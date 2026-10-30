@@ -71,6 +71,11 @@ public final class MemoryStorageProvider implements StorageProvider {
         }
 
         @Override
+        public @NotNull CompletableFuture<Set<UUID>> players() {
+            return CompletableFuture.completedFuture(new HashSet<>(worldVisits.keySet()));
+        }
+
+        @Override
         public @NotNull CompletableFuture<Void> markVisited(@NotNull UUID playerId, @NotNull String worldName) {
             worldVisits.computeIfAbsent(playerId, id -> ConcurrentHashMap.newKeySet()).add(worldName);
             return DONE;
@@ -83,6 +88,11 @@ public final class MemoryStorageProvider implements StorageProvider {
         public @NotNull CompletableFuture<Map<String, Long>> load(@NotNull UUID playerId) {
             Map<String, Long> played = animations.get(playerId);
             return CompletableFuture.completedFuture(played == null ? new HashMap<>() : new HashMap<>(played));
+        }
+
+        @Override
+        public @NotNull CompletableFuture<Set<UUID>> players() {
+            return CompletableFuture.completedFuture(new HashSet<>(animations.keySet()));
         }
 
         @Override
@@ -108,7 +118,7 @@ public final class MemoryStorageProvider implements StorageProvider {
 
     @Override
     public @NotNull Set<StorageCapability> capabilities() {
-        return EnumSet.of(StorageCapability.ATOMIC_INCREMENT);
+        return EnumSet.of(StorageCapability.ATOMIC_INCREMENT, StorageCapability.EXPORT);
     }
 
     @Override

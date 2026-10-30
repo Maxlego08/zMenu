@@ -5,6 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
@@ -29,4 +30,12 @@ public interface AnimationStore {
      */
     @NotNull
     CompletableFuture<Void> clear(@NotNull UUID playerId, @Nullable String animationKey);
+
+    /**
+     * @return every player who saw an animation, for {@link StorageCapability#EXPORT}
+     */
+    @NotNull
+    default CompletableFuture<Set<UUID>> players() {
+        return CompletableFuture.failedFuture(new UnsupportedOperationException("This store cannot list its players"));
+    }
 }

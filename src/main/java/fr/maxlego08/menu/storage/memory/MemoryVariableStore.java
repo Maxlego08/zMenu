@@ -90,6 +90,15 @@ final class MemoryVariableStore implements VariableStore {
     }
 
     @Override
+    public @NotNull CompletableFuture<Set<String>> owners(@NotNull VariableScope scope) {
+        Set<String> owners = new HashSet<>();
+        this.variables.keySet().forEach(ref -> {
+            if (ref.scope() == scope) owners.add(ref.owner());
+        });
+        return CompletableFuture.completedFuture(owners);
+    }
+
+    @Override
     public @NotNull CompletableFuture<Set<String>> names(@NotNull VariableScope scope) {
         Set<String> names = new HashSet<>();
         this.variables.keySet().forEach(ref -> {

@@ -22,5 +22,11 @@ public enum StorageCapability {
      * {@link VariableStore#incrementAndGet} is atomic even when several servers add to the same
      * value at once.
      */
-    ATOMIC_INCREMENT
+    ATOMIC_INCREMENT,
+
+    /**
+     * Every owner, player and saved inventory can be listed, so {@code /zm storage migrate} can copy
+     * the store to another one.
+     */
+    EXPORT
 }

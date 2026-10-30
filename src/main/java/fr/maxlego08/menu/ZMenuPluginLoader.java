@@ -11,10 +11,14 @@ import org.jspecify.annotations.NonNull;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashSet;
+import java.util.Locale;
+import java.util.Set;
 
 public class ZMenuPluginLoader implements PluginLoader {
 
     private static final String JEDIS_VERSION = "5.2.0";
+    private static final String POSTGRESQL_VERSION = "42.7.4";
 
     @Override
     public void classloader(PluginClasspathBuilder classpathBuilder) {
@@ -32,9 +36,16 @@ public class ZMenuPluginLoader implements PluginLoader {
                 null
         ));
 
-        if (usesRedis(classpathBuilder.getContext().getDataDirectory().resolve("config.yml"))) {
+        Set<String> backends = configuredBackends(classpathBuilder.getContext().getDataDirectory().resolve("config.yml"));
+        if (backends.contains("REDIS")) {
             resolver.addDependency(new Dependency(
                     new DefaultArtifact("redis.clients:jedis:" + JEDIS_VERSION),
+                    null
+            ));
+        }
+        if (backends.contains("POSTGRESQL") || backends.contains("POSTGRES")) {
+            resolver.addDependency(new Dependency(
+                    new DefaultArtifact("org.postgresql:postgresql:" + POSTGRESQL_VERSION),
                     null
             ));
         }
@@ -43,14 +54,18 @@ public class ZMenuPluginLoader implements PluginLoader {
     }
 
     /**
-     * The Redis client is only downloaded for servers whose {@code storage-type} or
-     * {@code messaging-type} is {@code REDIS}.
+     * The backends {@code config.yml} names in {@code storage-type}, {@code messaging-type} and
+     * {@code migration-target}. The Redis client and the PostgreSQL driver are only downloaded when
+     * one of them asks for it.
      */
-    static boolean usesRedis(Path configFile) {
-        if (!Files.exists(configFile)) return false;
+    static Set<String> configuredBackends(Path configFile) {
+        if (!Files.exists(configFile)) return Set.of();
         YamlConfiguration configuration = YamlConfiguration.loadConfiguration(configFile.toFile());
-        return "REDIS".equalsIgnoreCase(configuration.getString("storage-type", ""))
-                || "REDIS".equalsIgnoreCase(configuration.getString("messaging-type", ""));
+        Set<String> backends = new HashSet<>();
+        for (String key : new String[]{"storage-type", "messaging-type", "migration-target"}) {
+            backends.add(configuration.getString(key, "").toUpperCase(Locale.ROOT));
+        }
+        return backends;
     }
 
     private @NonNull String getMavenCentralMirror() {

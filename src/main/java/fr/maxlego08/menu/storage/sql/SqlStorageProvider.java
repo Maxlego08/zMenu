@@ -49,8 +49,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * Keeps zMenu's data in SQLite, MySQL or MariaDB, chosen by {@code storage-type}, with the
- * connection settings of {@code database-configuration}.
+ * Keeps zMenu's data in SQLite, MySQL, MariaDB or PostgreSQL, chosen by {@code storage-type}, with
+ * the connection settings of {@code database-configuration}.
  */
 public final class SqlStorageProvider implements StorageProvider {
 
@@ -82,6 +82,7 @@ public final class SqlStorageProvider implements StorageProvider {
             case "SQLITE" -> DatabaseType.SQLITE;
             case "MYSQL" -> DatabaseType.MYSQL;
             case "MARIADB" -> DatabaseType.MARIADB;
+            case "POSTGRESQL", "POSTGRES" -> DatabaseType.POSTGRESQL;
             default -> null;
         };
     }
@@ -94,8 +95,8 @@ public final class SqlStorageProvider implements StorageProvider {
     @Override
     public @NotNull Set<StorageCapability> capabilities() {
         return this.databaseType == null || this.databaseType == DatabaseType.SQLITE
-                ? EnumSet.of(StorageCapability.PERSISTENT, StorageCapability.ATOMIC_INCREMENT)
-                : EnumSet.of(StorageCapability.PERSISTENT, StorageCapability.SHARED, StorageCapability.ATOMIC_INCREMENT);
+                ? EnumSet.of(StorageCapability.PERSISTENT, StorageCapability.ATOMIC_INCREMENT, StorageCapability.EXPORT)
+                : EnumSet.of(StorageCapability.PERSISTENT, StorageCapability.SHARED, StorageCapability.ATOMIC_INCREMENT, StorageCapability.EXPORT);
     }
 
     @Override

@@ -693,6 +693,13 @@ public class ZVariableService implements VariableService, Listener {
     }
 
     /**
+     * @return how many player changes wait for the next batch
+     */
+    public int getPendingCount() {
+        return this.pending.size();
+    }
+
+    /**
      * @return how many owners have their variables in memory
      */
     public int getCachedOwners() {

@@ -1,6 +1,7 @@
 package fr.maxlego08.menu.storage;
 
 import fr.maxlego08.menu.api.storage.spi.InventoryOpenRecord;
+import fr.maxlego08.menu.api.storage.spi.StorageCapability;
 import fr.maxlego08.menu.api.storage.spi.StorageContext;
 import fr.maxlego08.menu.api.storage.spi.StorageProvider;
 import fr.maxlego08.menu.api.storage.spi.VariableMutation;
@@ -176,6 +177,22 @@ abstract class StorageProviderContractTest {
 
         assertEquals(Set.of("coins", "rank"), this.provider.variables().names(VariableScope.PLAYER).join());
         assertEquals(Set.of("event"), this.provider.variables().names(VariableScope.GLOBAL).join());
+    }
+
+    @Test
+    void ownersAndPlayersCanBeListed() {
+        this.provider.variables().apply(List.of(
+                set(player(PLAYER, "coins"), "10", 0),
+                set(player(OTHER, "rank"), "vip", 0),
+                set(VariableRef.global("event"), "on", 0))).join();
+        this.provider.worldVisits().markVisited(PLAYER, "world").join();
+        this.provider.animations().markPlayed(OTHER, "menu:open", 5L).join();
+
+        assertTrue(this.provider.capabilities().contains(StorageCapability.EXPORT));
+        assertEquals(Set.of(PLAYER.toString(), OTHER.toString()), this.provider.variables().owners(VariableScope.PLAYER).join());
+        assertEquals(Set.of(VariableRef.GLOBAL_OWNER), this.provider.variables().owners(VariableScope.GLOBAL).join());
+        assertEquals(Set.of(PLAYER), this.provider.worldVisits().players().join());
+        assertEquals(Set.of(OTHER), this.provider.animations().players().join());
     }
 
     @Test

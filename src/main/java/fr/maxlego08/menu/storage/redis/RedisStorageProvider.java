@@ -48,7 +48,7 @@ public final class RedisStorageProvider implements StorageProvider {
 
     @Override
     public @NotNull Set<StorageCapability> capabilities() {
-        return EnumSet.of(StorageCapability.PERSISTENT, StorageCapability.SHARED, StorageCapability.ATOMIC_INCREMENT);
+        return EnumSet.of(StorageCapability.PERSISTENT, StorageCapability.SHARED, StorageCapability.ATOMIC_INCREMENT, StorageCapability.EXPORT);
     }
 
     @Override

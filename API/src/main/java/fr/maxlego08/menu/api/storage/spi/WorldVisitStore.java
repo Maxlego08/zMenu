@@ -18,4 +18,12 @@ public interface WorldVisitStore {
 
     @NotNull
     CompletableFuture<Void> markVisited(@NotNull UUID playerId, @NotNull String worldName);
+
+    /**
+     * @return every player who visited a world, for {@link StorageCapability#EXPORT}
+     */
+    @NotNull
+    default CompletableFuture<Set<UUID>> players() {
+        return CompletableFuture.failedFuture(new UnsupportedOperationException("This store cannot list its players"));
+    }
 }

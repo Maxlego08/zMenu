@@ -57,6 +57,14 @@ public interface VariableStore {
     CompletableFuture<Void> deleteScope(@NotNull VariableScope scope);
 
     /**
+     * @return every owner having at least one variable in a scope, for {@link StorageCapability#EXPORT}
+     */
+    @NotNull
+    default CompletableFuture<Set<String>> owners(@NotNull VariableScope scope) {
+        return CompletableFuture.failedFuture(new UnsupportedOperationException("This store cannot list its owners"));
+    }
+
+    /**
      * @return every name used in a scope
      */
     @NotNull

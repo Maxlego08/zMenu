@@ -164,6 +164,11 @@ final class SqlVariableStore implements VariableStore {
     }
 
     @Override
+    public @NotNull CompletableFuture<Set<String>> owners(@NotNull VariableScope scope) {
+        return this.database.read(() -> SqlRows.distinct(this.database.requestHelper(), Tables.VARIABLES, "owner", table -> table.where("scope", scope.id())));
+    }
+
+    @Override
     public @NotNull CompletableFuture<Set<String>> names(@NotNull VariableScope scope) {
         return this.database.read(() -> {
             Set<String> names = new HashSet<>();

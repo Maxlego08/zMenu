@@ -30,6 +30,7 @@ import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.utils.TypeSafeCache;
 import net.kyori.adventure.key.Key;
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -42,6 +43,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 /**
@@ -138,6 +140,70 @@ public class ZStorageManager implements StorageManager {
         this.plugin.getServer().getPluginManager().registerEvents(this.variableService, this.plugin);
 
         this.startBatchTask(configuration.batchSeconds());
+    }
+
+    /**
+     * A new, unopened instance of a built-in provider, so a migration can open a second SQL
+     * storage (SQLite to MySQL) next to the one in use. Providers added by addons have a single
+     * instance, taken from the registry.
+     */
+    private @Nullable StorageProvider newProvider(Key key) {
+        if (key.equals(ZMenuKeys.key("sql"))) return new SqlStorageProvider();
+        if (key.equals(ZMenuKeys.key("redis"))) return new RedisStorageProvider();
+        if (key.equals(ZMenuKeys.key("memory"))) return new MemoryStorageProvider();
+        StorageProvider registered = this.plugin.getInventoryManager().getRegistries().registry(Registries.STORAGE_PROVIDER).get(key).orElse(null);
+        return registered == this.provider ? null : registered;
+    }
+
+    /**
+     * Copies every zMenu data of the storage in use to another storage, opened with the settings of
+     * {@code config.yml} and the given {@code storage-type}. The buffered changes are written first.
+     * Blocks until the copy is stored; call it off the main thread.
+     *
+     * @param storageType the target, such as {@code MYSQL} or {@code REDIS}
+     * @param progress    receives a line of text after each step
+     * @throws IllegalArgumentException when the target is unknown or is the storage in use
+     */
+    public StorageMigration.@NonNull Result migrateTo(@NonNull String storageType, @NonNull Consumer<String> progress) throws Exception {
+        if (!this.isEnable()) throw new IllegalStateException("The storage is not open");
+
+        StorageConfiguration configuration = StorageConfiguration.read(this.plugin.getConfig());
+        if (configuration.storageType().equalsIgnoreCase(storageType)) {
+            throw new IllegalArgumentException("storage-type is already " + configuration.storageType());
+        }
+        Key key = providerKey(storageType);
+        StorageProvider target = key == null ? null : this.newProvider(key);
+        if (target == null) throw new IllegalArgumentException("Unknown storage " + storageType);
+
+        this.flush();
+
+        YamlConfiguration targetConfiguration = new YamlConfiguration();
+        targetConfiguration.loadFromString(this.plugin.getConfig().saveToString());
+        targetConfiguration.set("storage-type", storageType.toUpperCase(Locale.ROOT));
+        targetConfiguration.set("messaging-type", "NONE");
+
+        target.open(new StorageContext(this.plugin, targetConfiguration, this.plugin.getDataFolder(), this.plugin.getLogger(), this.variableService.serverId())).join();
+        try {
+            return new StorageMigration(this.provider, target, progress).run();
+        } finally {
+            target.close().join();
+        }
+    }
+
+    /**
+     * @return a few lines describing the storage in use, for {@code /zm storage status}
+     */
+    public @NonNull List<String> status() {
+        List<String> lines = new ArrayList<>();
+        if (this.provider == null) {
+            lines.add("Storage: not open");
+            return lines;
+        }
+        lines.add("Storage: " + this.provider.key().asString() + " " + this.provider.capabilities());
+        lines.add("Server id: " + this.variableService.serverId());
+        lines.add("Messaging: " + (this.redisMessaging != null ? "redis" : this.provider.broker().map(broker -> broker.getClass().getSimpleName()).orElse("none")));
+        lines.add("Owners in memory: " + this.variableService.getCachedOwners() + ", player changes waiting: " + this.variableService.getPendingCount());
+        return lines;
     }
 
     /**

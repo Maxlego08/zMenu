@@ -27,6 +27,6 @@ class SqliteStorageProviderTest extends StorageProviderContractTest {
 
     @Test
     void sqliteIsPersistentButNotShared() {
-        assertEquals(EnumSet.of(StorageCapability.PERSISTENT, StorageCapability.ATOMIC_INCREMENT), this.provider.capabilities());
+        assertEquals(EnumSet.of(StorageCapability.PERSISTENT, StorageCapability.ATOMIC_INCREMENT, StorageCapability.EXPORT), this.provider.capabilities());
     }
 }

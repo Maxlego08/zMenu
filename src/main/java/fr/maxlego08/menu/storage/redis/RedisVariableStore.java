@@ -242,6 +242,11 @@ final class RedisVariableStore implements VariableStore {
     }
 
     @Override
+    public @NotNull CompletableFuture<Set<String>> owners(@NotNull VariableScope scope) {
+        return this.connection.threads().read(() -> new HashSet<>(this.connection.jedis().smembers(this.ownersKey(scope))));
+    }
+
+    @Override
     public @NotNull CompletableFuture<Set<String>> names(@NotNull VariableScope scope) {
         return this.connection.threads().read(() -> new HashSet<>(this.connection.jedis().hkeys(this.namesKey(scope))));
     }

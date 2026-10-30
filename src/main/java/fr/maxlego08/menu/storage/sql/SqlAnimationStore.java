@@ -7,6 +7,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
@@ -28,6 +29,11 @@ final class SqlAnimationStore implements AnimationStore {
             }
             return played;
         });
+    }
+
+    @Override
+    public @NotNull CompletableFuture<Set<UUID>> players() {
+        return this.database.read(() -> SqlRows.distinctPlayers(this.database.requestHelper(), Tables.PLAYER_ANIMATIONS));
     }
 
     @Override

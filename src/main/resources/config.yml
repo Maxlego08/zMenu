@@ -44,6 +44,8 @@ skip-update-check: false
 # SQLITE - For the launch of the plugin only.
 # MYSQL - RECOMMENDED
 # MARIADB - RECOMMENDED
+# POSTGRESQL - Uses database-configuration below (set port to 5432). zMenu downloads the driver on
+#              the next start.
 # REDIS - Keeps everything in Redis (settings in the redis section below). Make sure Redis writes its
 #         data to disk (appendonly yes in redis.conf), or a restart of Redis loses it.
 # NONE - If you do not need a database, you can disable it.
@@ -86,6 +88,11 @@ redis:
 # When a player moves from one server to another, the new server waits up to this many milliseconds
 # for the old one to save the player's data before reading it (only with a shared database).
 session-handoff-timeout: 3000
+
+# To move to another storage-type, copy the data with /zm storage migrate <type>, then change
+# storage-type and restart. When the new type needs a driver zMenu does not have yet (POSTGRESQL,
+# REDIS), set it here and restart once before running the command, so zMenu downloads it.
+migration-target: ""
 
 # Configuration of your database, it is recommended to use the database to store your data.
 database-configuration:

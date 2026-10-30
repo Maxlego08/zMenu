@@ -5,12 +5,15 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 /**
- * When each player last saw an animation, in the hash {@code <prefix>:anim:<uuid>}.
+ * When each player last saw an animation, in the hash {@code <prefix>:anim:<uuid>}, and the players
+ * having one in {@code <prefix>:anim-players}.
  */
 final class RedisAnimationStore implements AnimationStore {
 
@@ -35,7 +38,19 @@ final class RedisAnimationStore implements AnimationStore {
 
     @Override
     public @NotNull CompletableFuture<Void> markPlayed(@NotNull UUID playerId, @NotNull String animationKey, long playedAt) {
-        return this.connection.threads().write(() -> this.connection.jedis().hset(this.key(playerId), animationKey, String.valueOf(playedAt)));
+        return this.connection.threads().write(() -> {
+            this.connection.jedis().hset(this.key(playerId), animationKey, String.valueOf(playedAt));
+            this.connection.jedis().sadd(this.connection.key("anim-players"), playerId.toString());
+        });
+    }
+
+    @Override
+    public @NotNull CompletableFuture<Set<UUID>> players() {
+        return this.connection.threads().read(() -> {
+            Set<UUID> players = new HashSet<>();
+            this.connection.jedis().smembers(this.connection.key("anim-players")).forEach(playerId -> players.add(UUID.fromString(playerId)));
+            return players;
+        });
     }
 
     @Override

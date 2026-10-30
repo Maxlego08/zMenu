@@ -18,6 +18,6 @@ class MemoryStorageProviderTest extends StorageProviderContractTest {
 
     @Test
     void memoryIsNeitherPersistentNorShared() {
-        assertEquals(EnumSet.of(StorageCapability.ATOMIC_INCREMENT), this.provider.capabilities());
+        assertEquals(EnumSet.of(StorageCapability.ATOMIC_INCREMENT, StorageCapability.EXPORT), this.provider.capabilities());
     }
 }

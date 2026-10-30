@@ -31,6 +31,11 @@ final class SqlWorldVisitStore implements WorldVisitStore {
     }
 
     @Override
+    public @NotNull CompletableFuture<Set<UUID>> players() {
+        return this.database.read(() -> SqlRows.distinctPlayers(this.database.requestHelper(), Tables.FIRST_WORLD_JOIN));
+    }
+
+    @Override
     public @NotNull CompletableFuture<Void> markVisited(@NotNull UUID playerId, @NotNull String worldName) {
         return this.database.write(() -> this.database.requestHelper().upsert(Tables.FIRST_WORLD_JOIN, table -> {
             table.uuid("player_id", playerId).primary();

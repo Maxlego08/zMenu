@@ -55,7 +55,7 @@ class RedisStorageProviderTest extends StorageProviderContractTest {
 
     @Test
     void redisIsSharedAndAddsAtomically() {
-        assertEquals(EnumSet.of(StorageCapability.PERSISTENT, StorageCapability.SHARED, StorageCapability.ATOMIC_INCREMENT), this.provider.capabilities());
+        assertEquals(EnumSet.of(StorageCapability.PERSISTENT, StorageCapability.SHARED, StorageCapability.ATOMIC_INCREMENT, StorageCapability.EXPORT), this.provider.capabilities());
         assertTrue(this.provider.broker().isPresent());
         assertTrue(this.provider.sessions().isPresent());
     }
