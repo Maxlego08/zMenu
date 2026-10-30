@@ -42,6 +42,8 @@
 
 # Unreleased
 
+# 1.1.2.1
+
 ## New Features
 
 - **`database-configuration.max-lifetime` option**: new `config.yml` key, in seconds (default `1800`), that sets
