@@ -20,11 +20,12 @@ import org.jspecify.annotations.NonNull;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
 public class ZDataManager implements DataManager {
 
-    private final Map<UUID, ZPlayerData> players = new HashMap<>();
+    private final Map<UUID, ZPlayerData> players = new ConcurrentHashMap<>();
     private final ZMenuPlugin plugin;
     private final Map<String, String> defaultValues = new HashMap<>();
     private long lastSave;
@@ -41,16 +42,7 @@ public class ZDataManager implements DataManager {
 
     @Override
     public @NonNull PlayerData getOrCreate(@NonNull UUID uniqueId) {
-
-        Optional<PlayerData> optional = this.getPlayer(uniqueId);
-        if (optional.isPresent()) {
-            return optional.get();
-        }
-
-        ZPlayerData data = new ZPlayerData(this.plugin.getStorageManager(), uniqueId);
-        this.players.put(uniqueId, data);
-
-        return data;
+        return this.players.computeIfAbsent(uniqueId, id -> new ZPlayerData(this.plugin.getStorageManager(), id));
     }
 
     @Override

@@ -8,12 +8,13 @@ import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NonNull;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class ZPlayerData implements PlayerData {
 
     private final StorageManager storageManager;
     private final UUID uniqueId;
-    private final Map<String, Data> datas = new HashMap<>();
+    private final Map<String, Data> datas = new ConcurrentHashMap<>();
 
     public ZPlayerData(@NotNull StorageManager storageManager,@NotNull UUID uniqueId) {
         super();

@@ -14,6 +14,7 @@ import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 import org.bukkit.inventory.ItemStack;
 import org.jspecify.annotations.NonNull;
@@ -21,11 +22,14 @@ import org.jspecify.annotations.NonNull;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class ItemJoinMechanicListener extends MechanicListener {
     private final ItemJoinMechanicFactory itemJoinMechanicFactory;
     private final ItemManager itemManager;
     private final MenuPlugin plugin;
+    private final Map<UUID, Set<String>> visitedWorlds = new ConcurrentHashMap<>();
 
     public ItemJoinMechanicListener(ItemJoinMechanicFactory itemJoinMechanicFactory, MenuPlugin plugin) {
         this.itemJoinMechanicFactory = itemJoinMechanicFactory;
@@ -75,7 +79,7 @@ public class ItemJoinMechanicListener extends MechanicListener {
             }
         }
 
-        this.grantFirstWorldJoinItems(player, player.getWorld().getName());
+        this.loadVisitedWorlds(player);
     }
 
     @EventHandler
@@ -83,16 +87,61 @@ public class ItemJoinMechanicListener extends MechanicListener {
         this.grantFirstWorldJoinItems(event.getPlayer(), event.getPlayer().getWorld().getName());
     }
 
-    private void grantFirstWorldJoinItems(Player player, String worldName) {
-        Set<String> visitedWorlds = this.plugin.getStorageManager().getVisitedWorlds(player.getUniqueId());
+    @EventHandler
+    public void onQuit(PlayerQuitEvent event) {
+        this.visitedWorlds.remove(event.getPlayer().getUniqueId());
+    }
 
+    /**
+     * Reads the worlds a player has already visited, off the main thread, then grants the items
+     * of the world they joined in.
+     *
+     * <p>The read used to run on the main thread on every join and every world change. The worlds
+     * are now read once per session and kept until the player leaves.</p>
+     */
+    private void loadVisitedWorlds(Player player) {
+        if (!this.hasFirstWorldJoinMechanics()) return;
+
+        UUID uniqueId = player.getUniqueId();
+        this.plugin.getScheduler().runAsync(task -> {
+            Set<String> worlds = ConcurrentHashMap.newKeySet();
+            worlds.addAll(this.plugin.getStorageManager().getVisitedWorlds(uniqueId));
+
+            this.plugin.getScheduler().runAtEntity(player, entityTask -> {
+                if (!player.isOnline()) return;
+                this.visitedWorlds.put(uniqueId, worlds);
+                this.grantFirstWorldJoinItems(player, player.getWorld().getName());
+            });
+        });
+    }
+
+    private boolean hasFirstWorldJoinMechanics() {
+        for (Map.Entry<String, ItemJoinMechanic> entry : this.itemJoinMechanicFactory.getAllMechanics()) {
+            if (entry.getValue().hasFirstWorldJoinWorlds()) return true;
+        }
+        return false;
+    }
+
+    /**
+     * Grants the items of a world the player enters for the first time. Does nothing until the
+     * visited worlds have been read, the read grants the items of the current world itself.
+     */
+    private void grantFirstWorldJoinItems(Player player, String worldName) {
+        Set<String> visited = this.visitedWorlds.get(player.getUniqueId());
+        if (visited == null || visited.contains(worldName)) return;
+
+        boolean granted = false;
         for (Map.Entry<String, ItemJoinMechanic> entry : this.itemJoinMechanicFactory.getAllMechanics()) {
             ItemJoinMechanic mechanic = entry.getValue();
             if (!mechanic.hasFirstWorldJoinWorlds()) continue;
             if (!mechanic.getFirstWorldJoinWorlds().contains(worldName)) continue;
-            if (visitedWorlds.contains(worldName)) continue;
 
             this.itemManager.giveItem(player, entry.getKey());
+            granted = true;
+        }
+
+        if (granted) {
+            visited.add(worldName);
             this.plugin.getStorageManager().markWorldVisited(player.getUniqueId(), worldName);
         }
     }

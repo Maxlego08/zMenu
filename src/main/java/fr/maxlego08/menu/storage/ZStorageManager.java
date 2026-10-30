@@ -31,16 +31,33 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.jspecify.annotations.NonNull;
 
 import java.util.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ZStorageManager implements StorageManager {
+
+    private static final long FLUSH_TIMEOUT_SECONDS = 30;
 
     private final MenuPlugin plugin;
     private final TypeSafeCache cache = new TypeSafeCache();
     private RequestHelper requestHelper;
     private boolean isEnable = true;
     private final AtomicBoolean flushing = new AtomicBoolean(false);
+
+    /**
+     * Runs every database write, one at a time and in the order it was asked for.
+     *
+     * <p>Writes used to go through the shared async scheduler, which runs tasks in parallel. A
+     * saved inventory could then be deleted before the insert that created it ran, leaving a row
+     * that gave the items back a second time on the next join, and a buffered value could be
+     * written after the delete meant to remove it. A single thread keeps writes in order.</p>
+     */
+    private ExecutorService writer;
 
     public ZStorageManager(MenuPlugin plugin) {
         this.plugin = plugin;
@@ -106,6 +123,12 @@ public class ZStorageManager implements StorageManager {
         MigrationManager.setDatabaseConfiguration(databaseConnection.getDatabaseConfiguration());
         MigrationManager.execute(databaseConnection, logger);
 
+        this.writer = Executors.newSingleThreadExecutor(runnable -> {
+            Thread thread = new Thread(runnable, "zMenu Storage Writer");
+            thread.setDaemon(true);
+            return thread;
+        });
+
         this.startBatchTask(this.plugin.getConfig().getInt("batch-task", 10));
     }
 
@@ -115,10 +138,36 @@ public class ZStorageManager implements StorageManager {
 
         if (!this.isEnable()) return;
 
-        this.plugin.getScheduler().runTimerAsync(() -> {
-            this.storeOpenInventories();
-            this.storePlayerData();
-        }, seconds, seconds, TimeUnit.SECONDS);
+        this.plugin.getScheduler().runTimerAsync(() -> this.write(this::storeBuffered), seconds, seconds, TimeUnit.SECONDS);
+    }
+
+    /**
+     * Queues a database write behind every write already queued.
+     *
+     * <p>Once the writer has been closed, during shutdown, the write runs on the calling thread
+     * instead of being dropped.</p>
+     */
+    private void write(Runnable task) {
+        if (!this.isEnable() || this.writer == null) return;
+
+        Runnable guarded = () -> {
+            try {
+                task.run();
+            } catch (Exception exception) {
+                fr.maxlego08.menu.zcore.logger.Logger.error("A database write failed", exception);
+            }
+        };
+
+        try {
+            this.writer.execute(guarded);
+        } catch (RejectedExecutionException exception) {
+            guarded.run();
+        }
+    }
+
+    private void storeBuffered() {
+        this.storeOpenInventories();
+        this.storePlayerData();
     }
 
     private void storePlayerData() {
@@ -173,18 +222,44 @@ public class ZStorageManager implements StorageManager {
     }
 
     /**
-     * Writes everything still buffered, on the calling thread.
+     * Writes everything still buffered and waits until it, and every write queued before it, is
+     * done.
      *
-     * <p>Deliberately synchronous. This is called from {@code onDisable}, where the plugin
-     * scheduler is being torn down, so anything handed to {@code runAsync} there would never run.</p>
+     * <p>Deliberately blocking. This is called from {@code onDisable}, where the plugin scheduler
+     * is being torn down, so the server must not stop before the data is written.</p>
      */
     @Override
     public void flush() {
 
-        if (!this.isEnable()) return;
+        if (!this.isEnable() || this.writer == null) return;
 
-        this.storeOpenInventories();
-        this.storePlayerData();
+        try {
+            this.writer.submit(this::storeBuffered).get(FLUSH_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+        } catch (RejectedExecutionException exception) {
+            this.storeBuffered();
+        } catch (InterruptedException exception) {
+            Thread.currentThread().interrupt();
+        } catch (ExecutionException | TimeoutException exception) {
+            fr.maxlego08.menu.zcore.logger.Logger.error("Unable to write the buffered data to the database", exception);
+        }
+    }
+
+    /**
+     * Writes what is still queued, then stops the writer thread. Called once, when the plugin
+     * disables; later writes run on the calling thread.
+     */
+    public void close() {
+
+        if (this.writer == null) return;
+
+        this.writer.shutdown();
+        try {
+            if (!this.writer.awaitTermination(FLUSH_TIMEOUT_SECONDS, TimeUnit.SECONDS)) {
+                fr.maxlego08.menu.zcore.logger.Logger.info("Some database writes did not finish before the server stopped.", fr.maxlego08.menu.zcore.logger.Logger.LogType.ERROR);
+            }
+        } catch (InterruptedException exception) {
+            Thread.currentThread().interrupt();
+        }
     }
 
     /**
@@ -204,9 +279,9 @@ public class ZStorageManager implements StorageManager {
 
         if (!this.flushing.compareAndSet(false, true)) return;
 
-        this.plugin.getScheduler().runAsync(w -> {
+        this.write(() -> {
             try {
-                this.flush();
+                this.storeBuffered();
             } finally {
                 this.flushing.set(false);
             }
@@ -231,7 +306,7 @@ public class ZStorageManager implements StorageManager {
         if (!this.isEnable()) return;
 
         this.cache.clear(DataDTO.class);
-        this.plugin.getScheduler().runAsync(w -> this.requestHelper.delete(Tables.PLAYER_DATAS, table -> {
+        this.write(() -> this.requestHelper.delete(Tables.PLAYER_DATAS, table -> {
         }));
     }
 
@@ -240,7 +315,7 @@ public class ZStorageManager implements StorageManager {
         if (!this.isEnable()) return;
 
         this.cache.removeMatching(DataDTO.class, e -> e.player_id().equals(uniqueId));
-        this.plugin.getScheduler().runAsync(w -> this.requestHelper.delete(Tables.PLAYER_DATAS, table -> table.where("player_id", uniqueId)));
+        this.write(() -> this.requestHelper.delete(Tables.PLAYER_DATAS, table -> table.where("player_id", uniqueId)));
     }
 
     @Override
@@ -248,7 +323,7 @@ public class ZStorageManager implements StorageManager {
         if (!this.isEnable()) return;
 
         this.cache.removeMatching(DataDTO.class, e -> e.key().equals(key));
-        this.plugin.getScheduler().runAsync(w -> this.requestHelper.delete(Tables.PLAYER_DATAS, table -> table.where("key", key)));
+        this.write(() -> this.requestHelper.delete(Tables.PLAYER_DATAS, table -> table.where("key", key)));
     }
 
     @Override
@@ -256,7 +331,7 @@ public class ZStorageManager implements StorageManager {
         if (!this.isEnable()) return;
 
         this.cache.removeMatching(DataDTO.class, e -> e.player_id().equals(uuid) && e.key().equals(key));
-        this.plugin.getScheduler().runAsync(w -> this.requestHelper.delete(Tables.PLAYER_DATAS, table -> {
+        this.write(() -> this.requestHelper.delete(Tables.PLAYER_DATAS, table -> {
             table.where("player_id", uuid);
             table.where("key", key);
         }));
@@ -285,7 +360,7 @@ public class ZStorageManager implements StorageManager {
 
         if (!this.isEnable()) return;
 
-        this.plugin.getScheduler().runAsync(w -> this.requestHelper.delete(Tables.PLAYER_INVENTORIES, table -> table.where("player_id", uuid)));
+        this.write(() -> this.requestHelper.delete(Tables.PLAYER_INVENTORIES, table -> table.where("player_id", uuid)));
     }
 
     @Override
@@ -302,7 +377,7 @@ public class ZStorageManager implements StorageManager {
     public void markWorldVisited(@NonNull UUID playerId, @NonNull String worldName) {
         if (!this.isEnable()) return;
 
-        this.plugin.getScheduler().runAsync(w -> this.requestHelper.upsert(Tables.FIRST_WORLD_JOIN, table -> {
+        this.write(() -> this.requestHelper.upsert(Tables.FIRST_WORLD_JOIN, table -> {
             table.uuid("player_id", playerId).primary();
             table.string("world_name", worldName).primary();
         }));
@@ -324,7 +399,7 @@ public class ZStorageManager implements StorageManager {
     public void markAnimationPlayed(@NonNull UUID playerId, @NonNull String animationKey, long playedAt) {
         if (!this.isEnable()) return;
 
-        this.plugin.getScheduler().runAsync(w -> this.requestHelper.upsert(Tables.PLAYER_ANIMATIONS, table -> {
+        this.write(() -> this.requestHelper.upsert(Tables.PLAYER_ANIMATIONS, table -> {
             table.uuid("player_id", playerId).primary();
             table.string("animation_key", animationKey).primary();
             table.bigInt("played_at", playedAt);
@@ -335,7 +410,7 @@ public class ZStorageManager implements StorageManager {
     public void clearPlayedAnimations(@NonNull UUID playerId, String animationKey) {
         if (!this.isEnable()) return;
 
-        this.plugin.getScheduler().runAsync(w -> this.requestHelper.delete(Tables.PLAYER_ANIMATIONS, table -> {
+        this.write(() -> this.requestHelper.delete(Tables.PLAYER_ANIMATIONS, table -> {
             table.where("player_id", playerId);
             if (animationKey != null) table.where("animation_key", animationKey);
         }));
@@ -346,7 +421,7 @@ public class ZStorageManager implements StorageManager {
 
         if (!this.isEnable()) return;
 
-        this.plugin.getScheduler().runAsync(w -> this.requestHelper.insert(Tables.PLAYER_INVENTORIES, table -> {
+        this.write(() -> this.requestHelper.insert(Tables.PLAYER_INVENTORIES, table -> {
             table.uuid("player_id", uuid);
             table.string("inventory", inventoryPlayer.toInventoryString());
         }));

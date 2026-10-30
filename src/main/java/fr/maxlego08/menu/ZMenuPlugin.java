@@ -576,6 +576,7 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
         if (this.inventoryHotReload != null) this.inventoryHotReload.stop();
 
         if (this.storageManager != null) this.safeDisable("storage", this.storageManager::flush);
+        if (this.storageManager instanceof ZStorageManager zStorageManager) this.safeDisable("storage writer", zStorageManager::close);
 
         this.safeDisable("configuration", () -> Configuration.getInstance().save(this.getConfig(), this.configFile));
 

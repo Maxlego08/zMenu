@@ -69,6 +69,10 @@
 
 ## Fixes
 
+* A saved inventory given back to a player when the server stops is now removed from the database, so the player no longer gets the same items a second time on their next join.
+* Database writes now run one at a time, in the order they were made. A saved inventory could be deleted before it was written, leaving a copy that was given back again later, and a player data value removed right after a change could come back.
+* The items given the first time a player enters a world no longer read the database on the main thread at every join and world change: the visited worlds are read once, off the main thread, and kept until the player leaves.
+* Player data is now safe to read from placeholder threads and Folia region threads.
 * The `lore` item verification was never registered, so it silently compared the whole item instead; it now compares only the lore.
 * `/zm reload command` reports again whether the commands were reloaded, and names a command it cannot find.
 * The `block` argument type of custom commands was registered as a second `material` type and could never be used; it now exists and accepts only materials that are blocks.

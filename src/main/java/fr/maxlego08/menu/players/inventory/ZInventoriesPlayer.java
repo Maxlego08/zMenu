@@ -14,11 +14,12 @@ import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NonNull;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
 
 public class ZInventoriesPlayer implements InventoriesPlayer {
 
-    private final Map<UUID, InventoryPlayer> inventories = new HashMap<>();
+    private final Map<UUID, InventoryPlayer> inventories = new ConcurrentHashMap<>();
     private final ZMenuPlugin plugin;
     private long lastSave;
 
@@ -149,12 +150,20 @@ public class ZInventoriesPlayer implements InventoriesPlayer {
         this.inventories.putAll(loadedInventories);
     }
 
+    /**
+     * Gives every online player their saved inventory back, on shutdown.
+     *
+     * <p>The saved copy is deleted from the database for each player who got it back. Keeping it
+     * gave the same items a second time when the player next joined. Offline players keep their
+     * saved copy, they get it back on join.</p>
+     */
     @Override
     public void restoreAllInventories() {
         new HashMap<>(this.inventories).forEach((uuid, inventoryPlayer) -> {
             Player player = Bukkit.getPlayer(uuid);
             if (player != null && player.isOnline()) {
                 inventoryPlayer.forceGiveInventory(player);
+                this.plugin.getStorageManager().removeInventory(uuid);
             }
             this.inventories.remove(uuid);
         });
