@@ -1,6 +1,5 @@
 package fr.maxlego08.menu.hooks.paper;
 
-import fr.maxlego08.menu.api.utils.PlatformType;
 import fr.maxlego08.menu.api.utils.version.ClientVersionProvider;
 import fr.maxlego08.menu.api.utils.version.MinecraftVersion;
 import fr.maxlego08.menu.api.utils.version.ProtocolVersions;
@@ -29,7 +28,7 @@ public class PaperProtocolClientVersionProvider implements ClientVersionProvider
 
     @Override
     public boolean isAvailable() {
-        return PlatformType.isPaper();
+        return true;
     }
 
     @Override

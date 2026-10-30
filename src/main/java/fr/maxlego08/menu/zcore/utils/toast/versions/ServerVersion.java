@@ -8,11 +8,7 @@ public class ServerVersion {
     public static VersionType getVersionType(String serverVersion) {
         String version = extractVersionNumber(serverVersion);
 
-        if (isBetween(version, "1.16", "1.20.4")) {
-            return VersionType.LEGACY;
-        }
-
-        if (isBetween(version, "1.20.5", "1.21.3")) {
+        if (compareVersion(version, "1.21.3") <= 0) {
             return VersionType.MIDDLE;
         }
 
@@ -26,10 +22,6 @@ public class ServerVersion {
             return matcher.group(1);
         }
         return "0.0.0";
-    }
-
-    private static boolean isBetween(String version, String min, String max) {
-        return compareVersion(version, min) >= 0 && compareVersion(version, max) <= 0;
     }
 
     private static int compareVersion(String v1, String v2) {

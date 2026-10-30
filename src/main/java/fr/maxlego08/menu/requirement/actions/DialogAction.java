@@ -9,6 +9,7 @@ import fr.maxlego08.menu.api.inventory.dialog.DialogInventory;
 import fr.maxlego08.menu.api.utils.Message;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.common.utils.ActionHelper;
+import fr.maxlego08.menu.common.utils.MessageUtils;
 import fr.maxlego08.menu.zcore.utils.InventoryArgument;
 import org.bukkit.entity.Player;
 import org.jspecify.annotations.NonNull;
@@ -45,7 +46,7 @@ public class DialogAction extends ActionHelper {
                 this.inventoryArgument.process(player,placeholders);
                 this.dialogManager.openDialog(player, optional.get(), oldInventories);
             } else {
-                inventory.getPlugin().getInventoryManager().sendMessage(player, Message.INVENTORY_NOT_FOUND, "%name%", fromInventory.getFileName(), "%toName%", this.dialog, "%plugin%", this.plugin == null ? "zMenu" : this.plugin);
+                MessageUtils.message(inventory.getPlugin(), player, Message.INVENTORY_NOT_FOUND, "%name%", fromInventory.getFileName(), "%toName%", this.dialog, "%plugin%", this.plugin == null ? "zMenu" : this.plugin);
             }
         });
     }

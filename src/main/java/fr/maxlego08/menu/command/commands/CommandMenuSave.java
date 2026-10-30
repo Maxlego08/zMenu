@@ -1,8 +1,8 @@
 package fr.maxlego08.menu.command.commands;
 
 import com.mojang.brigadier.arguments.StringArgumentType;
+import fr.maxlego08.menu.ZInventoryManager;
 import fr.maxlego08.menu.ZMenuPlugin;
-import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.utils.Message;
 import fr.maxlego08.menu.common.enums.Permission;
 import fr.maxlego08.menu.common.utils.MessageUtils;
@@ -36,7 +36,7 @@ public class CommandMenuSave extends SubCommand<ZMenuPlugin> {
             return CommandResultType.SUCCESS;
         }
 
-        InventoryManager inventoryManager = commandDispatch.getPlugin().getInventoryManager();
+        ZInventoryManager inventoryManager = commandDispatch.getPlugin().getInventoryManager();
         String name = commandDispatch.getArgument("item-name", String.class);
         SaveType type = commandDispatch.getArgument("type", SaveType.class, SaveType.BASE64);
 

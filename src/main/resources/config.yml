@@ -4,6 +4,12 @@
 #
 # Get 23.5% off at MineStrator with: https://cashback.groupez.dev/
 
+# Turn off the parts of zMenu you do not use. A disabled feature registers nothing (no listener, command or default file).
+# Features are read when the server starts: restart the server after changing them, /zm reload does not apply them.
+features:
+  # Custom items of the items folder, their mechanics (itemjoin, on-click), the item update on join and /zm giveitem.
+  custom-items: true
+
 # Enables detailed information display in the console.
 # If you encounter an issue, enable this option and send the errors to support.
 enable-debug: false
@@ -93,7 +99,7 @@ enable-log-storage-file: false
 enable-open-message: true
 
 # Enable MiniMessage format.
-# Allows the use of MiniMessage formatting (colors, gradients, etc.). Requires Minecraft 1.17+.
+# Enables Dialogs support (Paper 1.21.7+). MiniMessage formatting is always enabled.
 # More info: https://docs.advntr.dev/minimessage/index.html
 enable-mini-message-format: true
 
@@ -230,6 +236,18 @@ component-cache:
 # Enable caching of ItemStacks.
 # Caching helps improve performance by reducing object creation.
 enable-cache-item-stack: true
+
+# Longest an opening or closing animation may last, in milliseconds.
+# A longer one still plays, but is reported in the console and never freezes the menu,
+# so a mistyped interval cannot lock a player out of their menu.
+max-animation-duration: 10000
+
+# From how many idle-animation buttons a menu drives them all from one shared timer.
+# Below this, each idle button gets a task of its own, which keeps every frame exact to the tick.
+# At or above it, the menu uses a single task per viewer, however many buttons cycle,
+# and frames land on the next tick (only noticeable for durations that are not a multiple of 50 ms).
+# Lower it on a busy server with many idle buttons; 0 always shares, a very large value never does.
+shared-idle-timer-threshold: 8
 
 # Enable click cooldown.
 # Prevents players from spamming clicks too quickly. Useful to reduce abuse or bugs.

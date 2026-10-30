@@ -12,7 +12,10 @@ public enum EnumInventory {
 
     /**
      * Inventory specifically for marketplace interfaces.
+     *
+     * @deprecated no inventory uses it.
      */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     INVENTORY_MARKETPLACE(2),
 
 	;

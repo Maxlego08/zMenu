@@ -99,7 +99,7 @@ public class ItemButton {
         if (this.inPlayerInventory) {
             this.baseInventory.getPlayerInventoryItems().put(this.slot, this);
         } else {
-            this.baseInventory.getSpigotInventory().setItem(this.slot, displayItem);
+            this.baseInventory.getInventory().setItem(this.slot, displayItem);
         }
     }
 

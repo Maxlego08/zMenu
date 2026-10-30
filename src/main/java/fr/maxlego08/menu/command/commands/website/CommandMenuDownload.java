@@ -34,8 +34,6 @@ public class CommandMenuDownload extends SubCommand<ZMenuPlugin> {
             return CommandResultType.SUCCESS;
         }
 
-        /*DownloadFile downloadFile = new DownloadFile();
-        runAsync(plugin, () -> downloadFile.download(plugin, this.sender, link));*/
         this.plugin.getWebsiteManager().downloadFromUrl(commandDispatch.getSender(), link, force);
         return CommandResultType.SUCCESS;
     }

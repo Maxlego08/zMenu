@@ -5,6 +5,7 @@ import fr.maxlego08.menu.api.ButtonManager;
 import fr.maxlego08.menu.api.loader.ActionLoader;
 import fr.maxlego08.menu.api.loader.PermissibleLoader;
 import fr.maxlego08.menu.api.requirement.Action;
+import fr.maxlego08.menu.api.registry.Registries;
 import fr.maxlego08.menu.api.requirement.Permissible;
 import fr.maxlego08.menu.loader.actions.PlayerCommandAsOPLoader;
 import fr.maxlego08.menu.test.serialization.ObjectGraphComparator;
@@ -15,7 +16,6 @@ import org.junit.jupiter.api.Test;
 import org.mockbukkit.mockbukkit.MockBukkit;
 
 import java.io.File;
-import java.lang.reflect.Field;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -39,7 +39,8 @@ class ActionSerializationTest {
         MockBukkit.mock().addSimpleWorld("world");
         plugin = MockBukkit.load(ZMenuPlugin.class, true);
         buttonManager = plugin.getButtonManager();
-        buttonManager.registerAction(new PlayerCommandAsOPLoader());
+        PlayerCommandAsOPLoader opLoader = new PlayerCommandAsOPLoader();
+        plugin.getInventoryManager().getRegistries().writable(Registries.ACTION).register(plugin, opLoader, opLoader.aliases());
         actionsFile = new File(Objects.requireNonNull(ActionSerializationTest.class.getResource("/serialization/actions.yml")).toURI());
         permissiblesFile = new File(Objects.requireNonNull(ActionSerializationTest.class.getResource("/serialization/permissibles.yml")).toURI());
     }
@@ -117,39 +118,29 @@ class ActionSerializationTest {
     }
 
     @Test
-    void everyRegisteredActionHasAFixture() throws ReflectiveOperationException {
+    void everyRegisteredActionHasAFixture() {
         Set<ActionLoader> covered = identitySet();
         for (Map<String, Object> entry : entries(actionsFile, "actions")) {
             buttonManager.getActionLoader(String.valueOf(entry.get("type"))).ifPresent(covered::add);
         }
         List<String> missing = new ArrayList<>();
-        for (ActionLoader loader : registered("actionsLoader", ActionLoader.class)) {
+        for (ActionLoader loader : plugin.getInventoryManager().getRegistries().registry(Registries.ACTION)) {
             if (!covered.contains(loader)) missing.add(loader.getClass().getSimpleName() + " " + loader.getKeys());
         }
         assertEquals(List.of(), missing, "add an entry for these actions to serialization/actions.yml");
     }
 
     @Test
-    void everyRegisteredPermissibleHasAFixture() throws ReflectiveOperationException {
+    void everyRegisteredPermissibleHasAFixture() {
         Set<PermissibleLoader> covered = identitySet();
         for (Map<String, Object> entry : entries(permissiblesFile, "requirements")) {
             buttonManager.getPermission(String.valueOf(entry.get("type"))).ifPresent(covered::add);
         }
         List<String> missing = new ArrayList<>();
-        for (PermissibleLoader loader : registered("permissibles", PermissibleLoader.class)) {
+        for (PermissibleLoader loader : plugin.getInventoryManager().getRegistries().registry(Registries.PERMISSIBLE)) {
             if (!covered.contains(loader)) missing.add(loader.getClass().getSimpleName() + " " + loader.getKey());
         }
         assertEquals(List.of(), missing, "add an entry for these permissibles to serialization/permissibles.yml");
-    }
-
-    private static <T> Collection<T> registered(String fieldName, Class<T> type) throws ReflectiveOperationException {
-        Field field = buttonManager.getClass().getDeclaredField(fieldName);
-        field.setAccessible(true);
-        Set<T> loaders = identitySet();
-        for (Object loader : ((Map<?, ?>) field.get(buttonManager)).values()) {
-            loaders.add(type.cast(loader));
-        }
-        return loaders;
     }
 
     private static <T> Set<T> identitySet() {

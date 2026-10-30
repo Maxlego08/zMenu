@@ -60,7 +60,7 @@ public class CommandMenuOpenMainMenu extends SubCommand<ZMenuPlugin> {
 
         String mainMenu = Configuration.mainMenu;
 
-        Optional<Inventory> optional = inventoryManager.getInventory(mainMenu);
+        Optional<Inventory> optional = inventoryManager.findInventory(mainMenu);
 
         if (optional.isEmpty()) {
             MessageUtils.message(commandDispatch.getPlugin(), commandDispatch.getSender(), Message.INVENTORY_OPEN_ERROR_INVENTORY, "%name%", mainMenu);

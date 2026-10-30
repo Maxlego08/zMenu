@@ -38,7 +38,7 @@ public class RulePermissibleLoader extends PermissibleLoader {
 
         @SuppressWarnings("unchecked")
         Map<String, Object> ruleMap = (Map<String, Object>) ruleRawMap;
-        Rule rule = ZRuleLoaderRegistry.getInstance().loadRule(ruleMap);
+        Rule rule = ZRuleLoaderRegistry.loadRule(ruleMap);
         if (rule == null) return null;
 
         String sourceStr = accessor.getString("item-source", "HAND");

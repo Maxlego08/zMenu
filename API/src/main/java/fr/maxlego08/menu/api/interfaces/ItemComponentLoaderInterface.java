@@ -11,7 +11,10 @@ import java.io.File;
 /**
  * Interface for classes that load custom item components from configuration.
  * Used to decouple loading implementations from main logic.
+ *
+ * @deprecated not used by zMenu; item components are loaded by {@link fr.maxlego08.menu.api.loader.ItemComponentLoader}.
  */
+@Deprecated(since = "1.1.2.1", forRemoval = true)
 public interface ItemComponentLoaderInterface {
     @Nullable
     /**

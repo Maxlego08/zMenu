@@ -1,0 +1,42 @@
+#
+# Documentation: https://docs.groupez.dev/zmenu/getting-started
+#
+# An overlay pack: no motion of its own, just a sweep of light that can be
+# added on top of another animation.
+#
+#   open-animation:
+#     files:
+#       - fancy_open      # the motion
+#       - glint           # this sweep, merged on top
+#
+# A file may also build on another with `extends`, so a variant does not
+# have to repeat its base:
+#
+#   extends: fancy_open
+#   interval: 10
+#
+# The animations are merged in the order they are given, key by key, and
+# whatever the menu writes next to them wins over all of them.
+
+type: SEQUENTIAL
+interval: 40
+
+temporary-items:
+
+  glint:
+    slots:
+      - 0-8
+    frames:
+      light:
+        at: start
+        item:
+          material: WHITE_STAINED_GLASS_PANE
+          name: " "
+      warm:
+        at: 200
+        item:
+          material: YELLOW_STAINED_GLASS_PANE
+          name: " "
+      gone:
+        at: 400
+        remove: true

@@ -60,4 +60,5 @@ build-and-deploy.sh
 GEMINI.md
 
 TODO.md
-docs/triage-issues.md
+/docs/*
+!/docs/live-sync-plan.md

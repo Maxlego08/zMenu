@@ -9,7 +9,6 @@ import fr.maxlego08.menu.api.pattern.ActionPattern;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.Permissible;
 import fr.maxlego08.menu.api.requirement.Requirement;
-import fr.maxlego08.menu.api.rules.loader.RuleLoader;
 import fr.maxlego08.menu.api.utils.Loader;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
@@ -37,21 +36,30 @@ public interface ButtonManager {
      * Registers a new {@link ButtonLoader} responsible for button creation.
      *
      * @param button The {@link ButtonLoader} instance to register.
+     * @deprecated register it in {@link fr.maxlego08.menu.api.registry.Registries#BUTTON}:
+     * {@code registries.writable(Registries.BUTTON).register(plugin, loader, loader.aliases())}, which
+     * throws on a name already taken instead of logging it.
      */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     void register(@NotNull ButtonLoader button);
 
     /**
      * Unregisters an existing {@link ButtonLoader}, ceasing its button creation responsibilities.
      *
      * @param button The {@link ButtonLoader} instance to unregister.
+     * @deprecated use {@code registries.writable(Registries.BUTTON).unregister(loader.key())}.
      */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     void unregister(@NotNull ButtonLoader button);
 
     /**
      * Unregisters all {@link ButtonLoader} instances linked to a specific plugin.
      *
      * @param plugin The plugin whose loaders should be unregistered.
+     * @deprecated a plugin's button types are removed when it disables; to remove them earlier use
+     * {@code registries.writable(Registries.BUTTON).unregisterAll(plugin)}.
      */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     void unregisters(@NotNull Plugin plugin);
 
     /**
@@ -67,8 +75,11 @@ public interface ButtonManager {
      *
      * @param plugin The plugin whose loaders are to be retrieved.
      * @return A collection of {@link ButtonLoader} instances or an empty collection if none are found.
+     * @deprecated read {@link fr.maxlego08.menu.api.registry.Registries#BUTTON} and its
+     * {@link fr.maxlego08.menu.api.registry.KeyedRegistry#owner(net.kyori.adventure.key.Key) owners}.
      */
     @NotNull
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     Collection<ButtonLoader> getLoaders(@NotNull Plugin plugin);
 
     /**
@@ -84,15 +95,21 @@ public interface ButtonManager {
      * Registers a new {@link PermissibleLoader} responsible for permissible creation.
      *
      * @param permissibleLoader The {@link PermissibleLoader} instance to register.
+     * @deprecated register it in {@link fr.maxlego08.menu.api.registry.Registries#PERMISSIBLE}:
+     * {@code registries.writable(Registries.PERMISSIBLE).register(plugin, loader)}, which throws on a
+     * name already taken instead of logging it.
      */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     void registerPermissible(@NotNull PermissibleLoader permissibleLoader);
 
     /**
      * Retrieves a mapping of permissible keys to their associated {@link PermissibleLoader} instances.
      *
-     * @return A map linking permissible keys to their corresponding {@link PermissibleLoader} instances.
+     * @return A copy of the registered types, by their lowercased name.
+     * @deprecated read {@link fr.maxlego08.menu.api.registry.Registries#PERMISSIBLE}.
      */
     @NotNull
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     Map<String, PermissibleLoader> getPermissibles();
 
     /**
@@ -108,18 +125,12 @@ public interface ButtonManager {
      * Registers a new {@link ActionLoader} responsible for action creation.
      *
      * @param actionLoader The {@link ActionLoader} instance to register.
+     * @deprecated register it in {@link fr.maxlego08.menu.api.registry.Registries#ACTION}:
+     * {@code registries.writable(Registries.ACTION).register(plugin, loader, loader.aliases())}, which
+     * throws on a name already taken instead of logging it.
      */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     void registerAction(@NotNull ActionLoader actionLoader);
-
-    /**
-     * Registers a {@link RuleLoader} so its rule type (and aliases) can be used in item rules,
-     * for example in an {@code item_drag} button or an {@code item-rule} requirement.
-     * <p>
-     * Unlike {@code @AutoRuleLoader}, which only scans the zMenu package, this lets external plugins add rule types.
-     *
-     * @param ruleLoader The {@link RuleLoader} instance to register.
-     */
-    void registerRuleLoader(@NotNull RuleLoader ruleLoader);
 
     /**
      * Retrieves an {@link Optional} {@link ActionLoader} based on a specific action key.

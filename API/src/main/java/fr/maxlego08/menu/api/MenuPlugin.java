@@ -3,13 +3,16 @@ package fr.maxlego08.menu.api;
 import com.tcoded.folialib.impl.PlatformScheduler;
 import fr.maxlego08.menu.api.attribute.AttributApplier;
 import fr.maxlego08.menu.api.command.CommandManager;
+import fr.maxlego08.menu.api.configuration.Feature;
 import fr.maxlego08.menu.api.dupe.DupeManager;
 import fr.maxlego08.menu.api.enchantment.Enchantments;
+import fr.maxlego08.menu.api.itemstack.ItemStackService;
 import fr.maxlego08.menu.api.font.FontImage;
 import fr.maxlego08.menu.api.interfaces.ReturnBiConsumer;
 import fr.maxlego08.menu.api.pattern.PatternManager;
 import fr.maxlego08.menu.api.players.DataManager;
 import fr.maxlego08.menu.api.players.inventory.InventoriesPlayer;
+import fr.maxlego08.menu.api.sound.SoundService;
 import fr.maxlego08.menu.api.storage.StorageManager;
 import fr.maxlego08.menu.api.utils.MetaUpdater;
 import fr.maxlego08.menu.api.utils.toast.ToastHelper;
@@ -18,8 +21,10 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -213,19 +218,25 @@ public interface MenuPlugin extends Plugin {
     /**
      * Checks if the plugin is a Paper plugin.
      * @return true if the plugin is a Paper plugin, false otherwise
+     * @deprecated zMenu only runs on Paper and its forks, so this is always true.
      */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     boolean isPaper();
 
     /**
      * Checks if the plugin is a Paper or Folia plugin.
      * @return true if the plugin is a Paper or Folia plugin, false otherwise
+     * @deprecated zMenu only runs on Paper and its forks, so this is always true.
      */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     boolean isPaperOrFolia();
 
     /**
      * Checks if the plugin is a Spigot plugin.
      * @return true if the plugin is a Spigot plugin, false otherwise
+     * @deprecated zMenu only runs on Paper and its forks, so this is always false.
      */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     boolean isSpigot();
 
     /**
@@ -249,8 +260,36 @@ public interface MenuPlugin extends Plugin {
      * @param path          the path within the configuration to load from.
      * @param file          the file from which the configuration was loaded, used for logging errors.
      * @return the loaded menu item stack.
+     * @deprecated use {@link ItemStackService#load(YamlConfiguration, String, File)}.
      */
-    MenuItemStack loadItemStack(YamlConfiguration configuration, String path, File file);
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
+    default MenuItemStack loadItemStack(YamlConfiguration configuration, String path, File file) {
+        return this.getItemStackService().load(configuration, path, file);
+    }
+
+    /**
+     * Gets the service that reads, converts and compares the items of zMenu.
+     *
+     * @return the item stack service
+     */
+    ItemStackService getItemStackService();
+
+    /**
+     * Gets the service that creates the sounds of zMenu and reads them from files.
+     *
+     * @return the sound service
+     */
+    SoundService getSoundService();
+
+    /**
+     * Reads a YAML file through zMenu's file cache: a file read by several menus is parsed once, and
+     * read again when it changes on disk.
+     *
+     * @param path the file
+     * @return the configuration, or empty if the file does not exist
+     */
+    @NotNull
+    Optional<YamlConfiguration> readYamlFile(@NotNull Path path);
 
     /**
      * Returns the ToastHelper object for this plugin.
@@ -273,7 +312,22 @@ public interface MenuPlugin extends Plugin {
         return ClientVersionManager.SERVER_VERSION_ONLY;
     }
 
+    /**
+     * Returns the custom item manager. Never null: when {@link Feature#CUSTOM_ITEMS} is disabled it is
+     * a manager that knows no item and ignores every registration.
+     *
+     * @return the item manager
+     */
     ItemManager getItemManager();
+
+    /**
+     * Tells whether a feature is running. Features are read from {@code config.yml} once when zMenu
+     * enables, a change made afterwards only applies after a restart.
+     *
+     * @param feature the feature
+     * @return whether the feature is enabled
+     */
+    boolean isFeatureEnabled(@NotNull Feature feature);
 
     AttributApplier getAttributApplier();
 

@@ -1,8 +1,12 @@
 package fr.maxlego08.menu.api.command;
 
+import fr.maxlego08.menu.api.ZMenuKeys;
 import fr.maxlego08.menu.api.utils.Message;
+import net.kyori.adventure.key.Key;
+import net.kyori.adventure.key.Keyed;
+import org.jetbrains.annotations.NotNull;
 
-public interface CommandArgumentValidator {
+public interface CommandArgumentValidator extends Keyed {
     /**
      * Checks if the given value is valid for this validator.
      *
@@ -25,4 +29,15 @@ public interface CommandArgumentValidator {
      * @return The type of this argument validator.
      */
     String getType();
+
+    /**
+     * The key of this validator in {@link fr.maxlego08.menu.api.registry.Registries#COMMAND_ARGUMENT_VALIDATOR},
+     * read from {@link #getType()} like a {@code type} written in a command file.
+     *
+     * @return the key
+     */
+    @Override
+    default @NotNull Key key() {
+        return ZMenuKeys.parse(this.getType());
+    }
 }

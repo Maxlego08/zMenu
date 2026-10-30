@@ -1,5 +1,8 @@
 package fr.maxlego08.menu.api.itemstack;
 
+import fr.maxlego08.menu.api.ZMenuKeys;
+import net.kyori.adventure.key.Key;
+import net.kyori.adventure.key.Keyed;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
@@ -7,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
  * The ItemStackSimilar interface defines methods for comparing ItemStacks in Minecraft.
  * It is used to determine if two ItemStacks are similar based on a specific implementation.
  */
-public interface ItemStackSimilar {
+public interface ItemStackSimilar extends Keyed {
 
     /**
      * Retrieves the name of the ItemStack comparison implementation.
@@ -17,6 +20,17 @@ public interface ItemStackSimilar {
      */
     @NotNull
     String getName();
+
+    /**
+     * The key of this comparison in {@link fr.maxlego08.menu.api.registry.Registries#ITEM_VERIFICATION},
+     * read from {@link #getName()} like a name written in a file.
+     *
+     * @return the key
+     */
+    @Override
+    default @NotNull Key key() {
+        return ZMenuKeys.parse(this.getName());
+    }
 
     /**
      * Compares two ItemStacks to determine if they are similar according to a defined rule.

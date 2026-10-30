@@ -16,6 +16,10 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.UUID;
 
+/**
+ * @deprecated not used by zMenu; the profile component reads its profile with {@link ResolvableProfileResolvable}.
+ */
+@Deprecated(since = "1.1.2.1", forRemoval = true)
 public final class ResolvablePlayerProfile implements Resolvable<PlayerProfile> {
 
     private final @Nullable ResolvableUUID uuid;

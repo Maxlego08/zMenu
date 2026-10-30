@@ -1,13 +1,18 @@
 package fr.maxlego08.menu.hooks.dialogs;
 
-import fr.maxlego08.menu.api.registry.Registry;
 import fr.maxlego08.menu.hooks.dialogs.loader.DialogActionLoader;
 import fr.maxlego08.menu.hooks.dialogs.loader.dialogaction.ZCustomClickDialogActionLoader;
 import fr.maxlego08.menu.hooks.dialogs.loader.dialogaction.ZStaticDialogActionLoader;
 
-public class DialogActionLoaderRegistry extends Registry<String, DialogActionLoader> {
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+
+public class DialogActionLoaderRegistry {
 
     private static DialogActionLoaderRegistry instance;
+
+    private final Map<String, DialogActionLoader> loaders = new HashMap<>();
 
     public DialogActionLoaderRegistry() {
         this.registerDefaults();
@@ -25,7 +30,11 @@ public class DialogActionLoaderRegistry extends Registry<String, DialogActionLoa
     }
 
     public void registerLoader(DialogActionLoader loader) {
-        this.register(loader.getType(), loader);
+        this.loaders.put(loader.getType(), loader);
+    }
+
+    public Optional<DialogActionLoader> get(String type) {
+        return Optional.ofNullable(this.loaders.get(type));
     }
 
     public static DialogActionLoaderRegistry getInstance() {

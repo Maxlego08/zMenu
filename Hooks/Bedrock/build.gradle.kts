@@ -7,6 +7,7 @@ repositories {
 
 dependencies {
     compileOnly(projects.api)
+    compileOnly(projects.common)
     compileOnly(libs.paper.api)
     compileOnly(libs.floodgate)
 }

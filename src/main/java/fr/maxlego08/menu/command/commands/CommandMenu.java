@@ -1,6 +1,7 @@
 package fr.maxlego08.menu.command.commands;
 
 import fr.maxlego08.menu.ZMenuPlugin;
+import fr.maxlego08.menu.api.configuration.Feature;
 import fr.maxlego08.menu.command.commands.bedrock.CommandBedrock;
 import fr.maxlego08.menu.command.commands.convert.CommandMenuConvert;
 import fr.maxlego08.menu.command.commands.dialogs.CommandDialog;
@@ -35,7 +36,10 @@ public class CommandMenu extends BaseCommand<ZMenuPlugin> {
         this.addSubCommand(new CommandAddons(plugin));
         this.addSubCommand(new CommandDumplog(plugin));
         this.addSubCommand(new CommandContributors(plugin));
-        this.addSubCommand(new CommandMenuGiveItem(plugin));
+        if (plugin.isFeatureEnabled(Feature.CUSTOM_ITEMS)) {
+            this.addSubCommand(new CommandMenuGiveItem(plugin));
+        }
+        this.addSubCommand(new CommandMenuAnimationReset(plugin));
         this.addSubCommand(new CommandMenuWebsite(plugin));
         this.addSubCommand(new CommandMenuConvert(plugin));
 

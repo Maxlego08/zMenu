@@ -3,6 +3,7 @@ package fr.maxlego08.menu.api.inventory;
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.MenuItemStack;
 import fr.maxlego08.menu.api.animation.TitleAnimation;
+import fr.maxlego08.menu.api.animation.slot.settings.SlotAnimationSettings;
 import fr.maxlego08.menu.api.utils.ClearInvType;
 import org.bukkit.event.inventory.InventoryType;
 import org.jetbrains.annotations.Nullable;
@@ -28,6 +29,16 @@ public interface ContainerInventory extends Inventory {
     @Nullable
     MenuItemStack getFillItemStack();
 
+    /**
+     * Whether the fill item may be served from its build cache, the {@code use-cache} option of
+     * the fill item, which works like the one of a button.
+     *
+     * @return true when the cache may be used, which is the default
+     */
+    default boolean isFillItemUseCache() {
+        return true;
+    }
+
     boolean shouldCancelItemPickup();
 
     InventoryType getType();
@@ -35,4 +46,46 @@ public interface ContainerInventory extends Inventory {
     boolean isClickLimiterEnabled();
 
     ClearInvType getClearInvType();
+
+    /**
+     * Gets the animation played when this inventory is opened.
+     *
+     * @return the animation settings, or null if the inventory is displayed at once
+     */
+    @Nullable
+    default SlotAnimationSettings getSlotAnimation() {
+        return null;
+    }
+
+    /**
+     * Gets the animation played when this inventory closes itself.
+     *
+     * <p>Only plays for a close the menu decides on, such as a {@code close} action or a switch to
+     * another menu. A player pressing escape closes the window at once and nothing can hold it
+     * open long enough to animate.</p>
+     *
+     * @return the animation settings, or null if the inventory just goes away
+     */
+    @Nullable
+    default SlotAnimationSettings getCloseAnimation() {
+        return null;
+    }
+
+    /**
+     * Sets the animation played when this inventory is opened. An inventory that cannot animate
+     * ignores it.
+     *
+     * @param slotAnimation the animation settings, or null to display the inventory at once
+     */
+    default void setSlotAnimation(@Nullable SlotAnimationSettings slotAnimation) {
+    }
+
+    /**
+     * Sets the animation played when this inventory closes itself. An inventory that cannot animate
+     * ignores it.
+     *
+     * @param closeAnimation the animation settings, or null to close at once
+     */
+    default void setCloseAnimation(@Nullable SlotAnimationSettings closeAnimation) {
+    }
 }

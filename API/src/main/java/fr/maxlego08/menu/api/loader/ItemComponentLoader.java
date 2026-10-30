@@ -1,5 +1,6 @@
 package fr.maxlego08.menu.api.loader;
 
+import fr.maxlego08.menu.api.ZMenuKeys;
 import fr.maxlego08.menu.api.context.MenuItemStackContext;
 import fr.maxlego08.menu.api.itemstack.ItemComponent;
 import fr.maxlego08.menu.api.utils.PaperMetaUpdater;
@@ -11,6 +12,8 @@ import fr.maxlego08.menu.api.utils.resolvable.paper.ResolvableComponent;
 import io.papermc.paper.datacomponent.DataComponentType;
 import io.papermc.paper.registry.RegistryAccess;
 import io.papermc.paper.registry.RegistryKey;
+import net.kyori.adventure.key.Key;
+import net.kyori.adventure.key.Keyed;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.NamespacedKey;
@@ -28,7 +31,7 @@ import java.util.*;
 import java.util.function.Function;
 
 @SuppressWarnings("unused")
-public abstract class ItemComponentLoader {
+public abstract class ItemComponentLoader implements Keyed {
     public enum ComponentOwnerType {
         /**
          * Component provided by Minecraft itself.
@@ -168,6 +171,27 @@ public abstract class ItemComponentLoader {
     @NotNull
     public String getComponentName() {
         return this.componentName;
+    }
+
+    /**
+     * The key of this component in {@link fr.maxlego08.menu.api.registry.Registries#ITEM_COMPONENT}:
+     * {@code minecraft:<name>} for a Minecraft component, {@code <plugin>:<name>} for a plugin's.
+     *
+     * @return the key
+     */
+    @Override
+    public @NotNull Key key() {
+        String namespace = this.ownerType == ComponentOwnerType.PLUGIN && this.plugin != null ? this.plugin.getName() : "minecraft";
+        return ZMenuKeys.parse(namespace + ":" + this.componentName);
+    }
+
+    /**
+     * The other names of this component: a Minecraft component is also known without its namespace.
+     *
+     * @return the other names, as keys
+     */
+    public @NotNull List<Key> aliases() {
+        return this.ownerType == ComponentOwnerType.MINECRAFT ? List.of(ZMenuKeys.parse(this.componentName)) : List.of();
     }
 
     @NotNull

@@ -2,6 +2,12 @@ package fr.maxlego08.menu.api.exceptions;
 
 import java.io.Serial;
 
+/**
+ * @deprecated no longer thrown: a button type registered twice is refused by
+ * {@link fr.maxlego08.menu.api.registry.Registries#BUTTON} with a
+ * {@link fr.maxlego08.menu.api.registry.RegistrationException}.
+ */
+@Deprecated(since = "1.1.2.1", forRemoval = true)
 public class ButtonAlreadyRegisterException extends Error {
 
     /**
@@ -15,7 +21,6 @@ public class ButtonAlreadyRegisterException extends Error {
      */
     public ButtonAlreadyRegisterException() {
         super();
-        // TODO Auto-generated constructor stub
     }
 
     /**
@@ -27,7 +32,6 @@ public class ButtonAlreadyRegisterException extends Error {
     public ButtonAlreadyRegisterException(String message, Throwable cause, boolean enableSuppression,
                                           boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
-        // TODO Auto-generated constructor stub
     }
 
     /**
@@ -36,7 +40,6 @@ public class ButtonAlreadyRegisterException extends Error {
      */
     public ButtonAlreadyRegisterException(String message, Throwable cause) {
         super(message, cause);
-        // TODO Auto-generated constructor stub
     }
 
     /**
@@ -44,7 +47,6 @@ public class ButtonAlreadyRegisterException extends Error {
      */
     public ButtonAlreadyRegisterException(String message) {
         super(message);
-        // TODO Auto-generated constructor stub
     }
 
     /**
@@ -52,7 +54,6 @@ public class ButtonAlreadyRegisterException extends Error {
      */
     public ButtonAlreadyRegisterException(Throwable cause) {
         super(cause);
-        // TODO Auto-generated constructor stub
     }
 
 }

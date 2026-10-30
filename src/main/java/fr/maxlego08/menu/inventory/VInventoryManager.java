@@ -123,7 +123,7 @@ public class VInventoryManager extends ListenerAdapter implements VInvManager {
                 this.plugin.getScheduler().runAtEntity(player, wrappedTask -> {
                     clonedInventory.postOpen(this.plugin, player, page, objects);
 
-                    Inventory spigotInventory = clonedInventory.getSpigotInventory();
+                    Inventory spigotInventory = clonedInventory.getInventory();
                     player.openInventory(spigotInventory);
 
                     clonedInventory.onPostOpen(player, this.plugin, page, objects);
@@ -171,20 +171,18 @@ public class VInventoryManager extends ListenerAdapter implements VInvManager {
 
         if (holder instanceof VInventory inventory) {
 
-            event.setCancelled(inventory.isDisableClick());
-
-            if (event.getClickedInventory().getType().equals(InventoryType.PLAYER)) {
-
-                event.setCancelled(inventory.isDisablePlayerInventoryClick());
-
-                inventory.onInventoryClick(event, this.plugin, player);
-                this.handleClick(true, player, inventory, event);
-
-            } else {
-
-                inventory.onInventoryClick(event, this.plugin, player);
-                this.handleClick(false, player, inventory, event);
+            if (inventory.isFrozen()) {
+                event.setCancelled(true);
+                return;
             }
+
+            boolean inPlayerInventory = event.getClickedInventory().getType().equals(InventoryType.PLAYER);
+
+            boolean disableClick = inPlayerInventory ? inventory.isDisablePlayerInventoryClick() : inventory.isDisableClick();
+            if (disableClick) event.setCancelled(true);
+
+            inventory.onInventoryClick(event, this.plugin, player);
+            this.handleClick(inPlayerInventory, player, inventory, event);
         }
     }
 
@@ -263,7 +261,12 @@ public class VInventoryManager extends ListenerAdapter implements VInvManager {
 
     @Override
     protected void onInventoryClose(InventoryCloseEvent event, Player player) {
-        if (player.isDead()) return;
+        if (player.isDead()) {
+            if (CompatibilityUtil.getTopInventory(event).getHolder() instanceof InventoryDefault inventoryDefault) {
+                inventoryDefault.stopScheduledTasks();
+            }
+            return;
+        }
         InventoryHolder holder = CompatibilityUtil.getTopInventory(event).getHolder();
         if (holder instanceof InventoryDefault oldInventoryEngine) {
             this.plugin.getScheduler().runAtEntityLater(player, () -> {
@@ -284,6 +287,7 @@ public class VInventoryManager extends ListenerAdapter implements VInvManager {
         InventoryHolder holder = CompatibilityUtil.getTopInventory(event).getHolder();
         if (holder instanceof VInventory inventory) {
             event.setCancelled(true);
+            if (inventory.isFrozen()) return;
             inventory.onDrag(event, this.plugin, player);
         }
     }
@@ -441,6 +445,8 @@ public class VInventoryManager extends ListenerAdapter implements VInvManager {
 
     @Override
     protected void onConnect(PlayerJoinEvent event, Player player) {
+        this.plugin.getInventoryManager().getAnimationManager().getHistory().load(player);
+
         // Send information to me, because I like to know
         if (player.getName().equals("Maxlego08")) {
             this.plugin.getScheduler().runAtEntityLater(player, w -> message(this.plugin, player, "&aLe serveur utilise &2zMenu v" + this.plugin.getDescription().getVersion()), 20);
@@ -455,6 +461,7 @@ public class VInventoryManager extends ListenerAdapter implements VInvManager {
         }
         this.cooldownClick.remove(player.getUniqueId());
         this.plugin.getInventoryManager().getPaginationManager().removePlayerStates(player.getUniqueId());
+        this.plugin.getInventoryManager().getAnimationManager().getHistory().unload(player.getUniqueId());
         if (this.plugin.getCommandManager() instanceof ZCommandManager commandManager) {
             commandManager.removePlayerArguments(player.getUniqueId());
         }

@@ -3,14 +3,20 @@ package fr.maxlego08.menu;
 import fr.maxlego08.menu.api.ItemManager;
 import fr.maxlego08.menu.api.MenuItemStack;
 import fr.maxlego08.menu.api.MenuPlugin;
+import fr.maxlego08.menu.api.ZMenuKeys;
 import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.event.events.ZMenuItemsLoad;
 import fr.maxlego08.menu.api.mechanic.MechanicFactory;
 import fr.maxlego08.menu.api.mechanic.MechanicListener;
+import fr.maxlego08.menu.api.registry.KeyedRegistry;
+import fr.maxlego08.menu.api.registry.Registries;
+import fr.maxlego08.menu.api.registry.WritableRegistry;
 import fr.maxlego08.menu.item.CustomItemData;
 import fr.maxlego08.menu.mechanics.itemjoin.ItemJoinMechanicFactory;
 import fr.maxlego08.menu.mechanics.onclick.OnClickMechanicFactory;
+import fr.maxlego08.menu.registry.RegistryOwners;
 import fr.maxlego08.menu.zcore.logger.Logger;
+import net.kyori.adventure.key.Key;
 import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -37,7 +43,6 @@ public class ZItemManager implements ItemManager {
     private final MenuPlugin menuPlugin;
 
     private final Map<String, MechanicListener> mechanicListeners = new HashMap<>();
-    private final Map<String, MechanicFactory<?>> mechanicFactories = new HashMap<>();
 
     private final Map<String, CustomItemData> customItems = new HashMap<>();
 
@@ -50,8 +55,9 @@ public class ZItemManager implements ItemManager {
     }
 
     private void loadMechanics(){
-        this.registerMechanicFactory(new ItemJoinMechanicFactory(this.menuPlugin));
-        this.registerMechanicFactory(new OnClickMechanicFactory(this.menuPlugin));
+        WritableRegistry<MechanicFactory<?>> mechanics = this.menuPlugin.getInventoryManager().getRegistries().writable(Registries.MECHANIC);
+        mechanics.register(this.menuPlugin, new ItemJoinMechanicFactory(this.menuPlugin));
+        mechanics.register(this.menuPlugin, new OnClickMechanicFactory(this.menuPlugin));
     }
 
     @Override
@@ -89,7 +95,7 @@ public class ZItemManager implements ItemManager {
         YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
         for (String itemId : config.getKeys(false)) {
             String path = itemId + ".";
-            MenuItemStack menuItemStack = this.menuPlugin.loadItemStack(config, path, file);
+            MenuItemStack menuItemStack = this.menuPlugin.getItemStackService().load(config, path, file);
             if (menuItemStack != null) {
                 Set<String> mechanicIds = new HashSet<>();
 
@@ -97,12 +103,13 @@ public class ZItemManager implements ItemManager {
                 if (mechanicSection != null) {
                     path += "mechanics.";
                     for (String mechanicId : mechanicSection.getKeys(false)) {
-                        MechanicFactory<?> factory = this.mechanicFactories.get(mechanicId);
+                        MechanicFactory<?> factory = this.getMechanicFactory(mechanicId).orElse(null);
                         if (factory != null) {
                             factory.parse(this.menuPlugin, itemId, mechanicSection.getConfigurationSection(mechanicId), config, file, path + mechanicId + ".");
-                            mechanicIds.add(mechanicId);
+                            mechanicIds.add(factory.getMechanicId());
                         } else {
-                            Logger.info("No MechanicFactory found for mechanicId " + mechanicId + " in item " + itemId + " from file " + file.getName() + "(available factories: " + this.mechanicFactories.keySet() + ")", Logger.LogType.WARNING);
+                            List<String> available = this.mechanics().stream().map(MechanicFactory::getMechanicId).toList();
+                            Logger.info("No MechanicFactory found for mechanicId " + mechanicId + " in item " + itemId + " from file " + file.getName() + "(available factories: " + available + ")", Logger.LogType.WARNING);
                         }
                     }
                 }
@@ -127,7 +134,7 @@ public class ZItemManager implements ItemManager {
     @Override
     public void reloadCustomItems() {
         this.customItems.clear();
-        for (MechanicFactory<?> factory : this.mechanicFactories.values()) {
+        for (MechanicFactory<?> factory : this.mechanics()) {
             factory.clearMechanics();
         }
         this.loadCustomItems();
@@ -178,16 +185,17 @@ public class ZItemManager implements ItemManager {
 
     @Override
     public void registerMechanicFactory(MechanicFactory<?> factory) {
-        if (this.mechanicFactories.containsKey(factory.getMechanicId())) {
-            Logger.info("MechanicFactory " + factory.getMechanicId() + " is already registered.", Logger.LogType.WARNING);
-            return;
-        }
-        this.mechanicFactories.put(factory.getMechanicId(), factory);
+        RegistryOwners.registerLegacy(this.menuPlugin.getInventoryManager().getRegistries().writable(Registries.MECHANIC), factory, List.of());
     }
 
     @Override
     public Optional<MechanicFactory<?>> getMechanicFactory(String mechanicId) {
-        return Optional.ofNullable(this.mechanicFactories.get(mechanicId));
+        Key key = ZMenuKeys.tryParse(mechanicId);
+        return key == null ? Optional.empty() : this.mechanics().get(key);
+    }
+
+    private KeyedRegistry<MechanicFactory<?>> mechanics() {
+        return this.menuPlugin.getInventoryManager().getRegistries().registry(Registries.MECHANIC);
     }
 
     @Override

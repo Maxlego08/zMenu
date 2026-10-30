@@ -18,7 +18,10 @@ import fr.maxlego08.menu.api.button.Button;
  * the default interaction patterns established by the plugin's UI framework. Implementations might
  * include basic navigation, confirmation actions, or triggers for non-complex operations.
  * </p>
+ *
+ * @deprecated adds nothing to {@link Button}, and zMenu's own default button does not extend it; extend {@link Button}.
  */
+@Deprecated(since = "1.1.2.1", forRemoval = true)
 public abstract class NoneButton extends Button {
 
 }

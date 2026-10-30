@@ -5,6 +5,10 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
+/**
+ * @deprecated not used by zMenu.
+ */
+@Deprecated(since = "1.1.2.1", forRemoval = true)
 public enum ClickAction {
     LEFT_CLICK(Action.LEFT_CLICK_BLOCK, Action.LEFT_CLICK_AIR),
     RIGHT_CLICK(Action.RIGHT_CLICK_BLOCK, Action.RIGHT_CLICK_AIR),

@@ -2,24 +2,26 @@ package fr.maxlego08.menu;
 
 import fr.maxlego08.menu.api.ButtonManager;
 import fr.maxlego08.menu.api.MenuPlugin;
+import fr.maxlego08.menu.api.ZMenuKeys;
 import fr.maxlego08.menu.api.button.Button;
-import fr.maxlego08.menu.api.checker.InventoryRequirementType;
-import fr.maxlego08.menu.api.exceptions.ButtonAlreadyRegisterException;
 import fr.maxlego08.menu.api.exceptions.InventoryException;
 import fr.maxlego08.menu.api.loader.ActionLoader;
 import fr.maxlego08.menu.api.loader.ButtonLoader;
 import fr.maxlego08.menu.api.loader.PermissibleLoader;
 import fr.maxlego08.menu.api.pattern.ActionPattern;
+import fr.maxlego08.menu.api.registry.KeyedRegistry;
+import fr.maxlego08.menu.api.registry.Registries;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.Permissible;
 import fr.maxlego08.menu.api.requirement.Requirement;
-import fr.maxlego08.menu.api.rules.loader.RuleLoader;
 import fr.maxlego08.menu.api.utils.Loader;
 import fr.maxlego08.menu.api.utils.TypedMapAccessor;
 import fr.maxlego08.menu.common.utils.ZUtils;
 import fr.maxlego08.menu.loader.RequirementLoader;
 import fr.maxlego08.menu.loader.ZButtonLoader;
-import fr.maxlego08.menu.registry.ZRuleLoaderRegistry;
+import fr.maxlego08.menu.registry.RegistryOwners;
+import fr.maxlego08.menu.registry.ZRegistryManager;
+import net.kyori.adventure.key.Key;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -34,9 +36,6 @@ import java.util.*;
 public class ZButtonManager extends ZUtils implements ButtonManager {
 
     private final ZMenuPlugin plugin;
-    private final Map<String, List<ButtonLoader>> loaders = new HashMap<>();
-    private final Map<String, PermissibleLoader> permissibles = new HashMap<>();
-    private final Map<String, ActionLoader> actionsLoader = new HashMap<>();
 
     public ZButtonManager(ZMenuPlugin plugin) {
         this.plugin = plugin;
@@ -44,133 +43,79 @@ public class ZButtonManager extends ZUtils implements ButtonManager {
 
     @Override
     public void register(@NonNull ButtonLoader button) {
-
-        ButtonLoader existingLoader = null;
-        for (List<ButtonLoader> buttonLoaders : this.loaders.values()) {
-            for (ButtonLoader loader : buttonLoaders) {
-                // Check if name matches
-                if (loader.getName().equalsIgnoreCase(button.getName())) {
-                    existingLoader = loader;
-                    break;
-                }
-                // Check if any alias matches
-                for (String alias : loader.getAliases()) {
-                    if (alias.equalsIgnoreCase(button.getName())) {
-                        existingLoader = loader;
-                        break;
-                    }
-                }
-                // Check if any of the new button's aliases conflict with existing loader names/aliases
-                for (String newAlias : button.getAliases()) {
-                    if (loader.getName().equalsIgnoreCase(newAlias)) {
-                        existingLoader = loader;
-                        break;
-                    }
-                    for (String existingAlias : loader.getAliases()) {
-                        if (existingAlias.equalsIgnoreCase(newAlias)) {
-                            existingLoader = loader;
-                            break;
-                        }
-                    }
-                }
-                if (existingLoader != null) {
-                    break;
-                }
-            }
-            if (existingLoader != null) {
-                break;
-            }
-        }
-        if (existingLoader != null) {
-            throw new ButtonAlreadyRegisterException("Button " + button.getName() + " was already register in the " + existingLoader.getPlugin().getName());
-        }
-
-        Plugin plugin = button.getPlugin();
-        List<ButtonLoader> buttonLoaders = this.loaders.getOrDefault(plugin.getName(), new ArrayList<>());
-        buttonLoaders.add(button);
-        this.loaders.put(plugin.getName(), buttonLoaders);
-
-        this.plugin.getInventoryManager().loadElement(InventoryRequirementType.BUTTON, button.getName());
+        RegistryOwners.registerLegacy(this.registries().writable(Registries.BUTTON), button.getPlugin().getName(), button, button.aliases());
     }
 
     @Override
     public void unregister(@NotNull ButtonLoader button) {
-        String pluginName = button.getPlugin().getName();
-        List<ButtonLoader> buttonLoaders = this.loaders.getOrDefault(pluginName, new ArrayList<>());
-        buttonLoaders.remove(button);
-        this.loaders.put(pluginName, buttonLoaders);
+        if (this.registries().registry(Registries.BUTTON).containsValue(button)) {
+            this.registries().writable(Registries.BUTTON).unregister(button.key());
+        }
     }
 
     @Override
     public void unregisters(@NotNull Plugin plugin) {
-        this.loaders.remove(plugin.getName());
+        this.registries().writable(Registries.BUTTON).unregisterAll(plugin);
     }
 
     @Override
     public @NonNull Collection<ButtonLoader> getLoaders() {
-        List<ButtonLoader> flattened = new ArrayList<>();
-        for (List<ButtonLoader> buttonLoaders : this.loaders.values()) {
-            flattened.addAll(buttonLoaders);
-        }
-        return flattened;
+        return this.registries().registry(Registries.BUTTON).values();
     }
 
     @Override
     public @NotNull Collection<ButtonLoader> getLoaders(@NotNull Plugin plugin) {
-        return this.loaders.getOrDefault(plugin.getName(), new ArrayList<>());
+        KeyedRegistry<ButtonLoader> registry = this.registries().registry(Registries.BUTTON);
+        return registry.stream().filter(loader -> registry.owner(loader.key()).filter(plugin.getName()::equals).isPresent()).toList();
     }
 
     @Override
     public @NotNull Optional<ButtonLoader> getLoader(String name) {
-        Set<String> seenNames = new HashSet<>();
-        for (ButtonLoader loader : this.getLoaders()) {
-            if (loader.getName().equalsIgnoreCase(name)) {
-                return Optional.of(loader);
-            }
-            for (String alias : loader.getAliases()) {
-                if (alias.equalsIgnoreCase(name)) {
-                    return Optional.of(loader);
-                }
-            }
-            seenNames.add(loader.getName());
-            seenNames.addAll(loader.getAliases());
+        Key id = name == null ? null : ZMenuKeys.tryParse(name);
+        KeyedRegistry<ButtonLoader> registry = this.registries().registry(Registries.BUTTON);
+        Optional<ButtonLoader> loader = id == null ? Optional.empty() : registry.get(id);
+        if (loader.isEmpty()) {
+            Set<String> names = new TreeSet<>();
+            registry.keys().forEach(key -> names.add(key.value()));
+            registry.aliases().keySet().forEach(key -> names.add(key.value()));
+            Logger.info("Button " + name + " not found. Available buttons: " + String.join(", ", names), Logger.LogType.ERROR);
         }
-        Logger.info("Button " + name + " not found. Available buttons: " + String.join(", ", seenNames), Logger.LogType.ERROR);
-        return Optional.empty();
+        return loader;
     }
 
     @Override
     public void registerPermissible(@NotNull PermissibleLoader permissibleLoader) {
-        this.permissibles.put(permissibleLoader.getKey().toLowerCase(Locale.ROOT), permissibleLoader);
-        this.plugin.getInventoryManager().loadElement(InventoryRequirementType.PERMISSIBLE, permissibleLoader.getKey());
+        RegistryOwners.registerLegacy(this.registries().writable(Registries.PERMISSIBLE), permissibleLoader, List.of());
     }
 
     @Override
     public @NotNull Map<String, PermissibleLoader> getPermissibles() {
-        return this.permissibles;
+        Map<String, PermissibleLoader> permissibles = new LinkedHashMap<>();
+        for (PermissibleLoader loader : this.registries().registry(Registries.PERMISSIBLE)) {
+            permissibles.put(loader.getKey().toLowerCase(Locale.ROOT), loader);
+        }
+        return permissibles;
     }
 
     @Override
     public @NotNull Optional<PermissibleLoader> getPermission(@NotNull String key) {
-        return Optional.ofNullable(this.permissibles.getOrDefault(key.toLowerCase(Locale.ROOT), null));
+        Key id = ZMenuKeys.tryParse(key);
+        return id == null ? Optional.empty() : this.registries().registry(Registries.PERMISSIBLE).get(id);
+    }
+
+    private ZRegistryManager registries() {
+        return this.plugin.getInventoryManager().getRegistries();
     }
 
     @Override
     public void registerAction(@NotNull ActionLoader actionLoader) {
-        for (String value : actionLoader.getKeys()) {
-            this.actionsLoader.put(value.toLowerCase(Locale.ROOT), actionLoader);
-            this.plugin.getInventoryManager().loadElement(InventoryRequirementType.ACTION, value);
-        }
-    }
-
-    @Override
-    public void registerRuleLoader(@NotNull RuleLoader ruleLoader) {
-        ZRuleLoaderRegistry.getInstance().register(ruleLoader);
+        RegistryOwners.registerLegacy(this.registries().writable(Registries.ACTION), actionLoader, actionLoader.aliases());
     }
 
     @Override
     public @NotNull Optional<ActionLoader> getActionLoader(@NotNull String key) {
-        return Optional.ofNullable(this.actionsLoader.getOrDefault(key.toLowerCase(Locale.ROOT), null));
+        Key id = ZMenuKeys.tryParse(key);
+        return id == null ? Optional.empty() : this.registries().registry(Registries.ACTION).get(id);
     }
 
     @Override

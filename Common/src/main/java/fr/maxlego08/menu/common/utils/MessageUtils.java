@@ -3,14 +3,9 @@ package fr.maxlego08.menu.common.utils;
 import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.utils.IMessage;
 import fr.maxlego08.menu.api.utils.Message;
-import fr.maxlego08.menu.api.utils.version.MinecraftVersion;
-import fr.maxlego08.menu.zcore.logger.Logger;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-
-import java.lang.reflect.Constructor;
 
 /**
  * Allows you to manage messages sent to players and the console
@@ -151,48 +146,6 @@ public abstract class MessageUtils extends LocationUtils {
             compensated += spaceLength;
         }
         return sb + message;
-    }
-
-    protected final Class<?> getNMSClass(String name) {
-        try {
-            return Class.forName("net.minecraft.server." + Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3] + "." + name);
-        } catch (ClassNotFoundException e) {
-            Logger.error(e);
-        }
-        return null;
-    }
-
-    protected void title(Player player, String title, String subtitle, int fadeInTime, int showTime, int fadeOutTime) {
-
-        if (MinecraftVersion.getCurrentVersion().isAtLeast(MinecraftVersion.parse("1.13"))) {
-            player.sendTitle(title, subtitle, fadeInTime, showTime, fadeOutTime);
-            return;
-        }
-
-        try {
-            Object chatTitle = this.getNMSClass("IChatBaseComponent").getDeclaredClasses()[0].getMethod("a", String.class).invoke(null, "{\"text\": \"" + title + "\"}");
-            Constructor<?> titleConstructor = this.getNMSClass("PacketPlayOutTitle").getConstructor(this.getNMSClass("PacketPlayOutTitle").getDeclaredClasses()[0], this.getNMSClass("IChatBaseComponent"), int.class, int.class, int.class);
-            Object packet = titleConstructor.newInstance(this.getNMSClass("PacketPlayOutTitle").getDeclaredClasses()[0].getField("TITLE").get(null), chatTitle, fadeInTime, showTime, fadeOutTime);
-
-            Object chatsTitle = this.getNMSClass("IChatBaseComponent").getDeclaredClasses()[0].getMethod("a", String.class).invoke(null, "{\"text\": \"" + subtitle + "\"}");
-            Constructor<?> timingTitleConstructor = this.getNMSClass("PacketPlayOutTitle").getConstructor(this.getNMSClass("PacketPlayOutTitle").getDeclaredClasses()[0], this.getNMSClass("IChatBaseComponent"), int.class, int.class, int.class);
-            Object timingPacket = timingTitleConstructor.newInstance(this.getNMSClass("PacketPlayOutTitle").getDeclaredClasses()[0].getField("SUBTITLE").get(null), chatsTitle, fadeInTime, showTime, fadeOutTime);
-
-            this.sendPacket(player, packet);
-            this.sendPacket(player, timingPacket);
-        } catch (Exception e) {
-            Logger.error(e);
-        }
-    }
-
-    protected final void sendPacket(Player player, Object packet) {
-        try {
-            Object handle = player.getClass().getMethod("getHandle").invoke(player);
-            Object playerConnection = handle.getClass().getField("playerConnection").get(handle);
-            playerConnection.getClass().getMethod("sendPacket", this.getNMSClass("Packet")).invoke(playerConnection, packet);
-        } catch (Exception e) {
-            Logger.error(e);
-        }
     }
 
 }

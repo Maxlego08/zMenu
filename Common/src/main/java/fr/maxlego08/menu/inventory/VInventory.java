@@ -48,10 +48,26 @@ public abstract class VInventory extends ZUtils implements Cloneable, BaseInvent
     private ClearInvType clearInvType = ClearInvType.DEFAULT;
 
     private boolean isClose = false;
+    private boolean frozen = false;
 
     @Override
     public boolean isClose() {
         return this.isClose;
+    }
+
+    @Override
+    public boolean isFrozen() {
+        return this.frozen;
+    }
+
+    /**
+     * Freezes or unfreezes this inventory. A frozen inventory ignores every click, which is used
+     * while the opening animation plays.
+     *
+     * @param frozen whether the inventory must ignore clicks
+     */
+    public void setFrozen(boolean frozen) {
+        this.frozen = frozen;
     }
 
     public int getId() {
@@ -248,11 +264,6 @@ public abstract class VInventory extends ZUtils implements Cloneable, BaseInvent
     @Override
     public Object[] getArgs() {
         return this.args;
-    }
-
-    @Override
-    public @NonNull Inventory getSpigotInventory() {
-        return this.inventory;
     }
 
     public String getGuiName() {

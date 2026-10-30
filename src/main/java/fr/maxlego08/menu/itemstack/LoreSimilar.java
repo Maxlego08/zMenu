@@ -1,5 +1,6 @@
 package fr.maxlego08.menu.itemstack;
 
+import fr.maxlego08.menu.api.annotations.AutoItemStackSimilar;
 import fr.maxlego08.menu.api.itemstack.ItemStackSimilar;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -7,6 +8,7 @@ import org.jspecify.annotations.NonNull;
 
 import java.util.Objects;
 
+@AutoItemStackSimilar
 public class LoreSimilar implements ItemStackSimilar {
 	@Override
 	public @NonNull String getName() {

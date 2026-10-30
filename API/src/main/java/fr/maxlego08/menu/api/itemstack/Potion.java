@@ -93,9 +93,10 @@ public class Potion {
      *
      * @param damage the damage value
      * @return the produced potion
+     * @deprecated potions have no damage value since Minecraft 1.9, and several of the type names it uses no longer exist.
      */
-
     @NotNull
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     public static Potion fromDamage(int damage) {
         PotionType type = switch (damage & POTION_BIT) {
 //            case 0 -> PotionType.WATER;
@@ -135,9 +136,11 @@ public class Potion {
      * Returns an instance of {@link PotionBrewer}.
      *
      * @return An instance of PotionBrewer
+     * @deprecated zMenu never sets a brewer, so this is always null.
      */
     @Contract(pure = true)
     @Nullable
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     public static PotionBrewer getBrewer() {
         return brewer;
     }
@@ -147,7 +150,9 @@ public class Potion {
      * used from within a plugin.
      *
      * @param other The new PotionBrewer
+     * @deprecated nothing reads the brewer.
      */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     public static void setPotionBrewer(@Nullable PotionBrewer other) {
         if (brewer != null)
             throw new IllegalArgumentException("brewer can only be set internally");
@@ -369,8 +374,10 @@ public class Potion {
      * item stacks.
      *
      * @return The damage value of this potion Non-functional
+     * @deprecated always returns 0: potions have no damage value since Minecraft 1.9.
      */
     @Contract(pure = true)
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     public short toDamageValue() {
         return 0;
     }
@@ -403,9 +410,10 @@ public class Potion {
      * Gets the potion from its name id.
      *
      * @return the name id Non-functional
+     * @deprecated always returns 0.
      */
-
     @Contract(pure = true)
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     public int getNameId() {
         return 0;
     }

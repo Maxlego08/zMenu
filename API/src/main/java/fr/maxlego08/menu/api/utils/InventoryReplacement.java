@@ -2,12 +2,12 @@ package fr.maxlego08.menu.api.utils;
 
 import com.google.common.base.Preconditions;
 import fr.maxlego08.menu.api.Inventory;
+import fr.maxlego08.menu.api.ZMenuKeys;
 import org.bukkit.configuration.ConfigurationSection;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-import java.util.Objects;
 
 public record InventoryReplacement(String inventoryName, String plugin, List<Integer> pages, InventoryReplacementMode mode) {
     public static final String DEFAULT_PLUGIN = "zMenu";
@@ -27,12 +27,7 @@ public record InventoryReplacement(String inventoryName, String plugin, List<Int
 
     public boolean shouldTrigger(Inventory inventory, int page) {
 
-        // Inventory Name
-        if (!Objects.equals(this.inventoryName, inventory.getFileName())) {
-            return false;
-        }
-        // Plugin Name
-        if (!Objects.equals(this.plugin, inventory.getPlugin().getName())) {
+        if (this.inventoryName == null || !inventory.key().equals(ZMenuKeys.fileKey(this.plugin, this.inventoryName))) {
             return false;
         }
 

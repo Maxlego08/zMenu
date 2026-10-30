@@ -10,6 +10,11 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
+/**
+ * @deprecated rule types live in {@link Registries#RULE}; zMenu no longer has a rule loader registry of
+ * this kind.
+ */
+@Deprecated(since = "1.1.2.1", forRemoval = true)
 public abstract class RuleLoaderRegistry extends Registry<String, RuleLoader>{
 
     protected RuleLoaderRegistry() {
