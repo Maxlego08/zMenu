@@ -1,6 +1,7 @@
 package fr.maxlego08.menu.storage;
 
 import com.github.fppt.jedismock.RedisServer;
+import de.bwaldvogel.mongo.MongoServer;
 import fr.maxlego08.menu.api.storage.spi.StorageContext;
 import fr.maxlego08.menu.api.storage.spi.StorageProvider;
 import fr.maxlego08.menu.api.storage.spi.VariableMutation;
@@ -8,6 +9,7 @@ import fr.maxlego08.menu.api.variable.Variable;
 import fr.maxlego08.menu.api.variable.VariableRef;
 import fr.maxlego08.menu.api.variable.VariableScope;
 import fr.maxlego08.menu.storage.memory.MemoryStorageProvider;
+import fr.maxlego08.menu.storage.mongo.MongoStorageProvider;
 import fr.maxlego08.menu.storage.redis.RedisStorageProvider;
 import fr.maxlego08.menu.storage.sql.SqlStorageProvider;
 import org.bukkit.configuration.ConfigurationSection;
@@ -16,6 +18,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import java.io.File;
+import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -27,8 +30,8 @@ import java.util.logging.Logger;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
- * {@code /zm storage migrate} copies everything from one backend to another: SQLite to Redis, then
- * Redis to memory, without losing or changing anything.
+ * {@code /zm storage migrate} copies everything from one backend to another: SQLite to Redis, Redis
+ * to MongoDB, then MongoDB to memory, without losing or changing anything.
  */
 class StorageMigrationTest {
 
@@ -62,7 +65,7 @@ class StorageMigrationTest {
     }
 
     @Test
-    void everythingIsCopiedFromSqliteToRedisToMemory() throws Exception {
+    void everythingIsCopiedThroughEveryBackend() throws Exception {
         YamlConfiguration sqliteConfiguration = new YamlConfiguration();
         sqliteConfiguration.set("storage-type", "SQLITE");
         StorageProvider sqlite = this.open(new SqlStorageProvider(), sqliteConfiguration);
@@ -83,17 +86,25 @@ class StorageMigrationTest {
 
         RedisServer redisServer = RedisServer.newRedisServer();
         redisServer.start();
+        MongoServer mongoServer = MongoTestServers.newMongoServer();
+        InetSocketAddress mongoAddress = mongoServer.bind();
         try {
             YamlConfiguration redisConfiguration = RedisStorageProviderTest.redisConfiguration(redisServer);
             redisConfiguration.set("messaging-type", "NONE");
+            YamlConfiguration mongoConfiguration = MongoTestServers.mongoConfiguration(mongoAddress);
+            mongoConfiguration.set("messaging-type", "NONE");
             StorageProvider redis = this.open(new RedisStorageProvider(), redisConfiguration);
+            StorageProvider mongo = this.open(new MongoStorageProvider(), mongoConfiguration);
             StorageProvider memory = this.open(new MemoryStorageProvider(), new YamlConfiguration());
 
             StorageMigration.Result toRedis = new StorageMigration(sqlite, redis, step -> {
             }).run();
-            new StorageMigration(redis, memory, step -> {
+            new StorageMigration(redis, mongo, step -> {
             }).run();
             redis.close().join();
+            new StorageMigration(mongo, memory, step -> {
+            }).run();
+            mongo.close().join();
 
             assertEquals(1204, toRedis.variables());
             assertEquals(1, toRedis.inventories());
@@ -102,11 +113,13 @@ class StorageMigrationTest {
 
             Map<String, String> original = snapshot(sqlite);
             assertEquals(original, snapshot(this.open(new RedisStorageProvider(), redisConfiguration)));
+            assertEquals(original, snapshot(this.open(new MongoStorageProvider(), mongoConfiguration)));
             assertEquals(original, snapshot(memory));
             assertEquals(Set.of("coins", "rank", "balance"), memory.variables().names(VariableScope.PLAYER).join());
         } finally {
             sqlite.close().join();
             redisServer.stop();
+            mongoServer.shutdownNow();
         }
     }
 }

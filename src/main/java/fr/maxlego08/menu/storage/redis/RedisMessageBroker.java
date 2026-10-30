@@ -4,13 +4,13 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import fr.maxlego08.menu.api.storage.spi.MessageBroker;
 import fr.maxlego08.menu.api.storage.spi.StorageEvent;
-import fr.maxlego08.menu.api.variable.VariableRef;
-import fr.maxlego08.menu.api.variable.VariableScope;
+import fr.maxlego08.menu.storage.StorageEvents;
 import org.jetbrains.annotations.NotNull;
 import redis.clients.jedis.JedisPubSub;
 
+import java.util.HashMap;
 import java.util.List;
-import java.util.UUID;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Consumer;
@@ -119,55 +119,18 @@ public final class RedisMessageBroker implements MessageBroker {
 
     static String encode(StorageEvent event) {
         JsonObject json = new JsonObject();
-        json.addProperty("origin", event.origin());
-        switch (event) {
-            case StorageEvent.VariableChanged changed -> {
-                json.addProperty("type", "variable");
-                json.addProperty("scope", changed.ref().scope().id());
-                json.addProperty("owner", changed.ref().owner());
-                json.addProperty("name", changed.ref().name());
-            }
-            case StorageEvent.NameCleared cleared -> {
-                json.addProperty("type", "name");
-                json.addProperty("scope", cleared.scope().id());
-                json.addProperty("name", cleared.name());
-            }
-            case StorageEvent.OwnerCleared cleared -> {
-                json.addProperty("type", "owner");
-                json.addProperty("scope", cleared.scope().id());
-                json.addProperty("owner", cleared.owner());
-            }
-            case StorageEvent.ScopeCleared cleared -> {
-                json.addProperty("type", "scope");
-                json.addProperty("scope", cleared.scope().id());
-            }
-            case StorageEvent.SessionReleased released -> {
-                json.addProperty("type", "session");
-                json.addProperty("owner", released.playerId().toString());
-            }
-        }
+        StorageEvents.toFields(event).forEach((key, value) -> {
+            if (value != null) json.addProperty(key, value);
+        });
         return json.toString();
     }
 
     static StorageEvent decode(String message) {
         JsonObject json = JsonParser.parseString(message).getAsJsonObject();
-        String origin = text(json, "origin");
-        String type = text(json, "type");
-        VariableScope scope = VariableScope.parse(text(json, "scope"));
-        String owner = text(json, "owner");
-        String name = text(json, "name");
-        if (origin == null || type == null) return null;
-        return switch (type) {
-            case "variable" -> scope == null || owner == null || name == null ? null : new StorageEvent.VariableChanged(origin, new VariableRef(scope, owner, name));
-            case "name" -> scope == null || name == null ? null : new StorageEvent.NameCleared(origin, scope, name);
-            case "owner" -> scope == null || owner == null ? null : new StorageEvent.OwnerCleared(origin, scope, owner);
-            case "scope" -> scope == null ? null : new StorageEvent.ScopeCleared(origin, scope);
-            case "session" -> owner == null ? null : new StorageEvent.SessionReleased(origin, UUID.fromString(owner));
-            default -> null;
-        };
-    }
-
-    private static String text(JsonObject json, String key) {
-        return json.has(key) && !json.get(key).isJsonNull() ? json.get(key).getAsString() : null;
+        Map<String, String> fields = new HashMap<>();
+        json.entrySet().forEach(entry -> {
+            if (!entry.getValue().isJsonNull()) fields.put(entry.getKey(), entry.getValue().getAsString());
+        });
+        return StorageEvents.fromFields(fields);
     }
 }

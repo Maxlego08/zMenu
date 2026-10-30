@@ -19,6 +19,7 @@ public class ZMenuPluginLoader implements PluginLoader {
 
     private static final String JEDIS_VERSION = "5.2.0";
     private static final String POSTGRESQL_VERSION = "42.7.4";
+    private static final String MONGODB_VERSION = "5.2.0";
 
     @Override
     public void classloader(PluginClasspathBuilder classpathBuilder) {
@@ -43,6 +44,12 @@ public class ZMenuPluginLoader implements PluginLoader {
                     null
             ));
         }
+        if (backends.contains("MONGODB") || backends.contains("MONGO")) {
+            resolver.addDependency(new Dependency(
+                    new DefaultArtifact("org.mongodb:mongodb-driver-sync:" + MONGODB_VERSION),
+                    null
+            ));
+        }
         if (backends.contains("POSTGRESQL") || backends.contains("POSTGRES")) {
             resolver.addDependency(new Dependency(
                     new DefaultArtifact("org.postgresql:postgresql:" + POSTGRESQL_VERSION),
@@ -55,8 +62,8 @@ public class ZMenuPluginLoader implements PluginLoader {
 
     /**
      * The backends {@code config.yml} names in {@code storage-type}, {@code messaging-type} and
-     * {@code migration-target}. The Redis client and the PostgreSQL driver are only downloaded when
-     * one of them asks for it.
+     * {@code migration-target}. The Redis client and the PostgreSQL and MongoDB drivers are only
+     * downloaded when one of them asks for it.
      */
     static Set<String> configuredBackends(Path configFile) {
         if (!Files.exists(configFile)) return Set.of();

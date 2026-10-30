@@ -26,7 +26,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class CommandMenuStorageMigrate extends SubCommand<ZMenuPlugin> {
 
     private static final long CONFIRM_MILLIS = 30_000;
-    private static final String[] TARGETS = {"SQLITE", "MYSQL", "MARIADB", "POSTGRESQL", "REDIS"};
+    private static final String[] TARGETS = {"SQLITE", "MYSQL", "MARIADB", "POSTGRESQL", "REDIS", "MONGODB"};
 
     private final Map<String, Long> confirmations = new ConcurrentHashMap<>();
 

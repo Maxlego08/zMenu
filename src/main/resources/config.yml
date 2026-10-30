@@ -46,6 +46,8 @@ skip-update-check: false
 # MARIADB - RECOMMENDED
 # POSTGRESQL - Uses database-configuration below (set port to 5432). zMenu downloads the driver on
 #              the next start.
+# MONGODB - Keeps everything in MongoDB (settings in the mongodb section below). zMenu downloads the
+#           driver on the next start.
 # REDIS - Keeps everything in Redis (settings in the redis section below). Make sure Redis writes its
 #         data to disk (appendonly yes in redis.conf), or a restart of Redis loses it.
 # NONE - If you do not need a database, you can disable it.
@@ -63,9 +65,9 @@ server-id: ""
 
 # How servers sharing a MySQL or MariaDB database tell each other about changes to player and global
 # variables, so a value changed on one server is updated on the others.
-# AUTO - With MySQL or MariaDB, through a table of the database read every messaging-poll-interval
-#        seconds; with storage-type REDIS, through Redis pub/sub. SQLite is never shared, so it does
-#        nothing there.
+# AUTO - With MySQL, MariaDB, PostgreSQL or MongoDB, through a table (collection) of the database read
+#        every messaging-poll-interval seconds; with storage-type REDIS, through Redis pub/sub.
+#        SQLite is never shared, so it does nothing there.
 # REDIS - Through Redis pub/sub (redis section below), even with MySQL or MariaDB as storage: changes
 #         reach the other servers at once.
 # NONE - Nothing is sent: a server only sees the changes of the others when it reads them again
@@ -84,6 +86,14 @@ redis:
   key-prefix: "zmenu"
   # Refuse to start when Redis does not write its data to disk (appendonly no)
   require-aof: false
+
+# MongoDB, used by storage-type MONGODB.
+mongodb:
+  # mongodb://[user:password@]host:port, or a mongodb+srv:// connection string
+  uri: "mongodb://localhost:27017"
+  database: "zmenu"
+  # The start of every collection name
+  collection-prefix: "zmenu_"
 
 # When a player moves from one server to another, the new server waits up to this many milliseconds
 # for the old one to save the player's data before reading it (only with a shared database).

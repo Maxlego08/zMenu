@@ -22,6 +22,7 @@ import fr.maxlego08.menu.api.variable.Variable;
 import fr.maxlego08.menu.api.variable.VariableRef;
 import fr.maxlego08.menu.api.variable.VariableScope;
 import fr.maxlego08.menu.storage.memory.MemoryStorageProvider;
+import fr.maxlego08.menu.storage.mongo.MongoStorageProvider;
 import fr.maxlego08.menu.storage.redis.RedisMessaging;
 import fr.maxlego08.menu.storage.redis.RedisStorageProvider;
 import fr.maxlego08.menu.storage.sql.SqlStorageProvider;
@@ -77,6 +78,7 @@ public class ZStorageManager implements StorageManager {
         if (SqlStorageProvider.databaseType(storageType) != null) return ZMenuKeys.key("sql");
         if (storageType.equalsIgnoreCase("NONE")) return ZMenuKeys.key("memory");
         if (storageType.equalsIgnoreCase("REDIS")) return ZMenuKeys.key("redis");
+        if (storageType.equalsIgnoreCase("MONGODB") || storageType.equalsIgnoreCase("MONGO")) return ZMenuKeys.key("mongodb");
         return ZMenuKeys.tryParse(storageType.toLowerCase(Locale.ROOT));
     }
 
@@ -87,6 +89,7 @@ public class ZStorageManager implements StorageManager {
         providers.register(this.plugin, new SqlStorageProvider());
         providers.register(this.plugin, new MemoryStorageProvider());
         providers.register(this.plugin, new RedisStorageProvider());
+        providers.register(this.plugin, new MongoStorageProvider());
 
         StorageConfiguration configuration = StorageConfiguration.read(this.plugin.getConfig());
         Key key;
@@ -150,6 +153,7 @@ public class ZStorageManager implements StorageManager {
     private @Nullable StorageProvider newProvider(Key key) {
         if (key.equals(ZMenuKeys.key("sql"))) return new SqlStorageProvider();
         if (key.equals(ZMenuKeys.key("redis"))) return new RedisStorageProvider();
+        if (key.equals(ZMenuKeys.key("mongodb"))) return new MongoStorageProvider();
         if (key.equals(ZMenuKeys.key("memory"))) return new MemoryStorageProvider();
         StorageProvider registered = this.plugin.getInventoryManager().getRegistries().registry(Registries.STORAGE_PROVIDER).get(key).orElse(null);
         return registered == this.provider ? null : registered;

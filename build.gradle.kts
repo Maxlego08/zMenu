@@ -234,11 +234,14 @@ dependencies {
     }
 
     compileOnly(libs.jedis)
+    compileOnly(libs.mongodb.driver.sync)
 
     testImplementation(libs.paper.api)
     testRuntimeOnly(libs.sqlite.jdbc)
     testImplementation(libs.jedis)
     testImplementation(libs.jedis.mock)
+    testImplementation(libs.mongodb.driver.sync)
+    testImplementation(libs.mongo.java.server)
 }
 
 dependencies {

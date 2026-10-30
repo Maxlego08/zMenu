@@ -3,18 +3,17 @@ package fr.maxlego08.menu.storage.sql;
 import fr.maxlego08.menu.api.storage.Tables;
 import fr.maxlego08.menu.api.storage.spi.MessageBroker;
 import fr.maxlego08.menu.api.storage.spi.StorageEvent;
-import fr.maxlego08.menu.api.variable.VariableRef;
-import fr.maxlego08.menu.api.variable.VariableScope;
+import fr.maxlego08.menu.storage.StorageEvents;
 import fr.maxlego08.sarah.SchemaBuilder;
 import fr.maxlego08.sarah.database.Schema;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Executors;
@@ -81,40 +80,9 @@ final class SqlPollingBroker implements MessageBroker {
         long now = System.currentTimeMillis();
         List<Schema> schemas = new ArrayList<>(events.size());
         for (StorageEvent event : events) {
+            Map<String, String> fields = StorageEvents.toFields(event);
             schemas.add(SchemaBuilder.insert(Tables.STORAGE_EVENTS, table -> {
-                table.string("origin", event.origin());
-                switch (event) {
-                    case StorageEvent.VariableChanged changed -> {
-                        table.string("type", "variable");
-                        table.string("scope", changed.ref().scope().id());
-                        table.string("owner", changed.ref().owner());
-                        table.string("name", changed.ref().name());
-                    }
-                    case StorageEvent.NameCleared cleared -> {
-                        table.string("type", "name");
-                        table.string("scope", cleared.scope().id());
-                        table.object("owner", null);
-                        table.string("name", cleared.name());
-                    }
-                    case StorageEvent.OwnerCleared cleared -> {
-                        table.string("type", "owner");
-                        table.string("scope", cleared.scope().id());
-                        table.string("owner", cleared.owner());
-                        table.object("name", null);
-                    }
-                    case StorageEvent.ScopeCleared cleared -> {
-                        table.string("type", "scope");
-                        table.string("scope", cleared.scope().id());
-                        table.object("owner", null);
-                        table.object("name", null);
-                    }
-                    case StorageEvent.SessionReleased released -> {
-                        table.string("type", "session");
-                        table.object("scope", null);
-                        table.string("owner", released.playerId().toString());
-                        table.object("name", null);
-                    }
-                }
+                fields.forEach(table::object);
                 table.bigInt("created_at", now);
             }));
         }
@@ -164,19 +132,10 @@ final class SqlPollingBroker implements MessageBroker {
     }
 
     private static StorageEvent toEvent(Map<String, Object> row) {
-        String origin = SqlRows.text(row, "origin");
-        String type = SqlRows.text(row, "type");
-        VariableScope scope = VariableScope.parse(SqlRows.text(row, "scope"));
-        String owner = SqlRows.text(row, "owner");
-        String name = SqlRows.text(row, "name");
-        if (origin == null || type == null) return null;
-        return switch (type) {
-            case "variable" -> scope == null || owner == null || name == null ? null : new StorageEvent.VariableChanged(origin, new VariableRef(scope, owner, name));
-            case "name" -> scope == null || name == null ? null : new StorageEvent.NameCleared(origin, scope, name);
-            case "owner" -> scope == null || owner == null ? null : new StorageEvent.OwnerCleared(origin, scope, owner);
-            case "scope" -> scope == null ? null : new StorageEvent.ScopeCleared(origin, scope);
-            case "session" -> owner == null ? null : new StorageEvent.SessionReleased(origin, UUID.fromString(owner));
-            default -> null;
-        };
+        Map<String, String> fields = new HashMap<>();
+        for (String field : new String[]{"origin", "type", "scope", "owner", "name"}) {
+            fields.put(field, SqlRows.text(row, field));
+        }
+        return StorageEvents.fromFields(fields);
     }
 }
