@@ -11,6 +11,16 @@ public interface InventoryListener {
         return false;
     }
 
+    /**
+     * Called when the item of a button already placed is replaced after the inventory has been opened,
+     * for example once a player head texture has been loaded.
+     *
+     * @return true if the listener displayed the item itself and the default placement must be skipped
+     */
+    default boolean updateItem(BaseInventory baseInventory, boolean inPlayerInventory, ItemButton itemButton) {
+        return false;
+    }
+
     default void onInventoryPreOpen(Player player, BaseInventory baseInventory, int page, Object... objects){
 
     }

@@ -27,9 +27,9 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class PacketUtils implements InventoryListener, PacketManager {
 
@@ -37,7 +37,7 @@ public class PacketUtils implements InventoryListener, PacketManager {
     private PacketTitleListener packetTitleListener;
     private PacketEventClickLimiterListener packetEventClickLimiterListener;
 
-    public static final Map<UUID, FakeInventory> fakeContents = new HashMap<>();
+    public static final Map<UUID, FakeInventory> fakeContents = new ConcurrentHashMap<>();
     private final MenuPlugin plugin;
 
     private boolean ownsApi;
@@ -109,6 +109,7 @@ public class PacketUtils implements InventoryListener, PacketManager {
     @SuppressWarnings("ConstantConditions")
     public void onDisable() {
         this.ready = false;
+        fakeContents.clear();
         if (this.ownsApi && PacketEvents.getAPI() != null) {
             this.api().terminate();
         }
@@ -139,11 +140,6 @@ public class PacketUtils implements InventoryListener, PacketManager {
 
     @Override
     public void onInventoryPostOpen(Player player, BaseInventory inventory) {
-        if (fakeContents.containsKey(inventory.getPlayer().getUniqueId())) {
-            FakeInventory fakeInventory = fakeContents.get(inventory.getPlayer().getUniqueId());
-            Logger.info("OPEN");
-            Logger.info(fakeInventory.getSlots().toString());
-        }
     }
 
     @Override

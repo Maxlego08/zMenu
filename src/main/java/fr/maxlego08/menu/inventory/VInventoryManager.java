@@ -2,8 +2,7 @@ package fr.maxlego08.menu.inventory;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import fr.maxlego08.menu.zcore.logger.Logger;
-
+import fr.maxlego08.menu.ZCommandManager;
 import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.VInvManager;
 import fr.maxlego08.menu.api.configuration.Configuration;
@@ -22,17 +21,14 @@ import fr.maxlego08.menu.api.utils.Message;
 import fr.maxlego08.menu.common.utils.nms.ItemStackUtils;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.listener.ListenerAdapter;
+import fr.maxlego08.menu.zcore.logger.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.inventory.InventoryDragEvent;
-import org.bukkit.event.inventory.InventoryOpenEvent;
-import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.event.inventory.*;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -371,6 +367,7 @@ public class VInventoryManager extends ListenerAdapter implements VInvManager {
      * Closes the open menu when the player left the location where it was opened.
      */
     private void checkDistance(Player player) {
+        if (!Configuration.closeInventoryOnMove) return;
         if (CompatibilityUtil.getTopInventory(player).getHolder() instanceof VInventory inventory && this.hasMovedTooFar(player, inventory)) {
             this.closeGhostInventory(player);
         }
@@ -458,5 +455,8 @@ public class VInventoryManager extends ListenerAdapter implements VInvManager {
         }
         this.cooldownClick.remove(player.getUniqueId());
         this.plugin.getInventoryManager().getPaginationManager().removePlayerStates(player.getUniqueId());
+        if (this.plugin.getCommandManager() instanceof ZCommandManager commandManager) {
+            commandManager.removePlayerArguments(player.getUniqueId());
+        }
     }
 }

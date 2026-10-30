@@ -27,11 +27,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class ZCommandManager extends ZUtils implements CommandManager {
 
     private final Map<String, List<Command>> commands = new HashMap<>();
-    private final Map<UUID, Map<String, String>> playerArguments = new HashMap<>();
+    private final Map<UUID, Map<String, String>> playerArguments = new ConcurrentHashMap<>();
     private final List<CommandArgumentValidator> commandArgumentValidators = new ArrayList<>();
     private final ZMenuPlugin plugin;
 
@@ -107,6 +108,7 @@ public class ZCommandManager extends ZUtils implements CommandManager {
     public void loadCommands() {
 
         this.unregisterCommands(this.plugin);
+        this.playerArguments.clear();
 
         // Check if file exist
         File folder = new File(this.plugin.getDataFolder(), "commands");
@@ -182,10 +184,11 @@ public class ZCommandManager extends ZUtils implements CommandManager {
     @Override
     public void setPlayerArgument(Player player, String key, String value) {
 
-        Map<String, String> arguments = this.playerArguments.getOrDefault(player.getUniqueId(), new HashMap<>());
-        arguments.put(key, value);
-        this.playerArguments.put(player.getUniqueId(), arguments);
+        this.playerArguments.computeIfAbsent(player.getUniqueId(), uuid -> new HashMap<>()).put(key, value);
+    }
 
+    public void removePlayerArguments(UUID uuid) {
+        this.playerArguments.remove(uuid);
     }
 
     @Override

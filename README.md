@@ -74,6 +74,17 @@ items:
               - "&aYou clicked the button!"
 ```
 
+### Inventory Types
+
+The `type` field sets the container type (default `CHEST`).
+
+| Type | Minimum Minecraft version | Notes |
+|---|---|---|
+| `CHEST` | 1.20.6 | Default. Size must be a multiple of 9. |
+| `ANVIL` | 1.21 | Enables `rename-requirements`. On older versions, zMenu logs an error at load time and the menu opens as a chest, so rename requirements do not run. |
+
+`CRAFTING` and `PLAYER` are not supported.
+
 ## API Usage
 
 **Maven**
@@ -90,7 +101,7 @@ items:
         <dependency>
             <groupId>fr.maxlego08.menu</groupId>
             <artifactId>zmenu-api</artifactId>
-            <version>1.1.2.0</version>
+            <version>1.1.2.1</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
@@ -104,7 +115,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly("fr.maxlego08.menu:zmenu-api:1.1.2.0")
+    compileOnly("fr.maxlego08.menu:zmenu-api:1.1.2.1")
 }
 ```
 

@@ -322,6 +322,8 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
                 TitleAnimationLoader animationLoader = titleAnimationLoader.get();
                 TitleAnimation titleAnimation = animationLoader.load(configuration, titleAnimationPath, file);
                 inventory.setTitleAnimation(titleAnimation);
+            } else {
+                Logger.info("The title animation of " + file.getName() + " was ignored: no title animation provider " + (pluginName == null ? "is registered" : "named '" + pluginName + "' is registered (is PacketEvents installed?)") + ".", Logger.LogType.WARNING);
             }
         }
     }

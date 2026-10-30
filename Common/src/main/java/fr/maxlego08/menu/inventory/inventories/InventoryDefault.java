@@ -6,6 +6,7 @@ import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.MenuItemStack;
 import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.button.Button;
+import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.engine.InventoryResult;
 import fr.maxlego08.menu.api.engine.ItemButton;
@@ -13,7 +14,6 @@ import fr.maxlego08.menu.api.exceptions.InventoryOpenException;
 import fr.maxlego08.menu.api.inventory.ChestInventory;
 import fr.maxlego08.menu.api.inventory.ContainerInventory;
 import fr.maxlego08.menu.api.pattern.Pattern;
-import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.requirement.RefreshRequirement;
 import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.api.utils.Placeholders;
@@ -31,6 +31,7 @@ import org.jspecify.annotations.NonNull;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 /**
@@ -38,7 +39,7 @@ import java.util.function.Consumer;
  */
 public class InventoryDefault extends VInventory implements InventoryEngine {
 
-    private final Map<Integer, TimerTask> timers = new ConcurrentHashMap<>();
+    private final Map<Integer, WrappedTask> timers = new ConcurrentHashMap<>();
     private PerformanceDebug perfDebug;
     private Inventory inventory;
     private List<Inventory> oldInventories = new ArrayList<>();
@@ -184,7 +185,7 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
 
     @Override
     protected void onClose(InventoryCloseEvent event, MenuPlugin plugin, Player player) {
-
+        this.cancelTimers();
         this.inventory.closeInventory(player, this);
         this.buttons.forEach(button -> button.onInventoryClose(player, this));
     }
@@ -330,13 +331,17 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
         int maxSlotSize = button.isPlayerInventory() ? 36 : this.inventory.size();
 
         if (button.getPlayerHead() != null && itemStack.getItemMeta() instanceof SkullMeta) {
-            this.plugin.getScheduler().runAsync(w -> {
+            var scheduler = this.plugin.getScheduler();
+            scheduler.runAsync(w -> {
                 var updatedItemStack = this.plugin.getInventoryManager().postProcessSkullItemStack(itemStack, button, this.player, placeholders);
-                for (int slot : slots) {
-                    if (slot < 0 || slot >= maxSlotSize) continue;
+                // Back on the player's thread, and in the inventory the button was placed in (menu or player inventory)
+                scheduler.runAtEntity(this.player, w2 -> {
+                    for (int slot : slots) {
+                        if (slot < 0 || slot >= maxSlotSize) continue;
 
-                    this.getSpigotInventory().setItem(slot, updatedItemStack);
-                }
+                        this.updateItem(button.isPlayerInventory(), slot, updatedItemStack, true);
+                    }
+                });
             });
         }
 
@@ -396,19 +401,9 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
 
                 if (needRefresh || button.isUpdated()) {
                     long interval = refreshRequirement != null ? refreshRequirement.getUpdateInterval() : this.inventory.getUpdateInterval();
-                    TimerTask timerTask = this.scheduleFix(this.plugin, interval, (task, canRun) -> {
-                        if (!canRun) {
-                            return;
-                        }
-
+                    WrappedTask timerTask = this.plugin.getScheduler().runAtEntityTimer(this.player, () -> {
                         if (this.isClose()) {
-                            task.cancel();
-                            return;
-                        }
-
-                        TimerTask tTask = this.timers.get(slot);
-                        if (!task.equals(tTask)) {
-                            task.cancel();
+                            this.cancelTimers();
                             return;
                         }
 
@@ -418,9 +413,12 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
                         } else if (button.isUpdated()) {
                             this.handleUpdatedButton(button, itemStack, slot, placeholders);
                         }
-                    });
+                    }, interval, interval, TimeUnit.MILLISECONDS);
 
-                    this.timers.put(slot, timerTask);
+                    WrappedTask previousTask = this.timers.put(slot, timerTask);
+                    if (previousTask != null) {
+                        previousTask.cancel();
+                    }
                 }
             }
         }
@@ -428,10 +426,15 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
 
     @Override
     public void cancel(int slot) {
-        TimerTask task = this.timers.remove(slot);
+        WrappedTask task = this.timers.remove(slot);
         if (task != null) {
             task.cancel();
         }
+    }
+
+    private void cancelTimers() {
+        this.timers.values().forEach(WrappedTask::cancel);
+        this.timers.clear();
     }
 
     @Override

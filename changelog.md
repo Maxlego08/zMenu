@@ -42,6 +42,94 @@
 
 # Unreleased
 
+# 1.1.2.1
+
+## New Features
+
+- **`database-configuration.max-lifetime` option**: new `config.yml` key, in seconds (default `1800`), that sets
+  the maximum lifetime of a pooled MySQL/MariaDB connection. It is passed to Sarah as the HikariCP max lifetime.
+  `0` keeps connections until the pool closes, a missing or negative value keeps Sarah's default of 30 minutes,
+  and Hikari requires at least 30 seconds. The value is also read from the global database configuration when
+  one is used. Sarah was updated from `1.25` to `1.26`.
+- **API: `ButtonManager#registerRuleLoader(RuleLoader)`**: third-party plugins can now register their own rule
+  types (and their aliases), usable in the `rule` section of `item_drag` buttons and in the `item-rule`
+  requirement. Until now only loaders annotated with `@AutoRuleLoader` inside zMenu were discovered.
+- **API: ItemStack serialization and SoundOption factory**: `InventoryManager` now exposes
+  `serializeItemStack(ItemStack)`, `deserializeItemStack(String)` and
+  `createSoundOption(String soundName, String categoryName, float pitch, float volume[, boolean isCustom])`,
+  which resolves the sound through XSound and returns `null` when the sound is unknown.
+- **API: item update hooks**: added `InventoryListener#updateItem(BaseInventory, boolean inPlayerInventory, ItemButton)`,
+  called when an already-placed button's item is replaced after the inventory opens (returning `true` skips the
+  default placement), `ItemButton#setDisplayItem(ItemStack)` and
+  `VInventory#updateItem(boolean inPlayerInventory, int slot, ItemStack, boolean enableAntiDupe)`.
+
+## Improvements
+
+- **Memory usage**: several caches and per-player maps that kept growing over time are now bounded or cleaned up:
+    - The PlaceholderAPI result cache (`enable-cache-placeholder-api` / `cache-placeholder-api`) is now a bounded
+      cache (10,000 entries) whose entries really expire after the configured duration. Expired entries used to
+      never be removed.
+    - `OfflinePlayerCache` no longer caches online `Player` objects, which could stay in memory after a logout.
+      The cache is also cleared on `/zm reload` and when the plugin is disabled.
+    - `ItemStackUtils` no longer keeps every serialized or deserialized item in a static map.
+    - Command player arguments, on-click item mechanic cooldowns, `item_drag` task states and PacketEvents fake
+      inventory contents are now removed when the player disconnects (or the inventory closes).
+    - The PacketEvents title and title-animation listeners now remove a player's data when they disconnect.
+- **Refreshing buttons on Folia**: buttons refreshed on a timer (`update` / `refresh-on-click` refresh
+  requirements and the inventory `update-interval`) now run on the viewing player's scheduler instead of a
+  shared `java.util.Timer` thread. Every refresh task of an inventory is cancelled as soon as it closes, and a
+  slot's old refresh task is cancelled when it gets a new one, so tasks no longer pile up.
+- **Item check after `/zm reload`**: the custom-item inventory check now runs on each player's own scheduler
+  instead of one async task for all players, so player inventories are no longer accessed off-thread.
+- **Button commands scheduling**: console and player commands of a button (except those sent through the
+  player's chat) are now always scheduled, on every platform: on the player's scheduler, or on the next tick for
+  the console. On Spigot/Paper they used to run immediately, so they may now run one tick later.
+- **Performance**: the `getTopInventory` method lookup, used on every click, move and packet, is now cached per
+  view class instead of being resolved by reflection each time. The move/teleport distance check exits early
+  when `close-inventory-on-move` is disabled. Color translation (`color()` / `colorReverse()`) reuses
+  precompiled patterns and skips hex processing when the text has no `#`.
+- **More configuration warnings**: zMenu now logs a warning, with the file and button path, instead of silently
+  ignoring:
+    - an `ANVIL` inventory loaded below Minecraft 1.21 (the menu falls back to a chest and `rename-requirements`
+      do not run);
+    - a `title-animation` section with no matching title animation provider (PacketEvents is probably missing);
+    - an unknown `item_drag` check-item `type` (it still falls back to `full`);
+    - a `ButtonOption` class that cannot be instantiated (reported once per class).
+- **Button options**: `ButtonOption` classes no longer need a public constructor that takes a `Plugin`; a public
+  no-argument constructor is used as a fallback. Before, such an option was silently dropped.
+- **Title animation provider**: `title-animation.plugin` is now matched case-insensitively, and when `plugin` is
+  omitted the first registered provider is always used, instead of an arbitrary one.
+- **`/zm dumplog`**: the uploaded log URL is now always sent as a clickable link, on every platform.
+- **Bundled dialog examples**: the default dialog files now use `after-action` (the key the loader actually
+  reads, `after_action` was ignored) and list its real values (`CLOSE`, `NONE`, `WAIT_FOR_RESPONSE`). Text inputs
+  in the examples and in `bedrock/custom-form.yml` now use `default-value` instead of `initial-value`. Existing
+  installs keep their files and must rename these keys by hand.
+- **API: removed `Tuples`**: the unused record `fr.maxlego08.menu.api.utils.Tuples` was deleted from the API
+  module. This is a breaking change for plugins that referenced it.
+- Builds are now reproducible (fixed file timestamps and order in the jars).
+
+## Fixes
+
+- **`/zm download` check was inverted**: the command was blocked when `enable-download-command` was `true` and
+  allowed when it was `false`. It now runs only when `enable-download-command: true` is set. The error message
+  also points to `config.yml` instead of `config.json`.
+- **Invalid `item_drag` rules**: when the `rule` section of an `item_drag` button is invalid, the button now
+  refuses every item and logs a warning. It used to accept any item.
+- **Player heads in player-inventory buttons**: a `player_head` button placed in the player inventory now
+  receives its asynchronously loaded texture in the player inventory slot, instead of the same slot number of
+  the menu. With the PacketEvents clear-inventory mode, the late head update is sent by packet without modifying
+  the real inventory.
+- **Paper 26.3 item components**: the `Paper-26-3` hook (components such as `attack_animation`,
+  `interact_animation`, `mob_visibility`, `provides_pottery_pattern`, `sign_text`, `villager_food`, `waxed`) is
+  now packaged in `zMenu.jar`. It was missing, so these components were unavailable.
+- **MythicMobs items**: `mythicmobs:` materials now generate the full item (name, lore, enchantments, NBT...)
+  instead of returning Mythic's cached base item.
+- **`%zmenu_player_previous_page%`** no longer returns a negative value on the first page.
+- **`%zmenu_statistic_hours_played%`** returned minutes instead of hours.
+- **Case-insensitive action registration**: actions registered by third-party plugins with uppercase or
+  mixed-case keys through `ButtonManager#registerAction` could never be found.
+- Opening a menu with PacketEvents fake-inventory contents no longer spams debug lines in the console.
+
 # 1.1.2.0
 
 ## New Features
