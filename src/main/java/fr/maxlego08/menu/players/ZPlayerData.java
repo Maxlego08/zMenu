@@ -4,6 +4,7 @@ import fr.maxlego08.menu.api.players.Data;
 import fr.maxlego08.menu.api.players.PlayerData;
 import fr.maxlego08.menu.api.storage.StorageManager;
 import fr.maxlego08.menu.api.storage.dto.DataDTO;
+import fr.maxlego08.menu.api.storage.spi.PlayerDataEntry;
 import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NonNull;
 
@@ -15,6 +16,9 @@ public class ZPlayerData implements PlayerData {
     private final StorageManager storageManager;
     private final UUID uniqueId;
     private final Map<String, Data> datas = new ConcurrentHashMap<>();
+    private volatile boolean loaded;
+    private volatile boolean online;
+    private volatile long lastAccess = System.currentTimeMillis();
 
     public ZPlayerData(@NotNull StorageManager storageManager,@NotNull UUID uniqueId) {
         super();
@@ -73,5 +77,46 @@ public class ZPlayerData implements PlayerData {
 
     public void setData(DataDTO dto) {
         this.datas.put(dto.key(), new ZData(dto));
+    }
+
+    /**
+     * Adds the values read from the database. A value already in memory is newer and kept.
+     */
+    void merge(@NotNull List<PlayerDataEntry> entries) {
+        for (PlayerDataEntry entry : entries) {
+            this.datas.putIfAbsent(entry.key(), new ZData(entry.key(), entry.value(), entry.expiresAt()));
+        }
+        this.loaded = true;
+    }
+
+    /**
+     * Forgets every value, without touching the database.
+     */
+    void clearLocal() {
+        this.datas.clear();
+    }
+
+    /**
+     * @return whether the values of this player have been read from the database
+     */
+    boolean isLoaded() {
+        return this.loaded;
+    }
+
+    boolean isOnline() {
+        return this.online;
+    }
+
+    void setOnline(boolean online) {
+        this.online = online;
+        this.touch();
+    }
+
+    void touch() {
+        this.lastAccess = System.currentTimeMillis();
+    }
+
+    long getLastAccess() {
+        return this.lastAccess;
     }
 }

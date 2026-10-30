@@ -10,7 +10,10 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
@@ -39,6 +42,21 @@ final class SqlPlayerDataStore implements PlayerDataStore {
     @Override
     public @NotNull CompletableFuture<List<PlayerDataEntry>> load(@NotNull UUID playerId) {
         return this.database.read(() -> toEntries(this.database.requestHelper().select(Tables.PLAYER_DATAS, DataDTO.class, table -> table.where("player_id", playerId))));
+    }
+
+    @Override
+    public @NotNull CompletableFuture<Set<String>> keys() {
+        return this.database.read(() -> {
+            Set<String> keys = new HashSet<>();
+            for (Map<String, Object> row : this.database.requestHelper().select(Tables.PLAYER_DATAS, table -> {
+                table.distinct();
+                table.addSelect("key");
+            })) {
+                String key = SqlRows.text(row, "key");
+                if (key != null) keys.add(key);
+            }
+            return keys;
+        });
     }
 
     @Override
@@ -79,5 +97,10 @@ final class SqlPlayerDataStore implements PlayerDataStore {
     public @NotNull CompletableFuture<Void> deleteAll() {
         return this.database.write(() -> this.database.requestHelper().delete(Tables.PLAYER_DATAS, table -> {
         }));
+    }
+
+    @Override
+    public @NotNull CompletableFuture<Void> deleteExpired(long now) {
+        return this.database.write(() -> this.database.requestHelper().delete(Tables.PLAYER_DATAS, table -> table.where("expired_at", "<", new Date(now))));
     }
 }

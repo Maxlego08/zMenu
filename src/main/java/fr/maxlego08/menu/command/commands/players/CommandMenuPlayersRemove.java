@@ -39,18 +39,16 @@ public class CommandMenuPlayersRemove extends SubCommand<ZMenuPlugin> {
         UUID targetId = commandDispatch.getArgument("player", UUID.class);
         String key = commandDispatch.getArgument("key", String.class);
 
-        Optional<PlayerData> optional = dataManager.getPlayer(targetId);
-        if (optional.isEmpty()) {
-            MessageUtils.message(commandDispatch.getPlugin(), commandDispatch.getSender(), Message.PLAYERS_DATA_REMOVE_ERROR, "%key%", key);
-            return CommandResultType.SUCCESS;
-        }
-        PlayerData playerData = optional.get();
-        if (!playerData.containsKey(key)) {
-            MessageUtils.message(commandDispatch.getPlugin(), commandDispatch.getSender(), Message.PLAYERS_DATA_REMOVE_ERROR, "%key%", key);
-            return CommandResultType.SUCCESS;
-        }
-        playerData.removeData(key);
-        MessageUtils.message(commandDispatch.getPlugin(), commandDispatch.getSender(), Message.PLAYERS_DATA_REMOVE_SUCCESS, "%key%", key, "%player%", commandDispatch.getArgument("player", OfflinePlayer.class).getName());
+        String playerName = commandDispatch.getArgument("player", OfflinePlayer.class).getName();
+        PlayerDataCommands.whenLoaded(commandDispatch.getPlugin(), commandDispatch.getSender(), targetId, () -> {
+            Optional<PlayerData> optional = dataManager.getPlayer(targetId);
+            if (optional.isEmpty() || !optional.get().containsKey(key)) {
+                MessageUtils.message(commandDispatch.getPlugin(), commandDispatch.getSender(), Message.PLAYERS_DATA_REMOVE_ERROR, "%key%", key);
+                return;
+            }
+            optional.get().removeData(key);
+            MessageUtils.message(commandDispatch.getPlugin(), commandDispatch.getSender(), Message.PLAYERS_DATA_REMOVE_SUCCESS, "%key%", key, "%player%", playerName);
+        });
         return CommandResultType.SUCCESS;
     }
 }

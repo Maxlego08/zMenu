@@ -343,6 +343,7 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
         this.safeHook("auto listeners", this::registerAutoListeners);
         this.addListener(this.vinventoryManager);
         this.addListener(this.inventoriesPlayer);
+        this.addListener((ZDataManager) this.dataManager);
         if (this.isFeatureEnabled(Feature.CUSTOM_ITEMS)) this.addListener(new ItemUpdaterListener(this.itemManager));
         this.addListener(this.inventoryManager);
 

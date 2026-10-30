@@ -49,6 +49,8 @@
 * A value of `database-configuration.yml` (the file shared by every plugin of the server) that is not set now falls back to `config.yml` and then to the defaults of `config.yml`, as documented; a missing value was read as empty when the shared file did not exist.
 * The MySQL and MariaDB connection pool is now closed when zMenu disables, after the queued writes are stored.
 * Removed the internal `GlobalDatabaseConfiguration` class, replaced by `StorageConfiguration`.
+* `DataManager#getPlayer` now only returns players whose data is in memory: online players, and offline players looked up in the last minutes. Added `DataManager#loadPlayer(UUID)` to read an offline player first. `DataManager#loadPlayers` now reads the players already online. `StorageManager#loadPlayers` and `#loadInventories` still read everything, but zMenu no longer calls them.
+* Storage SPI: added `PlayerDataStore#keys` and `#deleteExpired`, and `SavedInventoryStore#load`.
 * Removed the legacy `ClassicMeta` formatter. zMenu always formats items, messages and titles with MiniMessage through `ComponentMeta`. If it cannot start, zMenu logs an error and disables itself. `enable-mini-message-format` now only controls Dialogs support.
 
 ## New Features
@@ -65,6 +67,11 @@
 
 ## Improvements
 
+* Player data is no longer read for every player at startup and kept for the whole uptime. A player's values are read just before they join and kept while they are online. An offline player looked up by a command or a placeholder is read in the background and kept for 5 minutes after the last lookup. Startup time and memory no longer grow with the number of players who ever joined.
+* The inventories saved by menus with `clear-inventory` are read for each player before they join, instead of all at startup.
+* Expired player data is now deleted from the database every 10 minutes; it used to stay until someone read it.
+* The `/zm players` commands read an offline player's data first, then answer. A placeholder for an offline player whose data is not in memory yet shows the default value, then the real one on its next update.
+* A player whose data or saved inventory cannot be read is refused at login with a message (`PLAYERS_DATA_LOAD_ERROR`), instead of joining with missing values that a menu could then overwrite. `PLAYERS_DATA_LOAD_FAILED` is sent when a `/zm players` command cannot read a player.
 * `/zm reload` and `/zm reload inventory` no longer leave menus half-loaded: a menu file that cannot be read is reported and keeps its previous version, while every other menu is updated. The load events fire once the new menus are in place.
 * A menu file with a YAML syntax error is now reported instead of being loaded as an empty 54-slot menu.
 * Menus of other plugins stay available by name after `/zm reload`.

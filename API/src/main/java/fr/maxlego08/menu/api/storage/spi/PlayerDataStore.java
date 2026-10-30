@@ -4,6 +4,7 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
@@ -24,6 +25,12 @@ public interface PlayerDataStore {
      */
     @NotNull
     CompletableFuture<List<PlayerDataEntry>> load(@NotNull UUID playerId);
+
+    /**
+     * @return every key used by at least one player
+     */
+    @NotNull
+    CompletableFuture<Set<String>> keys();
 
     /**
      * Creates or replaces values, matched by player and key.
@@ -51,4 +58,12 @@ public interface PlayerDataStore {
      */
     @NotNull
     CompletableFuture<Void> deleteAll();
+
+    /**
+     * Deletes the values that expired before a time. Values that never expire are kept.
+     *
+     * @param now the time, in milliseconds since the epoch
+     */
+    @NotNull
+    CompletableFuture<Void> deleteExpired(long now);
 }

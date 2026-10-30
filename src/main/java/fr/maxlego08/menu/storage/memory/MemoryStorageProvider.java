@@ -55,6 +55,19 @@ public final class MemoryStorageProvider implements StorageProvider {
         }
 
         @Override
+        public @NotNull CompletableFuture<Set<String>> keys() {
+            Set<String> keys = new HashSet<>();
+            playerData.values().forEach(values -> keys.addAll(values.keySet()));
+            return CompletableFuture.completedFuture(keys);
+        }
+
+        @Override
+        public @NotNull CompletableFuture<Void> deleteExpired(long now) {
+            playerData.values().forEach(values -> values.values().removeIf(entry -> entry.expiresAt() != 0 && entry.expiresAt() < now));
+            return DONE;
+        }
+
+        @Override
         public @NotNull CompletableFuture<Void> save(@NotNull List<PlayerDataEntry> entries) {
             entries.forEach(entry -> playerData.computeIfAbsent(entry.playerId(), id -> new ConcurrentHashMap<>()).put(entry.key(), entry));
             return DONE;
@@ -91,6 +104,11 @@ public final class MemoryStorageProvider implements StorageProvider {
         @Override
         public @NotNull CompletableFuture<Map<UUID, String>> loadAll() {
             return CompletableFuture.completedFuture(new HashMap<>(savedInventories));
+        }
+
+        @Override
+        public @NotNull CompletableFuture<Optional<String>> load(@NotNull UUID playerId) {
+            return CompletableFuture.completedFuture(Optional.ofNullable(savedInventories.get(playerId)));
         }
 
         @Override

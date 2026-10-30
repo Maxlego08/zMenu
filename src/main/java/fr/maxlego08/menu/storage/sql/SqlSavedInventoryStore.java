@@ -7,6 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
@@ -31,6 +32,17 @@ final class SqlSavedInventoryStore implements SavedInventoryStore {
                 inventories.put(UUID.fromString(playerId), inventory);
             }
             return inventories;
+        });
+    }
+
+    @Override
+    public @NotNull CompletableFuture<Optional<String>> load(@NotNull UUID playerId) {
+        return this.database.read(() -> {
+            String inventory = null;
+            for (Map<String, Object> row : this.database.requestHelper().select(Tables.PLAYER_INVENTORIES, table -> table.where("player_id", playerId))) {
+                inventory = SqlRows.text(row, "inventory");
+            }
+            return Optional.ofNullable(inventory);
         });
     }
 

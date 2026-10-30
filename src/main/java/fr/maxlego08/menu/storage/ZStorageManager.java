@@ -31,6 +31,7 @@ import org.jspecify.annotations.NonNull;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -47,9 +48,16 @@ import java.util.function.Supplier;
 public class ZStorageManager implements StorageManager {
 
     private static final long FLUSH_TIMEOUT_SECONDS = 30;
+    private static final long PURGE_INTERVAL_MINUTES = 10;
 
     private final MenuPlugin plugin;
     private final TypeSafeCache cache = new TypeSafeCache();
+
+    /**
+     * Player data values waiting for the next batch, by player and key. A newer value replaces the
+     * one waiting for the same key.
+     */
+    private final Map<PendingKey, PlayerDataEntry> pendingData = new ConcurrentHashMap<>();
     private final AtomicBoolean flushing = new AtomicBoolean(false);
     private StorageProvider provider;
 
@@ -107,6 +115,77 @@ public class ZStorageManager implements StorageManager {
         }
 
         this.startBatchTask(configuration.batchSeconds());
+        this.plugin.getScheduler().runTimerAsync(this::purgeExpiredData, 1, PURGE_INTERVAL_MINUTES, TimeUnit.MINUTES);
+    }
+
+    /**
+     * Deletes expired player data from the database. Expired values used to stay there until
+     * someone read them.
+     */
+    private void purgeExpiredData() {
+        if (!this.isEnable()) return;
+        this.logFailure(this.provider.playerData().deleteExpired(System.currentTimeMillis()), "delete the expired player data");
+    }
+
+    /**
+     * Loads the values of one player, with the values still waiting to be written laid over them.
+     */
+    public CompletableFuture<List<PlayerDataEntry>> loadPlayerData(@NonNull UUID playerId) {
+        if (!this.isEnable()) return CompletableFuture.completedFuture(List.of());
+
+        return this.provider.playerData().load(playerId).thenApply(stored -> {
+            Map<String, PlayerDataEntry> entries = new LinkedHashMap<>();
+            stored.forEach(entry -> entries.put(entry.key(), entry));
+            this.pendingData.forEach((key, entry) -> {
+                if (key.playerId().equals(playerId)) entries.put(key.key(), entry);
+            });
+            return new ArrayList<>(entries.values());
+        });
+    }
+
+    /**
+     * @return every key used by at least one player, including the ones still waiting to be written
+     */
+    public CompletableFuture<Set<String>> loadDataKeys() {
+        if (!this.isEnable()) return CompletableFuture.completedFuture(Set.of());
+
+        return this.provider.playerData().keys().thenApply(stored -> {
+            Set<String> keys = new HashSet<>(stored);
+            this.pendingData.keySet().forEach(key -> keys.add(key.key()));
+            return keys;
+        });
+    }
+
+    public CompletableFuture<Optional<String>> loadSavedInventory(@NonNull UUID playerId) {
+        if (!this.isEnable()) return CompletableFuture.completedFuture(Optional.empty());
+
+        return this.provider.savedInventories().load(playerId);
+    }
+
+    /**
+     * @return whether a value of this player still waits to be written
+     */
+    public boolean hasPendingData(@NonNull UUID playerId) {
+        for (PendingKey key : this.pendingData.keySet()) {
+            if (key.playerId().equals(playerId)) return true;
+        }
+        return false;
+    }
+
+    /**
+     * Removes the waiting values matching a filter. A value replaced concurrently is kept.
+     */
+    private List<PlayerDataEntry> drainPendingData(java.util.function.Predicate<PendingKey> filter) {
+        List<PlayerDataEntry> drained = new ArrayList<>();
+        for (Map.Entry<PendingKey, PlayerDataEntry> entry : this.pendingData.entrySet()) {
+            if (filter.test(entry.getKey()) && this.pendingData.remove(entry.getKey(), entry.getValue())) {
+                drained.add(entry.getValue());
+            }
+        }
+        return drained;
+    }
+
+    private record PendingKey(UUID playerId, String key) {
     }
 
     /**
@@ -138,12 +217,8 @@ public class ZStorageManager implements StorageManager {
             this.provider.inventoryLogs().ifPresent(store -> writes.add(this.logFailure(store.append(records), "store the opened inventories")));
         }
 
-        List<DataDTO> dataList = this.cache.drain(DataDTO.class);
-        if (!dataList.isEmpty()) {
-            List<PlayerDataEntry> entries = new ArrayList<>(dataList.size());
-            for (DataDTO dto : dataList) {
-                entries.add(new PlayerDataEntry(dto.player_id(), dto.key(), dto.data(), dto.expired_at() == null ? 0 : dto.expired_at().getTime()));
-            }
+        List<PlayerDataEntry> entries = this.drainPendingData(key -> true);
+        if (!entries.isEmpty()) {
             writes.add(this.logFailure(this.provider.playerData().save(entries), "store the player data"));
         }
 
@@ -231,15 +306,15 @@ public class ZStorageManager implements StorageManager {
     public void upsertData(@NonNull UUID uuid, @NonNull Data data) {
         if (!this.isEnable()) return;
 
-        DataDTO dto = new DataDTO(uuid, data.getKey(), data.getValue().toString(), data.getExpiredAt() == 0 ? null : new Date(data.getExpiredAt()));
-        this.cache.replaceMatching(DataDTO.class, e -> e.player_id().equals(uuid) && e.key().equals(data.getKey()), dto);
+        Object value = data.getValue();
+        this.pendingData.put(new PendingKey(uuid, data.getKey()), new PlayerDataEntry(uuid, data.getKey(), value == null ? "" : value.toString(), data.getExpiredAt()));
     }
 
     @Override
     public void clearData() {
         if (!this.isEnable()) return;
 
-        this.cache.clear(DataDTO.class);
+        this.pendingData.clear();
         this.logFailure(this.provider.playerData().deleteAll(), "delete the player data");
     }
 
@@ -247,7 +322,7 @@ public class ZStorageManager implements StorageManager {
     public void clearData(@NonNull UUID uniqueId) {
         if (!this.isEnable()) return;
 
-        this.cache.removeMatching(DataDTO.class, e -> e.player_id().equals(uniqueId));
+        this.drainPendingData(key -> key.playerId().equals(uniqueId));
         this.logFailure(this.provider.playerData().deletePlayer(uniqueId), "delete the player data of " + uniqueId);
     }
 
@@ -255,7 +330,7 @@ public class ZStorageManager implements StorageManager {
     public void clearData(@NonNull String key) {
         if (!this.isEnable()) return;
 
-        this.cache.removeMatching(DataDTO.class, e -> e.key().equals(key));
+        this.drainPendingData(pending -> pending.key().equals(key));
         this.logFailure(this.provider.playerData().deleteKey(key), "delete the player data key " + key);
     }
 
@@ -263,7 +338,7 @@ public class ZStorageManager implements StorageManager {
     public void removeData(@NonNull UUID uuid, @NonNull String key) {
         if (!this.isEnable()) return;
 
-        this.cache.removeMatching(DataDTO.class, e -> e.player_id().equals(uuid) && e.key().equals(key));
+        this.pendingData.remove(new PendingKey(uuid, key));
         this.logFailure(this.provider.playerData().delete(uuid, key), "delete the player data key " + key + " of " + uuid);
     }
 

@@ -48,18 +48,20 @@ public class CommandMenuPlayersSubtract extends SubCommand<ZMenuPlugin> {
         String key = commandDispatch.getArgument("key", String.class);
         int value = commandDispatch.getArgument("number", Integer.class);
 
-        DataManager dataManager = commandDispatch.getPlugin().getDataManager();
-        Optional<Data> optional = dataManager.getData(targetId, key);
-        if (optional.isEmpty()) {
-            Data data = new ZData(key, -value, 0);
-            dataManager.addData(targetId, data);
-        } else {
-            Data data = optional.get();
-            data.remove(value);
-            commandDispatch.getPlugin().getStorageManager().upsertData(targetId, data);
-        }
+        PlayerDataCommands.whenLoaded(commandDispatch.getPlugin(), commandDispatch.getSender(), targetId, () -> {
+            DataManager dataManager = commandDispatch.getPlugin().getDataManager();
+            Optional<Data> optional = dataManager.getData(targetId, key);
+            if (optional.isEmpty()) {
+                Data data = new ZData(key, -value, 0);
+                dataManager.addData(targetId, data);
+            } else {
+                Data data = optional.get();
+                data.remove(value);
+                commandDispatch.getPlugin().getStorageManager().upsertData(targetId, data);
+            }
 
-        MessageUtils.message(commandDispatch.getPlugin(), commandDispatch.getSender(), Message.PLAYERS_DATA_SUBTRACT, "%player%", OfflinePlayerCache.getGlobalInstance().getName(targetId), "%key%", key);
+            MessageUtils.message(commandDispatch.getPlugin(), commandDispatch.getSender(), Message.PLAYERS_DATA_SUBTRACT, "%player%", OfflinePlayerCache.getGlobalInstance().getName(targetId), "%key%", key);
+        });
 
         return CommandResultType.SUCCESS;
     }

@@ -14,6 +14,7 @@ import java.io.File;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Logger;
@@ -89,6 +90,36 @@ abstract class StorageProviderContractTest {
         this.provider.playerData().save(List.of(new PlayerDataEntry(PLAYER, "coins", "1", 0))).join();
         this.provider.playerData().deleteAll().join();
         assertTrue(this.provider.playerData().loadAll().join().isEmpty());
+    }
+
+    @Test
+    void keysAreListedOnce() {
+        this.provider.playerData().save(List.of(
+                new PlayerDataEntry(PLAYER, "coins", "10", 0),
+                new PlayerDataEntry(PLAYER, "rank", "vip", 0),
+                new PlayerDataEntry(OTHER, "coins", "3", 0))).join();
+
+        assertEquals(Set.of("coins", "rank"), this.provider.playerData().keys().join());
+    }
+
+    @Test
+    void onlyExpiredValuesArePurged() {
+        this.provider.playerData().save(List.of(
+                new PlayerDataEntry(PLAYER, "expired", "1", 1_000L),
+                new PlayerDataEntry(PLAYER, "later", "2", 4_102_444_800_000L),
+                new PlayerDataEntry(PLAYER, "never", "3", 0))).join();
+
+        this.provider.playerData().deleteExpired(1_700_000_000_000L).join();
+
+        assertEquals(Set.of("later", "never"), this.provider.playerData().keys().join());
+    }
+
+    @Test
+    void savedInventoryIsLoadedPerPlayer() {
+        this.provider.savedInventories().save(PLAYER, "0:abc").join();
+
+        assertEquals(Optional.of("0:abc"), this.provider.savedInventories().load(PLAYER).join());
+        assertEquals(Optional.empty(), this.provider.savedInventories().load(OTHER).join());
     }
 
     @Test

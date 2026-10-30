@@ -4,6 +4,7 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
@@ -19,6 +20,12 @@ public interface SavedInventoryStore {
      */
     @NotNull
     CompletableFuture<Map<UUID, String>> loadAll();
+
+    /**
+     * @return the saved inventory of a player, or empty when there is none
+     */
+    @NotNull
+    CompletableFuture<Optional<String>> load(@NotNull UUID playerId);
 
     /**
      * Saves the inventory of a player, replacing any saved before.

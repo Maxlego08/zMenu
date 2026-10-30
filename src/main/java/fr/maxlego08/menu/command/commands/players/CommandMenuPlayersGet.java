@@ -39,21 +39,18 @@ public class CommandMenuPlayersGet extends SubCommand<ZMenuPlugin> {
         UUID targetId = commandDispatch.getArgument("player", UUID.class);
         String key = commandDispatch.getArgument("key", String.class);
 
-        Optional<PlayerData> optional = dataManager.getPlayer(targetId);
-        if (optional.isEmpty()) {
-            MessageUtils.message(commandDispatch.getPlugin(), commandDispatch.getSender(), Message.PLAYERS_DATA_GET_ERROR, "%key%", key);
-            return CommandResultType.SUCCESS;
-        }
+        PlayerDataCommands.whenLoaded(commandDispatch.getPlugin(), commandDispatch.getSender(), targetId, () -> {
+            Optional<PlayerData> optional = dataManager.getPlayer(targetId);
+            Optional<Data> optionalData = optional.flatMap(playerData -> playerData.getData(key));
+            if (optionalData.isEmpty()) {
+                MessageUtils.message(commandDispatch.getPlugin(), commandDispatch.getSender(), Message.PLAYERS_DATA_GET_ERROR, "%key%", key);
+                return;
+            }
 
-        PlayerData playerData = optional.get();
-        if (!playerData.containsKey(key)) {
-            MessageUtils.message(commandDispatch.getPlugin(), commandDispatch.getSender(), Message.PLAYERS_DATA_GET_ERROR, "%key%", key);
-            return CommandResultType.SUCCESS;
-        }
-
-        Data data = playerData.getData(key).get();
-        MessageUtils.message(commandDispatch.getPlugin(), commandDispatch.getSender(), Message.PLAYERS_DATA_GET_SUCCESS, "%value%", data.getValue(), "%key%", data.getKey(),
-                "%expiredAt%", data.getExpiredAt());
+            Data data = optionalData.get();
+            MessageUtils.message(commandDispatch.getPlugin(), commandDispatch.getSender(), Message.PLAYERS_DATA_GET_SUCCESS, "%value%", data.getValue(), "%key%", data.getKey(),
+                    "%expiredAt%", data.getExpiredAt());
+        });
         return CommandResultType.SUCCESS;
     }
 }

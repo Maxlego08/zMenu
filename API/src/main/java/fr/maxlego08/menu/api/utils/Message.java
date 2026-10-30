@@ -127,6 +127,8 @@ public enum Message implements IMessage {
             "&fValue&8: &7%value%"
     ),
     PLAYERS_DATA_GET_ERROR("&cCannot find the key &f%key%&c."),
+    PLAYERS_DATA_LOAD_ERROR("&cYour zMenu data could not be loaded. Please reconnect."),
+    PLAYERS_DATA_LOAD_FAILED("&cUnable to load the data of &b%player%&c, check the console."),
     PLAYERS_DATA_REMOVE_SUCCESS("&aYou have just deleted the key &f%key% &ffor &b%player%&a."),
     PLAYERS_DATA_REMOVE_ALL_SUCCESS("&aYou have just deleted all key's &b%key%&a."),
     PLAYERS_DATA_REMOVE_ERROR("&cCannot find the key &f%key%&c."),
