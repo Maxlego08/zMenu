@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "fr.maxlego08.menu"
-version = "1.1.2.0"
+version = "1.1.2.1"
 
 extra.set("targetFolder", file("target/"))
 extra.set("apiFolder", file("target-api/"))
@@ -210,6 +210,7 @@ tasks {
 
     processResources {
         from("resources")
+        inputs.property("version", project.version)
         filesMatching(listOf("plugin.yml", "paper-plugin.yml")) {
             expand("version" to project.version)
         }

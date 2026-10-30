@@ -402,7 +402,7 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
                         int animationSlot = this.toAnimationSlot(button.isPlayerInventory(), slot);
 
                         if (!this.replaceItemToReveal(animationSlot, updatedItemStack)) {
-                            this.setAnimationSlotItem(animationSlot, updatedItemStack);
+                            this.updateItem(button.isPlayerInventory(), slot, updatedItemStack, true);
                         }
                     }
                 });

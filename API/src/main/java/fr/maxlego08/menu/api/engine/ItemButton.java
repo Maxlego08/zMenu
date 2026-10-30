@@ -84,6 +84,16 @@ public class ItemButton {
         return this;
     }
 
+    /**
+     * Changes the item stored by this button without placing it anywhere.
+     * The caller is responsible for displaying it.
+     *
+     * @param displayItem the new display item
+     */
+    public void setDisplayItem(@NotNull ItemStack displayItem) {
+        this.displayItem = displayItem;
+    }
+
     public void updateDisplayItem(@NotNull ItemStack displayItem) {
         this.displayItem = displayItem;
         if (this.inPlayerInventory) {
