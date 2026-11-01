@@ -50,6 +50,8 @@
 * The MySQL and MariaDB connection pool is now closed when zMenu disables, after the queued writes are stored.
 * Removed the internal `GlobalDatabaseConfiguration` class, replaced by `StorageConfiguration`.
 * Fixed items looking like they disappeared when `enable-packet-event-click-limiter` blocked a fast click: the player's inventory is now sent again after a blocked click. The limiter also no longer stays active after switching to a menu with `click-limiter-enabled: false`, after dying with a menu open, or after disconnecting.
+* Fixed `clear-inventory-type: PACKET_EVENT` showing the real player inventory again after a shift-click, a blocked click or any inventory resync. Every packet that carries a player slot is now rewritten while the menu is open.
+* Fixed `show-items-after-animation` in title animations: the items were shown as soon as the menu opened instead of at the end of the animation.
 * `DataManager#getPlayer` now only returns players whose data is in memory: online players, and offline players looked up in the last minutes. Added `DataManager#loadPlayer(UUID)` to read an offline player first. `DataManager#loadPlayers` now reads the players already online. `StorageManager#loadPlayers` and `#loadInventories` still read everything, but zMenu no longer calls them.
 * Storage SPI: added `SavedInventoryStore#load`. `VariableStore` (`StorageProvider#variables`) replaces `PlayerDataStore` and `PlayerDataEntry`, and the new `ATOMIC_INCREMENT` capability says a provider adds to values atomically.
 * Player data now lives in the new `variables` table, next to the server and global variables. On the first start, zMenu copies the values of `player_datas` into it in one transaction; the old table is left untouched. zMenu now needs Sarah 1.27.

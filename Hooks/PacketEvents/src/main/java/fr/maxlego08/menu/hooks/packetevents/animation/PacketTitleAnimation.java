@@ -15,6 +15,10 @@ public class PacketTitleAnimation implements TitleAnimation {
         this.settings = settings;
     }
 
+    public TitleAnimationSettings getSettings() {
+        return this.settings;
+    }
+
     @Override
     public PlayerTitleAnimation playTitleAnimation(@NotNull MenuPlugin plugin, int containerId, @NotNull InventoryType type, int size, Object... args) {
         return new PacketPlayerTitleAnimation(plugin, this.settings, containerId, type, size, args);

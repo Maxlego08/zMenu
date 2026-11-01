@@ -50,7 +50,6 @@ import fr.maxlego08.menu.hooks.bedrock.ZBedrockManager;
 import fr.maxlego08.menu.hooks.bedrock.listener.BedrockReplacementListener;
 import fr.maxlego08.menu.hooks.dialogs.ZDialogManager;
 import fr.maxlego08.menu.hooks.dialogs.canvas.ZCanvasManager;
-import fr.maxlego08.menu.hooks.packetevents.PacketEventPlayerInventoryManager;
 import fr.maxlego08.menu.hooks.packetevents.PacketUtils;
 import fr.maxlego08.menu.hooks.packetevents.loader.PacketEventTitleAnimationLoader;
 import fr.maxlego08.menu.hooks.paper.PaperProtocolClientVersionProvider;
@@ -408,7 +407,6 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
 
         if (this.packetManager != null) {
             this.safeHook("packetevents", () -> {
-                this.inventoryManager.registerInventoryListener(new PacketEventPlayerInventoryManager(this));
                 this.packetManager.onPostEnable();
             });
         }
