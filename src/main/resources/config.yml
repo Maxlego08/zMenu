@@ -170,6 +170,7 @@ generate-default-file: true
 # Files listed in specify-path-menus are not watched.
 # The folder is also scanned every 2 seconds, for file systems that do not send change events (Docker, WSL, network shares).
 # Changes are logged in the console with a [HotReload] prefix, enable-debug shows more details.
+# You must have zMenu+ on your server to use this feature: https://minecraft-inventory-builder.com/resources/zmenu.4
 hot-reload:
   enable: false
   # Time in milliseconds to wait after the last change of a file before reloading it.
