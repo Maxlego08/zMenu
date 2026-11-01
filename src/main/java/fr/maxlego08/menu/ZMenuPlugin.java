@@ -114,10 +114,18 @@ import java.util.concurrent.TimeUnit;
  * @author Maxlego08
  */
 public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPlugin {
+    /**
+     * The oldest server version zMenu loads its dialog support on.
+     * <p>
+     * Note this is <b>not</b> the same threshold as
+     * {@link fr.maxlego08.menu.api.utils.version.ClientVersionManager#DIALOG_MINIMUM_VERSION}
+     * (1.21.6), which is the oldest <i>client</i> able to render a dialog. The server gate is
+     * deliberately one patch higher; the consequence is that on a 1.21.6 server dialogs are
+     * not loaded at all, so neither dialogs nor their fallbacks exist there.
+     */
+    private static final MinecraftVersion DIALOG_MINIMUM_SERVER_VERSION = MinecraftVersion.parse("1.21.7");
     private static ZMenuPlugin instance;
-
     private final boolean isMockBukkitServer;
-
     private final ICommandManager<ZMenuPlugin> commandManagerLib;
     private final StorageManager storageManager;
     private final ButtonManager buttonManager;
@@ -131,7 +139,6 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
     private final PatternManager patternManager;
     private final Enchantments enchantments;
     private final Set<Feature> enabledFeatures = EnumSet.noneOf(Feature.class);
-    private ItemManager itemManager = new DisabledItemManager();
     private final ItemStackService itemStackService = new ZItemStackService(this);
     private final SoundService soundService = new ZSoundService();
     private final FoliaLib foliaLib;
@@ -142,6 +149,7 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
     private final File configFile;
     private final PlatformScheduler scheduler;
     private final BukkitContext context = new BukkitContext.Factory(this, "df00d7dc59087d9e248fe7723489b87b").metrics(dev.faststats.Metrics.Factory::create).create();
+    private ItemManager itemManager = new DisabledItemManager();
     private ZWebsiteManager websiteManager;
     private DialogManager dialogManager;
     private CanvasManager canvasManager;
@@ -360,10 +368,13 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
         Bukkit.getOnlinePlayers().forEach(this.inventoryManager.getAnimationManager().getHistory()::load);
 
         this.inventoryHotReload = new InventoryHotReload(this);
-        if (!this.isMockBukkitServer) {
-            this.inventoryHotReload.update();
-            // Applies a change of hot-reload.enable made with the configuration dialog
-            this.scheduler.runTimer(this.inventoryHotReload::update, 2, 2, TimeUnit.SECONDS);
+        if (!this.isMockBukkitServer && Configuration.enableHotReload) {
+            if (this.isActive(Plugins.ZMENUPLUS)) {
+                this.inventoryHotReload.update();
+                this.scheduler.runTimer(this.inventoryHotReload::update, 2, 2, TimeUnit.SECONDS);
+            } else {
+                this.getLogger().warning("zMenuPlus is not active, hot-reload will not be enabled");
+            }
         }
 
         LocalPlaceholder localPlaceholder = LocalPlaceholder.getInstance();
@@ -398,9 +409,11 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
 
         if (!this.isActive(Plugins.ZMENUPLUS)) {
             Logger.info("");
-            Logger.info("You can support zMenu by upgrading your account here: https://minecraft-inventory-builder.com/pricing");
+            Logger.info("Do you like zMenu? You can financially support zMenu and get more functionalities with zMenu+: https://minecraft-inventory-builder.com/resources/4");
             Logger.info("");
         }
+        Logger.info("Get 23.5% discount at MineStrator, the top server hosting for Minecraft : https://cashback.groupez.dev/en");
+        Logger.info("Don't look for a better offer, it's impossible, it's the only permanent offer that gives you this much discount");
 
 
         this.dataManager.loadDefaultValues();
@@ -572,7 +585,7 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
 
         if (this.vinventoryManager != null) this.safeDisable("inventories", this.vinventoryManager::close);
         this.safeDisable("player inventories", this.inventoriesPlayer::restoreAllInventories);
-      
+
         if (this.inventoryHotReload != null) this.inventoryHotReload.stop();
 
         if (this.storageManager != null) this.safeDisable("storage", this.storageManager::flush);
@@ -603,17 +616,6 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
 
         this.postDisable();
     }
-
-    /**
-     * The oldest server version zMenu loads its dialog support on.
-     * <p>
-     * Note this is <b>not</b> the same threshold as
-     * {@link fr.maxlego08.menu.api.utils.version.ClientVersionManager#DIALOG_MINIMUM_VERSION}
-     * (1.21.6), which is the oldest <i>client</i> able to render a dialog. The server gate is
-     * deliberately one patch higher; the consequence is that on a 1.21.6 server dialogs are
-     * not loaded at all, so neither dialogs nor their fallbacks exist there.
-     */
-    private static final MinecraftVersion DIALOG_MINIMUM_SERVER_VERSION = MinecraftVersion.parse("1.21.7");
 
     /**
      * Whether this server can run the Paper Dialog API at all: right platform, new enough,
