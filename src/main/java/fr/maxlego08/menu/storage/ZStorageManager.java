@@ -31,6 +31,7 @@ import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.utils.TypeSafeCache;
 import net.kyori.adventure.key.Key;
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -103,7 +104,7 @@ public class ZStorageManager implements StorageManager {
         KeyedRegistry<StorageProvider> registry = this.plugin.getInventoryManager().getRegistries().registry(Registries.STORAGE_PROVIDER);
         Optional<StorageProvider> optional = key == null ? Optional.empty() : registry.get(key);
         if (optional.isEmpty()) {
-            Logger.info("Unknown storage-type " + configuration.storageType() + ". Use SQLITE, MYSQL, MARIADB, NONE or the key of a storage registered by an addon.", Logger.LogType.ERROR);
+            Logger.info("Unknown storage-type " + configuration.storageType() + ". Use SQLITE, MYSQL, MARIADB, POSTGRESQL, REDIS, MONGODB, NONE or the key of a storage registered by an addon.", Logger.LogType.ERROR);
             Bukkit.getPluginManager().disablePlugin(this.plugin);
             return;
         }
@@ -161,7 +162,10 @@ public class ZStorageManager implements StorageManager {
 
     /**
      * Copies every zMenu data of the storage in use to another storage, opened with the settings of
-     * {@code config.yml} and the given {@code storage-type}. The buffered changes are written first.
+     * {@code config.yml} and the given {@code storage-type}. The values set in
+     * {@code migration-database-configuration} replace those of {@code database-configuration} for
+     * the target only, so a SQL database can be copied to another one on a different host or port.
+     * The buffered changes are written first.
      * Blocks until the copy is stored; call it off the main thread.
      *
      * @param storageType the target, such as {@code MYSQL} or {@code REDIS}
@@ -185,6 +189,14 @@ public class ZStorageManager implements StorageManager {
         targetConfiguration.loadFromString(this.plugin.getConfig().saveToString());
         targetConfiguration.set("storage-type", storageType.toUpperCase(Locale.ROOT));
         targetConfiguration.set("messaging-type", "NONE");
+        ConfigurationSection migrationDatabase = this.plugin.getConfig().getConfigurationSection("migration-database-configuration");
+        if (migrationDatabase != null) {
+            for (Map.Entry<String, Object> entry : migrationDatabase.getValues(true).entrySet()) {
+                if (!(entry.getValue() instanceof ConfigurationSection)) {
+                    targetConfiguration.set("database-configuration." + entry.getKey(), entry.getValue());
+                }
+            }
+        }
 
         target.open(new StorageContext(this.plugin, targetConfiguration, this.plugin.getDataFolder(), this.plugin.getLogger(), this.variableService.serverId())).join();
         try {

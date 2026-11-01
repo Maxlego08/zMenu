@@ -104,6 +104,17 @@ session-handoff-timeout: 3000
 # REDIS), set it here and restart once before running the command, so zMenu downloads it.
 migration-target: ""
 
+# The database /zm storage migrate copies to, when it is not the one of database-configuration below,
+# for example MariaDB to PostgreSQL. Each value set here replaces the same value of
+# database-configuration for the copy only. After the copy, move these values into
+# database-configuration, change storage-type and restart.
+#migration-database-configuration:
+#  host: 127.0.0.1
+#  port: 5432
+#  user: zmenu
+#  password: 'secret'
+#  database: zmenu
+
 # Configuration of your database, it is recommended to use the database to store your data.
 database-configuration:
   # The prefix that will be applied to all tables,
@@ -126,6 +137,11 @@ database-configuration:
   # A connection older than this is retired and replaced. 0 keeps connections until the pool closes.
   # Hikari requires at least 30 seconds. 1800 is 30 minutes, the same default used when this option is omitted.
   max-lifetime: 1800
+  # Extra driver properties sent with every MySQL, MariaDB or PostgreSQL connection. Examples:
+  #   useSSL: "true"                     - MySQL / MariaDB over TLS
+  #   allowPublicKeyRetrieval: "true"    - MySQL 8 without TLS ("Public Key Retrieval is not allowed")
+  #   sslmode: "disable"                 - PostgreSQL without TLS, or "require" to force it
+  properties: {}
 
 # Time in seconds for saving data in batches.
 # Instead of making an SQL query for each update, a single query will be executed every 10 seconds

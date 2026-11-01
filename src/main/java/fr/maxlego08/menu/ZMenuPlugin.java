@@ -235,6 +235,7 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
         this.preEnable();
 
         this.storageManager.loadDatabase();
+        if (!this.isEnabled()) return;
         this.addListener(this.storageManager);
 
 

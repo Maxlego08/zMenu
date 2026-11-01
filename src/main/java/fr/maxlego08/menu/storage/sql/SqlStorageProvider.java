@@ -42,6 +42,7 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
@@ -112,6 +113,9 @@ public final class SqlStorageProvider implements StorageProvider {
                 configuration.port(), configuration.host(), configuration.database(), configuration.debug(), type);
         if (configuration.maxLifetimeMillis() != null) {
             databaseConfiguration = databaseConfiguration.withMaxLifetime(configuration.maxLifetimeMillis());
+        }
+        for (Map.Entry<String, String> property : configuration.properties().entrySet()) {
+            databaseConfiguration = databaseConfiguration.withProperty(property.getKey(), property.getValue());
         }
 
         DatabaseConnection connection = type == DatabaseType.SQLITE

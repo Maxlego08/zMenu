@@ -15,6 +15,7 @@ import io.papermc.paper.command.brigadier.Commands;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 
+import java.sql.SQLException;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -62,12 +63,34 @@ public class CommandMenuStorageMigrate extends SubCommand<ZMenuPlugin> {
                 this.reply(sender, Message.STORAGE_MIGRATE_DONE, "%target%", target, "%variables%", result.variables(), "%inventories%", result.inventories(),
                         "%worlds%", result.worlds(), "%animations%", result.animations());
             } catch (Exception exception) {
-                Logger.error("Unable to copy the zMenu data to " + target, exception);
                 Throwable cause = exception.getCause() != null ? exception.getCause() : exception;
+                Throwable root = rootCause(exception);
+                if (hasDatabaseError(exception)) {
+                    Logger.error("Unable to copy the zMenu data to " + target + ": " + root.getClass().getSimpleName() + ": " + root.getMessage());
+                } else {
+                    Logger.error("Unable to copy the zMenu data to " + target, exception);
+                }
                 this.reply(sender, Message.STORAGE_MIGRATE_ERROR, "%target%", target, "%error%", String.valueOf(cause.getMessage()));
             }
         });
         return CommandResultType.SUCCESS;
+    }
+
+    /**
+     * Whether a database driver error caused the failure. The connection pool already logs it with
+     * its stack trace, so only the message of its deepest cause is logged again.
+     */
+    private static boolean hasDatabaseError(Throwable throwable) {
+        for (Throwable cause = throwable; cause != null; cause = cause.getCause() == cause ? null : cause.getCause()) {
+            if (cause instanceof SQLException) return true;
+        }
+        return false;
+    }
+
+    private static Throwable rootCause(Throwable throwable) {
+        Throwable root = throwable;
+        while (root.getCause() != null && root.getCause() != root) root = root.getCause();
+        return root;
     }
 
     private void reply(CommandSender sender, Message message, Object... args) {

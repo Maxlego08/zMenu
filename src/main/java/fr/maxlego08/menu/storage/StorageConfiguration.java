@@ -11,6 +11,8 @@ import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -41,11 +43,14 @@ import java.util.concurrent.TimeUnit;
  * @param pollIntervalMillis {@code messaging-poll-interval}: how often the event table is read
  * @param handoffTimeoutMillis {@code session-handoff-timeout}: how long a joining player waits for
  *                           the server they left to store their data
+ * @param properties         {@code database-configuration.properties}: driver properties sent with
+ *                           every MySQL, MariaDB or PostgreSQL connection, such as {@code sslmode}
  */
 public record StorageConfiguration(@NotNull String storageType, @NotNull String tablePrefix, @NotNull String host, int port,
                                    @NotNull String user, @NotNull String password, @NotNull String database, boolean debug,
                                    @Nullable Long maxLifetimeMillis, int batchSeconds, @NotNull String serverId,
-                                   @NotNull String messagingType, long pollIntervalMillis, long handoffTimeoutMillis) {
+                                   @NotNull String messagingType, long pollIntervalMillis, long handoffTimeoutMillis,
+                                   @NotNull Map<String, String> properties) {
 
     private static final String SERVER_ID_FILE = "server-id.txt";
     private static final int MAX_SERVER_ID_LENGTH = 64;
@@ -102,8 +107,26 @@ public record StorageConfiguration(@NotNull String storageType, @NotNull String 
                 configuration.getString("server-id", ""),
                 configuration.getString("messaging-type", "AUTO"),
                 Math.max(250L, (long) (configuration.getDouble("messaging-poll-interval", 2) * 1000)),
-                Math.max(0L, configuration.getLong("session-handoff-timeout", 3000))
+                Math.max(0L, configuration.getLong("session-handoff-timeout", 3000)),
+                properties(configuration, shared)
         );
+    }
+
+    /**
+     * Reads {@code database-configuration.properties}. Unlike the other values, the two files are
+     * merged key by key, a property of the shared file replacing the same one of {@code config.yml}.
+     */
+    private static Map<String, String> properties(ConfigurationSection configuration, ConfigurationSection shared) {
+        Map<String, String> properties = new LinkedHashMap<>();
+        for (ConfigurationSection source : new ConfigurationSection[]{configuration, shared}) {
+            ConfigurationSection section = source == null ? null : source.getConfigurationSection(SECTION + "properties");
+            if (section == null) continue;
+            for (String key : section.getKeys(false)) {
+                Object value = section.get(key);
+                if (value != null && !section.isConfigurationSection(key)) properties.put(key, String.valueOf(value));
+            }
+        }
+        return Map.copyOf(properties);
     }
 
     private static String text(ConfigurationSection configuration, ConfigurationSection shared, String key, String fallback) {
