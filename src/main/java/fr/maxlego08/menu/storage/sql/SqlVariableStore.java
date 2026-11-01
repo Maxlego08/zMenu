@@ -13,12 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.sql.SQLTransactionRollbackException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Supplier;
@@ -77,7 +72,7 @@ final class SqlVariableStore implements VariableStore {
      * it if another server inserted the row in the meantime.</p>
      */
     private static void increment(RequestHelper helper, VariableRef ref, BigDecimal delta, long expiresAtIfCreated) {
-        int updated = helper.update(Tables.VARIABLES, table -> {
+        int updated = helper.updateAndCount(Tables.VARIABLES, table -> {
             table.expression("number_value", "COALESCE(`number_value`, 0) + ?", delta);
             table.object("text_value", null);
             table.expression("version", "`version` + 1");

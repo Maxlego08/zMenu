@@ -21,7 +21,7 @@ adventure-api = "4.26.1"
 adventure-text-minimessage = "4.26.1"
 
 # Utilities / Libraries
-sarah = "1.27-local"
+sarah = "1.27"
 currenciesapi = "1.0.15"
 folialib = "0.5.1"
 xseries = "13.8.0"

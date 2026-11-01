@@ -135,7 +135,7 @@ public final class SqlStorageProvider implements StorageProvider {
         MigrationManager.setDatabaseConfiguration(connection.getDatabaseConfiguration());
         MigrationManager.execute(connection, logger);
 
-        RequestHelper requestHelper = new RequestHelper(connection, logger);
+        RequestHelper requestHelper = new RequestHelper(connection, logger).setStrictReads(true);
         try {
             int copied = copyLegacyPlayerData(requestHelper);
             if (copied > 0) context.logger().info("Copied " + copied + " player data values to the variables table.");
