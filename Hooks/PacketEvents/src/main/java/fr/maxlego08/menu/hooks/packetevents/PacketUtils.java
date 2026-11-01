@@ -3,6 +3,7 @@ package fr.maxlego08.menu.hooks.packetevents;
 import com.github.retrooper.packetevents.PacketEvents;
 import com.github.retrooper.packetevents.PacketEventsAPI;
 import com.github.retrooper.packetevents.event.EventManager;
+import com.github.retrooper.packetevents.event.PacketListenerCommon;
 import com.github.retrooper.packetevents.event.PacketListenerPriority;
 import com.github.retrooper.packetevents.manager.player.PlayerManager;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerOpenWindow;
@@ -27,6 +28,8 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -36,6 +39,7 @@ public class PacketUtils implements InventoryListener, PacketManager {
     private PacketAnimationListener packetAnimationListener;
     private PacketTitleListener packetTitleListener;
     private PacketEventClickLimiterListener packetEventClickLimiterListener;
+    private final List<PacketListenerCommon> registeredListeners = new ArrayList<>();
 
     public static final Map<UUID, FakeInventory> fakeContents = new ConcurrentHashMap<>();
     private final MenuPlugin plugin;
@@ -87,11 +91,11 @@ public class PacketUtils implements InventoryListener, PacketManager {
         }
 
         EventManager eventManager = this.api().getEventManager();
-        eventManager.registerListener(this.packetAnimationListener = new PacketAnimationListener(this.plugin), PacketListenerPriority.LOW);
-        eventManager.registerListener(this.packetTitleListener = new PacketTitleListener(), PacketListenerPriority.LOW);
+        this.registeredListeners.add(eventManager.registerListener(this.packetAnimationListener = new PacketAnimationListener(this.plugin), PacketListenerPriority.LOW));
+        this.registeredListeners.add(eventManager.registerListener(this.packetTitleListener = new PacketTitleListener(), PacketListenerPriority.LOW));
         if (Configuration.enablePacketEventClickLimiter){
             this.packetEventClickLimiterListener = new PacketEventClickLimiterListener(this.plugin);
-            eventManager.registerListener(this.packetEventClickLimiterListener, PacketListenerPriority.HIGH);
+            this.registeredListeners.add(eventManager.registerListener(this.packetEventClickLimiterListener, PacketListenerPriority.HIGH));
         }
 
         this.ready = true;
@@ -109,9 +113,24 @@ public class PacketUtils implements InventoryListener, PacketManager {
     public void onDisable() {
         this.ready = false;
         fakeContents.clear();
+        this.unregisterListeners();
         if (this.ownsApi && PacketEvents.getAPI() != null) {
             this.api().terminate();
         }
+    }
+
+    /**
+     * Removes zMenu's listeners from packetevents. packetevents outlives zMenu when it is a plugin
+     * of its own, and would otherwise keep calling classes of a disabled zMenu, whose jar is closed.
+     */
+    @SuppressWarnings("ConstantConditions")
+    private void unregisterListeners() {
+        if (this.registeredListeners.isEmpty()) return;
+        PacketEventsAPI<?> api = PacketEvents.getAPI();
+        if (api != null) {
+            api.getEventManager().unregisterListeners(this.registeredListeners.toArray(new PacketListenerCommon[0]));
+        }
+        this.registeredListeners.clear();
     }
 
     @Override
