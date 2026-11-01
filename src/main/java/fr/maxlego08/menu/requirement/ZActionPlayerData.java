@@ -145,13 +145,7 @@ public class ZActionPlayerData extends ZUtils implements ActionPlayerData {
     @Override
     public void execute(@NonNull Player player, @NonNull DataManager dataManager, @NonNull Placeholders placeholders) {
         VariableService variables = this.plugin.getVariableService();
-        String name = this.papi(this.key, player, false);
-        String owner = switch (this.scope) {
-            case PLAYER -> player.getUniqueId().toString();
-            case SERVER -> variables.serverId();
-            case GLOBAL -> VariableRef.GLOBAL_OWNER;
-        };
-        VariableRef ref = new VariableRef(this.scope, owner, name);
+        VariableRef ref = variables.ref(this.scope, player.getUniqueId(), this.papi(this.key, player, false));
 
         switch (this.type) {
             case REMOVE -> variables.delete(ref);

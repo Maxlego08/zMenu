@@ -130,6 +130,25 @@ abstract class StorageProviderContractTest {
     }
 
     @Test
+    void anIncrementRestartsAnExpiredValue() {
+        long later = 4_102_444_800_000L;
+        VariableRef global = VariableRef.global("streak");
+        VariableRef boost = player(PLAYER, "boost");
+        this.provider.variables().apply(List.of(set(global, "10", 1_000L), set(boost, "7", 1_000L))).join();
+
+        assertEquals(0, BigDecimal.ONE.compareTo(this.provider.variables().incrementAndGet(global, BigDecimal.ONE, later).join()));
+        this.provider.variables().apply(List.of(new VariableMutation.Increment(boost, BigDecimal.valueOf(2), later))).join();
+
+        Variable streak = this.owner(VariableScope.GLOBAL, VariableRef.GLOBAL_OWNER).get("streak");
+        assertEquals("1", streak.text());
+        assertEquals(later, streak.expiresAt());
+        Variable restarted = this.player(PLAYER).get("boost");
+        assertEquals("2", restarted.text());
+        assertEquals(later, restarted.expiresAt());
+        assertEquals(Set.of("boost"), this.provider.variables().names(VariableScope.PLAYER).join());
+    }
+
+    @Test
     void parallelIncrementsAllCount() {
         VariableRef ref = VariableRef.global("counter");
         List<CompletableFuture<BigDecimal>> futures = new ArrayList<>();

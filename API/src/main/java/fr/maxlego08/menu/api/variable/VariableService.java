@@ -9,6 +9,7 @@ import java.time.Duration;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -30,6 +31,21 @@ public interface VariableService {
      */
     @NotNull
     String serverId();
+
+    /**
+     * @param playerId the player, needed for {@link VariableScope#PLAYER} only
+     * @return the owner of a scope: the given player, this server, or everyone
+     * @throws IllegalArgumentException when a player variable is asked for without a player
+     */
+    @NotNull
+    String ownerOf(@NotNull VariableScope scope, @Nullable UUID playerId);
+
+    /**
+     * @param playerId the player, needed for {@link VariableScope#PLAYER} only
+     * @return the variable of a name in a scope, owned as {@link #ownerOf(VariableScope, UUID)} says
+     */
+    @NotNull
+    VariableRef ref(@NotNull VariableScope scope, @Nullable UUID playerId, @NotNull String name);
 
     /**
      * @return the variable, if its owner is in memory and it has not expired

@@ -85,10 +85,24 @@ public record StorageConfiguration(@NotNull String storageType, @NotNull String 
     private static final String SECTION = "database-configuration.";
     private static final String SHARED_FILE = "database-configuration.yml";
 
+    /**
+     * Set to false in a configuration built for {@code /zm storage migrate}, whose
+     * {@code database-configuration} already holds the values of the shared file and the
+     * migration target, so the shared file must not replace them again.
+     */
+    public static final String USE_SHARED_FILE = SECTION + "use-shared-file";
+
     public static @NotNull StorageConfiguration read(@NotNull ConfigurationSection configuration) {
+        return read(configuration, configuration.getBoolean(USE_SHARED_FILE, true) ? sharedFile() : null);
+    }
+
+    /**
+     * @return the {@code database-configuration.yml} file of the server folder, or null when there
+     * is none
+     */
+    public static @Nullable ConfigurationSection sharedFile() {
         File sharedFile = new File(SHARED_FILE);
-        ConfigurationSection shared = sharedFile.exists() ? YamlConfiguration.loadConfiguration(sharedFile) : null;
-        return read(configuration, shared);
+        return sharedFile.exists() ? YamlConfiguration.loadConfiguration(sharedFile) : null;
     }
 
     static @NotNull StorageConfiguration read(@NotNull ConfigurationSection configuration, @Nullable ConfigurationSection shared) {

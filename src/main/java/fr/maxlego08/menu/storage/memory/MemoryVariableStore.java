@@ -29,6 +29,7 @@ final class MemoryVariableStore implements VariableStore {
 
     private BigDecimal increment(VariableRef ref, BigDecimal delta, long expiresAtIfCreated) {
         Variable current = this.variables.get(ref);
+        if (current != null && current.isExpired()) current = null;
         BigDecimal base = current == null || current.number() == null ? BigDecimal.ZERO : current.number();
         long expiresAt = current == null ? expiresAtIfCreated : current.expiresAt();
         BigDecimal value = base.add(delta);

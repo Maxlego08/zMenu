@@ -80,9 +80,11 @@ final class MongoVariableStore implements VariableStore {
     /**
      * Adds to the number with {@code $inc}, which MongoDB applies atomically. A text has no
      * {@code number} field, so it starts from 0 and the text is removed; an existing document
-     * keeps its expiry time.
+     * keeps its expiry time. An expired document not purged yet is deleted first, so the amount
+     * starts from 0 with the new expiry time.
      */
     private BigDecimal increment(VariableRef ref, BigDecimal delta, long expiresAtIfCreated) {
+        this.collection().deleteOne(Filters.and(Filters.eq("_id", id(ref)), Filters.gt("expiresAt", 0L), Filters.lt("expiresAt", System.currentTimeMillis())));
         Document document = this.collection().findOneAndUpdate(Filters.eq("_id", id(ref)), Updates.combine(
                 Updates.inc("number", new Decimal128(delta)),
                 Updates.unset("text"),

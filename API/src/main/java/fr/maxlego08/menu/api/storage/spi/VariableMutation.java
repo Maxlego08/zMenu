@@ -32,7 +32,8 @@ public sealed interface VariableMutation {
      *
      * @param delta              the amount, negative to subtract
      * @param expiresAtIfCreated the expiry time of a value this creates, 0 for never; an existing
-     *                           value keeps its own
+     *                           value keeps its own; an expired value is replaced, as if it did
+     *                           not exist
      */
     record Increment(@NotNull VariableRef ref, @NotNull BigDecimal delta, long expiresAtIfCreated) implements VariableMutation {
     }

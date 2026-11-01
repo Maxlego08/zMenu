@@ -178,6 +178,16 @@ public class ZInventoriesPlayer implements InventoriesPlayer {
         }
     }
 
+    /**
+     * Forgets the inventory read for a login another listener refused. It stays saved in the
+     * database for the next login.
+     */
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onPreLoginResult(AsyncPlayerPreLoginEvent event) {
+        if (event.getLoginResult() == AsyncPlayerPreLoginEvent.Result.ALLOWED || Bukkit.getPlayer(event.getUniqueId()) != null) return;
+        this.inventories.remove(event.getUniqueId());
+    }
+
     private ZInventoryPlayer decode(String encoded) {
         ZInventoryPlayer inventoryPlayer = new ZInventoryPlayer(this.plugin);
         for (String serializedItem : encoded.split(";")) {

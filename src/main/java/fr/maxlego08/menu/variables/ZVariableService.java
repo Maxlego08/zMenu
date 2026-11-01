@@ -61,6 +61,8 @@ public class ZVariableService implements VariableService, Listener {
     private static final long HEARTBEAT_SECONDS = 10;
     private static final long STALE_MILLIS = TimeUnit.SECONDS.toMillis(30);
     private static final long HANDOFF_POLL_MILLIS = 250;
+    private static final long JOIN_TIMEOUT_SECONDS = 60;
+    private static final long LOCAL_WRITES_TTL_MILLIS = TimeUnit.MINUTES.toMillis(1);
 
     private final MenuPlugin plugin;
     private final VariableStore store;
@@ -84,6 +86,12 @@ public class ZVariableService implements VariableService, Listener {
      * overtaken by changes another thread took out of {@link #pending} just before it.
      */
     private final Object writeLock = new Object();
+
+    /**
+     * The writes of this server handed to the store, per variable, guarded by {@link #writeLock}.
+     * A value read for another server's change is only kept if none of them ran meanwhile.
+     */
+    private final Map<VariableRef, LocalWrites> localWrites = new ConcurrentHashMap<>();
 
     /**
      * @param broker               carries changes between servers, or null on a single server
@@ -197,17 +205,7 @@ public class ZVariableService implements VariableService, Listener {
     void onEvent(@NotNull StorageEvent event) {
         if (event.origin().equals(this.serverId)) return;
         switch (event) {
-            case StorageEvent.VariableChanged changed -> {
-                VariableRef ref = changed.ref();
-                if (!this.isLoaded(ref.scope(), ref.owner())) return;
-                this.store.load(ref).whenComplete((loaded, throwable) -> {
-                    if (throwable != null) {
-                        Logger.error("Unable to read the variable " + ref.name() + " changed by " + event.origin(), throwable);
-                        return;
-                    }
-                    this.applyRemote(ref, loaded.orElse(null));
-                });
-            }
+            case StorageEvent.VariableChanged changed -> this.refresh(changed.ref());
             case StorageEvent.NameCleared cleared -> this.owners.forEach((key, cache) -> {
                 if (key.scope() == cleared.scope()) this.removeUnlessPending(cache, new VariableRef(key.scope(), key.owner(), cleared.name()));
             });
@@ -225,21 +223,119 @@ public class ZVariableService implements VariableService, Listener {
         }
     }
 
-    private void applyRemote(VariableRef ref, @Nullable Variable loaded) {
-        OwnerCache cache = this.owners.get(new OwnerKey(ref.scope(), ref.owner()));
-        if (cache == null) return;
-        synchronized (cache) {
-            VariableMutation waiting = this.pending.get(ref);
-            if (waiting instanceof VariableMutation.Increment increment) {
-                long expiresAt = loaded == null ? increment.expiresAtIfCreated() : loaded.expiresAt();
-                cache.values.put(ref.name(), Variable.ofNumber(ref, base(loaded).add(increment.delta()), expiresAt));
-            } else if (waiting == null) {
-                if (loaded == null) cache.values.remove(ref.name());
-                else {
-                    cache.values.put(ref.name(), loaded);
-                    this.names.get(ref.scope()).add(ref.name());
+    /**
+     * Reads a variable again after another server changed it.
+     *
+     * <p>While a write of this server to the same variable is not stored yet, the read waits for
+     * it: a value read before that write is stored would lack it, and this server is not told
+     * about its own changes. A read during which such a write ran is made again.</p>
+     */
+    void refresh(@NotNull VariableRef ref) {
+        if (!this.isLoaded(ref.scope(), ref.owner())) return;
+        long changes;
+        synchronized (this.writeLock) {
+            LocalWrites writes = this.localWrites.get(ref);
+            if (writes != null && writes.running > 0) {
+                writes.stale = true;
+                return;
+            }
+            changes = writes == null ? 0 : writes.changes;
+        }
+        this.store.load(ref).whenComplete((loaded, throwable) -> {
+            if (throwable != null) {
+                Logger.error("Unable to read the variable " + ref.name() + " changed by another server", throwable);
+                return;
+            }
+            if (!this.applyRemote(ref, loaded.orElse(null), changes)) this.refresh(ref);
+        });
+    }
+
+    /**
+     * @param changes how many local writes of the variable had started or ended when the value
+     *                was read
+     * @return false when a local write ran since, so the value must be read again
+     */
+    private boolean applyRemote(VariableRef ref, @Nullable Variable loaded, long changes) {
+        synchronized (this.writeLock) {
+            LocalWrites writes = this.localWrites.get(ref);
+            if (writes != null && writes.running > 0) {
+                writes.stale = true;
+                return true;
+            }
+            if ((writes == null ? 0 : writes.changes) != changes) return false;
+
+            OwnerCache cache = this.owners.get(new OwnerKey(ref.scope(), ref.owner()));
+            if (cache == null) return true;
+            synchronized (cache) {
+                VariableMutation waiting = this.pending.get(ref);
+                if (waiting instanceof VariableMutation.Increment increment) {
+                    cache.values.put(ref.name(), withIncrement(ref, loaded, increment));
+                } else if (waiting == null) {
+                    if (loaded == null) cache.values.remove(ref.name());
+                    else {
+                        cache.values.put(ref.name(), loaded);
+                        this.names.get(ref.scope()).add(ref.name());
+                    }
                 }
             }
+            return true;
+        }
+    }
+
+    /**
+     * @return a stored value with an addition not stored yet laid over it; an expired value counts
+     * as missing, as it does for the store
+     */
+    private static Variable withIncrement(VariableRef ref, @Nullable Variable stored, VariableMutation.Increment increment) {
+        Variable current = stored == null || stored.isExpired() ? null : stored;
+        long expiresAt = current == null ? increment.expiresAtIfCreated() : current.expiresAt();
+        return Variable.ofNumber(ref, base(current).add(increment.delta()), expiresAt);
+    }
+
+    /**
+     * Records writes handed to the store. Called with {@link #writeLock} held.
+     */
+    private void beginWrites(Collection<VariableRef> refs) {
+        long now = System.currentTimeMillis();
+        for (VariableRef ref : refs) {
+            LocalWrites writes = this.localWrites.computeIfAbsent(ref, key -> new LocalWrites());
+            writes.running++;
+            writes.changes++;
+            writes.touchedAt = now;
+        }
+    }
+
+    /**
+     * Records writes the store finished, stored or not, and reads again the variables another
+     * server changed meanwhile.
+     */
+    private void endWrites(Collection<VariableRef> refs) {
+        List<VariableRef> stale = new ArrayList<>();
+        synchronized (this.writeLock) {
+            long now = System.currentTimeMillis();
+            for (VariableRef ref : refs) {
+                LocalWrites writes = this.localWrites.get(ref);
+                if (writes == null) continue;
+                writes.running--;
+                writes.changes++;
+                writes.touchedAt = now;
+                if (writes.running == 0 && writes.stale) {
+                    writes.stale = false;
+                    stale.add(ref);
+                }
+            }
+        }
+        stale.forEach(this::refresh);
+    }
+
+    /**
+     * Forgets the variables without a local write for {@link #LOCAL_WRITES_TTL_MILLIS}, far longer
+     * than a read takes.
+     */
+    private void forgetLocalWrites() {
+        long limit = System.currentTimeMillis() - LOCAL_WRITES_TTL_MILLIS;
+        synchronized (this.writeLock) {
+            this.localWrites.values().removeIf(writes -> writes.running == 0 && writes.touchedAt < limit);
         }
     }
 
@@ -331,13 +427,17 @@ public class ZVariableService implements VariableService, Listener {
         if (mutations.isEmpty()) return CompletableFuture.completedFuture(null);
         List<VariableRef> refs = new ArrayList<>(mutations.size());
         mutations.forEach(mutation -> refs.add(mutation.ref()));
-        return this.logFailure(this.store.apply(mutations), "write the variables").thenRun(() -> this.publishChanged(refs));
+        this.beginWrites(refs);
+        return this.logFailure(this.store.apply(mutations), "write the variables")
+                .whenComplete((ignored, throwable) -> this.endWrites(refs))
+                .thenRun(() -> this.publishChanged(refs));
     }
 
     /**
      * @return the owner of a scope: the given player for {@link VariableScope#PLAYER}, this server
      * for {@link VariableScope#SERVER}, everyone for {@link VariableScope#GLOBAL}
      */
+    @Override
     public @NotNull String ownerOf(@NotNull VariableScope scope, @Nullable UUID playerId) {
         return switch (scope) {
             case PLAYER -> {
@@ -349,6 +449,7 @@ public class ZVariableService implements VariableService, Listener {
         };
     }
 
+    @Override
     public @NotNull VariableRef ref(@NotNull VariableScope scope, @Nullable UUID playerId, @NotNull String name) {
         return new VariableRef(scope, this.ownerOf(scope, playerId), name);
     }
@@ -449,7 +550,7 @@ public class ZVariableService implements VariableService, Listener {
                     this.names.get(scope).add(variable.ref().name());
                     VariableMutation waiting = this.pending.get(variable.ref());
                     if (waiting instanceof VariableMutation.Increment increment) {
-                        cache.values.put(variable.ref().name(), Variable.ofNumber(variable.ref(), base(variable).add(increment.delta()), variable.expiresAt()));
+                        cache.values.put(variable.ref().name(), withIncrement(variable.ref(), variable, increment));
                     } else if (waiting == null) {
                         cache.values.putIfAbsent(variable.ref().name(), variable);
                     }
@@ -501,22 +602,27 @@ public class ZVariableService implements VariableService, Listener {
             synchronized (this.writeLock) {
                 this.pending.merge(ref, increment, ZVariableService::merge);
             }
-            if (!cache.loaded) this.load(ref.scope(), ref.owner());
-            return CompletableFuture.completedFuture(updated.number());
+            if (cache.loaded) return CompletableFuture.completedFuture(updated.number());
+            return this.loadInBackground(ref.scope(), ref.owner())
+                    .thenApply(loaded -> this.getCached(ref).map(Variable::number).orElse(updated.number()));
         }
 
         CompletableFuture<BigDecimal> result;
+        List<VariableRef> refs = List.of(ref);
         synchronized (this.writeLock) {
+            this.beginWrites(refs);
             result = this.store.incrementAndGet(ref, delta, expiresAtIfCreated);
         }
         return result.whenComplete((value, throwable) -> {
             if (throwable != null) {
                 Logger.error("Unable to add to the variable " + ref.name(), throwable);
+                this.endWrites(refs);
                 return;
             }
             Variable stored = Variable.ofNumber(ref, value, cache.values.getOrDefault(ref.name(), updated).expiresAt());
             cache.values.put(ref.name(), stored);
-            this.publishChanged(List.of(ref));
+            this.endWrites(refs);
+            this.publishChanged(refs);
         });
     }
 
@@ -525,6 +631,14 @@ public class ZVariableService implements VariableService, Listener {
         OwnerCache cache = this.owners.get(new OwnerKey(ref.scope(), ref.owner()));
         if (cache != null) cache.values.remove(ref.name());
         this.write(new VariableMutation.Delete(ref));
+    }
+
+    /**
+     * Reads an owner unless it is in memory, logging a failure. Player changes of an owner not
+     * read yet stay buffered until the read completes.
+     */
+    private CompletableFuture<Collection<Variable>> loadInBackground(VariableScope scope, String owner) {
+        return this.logFailure(this.load(scope, owner), "load the " + scope.id() + " variables of " + owner);
     }
 
     /**
@@ -541,15 +655,20 @@ public class ZVariableService implements VariableService, Listener {
 
     /**
      * Player changes wait for the next batch; server and global changes are written at once.
+     *
+     * <p>A batch only takes the changes of players whose variables are read, so the variables of
+     * an offline player are read here, otherwise their change would wait until zMenu stops.</p>
      */
     private void write(VariableMutation mutation) {
+        VariableRef ref = mutation.ref();
         synchronized (this.writeLock) {
-            if (mutation.ref().scope() == VariableScope.PLAYER) {
-                this.pending.merge(mutation.ref(), mutation, ZVariableService::merge);
+            if (ref.scope() != VariableScope.PLAYER) {
+                this.applyAndPublish(List.of(mutation));
                 return;
             }
-            this.applyAndPublish(List.of(mutation));
+            this.pending.merge(ref, mutation, ZVariableService::merge);
         }
+        if (!this.isLoaded(ref.scope(), ref.owner())) this.loadInBackground(ref.scope(), ref.owner());
     }
 
     /**
@@ -653,14 +772,42 @@ public class ZVariableService implements VariableService, Listener {
             String message = Message.PLAYERS_DATA_LOAD_ERROR.getMessage();
             Component reason = this.plugin.getMetaUpdater() instanceof PaperMetaUpdater paperMetaUpdater ? paperMetaUpdater.getComponent(message) : Component.text(message);
             event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, reason);
+            return;
         }
+
+        if (this.sessions != null) {
+            UUID playerId = event.getUniqueId();
+            this.plugin.getScheduler().runLaterAsync(() -> this.releaseIfAbsent(playerId), JOIN_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+        }
+    }
+
+    /**
+     * Releases the session claimed for a login another listener refused, so the next server the
+     * player joins does not wait for this one.
+     */
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onPreLoginResult(AsyncPlayerPreLoginEvent event) {
+        if (event.getLoginResult() != AsyncPlayerPreLoginEvent.Result.ALLOWED) this.releaseIfAbsent(event.getUniqueId());
+    }
+
+    /**
+     * Releases a session claimed for a login that never ended in a join, such as a player turned
+     * away by a ban or the whitelist after the pre-login. A player who joins later claims it again.
+     */
+    void releaseIfAbsent(@NotNull UUID playerId) {
+        if (this.sessions == null || Bukkit.getPlayer(playerId) != null) return;
+        OwnerCache cache = this.owners.get(new OwnerKey(VariableScope.PLAYER, playerId.toString()));
+        if (cache != null && cache.online) return;
+        this.releasePlayer(playerId);
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onJoin(PlayerJoinEvent event) {
-        String owner = event.getPlayer().getUniqueId().toString();
+        UUID playerId = event.getPlayer().getUniqueId();
+        String owner = playerId.toString();
         this.cache(VariableScope.PLAYER, owner).setOnline(true);
         this.load(VariableScope.PLAYER, owner);
+        if (this.sessions != null) this.logFailure(this.sessions.claim(playerId, this.serverId, System.currentTimeMillis()), "claim the session of " + playerId);
     }
 
     /**
@@ -686,6 +833,7 @@ public class ZVariableService implements VariableService, Listener {
             OwnerCache cache = entry.getValue();
             return key.scope() == VariableScope.PLAYER && !cache.online && cache.lastAccess < limit && !this.hasPending(key.scope(), key.owner());
         });
+        this.forgetLocalWrites();
     }
 
     private void purgeExpired() {
@@ -713,6 +861,14 @@ public class ZVariableService implements VariableService, Listener {
     }
 
     private record OwnerKey(VariableScope scope, String owner) {
+    }
+
+    private static final class LocalWrites {
+
+        private int running;
+        private long changes;
+        private long touchedAt;
+        private boolean stale;
     }
 
     private static final class OwnerCache {

@@ -69,9 +69,17 @@ final class SqlVariableStore implements VariableStore {
      *
      * <p>An existing row is updated with {@code COALESCE(number_value, 0) + ?}, so a text value
      * that is not a number counts as 0. When there is no row, an upsert inserts the amount, or adds
-     * it if another server inserted the row in the meantime.</p>
+     * it if another server inserted the row in the meantime. An expired row not purged yet is
+     * deleted first, so the amount starts from 0 with the new expiry time.</p>
      */
     private static void increment(RequestHelper helper, VariableRef ref, BigDecimal delta, long expiresAtIfCreated) {
+        long now = System.currentTimeMillis();
+        helper.delete(Tables.VARIABLES, table -> {
+            whereRef(table, ref);
+            table.where("expires_at", ">", 0);
+            table.where("expires_at", "<", now);
+        });
+
         int updated = helper.updateAndCount(Tables.VARIABLES, table -> {
             table.expression("number_value", "COALESCE(`number_value`, 0) + ?", delta);
             table.object("text_value", null);

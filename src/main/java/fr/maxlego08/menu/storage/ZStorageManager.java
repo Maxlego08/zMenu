@@ -29,9 +29,11 @@ import fr.maxlego08.menu.storage.sql.SqlStorageProvider;
 import fr.maxlego08.menu.variables.ZVariableService;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.utils.TypeSafeCache;
+import fr.maxlego08.sarah.database.DatabaseType;
 import net.kyori.adventure.key.Key;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -175,28 +177,15 @@ public class ZStorageManager implements StorageManager {
     public StorageMigration.@NonNull Result migrateTo(@NonNull String storageType, @NonNull Consumer<String> progress) throws Exception {
         if (!this.isEnable()) throw new IllegalStateException("The storage is not open");
 
-        StorageConfiguration configuration = StorageConfiguration.read(this.plugin.getConfig());
-        if (configuration.storageType().equalsIgnoreCase(storageType)) {
-            throw new IllegalArgumentException("storage-type is already " + configuration.storageType());
-        }
         Key key = providerKey(storageType);
+        YamlConfiguration targetConfiguration = this.migrationConfiguration(storageType);
+        if (key != null && this.isStorageInUse(key, targetConfiguration)) {
+            throw new IllegalArgumentException("storage-type " + storageType + " is the storage in use");
+        }
         StorageProvider target = key == null ? null : this.newProvider(key);
         if (target == null) throw new IllegalArgumentException("Unknown storage " + storageType);
 
         this.flush();
-
-        YamlConfiguration targetConfiguration = new YamlConfiguration();
-        targetConfiguration.loadFromString(this.plugin.getConfig().saveToString());
-        targetConfiguration.set("storage-type", storageType.toUpperCase(Locale.ROOT));
-        targetConfiguration.set("messaging-type", "NONE");
-        ConfigurationSection migrationDatabase = this.plugin.getConfig().getConfigurationSection("migration-database-configuration");
-        if (migrationDatabase != null) {
-            for (Map.Entry<String, Object> entry : migrationDatabase.getValues(true).entrySet()) {
-                if (!(entry.getValue() instanceof ConfigurationSection)) {
-                    targetConfiguration.set("database-configuration." + entry.getKey(), entry.getValue());
-                }
-            }
-        }
 
         target.open(new StorageContext(this.plugin, targetConfiguration, this.plugin.getDataFolder(), this.plugin.getLogger(), this.variableService.serverId())).join();
         try {
@@ -204,6 +193,54 @@ public class ZStorageManager implements StorageManager {
         } finally {
             target.close().join();
         }
+    }
+
+    /**
+     * The settings a migration target is opened with: those of {@code config.yml}, then the
+     * values of the shared {@code database-configuration.yml}, then those of
+     * {@code migration-database-configuration}. The shared file is not read again when the target
+     * opens, so it cannot replace the migration values.
+     */
+    private YamlConfiguration migrationConfiguration(String storageType) throws InvalidConfigurationException {
+        YamlConfiguration configuration = new YamlConfiguration();
+        configuration.loadFromString(this.plugin.getConfig().saveToString());
+        configuration.set("storage-type", storageType.toUpperCase(Locale.ROOT));
+        configuration.set("messaging-type", "NONE");
+
+        ConfigurationSection shared = StorageConfiguration.sharedFile();
+        copyValues(shared == null ? null : shared.getConfigurationSection("database-configuration"), configuration);
+        copyValues(this.plugin.getConfig().getConfigurationSection("migration-database-configuration"), configuration);
+        configuration.set(StorageConfiguration.USE_SHARED_FILE, false);
+        return configuration;
+    }
+
+    private static void copyValues(@Nullable ConfigurationSection source, ConfigurationSection target) {
+        if (source == null) return;
+        for (Map.Entry<String, Object> entry : source.getValues(true).entrySet()) {
+            if (!(entry.getValue() instanceof ConfigurationSection)) {
+                target.set("database-configuration." + entry.getKey(), entry.getValue());
+            }
+        }
+    }
+
+    /**
+     * Whether a migration target is the storage in use. A built-in provider other than SQL keeps
+     * its connection settings outside {@code database-configuration}, so the same provider is the
+     * same storage. Two SQL storages are the same when they are the same kind of server (MySQL and
+     * MariaDB are one kind) at the same address, with the same database and table prefix.
+     */
+    private boolean isStorageInUse(Key key, ConfigurationSection targetConfiguration) {
+        if (!key.equals(this.provider.key())) return false;
+        if (!key.equals(ZMenuKeys.key("sql"))) return true;
+
+        StorageConfiguration source = StorageConfiguration.read(this.plugin.getConfig());
+        StorageConfiguration target = StorageConfiguration.read(targetConfiguration);
+        DatabaseType sourceType = SqlStorageProvider.databaseType(source.storageType());
+        DatabaseType targetType = SqlStorageProvider.databaseType(target.storageType());
+        if (!source.tablePrefix().equals(target.tablePrefix())) return false;
+        if (sourceType == DatabaseType.SQLITE || targetType == DatabaseType.SQLITE) return sourceType == targetType;
+        boolean sameKind = sourceType == targetType || (sourceType != DatabaseType.POSTGRESQL && targetType != DatabaseType.POSTGRESQL);
+        return sameKind && source.host().equalsIgnoreCase(target.host()) && source.port() == target.port() && source.database().equals(target.database());
     }
 
     /**

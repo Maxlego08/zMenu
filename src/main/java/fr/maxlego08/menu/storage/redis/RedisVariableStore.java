@@ -6,6 +6,7 @@ import fr.maxlego08.menu.api.variable.Variable;
 import fr.maxlego08.menu.api.variable.VariableRef;
 import fr.maxlego08.menu.api.variable.VariableScope;
 import org.jetbrains.annotations.NotNull;
+import redis.clients.jedis.PipelineBase;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -31,6 +32,8 @@ import java.util.concurrent.CompletableFuture;
  */
 final class RedisVariableStore implements VariableStore {
 
+    private static final int PIPELINE_BATCH = 500;
+
     private static final String READ = """
             return {redis.call('HGET', KEYS[1], ARGV[1]) or false, redis.call('HGET', KEYS[2], ARGV[1]) or false}
             """;
@@ -55,10 +58,15 @@ final class RedisVariableStore implements VariableStore {
 
     /**
      * Adds to a number with HINCRBYFLOAT, so concurrent additions all count. A missing value or a
-     * text starts from the amount; an existing value keeps its expiry time.
+     * text starts from the amount; an existing value keeps its expiry time. An expired value not
+     * purged yet counts as missing.
      */
     private static final String INCREMENT = """
             local meta = redis.call('HGET', KEYS[2], ARGV[1])
+            if meta then
+                local expiry = tonumber(string.sub(meta, 3))
+                if expiry and expiry > 0 and expiry < tonumber(ARGV[4]) then meta = false end
+            end
             if meta and string.sub(meta, 1, 1) == 'N' then
                 return {redis.call('HINCRBYFLOAT', KEYS[1], ARGV[1], ARGV[2]), meta}
             end
@@ -143,7 +151,7 @@ final class RedisVariableStore implements VariableStore {
 
     private BigDecimal increment(VariableRef ref, BigDecimal delta, long expiresAtIfCreated) {
         Object result = this.connection.jedis().eval(INCREMENT, this.keys(ref.scope(), ref.owner()),
-                List.of(ref.name(), delta.toPlainString(), String.valueOf(expiresAtIfCreated)));
+                List.of(ref.name(), delta.toPlainString(), String.valueOf(expiresAtIfCreated), String.valueOf(System.currentTimeMillis())));
         List<?> values = (List<?>) result;
         String meta = String.valueOf(values.get(1));
         this.index(ref, Long.parseLong(meta.substring(2)), values.size() > 2 && isOne(values.get(2)));
@@ -205,11 +213,24 @@ final class RedisVariableStore implements VariableStore {
         return this.connection.threads().writeAndGet(() -> this.increment(ref, delta, expiresAtIfCreated));
     }
 
+    /**
+     * Deletes a name for every owner of a scope, {@link #PIPELINE_BATCH} owners per round trip,
+     * so a scope with many owners does not hold back the other writes for long. The name count
+     * is dropped as a whole afterwards.
+     */
     @Override
     public @NotNull CompletableFuture<Void> deleteName(@NotNull VariableScope scope, @NotNull String name) {
         return this.connection.threads().write(() -> {
-            for (String owner : this.connection.jedis().smembers(this.ownersKey(scope))) {
-                this.delete(new VariableRef(scope, owner, name));
+            List<String> owners = new ArrayList<>(this.connection.jedis().smembers(this.ownersKey(scope)));
+            for (int start = 0; start < owners.size(); start += PIPELINE_BATCH) {
+                try (PipelineBase pipeline = this.connection.jedis().pipelined()) {
+                    for (String owner : owners.subList(start, Math.min(owners.size(), start + PIPELINE_BATCH))) {
+                        VariableRef ref = new VariableRef(scope, owner, name);
+                        pipeline.eval(DELETE, this.keys(scope, owner), List.of(name));
+                        pipeline.zrem(this.expiryKey(), expiryMember(ref));
+                    }
+                    pipeline.sync();
+                }
             }
             this.connection.jedis().hdel(this.namesKey(scope), name);
         });

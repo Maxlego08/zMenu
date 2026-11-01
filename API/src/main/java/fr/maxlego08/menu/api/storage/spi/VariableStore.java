@@ -37,7 +37,8 @@ public interface VariableStore {
     CompletableFuture<Void> apply(@NotNull List<VariableMutation> mutations);
 
     /**
-     * Adds to a value in the database and reads it back, in one transaction.
+     * Adds to a value in the database and reads it back, in one transaction. An expired value
+     * counts as missing: it is replaced by the amount, with {@code expiresAtIfCreated}.
      *
      * @return the value after the addition
      */
