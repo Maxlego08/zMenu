@@ -90,7 +90,7 @@ public class PacketUtils implements InventoryListener, PacketManager {
         eventManager.registerListener(this.packetAnimationListener = new PacketAnimationListener(this.plugin), PacketListenerPriority.LOW);
         eventManager.registerListener(this.packetTitleListener = new PacketTitleListener(), PacketListenerPriority.LOW);
         if (Configuration.enablePacketEventClickLimiter){
-            this.packetEventClickLimiterListener = new PacketEventClickLimiterListener();
+            this.packetEventClickLimiterListener = new PacketEventClickLimiterListener(this.plugin);
             eventManager.registerListener(this.packetEventClickLimiterListener, PacketListenerPriority.HIGH);
         }
 
