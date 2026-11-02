@@ -6,6 +6,8 @@ import fr.maxlego08.menu.api.loader.ActionLoader;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.data.ActionPlayerDataType;
 import fr.maxlego08.menu.api.utils.TypedMapAccessor;
+import fr.maxlego08.menu.api.variable.VariableScope;
+import fr.maxlego08.menu.loader.ActionPlayerDataLoader;
 import fr.maxlego08.menu.requirement.ZActionPlayerData;
 import fr.maxlego08.menu.requirement.actions.DataAction;
 import org.jspecify.annotations.NonNull;
@@ -33,6 +35,7 @@ public class DataLoader extends ActionLoader {
             seconds = String.valueOf(accessor.getLong("seconds", 0L));
         }
         boolean mathExpression = accessor.getBoolean("math", false);
-        return new DataAction(new ZActionPlayerData(this.plugin.getStorageManager(), key, type, object, seconds, mathExpression), this.plugin);
+        VariableScope scope = ActionPlayerDataLoader.readScope(accessor.getString("scope", "player"), path + "scope");
+        return new DataAction(new ZActionPlayerData(this.plugin, key, type, object, seconds, mathExpression, scope), this.plugin);
     }
 }

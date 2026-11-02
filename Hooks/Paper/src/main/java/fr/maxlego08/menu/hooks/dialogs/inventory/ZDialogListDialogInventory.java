@@ -106,8 +106,8 @@ public class ZDialogListDialogInventory extends AbstractButtonUtilsInventory imp
 
     @Override
     public Dialog buildDialog(@NotNull Player player, @NotNull PaperMetaUpdater paperComponent, @NotNull InventoryEngine inventoryEngine, @NotNull Placeholders placeholders) {
-        List<DialogBody> dialogBodiesForPlayer = this.getDialogBodiesForPlayer(player, paperComponent);
-        List<DialogInput> dialogInputsForPlayer = this.getDialogInputsForPlayer(player, paperComponent);
+        List<DialogBody> dialogBodiesForPlayer = this.getDialogBodiesForPlayer(player, paperComponent, placeholders);
+        List<DialogInput> dialogInputsForPlayer = this.getDialogInputsForPlayer(player, paperComponent, placeholders);
 
         // Built before entering this list's frame, so a nested list receives the back button of its parent
         ActionButton exitAction = this.exitOrBackButton(this.exitButton != null ? this.createActionButton(this.exitButton.parse(player), dialogInputsForPlayer, paperComponent, placeholders, player, inventoryEngine, null) : null);
@@ -198,11 +198,8 @@ public class ZDialogListDialogInventory extends AbstractButtonUtilsInventory imp
     }
 
     private ActionButton createBackButton(@NotNull Player player, @NotNull PaperMetaUpdater paperComponent) {
-        DialogAction action = DialogAction.customClick((view, audience) -> {
-            if (audience instanceof Player viewer) {
-                this.menuPlugin.getScheduler().runAtEntity(viewer, task -> this.menuPlugin.getDialogManager().openDialog(viewer, this));
-            }
-        }, ClickCallback.Options.builder().uses(ClickCallback.UNLIMITED_USES).build());
+        DialogAction action = this.menuPlugin.getDialogManager().clickAction(player,
+                (viewer, view) -> this.menuPlugin.getDialogManager().openDialog(viewer, this), ClickCallback.UNLIMITED_USES, null);
         String tooltip = this.backButton.tooltip();
         return ActionButton.create(
                 paperComponent.getComponent(this.menuPlugin.parse(player, this.backButton.label())),

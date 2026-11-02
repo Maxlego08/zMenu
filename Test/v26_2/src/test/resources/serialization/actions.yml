@@ -98,6 +98,26 @@ actions:
   - type: data
     key: "last_claim"
     value: "%zmenu_time_unix_timestamp%"
+  - type: canvas-set
+    key: "tab"
+    value: "%name%"
+    keep: session
+    dialog: "shop"
+  - type: canvas-toggle
+    key: "notify"
+  - type: canvas-cycle
+    key: "size"
+    values: [ "s", "m", "l" ]
+    reverse: true
+  - type: canvas-add
+    key: "count"
+    amount: -1
+    min: 0.0
+    max: 10.0
+  - type: canvas-remove
+    key: "tab"
+  - type: canvas-refresh
+    dialog: "shop"
   - type: bedrock
     bedrock: main_form
     plugin: zMenu

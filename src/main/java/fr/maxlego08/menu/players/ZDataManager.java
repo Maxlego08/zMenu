@@ -5,10 +5,13 @@ import fr.maxlego08.menu.api.placeholder.LocalPlaceholder;
 import fr.maxlego08.menu.api.players.Data;
 import fr.maxlego08.menu.api.players.DataManager;
 import fr.maxlego08.menu.api.players.PlayerData;
-import fr.maxlego08.menu.api.storage.dto.DataDTO;
 import fr.maxlego08.menu.api.utils.Message;
 import fr.maxlego08.menu.api.utils.OfflinePlayerCache;
+import fr.maxlego08.menu.api.variable.Variable;
+import fr.maxlego08.menu.api.variable.VariableRef;
+import fr.maxlego08.menu.api.variable.VariableScope;
 import fr.maxlego08.menu.common.utils.builder.TimerBuilder;
+import fr.maxlego08.menu.variables.ZVariableService;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
@@ -20,55 +23,56 @@ import org.jspecify.annotations.NonNull;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
+/**
+ * Player data, the {@link VariableScope#PLAYER} variables of the {@link ZVariableService}.
+ *
+ * <p>A player's values are read before they join and kept while they are online; an offline
+ * player is read when looked up and kept for a few minutes. See {@link ZVariableService}.</p>
+ */
 public class ZDataManager implements DataManager {
 
-    private final Map<UUID, ZPlayerData> players = new HashMap<>();
     private final ZMenuPlugin plugin;
     private final Map<String, String> defaultValues = new HashMap<>();
-    private long lastSave;
 
     public ZDataManager(ZMenuPlugin plugin) {
         super();
         this.plugin = plugin;
     }
 
+    private ZVariableService variables() {
+        return this.plugin.getVariableService();
+    }
+
     @Override
     public @NonNull Optional<PlayerData> getPlayer(@NonNull UUID uniqueId) {
-        return Optional.ofNullable(this.players.getOrDefault(uniqueId, null));
+        if (!this.variables().isLoaded(VariableScope.PLAYER, uniqueId.toString())) return Optional.empty();
+        return Optional.of(new ZPlayerData(this.variables(), uniqueId));
     }
 
     @Override
     public @NonNull PlayerData getOrCreate(@NonNull UUID uniqueId) {
-
-        Optional<PlayerData> optional = this.getPlayer(uniqueId);
-        if (optional.isPresent()) {
-            return optional.get();
-        }
-
-        ZPlayerData data = new ZPlayerData(this.plugin.getStorageManager(), uniqueId);
-        this.players.put(uniqueId, data);
-
-        return data;
+        return new ZPlayerData(this.variables(), uniqueId);
     }
 
     @Override
     public void addData(@NonNull UUID uniqueId, @NonNull Data data) {
-        PlayerData playerData = this.getOrCreate(uniqueId);
-        playerData.addData(data);
+        this.getOrCreate(uniqueId).addData(data);
+    }
+
+    /**
+     * Reads the values of a player from the database, unless they are already in memory.
+     */
+    @Override
+    public @NonNull CompletableFuture<PlayerData> loadPlayer(@NonNull UUID uniqueId) {
+        return this.variables().load(VariableScope.PLAYER, uniqueId.toString()).thenApply(variables -> new ZPlayerData(this.variables(), uniqueId));
     }
 
     @Override
     public @NonNull Optional<Data> getData(@NonNull UUID uniqueId, @NonNull String key) {
-
-        Optional<PlayerData> optional = this.getPlayer(uniqueId);
-        if (optional.isEmpty()) {
-            return Optional.empty();
-        }
-
-        PlayerData playerData = optional.get();
-        return playerData.getData(key);
+        return this.variables().getCached(VariableRef.player(uniqueId, key)).map(ZPlayerData::toData);
     }
 
     public List<String> getKeys(String[] args) {
@@ -76,50 +80,40 @@ public class ZDataManager implements DataManager {
             return new ArrayList<>();
         }
         try {
-            String playerName = args[2];
-            OfflinePlayer offlinePlayer = OfflinePlayerCache.get(playerName);
-            Optional<PlayerData> optional = this.getPlayer(offlinePlayer.getUniqueId());
-            if (optional.isEmpty()) {
-                return new ArrayList<>();
-            }
-
-            PlayerData playerData = optional.get();
-            List<String> keys = new ArrayList<>(playerData.getDatas().size());
-            for (Data data : playerData.getDatas()) {
-                keys.add(data.getKey());
-            }
-            return keys;
-
+            OfflinePlayer offlinePlayer = OfflinePlayerCache.get(args[2]);
+            return this.getKeys(offlinePlayer.getUniqueId());
         } catch (Exception e) {
             return new ArrayList<>();
         }
     }
 
+    /**
+     * The keys of a player in memory. An offline player who is not is read in the background, so
+     * the keys show up on the next suggestion.
+     */
     @Override
     public List<String> getKeys(@NotNull UUID playerId) {
-        Optional<PlayerData> optional = this.getPlayer(playerId);
-        if (optional.isEmpty()) {
+        String owner = playerId.toString();
+        if (!this.variables().isLoaded(VariableScope.PLAYER, owner)) {
+            this.loadPlayer(playerId);
             return new ArrayList<>();
         }
 
-        PlayerData playerData = optional.get();
-        List<String> keys = new ArrayList<>(playerData.getDatas().size());
-        for (Data data : playerData.getDatas()) {
-            keys.add(data.getKey());
+        List<String> keys = new ArrayList<>();
+        for (Variable variable : this.variables().getCachedAll(VariableScope.PLAYER, owner)) {
+            keys.add(variable.ref().name());
         }
         return keys;
     }
 
     @Override
     public void clearAll() {
-        this.players.clear();
-        this.plugin.getStorageManager().clearData();
+        this.variables().deleteScope(VariableScope.PLAYER);
     }
 
     @Override
     public void clearPlayer(@NonNull UUID uniqueId) {
-        this.players.remove(uniqueId);
-        this.plugin.getStorageManager().clearData(uniqueId);
+        this.variables().deleteOwner(VariableScope.PLAYER, uniqueId.toString());
     }
 
     @Override
@@ -137,74 +131,77 @@ public class ZDataManager implements DataManager {
         configurationSection.getKeys(false).forEach(key -> this.defaultValues.put(key, configuration.getString("values." + key)));
     }
 
+    /**
+     * Nothing to do: the variable service reads the players already online when it starts, and
+     * the others when they join or are looked up.
+     */
     @Override
     public void loadPlayers() {
-        var playerDatas = this.plugin.getStorageManager().loadPlayers();
-        for (DataDTO dto : playerDatas) {
-            ZPlayerData playerData = this.players.computeIfAbsent(dto.player_id(), uuid -> new ZPlayerData(this.plugin.getStorageManager(), uuid));
-            playerData.setData(dto);
-        }
     }
 
     @Override
     public @NonNull List<String> getKeys() {
         Set<String> strings = new HashSet<>(this.defaultValues.keySet());
-        for (PlayerData playerData : this.players.values()) {
-            for (Data data : playerData.getDatas()) {
-                strings.add(data.getKey());
-            }
-        }
+        strings.addAll(this.variables().names(VariableScope.PLAYER));
         return new ArrayList<>(strings);
     }
 
     @Override
     public void clearKey(@NonNull String key) {
-        this.players.values().forEach(e -> e.removeData(key));
-        this.plugin.getStorageManager().clearData(key);
+        this.variables().deleteName(VariableScope.PLAYER, key);
     }
 
+    /**
+     * The variable of a placeholder, or empty when its owner is not in memory yet. An owner who is
+     * not is read in the background, so the placeholder shows the real value on its next update.
+     */
+    private Optional<Variable> placeholderVariable(VariableScope scope, OfflinePlayer offlinePlayer, String key) {
+        ZVariableService variables = this.variables();
+        String owner = variables.ownerOf(scope, offlinePlayer == null ? null : offlinePlayer.getUniqueId());
+        if (!variables.isLoaded(scope, owner)) {
+            variables.load(scope, owner);
+            return Optional.empty();
+        }
+        return variables.getCached(new VariableRef(scope, owner, key));
+    }
+
+    /**
+     * Registers {@code <scope>_key_exist_}, {@code <scope>_value_}, {@code <scope>_expire_format_},
+     * {@code <scope>_expire_} and {@code <scope>_is_expired_} for the player, server and global
+     * scopes, such as {@code %zmenu_global_value_event_started%}.
+     */
     public void registerPlaceholder(LocalPlaceholder localPlaceholder) {
+        for (VariableScope scope : VariableScope.values()) {
+            String prefix = scope.id() + "_";
 
-        localPlaceholder.register("player_key_exist_", (offlinePlayer, key) -> {
+            localPlaceholder.register(prefix + "key_exist_", (offlinePlayer, key) -> {
+                if (scope == VariableScope.PLAYER && offlinePlayer == null) return "false";
+                return String.valueOf(this.placeholderVariable(scope, offlinePlayer, key).isPresent());
+            });
 
-            Optional<PlayerData> optional = this.getPlayer(offlinePlayer.getUniqueId());
-            if (optional.isEmpty()) return "false";
+            localPlaceholder.register(prefix + "value_", (offlinePlayer, key) -> this.handlePlaceholder(scope, offlinePlayer, key, Variable::text));
 
-            PlayerData playerData = optional.get();
-            return String.valueOf(playerData.containsKey(key));
+            localPlaceholder.register(prefix + "expire_format_", (offlinePlayer, key) -> this.handlePlaceholder(scope, offlinePlayer, key, variable -> {
+                if (variable.expiresAt() <= 0) {
+                    return Message.PLACEHOLDER_NEVER.getMessage();
+                }
 
-        });
+                long seconds = Math.abs(System.currentTimeMillis() - variable.expiresAt()) / 1000;
+                return TimerBuilder.getStringTime(seconds);
+            }));
 
-        localPlaceholder.register("player_value_", (offlinePlayer, key) -> this.handlePlaceholder(offlinePlayer, key, data -> data.getValue().toString()));
+            localPlaceholder.register(prefix + "expire_", (offlinePlayer, key) -> this.handlePlaceholder(scope, offlinePlayer, key, variable -> String.valueOf(variable.expiresAt())));
 
-        localPlaceholder.register("player_expire_format_", (offlinePlayer, key) -> this.handlePlaceholder(offlinePlayer, key, data -> {
-            if (data.getExpiredAt() <= 0) {
-                return Message.PLACEHOLDER_NEVER.getMessage();
-            }
-
-            long seconds = Math.abs(System.currentTimeMillis() - data.getExpiredAt()) / 1000;
-            return TimerBuilder.getStringTime(seconds);
-        }));
-
-        localPlaceholder.register("player_expire_", (offlinePlayer, key) -> this.handlePlaceholder(offlinePlayer, key, data -> String.valueOf(data.getExpiredAt())));
-        localPlaceholder.register("player_is_expired_", (offlinePlayer, key) -> {
-
-            Optional<PlayerData> optional = this.getPlayer(offlinePlayer.getUniqueId());
-            if (optional.isEmpty()) return "true";
-
-            PlayerData playerData = optional.get();
-            Optional<Data> optionalData = playerData.getData(key);
-            return optionalData.map(data -> String.valueOf(data.isExpired())).orElse("true");
-        });
+            localPlaceholder.register(prefix + "is_expired_", (offlinePlayer, key) -> {
+                if (scope == VariableScope.PLAYER && offlinePlayer == null) return "true";
+                return String.valueOf(this.placeholderVariable(scope, offlinePlayer, key).isEmpty());
+            });
+        }
     }
 
-    private String handlePlaceholder(OfflinePlayer offlinePlayer, String key, Function<Data, String> consumer) {
-        Optional<PlayerData> optional = this.getPlayer(offlinePlayer.getUniqueId());
-        if (optional.isEmpty()) return this.getDefaultKey(key);
-
-        PlayerData playerData = optional.get();
-        Optional<Data> optionalData = playerData.getData(key);
-        return optionalData.isPresent() ? consumer.apply(optionalData.get()) : this.getDefaultKey(key);
+    private String handlePlaceholder(VariableScope scope, OfflinePlayer offlinePlayer, String key, Function<Variable, String> consumer) {
+        if (scope == VariableScope.PLAYER && offlinePlayer == null) return this.getDefaultKey(key);
+        return this.placeholderVariable(scope, offlinePlayer, key).map(consumer).orElseGet(() -> this.getDefaultKey(key));
     }
 
     private String getDefaultKey(String key) {

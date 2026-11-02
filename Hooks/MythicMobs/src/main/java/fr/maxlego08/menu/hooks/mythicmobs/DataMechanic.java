@@ -1,10 +1,11 @@
 package fr.maxlego08.menu.hooks.mythicmobs;
 
+import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.players.Data;
 import fr.maxlego08.menu.api.players.DataManager;
 import fr.maxlego08.menu.api.players.PlayerData;
 import fr.maxlego08.menu.api.requirement.data.ActionPlayerDataType;
-import fr.maxlego08.menu.api.storage.StorageManager;
+import fr.maxlego08.menu.api.variable.VariableRef;
 import fr.maxlego08.menu.players.ZData;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import io.lumine.mythic.api.adapters.AbstractEntity;
@@ -18,11 +19,13 @@ import net.objecthunter.exp4j.ExpressionBuilder;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
+import java.math.BigDecimal;
+import java.time.Duration;
 import java.util.Locale;
 import java.util.Optional;
 
 public class DataMechanic implements ITargetedEntitySkill {
-    private final StorageManager storageManager;
+    private final MenuPlugin plugin;
     private final DataManager dataManager;
     private ActionPlayerDataType actionPlayerDataType;
     private final PlaceholderString key;
@@ -30,9 +33,9 @@ public class DataMechanic implements ITargetedEntitySkill {
     private final long seconds;
     private final boolean enableMathExpression;
 
-    public DataMechanic(MythicLineConfig config, StorageManager storageManager, DataManager dataManager) {
-        this.storageManager = storageManager;
-        this.dataManager = dataManager;
+    public DataMechanic(MythicLineConfig config, MenuPlugin plugin) {
+        this.plugin = plugin;
+        this.dataManager = plugin.getDataManager();
 
         this.key = config.getPlaceholderString("key", "");
         this.value = config.getPlaceholderString("value", "");
@@ -57,29 +60,12 @@ public class DataMechanic implements ITargetedEntitySkill {
                     Optional<PlayerData> optional = this.dataManager.getPlayer(player.getUniqueId());
                     optional.ifPresent(data -> data.removeData(this.key.get(abstractEntity)));
                 }
-                case ADD -> {
-                    Optional<Data> optional = this.dataManager.getData(player.getUniqueId(), this.key.get(abstractEntity));
-                    if (optional.isPresent()) {
-                        Data data = optional.get();
-                        String result = this.value.get(abstractEntity);
-                        data.add(this.enableMathExpression ? (int) new ExpressionBuilder(result).build().evaluate() : Integer.parseInt(result));
-                        this.storageManager.upsertData(player.getUniqueId(), data);
-                    } else {
-                        this.dataManager.addData(player.getUniqueId(), this.toData(abstractEntity));
-                    }
-                }
-                case SUBTRACT -> {
-                    Optional<Data> optional = this.dataManager.getData(player.getUniqueId(), this.key.get(abstractEntity));
-                    if (optional.isPresent()) {
-                        Data data = optional.get();
-                        String result = this.value.get(abstractEntity);
-                        data.remove(this.enableMathExpression ? (int) new ExpressionBuilder(result).build().evaluate() : Integer.parseInt(result));
-                        this.storageManager.upsertData(player.getUniqueId(), data);
-                    } else {
-                        var data = this.toData(abstractEntity);
-                        data.negate();
-                        this.dataManager.addData(player.getUniqueId(), data);
-                    }
+                case ADD, SUBTRACT -> {
+                    String result = this.value.get(abstractEntity);
+                    int amount = this.enableMathExpression ? (int) new ExpressionBuilder(result).build().evaluate() : Integer.parseInt(result);
+                    VariableRef ref = VariableRef.player(player.getUniqueId(), this.key.get(abstractEntity));
+                    this.plugin.getVariableService().increment(ref, BigDecimal.valueOf(this.actionPlayerDataType == ActionPlayerDataType.ADD ? amount : -amount),
+                            this.seconds == 0 ? null : Duration.ofSeconds(this.seconds));
                 }
                 case SET -> {
                     this.dataManager.addData(player.getUniqueId(), this.toData(abstractEntity));

@@ -1,7 +1,11 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import xyz.jpenilla.runpaper.task.RunServer
+
 plugins {
     `java-library`
     alias(libs.plugins.shadow)
     alias(libs.plugins.groupez.repository)
+    alias(libs.plugins.run.paper)
 }
 
 group = "fr.maxlego08.menu"
@@ -23,7 +27,6 @@ allprojects {
     version = rootProject.version
 
     repositories {
-        // mavenLocal()
         mavenCentral()
 
         maven {
@@ -157,6 +160,65 @@ repositories {
     maven(url = "https://repo.codemc.io/repository/maven-public/")
 }
 
+runPaper {
+    disablePluginJarDetection()
+}
+
+/**
+ * Configures a test server: its own folder in run/, PlaceholderAPI, and what the runServer.* Gradle properties
+ * set, usually in ~/.gradle/gradle.properties:
+ *
+ * - runServer.versions: the Minecraft versions to create a task for, as a comma list (26.2,1.21.11 by default).
+ *   The first one is runServer, the others runServer<version> with _ for the dots, such as runServer1_21_11.
+ * - runServer.plugins: a comma list of packetevents, viaversion, luckperms, modrinth:<slug>:<version>,
+ *   hangar:<project>:<version> or url:<address>, downloaded next to PlaceholderAPI.
+ * - runServer.javaVersion and runServer.javaVendor: the Java toolchain the server runs on (25 and any vendor by
+ *   default), such as JetBrains for the JetBrains Runtime.
+ * - runServer.jvmArgsExtra: JVM arguments separated by spaces, such as -XX:+AllowEnhancedClassRedefinition.
+ * - runServer.javaAgent and runServer.javaAgentArgs: a Java agent jar and its arguments, such as HotswapAgent.
+ */
+fun RunServer.testServer(version: String) {
+    minecraftVersion(version)
+    runDirectory.set(layout.projectDirectory.dir("run/$version"))
+    systemProperty("terminal.jline", false)
+    systemProperty("terminal.ansi", true)
+    val plugins = providers.gradleProperty("runServer.plugins").getOrElse("").split(',').map { it.trim() }.filter { it.isNotEmpty() }
+    downloadPlugins {
+        hangar("PlaceholderAPI", libs.versions.placeholderapi.get())
+        for (plugin in plugins) {
+            when {
+                plugin.equals("packetevents", true) -> modrinth("packetevents", "${libs.versions.packetevents.get()}+spigot")
+                plugin.equals("viaversion", true) -> modrinth("viaversion", libs.versions.run.viaversion.get())
+                plugin.equals("luckperms", true) -> modrinth("luckperms", libs.versions.run.luckperms.get())
+                plugin.startsWith("url:") -> url(plugin.removePrefix("url:"))
+                plugin.startsWith("modrinth:") || plugin.startsWith("hangar:") -> {
+                    val parts = plugin.split(':')
+                    if (parts.size != 3) throw GradleException("runServer.plugins: $plugin must be written ${parts[0]}:<name>:<version>")
+                    if (parts[0] == "modrinth") modrinth(parts[1], parts[2]) else hangar(parts[1], parts[2])
+                }
+                else -> throw GradleException("runServer.plugins: unknown plugin $plugin, use packetevents, viaversion, luckperms, modrinth:<slug>:<version>, hangar:<project>:<version> or url:<address>")
+            }
+        }
+    }
+
+    val javaVersion = providers.gradleProperty("runServer.javaVersion").orNull?.trim()
+    val javaVendor = providers.gradleProperty("runServer.javaVendor").orNull?.trim()
+    if (!javaVersion.isNullOrEmpty() || !javaVendor.isNullOrEmpty()) {
+        javaLauncher.set(javaToolchains.launcherFor {
+            languageVersion.set(JavaLanguageVersion.of(javaVersion?.toIntOrNull() ?: 25))
+            if (!javaVendor.isNullOrEmpty()) vendor.set(JvmVendorSpec.matching(javaVendor))
+        })
+    }
+    val extraArgs = providers.gradleProperty("runServer.jvmArgsExtra").getOrElse("").trim()
+    if (extraArgs.isNotEmpty()) jvmArgs(extraArgs.split(Regex("\\s+")))
+    val javaAgent = providers.gradleProperty("runServer.javaAgent").orNull?.trim()
+    if (!javaAgent.isNullOrEmpty()) {
+        if (!file(javaAgent).isFile) throw GradleException("runServer.javaAgent: $javaAgent is not a file")
+        val agentArgs = providers.gradleProperty("runServer.javaAgentArgs").getOrElse("").trim()
+        jvmArgs("-javaagent:$javaAgent" + if (agentArgs.isEmpty()) "" else "=$agentArgs")
+    }
+}
+
 dependencies {
     api(projects.api)
     api(projects.common)
@@ -168,6 +230,18 @@ dependencies {
         exclude(group = "org.slf4j")
     }
 
+    compileOnly(libs.jedis)
+    compileOnly(libs.mongodb.driver.sync)
+
+    testImplementation(libs.paper.api)
+    testRuntimeOnly(libs.sqlite.jdbc)
+    testImplementation(libs.jedis)
+    testImplementation(libs.jedis.mock)
+    testImplementation(libs.mongodb.driver.sync)
+    testImplementation(libs.mongo.java.server)
+    testRuntimeOnly("com.mysql:mysql-connector-j:8.4.0")
+    testRuntimeOnly("org.mariadb.jdbc:mariadb-java-client:3.5.6")
+    testRuntimeOnly("org.postgresql:postgresql:42.7.4")
 }
 
 dependencies {
@@ -177,6 +251,13 @@ dependencies {
 
 
 tasks {
+    // -Dzmenu.it.<backend>=host:port runs the storage tests against a real server, see RealDatabases
+    test {
+        System.getProperties().stringPropertyNames()
+            .filter { it.startsWith("zmenu.it.") }
+            .forEach { systemProperty(it, System.getProperty(it)) }
+    }
+
     shadowJar {
         val paper26 = project(":Hooks:Paper-26")
         dependsOn(paper26.tasks.jar)
@@ -205,6 +286,37 @@ tasks {
 
     build {
         dependsOn(shadowJar)
+    }
+
+    val devShadowJar = register<ShadowJar>("devShadowJar") {
+        group = "run paper"
+        description = "Builds zMenu for the test servers without relocating its libraries, so its classes are the ones IntelliJ compiles and can be hotswapped."
+        val release = shadowJar.get()
+        from(sourceSets.main.get().output)
+        configurations.set(release.configurations)
+        exclude(release.excludes)
+        val paper26 = project(":Hooks:Paper-26")
+        dependsOn(paper26.tasks.jar)
+        from(zipTree(paper26.tasks.jar.get().archiveFile.get().asFile))
+        val paper263 = project(":Hooks:Paper-26-3")
+        dependsOn(paper263.tasks.jar)
+        from(zipTree(paper263.tasks.jar.get().archiveFile.get().asFile))
+        archiveBaseName.set("zMenu")
+        archiveClassifier.set("dev")
+        destinationDirectory.set(layout.buildDirectory.dir("dev-jar"))
+    }
+
+    val testServerVersions = providers.gradleProperty("runServer.versions").getOrElse("26.3,26.2,26.1.2,26.1,1.21.11")
+        .split(',').map { it.trim() }.filter { it.isNotEmpty() }.distinct()
+    if (testServerVersions.isEmpty()) throw GradleException("runServer.versions must list at least one Minecraft version")
+    testServerVersions.forEachIndexed { index, version ->
+        val configure: RunServer.() -> Unit = {
+            group = "run paper"
+            description = "Run a Paper $version server for plugin testing."
+            pluginJars.from(devShadowJar.flatMap { it.archiveFile })
+            testServer(version)
+        }
+        if (index == 0) runServer(configure) else register<RunServer>("runServer" + version.replace('.', '_'), configure)
     }
 
 

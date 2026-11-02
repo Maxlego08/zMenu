@@ -30,26 +30,22 @@ public class CommandMenuPlayersKeys extends SubCommand<ZMenuPlugin> {
         DataManager dataManager = commandDispatch.getPlugin().getDataManager();
 
         UUID targetId = commandDispatch.getArgument("player", UUID.class);
-        Optional<PlayerData> optional = dataManager.getPlayer(targetId);
-        if (optional.isEmpty()) {
-            MessageUtils.message(commandDispatch.getPlugin(), commandDispatch.getSender(), Message.PLAYERS_DATA_KEYS_EMPTY, "%player%", OfflinePlayerCache.getGlobalInstance().getName(targetId));
-            return CommandResultType.SUCCESS;
-        }
+        PlayerDataCommands.whenLoaded(commandDispatch.getPlugin(), commandDispatch.getSender(), targetId, () -> {
+            Optional<PlayerData> optional = dataManager.getPlayer(targetId);
+            Collection<Data> collection = optional.map(PlayerData::getDatas).orElse(List.of());
 
-        PlayerData playerData = optional.get();
-        Collection<Data> collection = playerData.getDatas();
+            if (collection.isEmpty()) {
+                MessageUtils.message(commandDispatch.getPlugin(), commandDispatch.getSender(), Message.PLAYERS_DATA_KEYS_EMPTY, "%player%", OfflinePlayerCache.getGlobalInstance().getName(targetId));
+                return;
+            }
 
-        if (collection.isEmpty()) {
-            MessageUtils.message(commandDispatch.getPlugin(), commandDispatch.getSender(), Message.PLAYERS_DATA_KEYS_EMPTY, "%player%", OfflinePlayerCache.getGlobalInstance().getName(targetId));
-            return CommandResultType.SUCCESS;
-        }
-
-        List<String> keyList = new ArrayList<>(collection.size());
-        for (Data data : collection) {
-            keyList.add(data.getKey());
-        }
-        String keys = ZUtils.toList(keyList, "§8", "§7");
-        MessageUtils.message(commandDispatch.getPlugin(), commandDispatch.getSender(), Message.PLAYERS_DATA_KEYS_SUCCESS, "%keys%", keys, "%player%", OfflinePlayerCache.getGlobalInstance().getName(targetId));
+            List<String> keyList = new ArrayList<>(collection.size());
+            for (Data data : collection) {
+                keyList.add(data.getKey());
+            }
+            String keys = ZUtils.toList(keyList, "§8", "§7");
+            MessageUtils.message(commandDispatch.getPlugin(), commandDispatch.getSender(), Message.PLAYERS_DATA_KEYS_SUCCESS, "%keys%", keys, "%player%", OfflinePlayerCache.getGlobalInstance().getName(targetId));
+        });
         return CommandResultType.SUCCESS;
     }
 }

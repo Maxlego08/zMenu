@@ -44,7 +44,7 @@ bin/
 
 ### Mac OS ###
 .DS_Store
-target
+/target/
 target-api
 *.java~
 *.kts~
@@ -62,3 +62,6 @@ GEMINI.md
 TODO.md
 /docs/*
 !/docs/live-sync-plan.md
+
+### run-paper ###
+run/

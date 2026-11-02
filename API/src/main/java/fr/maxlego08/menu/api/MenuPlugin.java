@@ -4,6 +4,7 @@ import com.tcoded.folialib.impl.PlatformScheduler;
 import fr.maxlego08.menu.api.attribute.AttributApplier;
 import fr.maxlego08.menu.api.command.CommandManager;
 import fr.maxlego08.menu.api.configuration.Feature;
+import fr.maxlego08.menu.api.dialog.canvas.CanvasManager;
 import fr.maxlego08.menu.api.dupe.DupeManager;
 import fr.maxlego08.menu.api.enchantment.Enchantments;
 import fr.maxlego08.menu.api.itemstack.ItemStackService;
@@ -14,6 +15,7 @@ import fr.maxlego08.menu.api.players.DataManager;
 import fr.maxlego08.menu.api.players.inventory.InventoriesPlayer;
 import fr.maxlego08.menu.api.sound.SoundService;
 import fr.maxlego08.menu.api.storage.StorageManager;
+import fr.maxlego08.menu.api.variable.VariableService;
 import fr.maxlego08.menu.api.utils.MetaUpdater;
 import fr.maxlego08.menu.api.utils.toast.ToastHelper;
 import fr.maxlego08.menu.api.utils.version.ClientVersionManager;
@@ -21,7 +23,9 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -151,7 +155,9 @@ public interface MenuPlugin extends Plugin {
      * The data manager is used for managing data related to players.
      *
      * @return the data manager
+     * @deprecated use {@link #getVariableService()}.
      */
+    @Deprecated(since = "1.1.2.2", forRemoval = true)
     DataManager getDataManager();
 
     /**
@@ -204,6 +210,13 @@ public interface MenuPlugin extends Plugin {
      * @return the storage manager
      */
     StorageManager getStorageManager();
+
+    /**
+     * @return the variables of every scope: player data, per-server values and values shared by
+     * every server
+     */
+    @ApiStatus.Experimental
+    VariableService getVariableService();
 
     /**
      * Checks if the plugin is a Folia plugin.
@@ -300,6 +313,16 @@ public interface MenuPlugin extends Plugin {
     ToastHelper getToastHelper();
 
     DialogManager getDialogManager();
+
+    /**
+     * Returns the manager of dialog canvases, which draws images and text at pixel positions inside
+     * dialogs. Null when the server cannot show dialogs.
+     *
+     * @return the canvas manager, or null
+     */
+    default @Nullable CanvasManager getCanvasManager() {
+        return null;
+    }
 
     /**
      * Returns the client version manager, used to know which Minecraft version a player's

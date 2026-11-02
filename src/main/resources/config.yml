@@ -44,12 +44,76 @@ skip-update-check: false
 # SQLITE - For the launch of the plugin only.
 # MYSQL - RECOMMENDED
 # MARIADB - RECOMMENDED
+# POSTGRESQL - Uses database-configuration below (set port to 5432). zMenu downloads the driver on
+#              the next start.
+# MONGODB - Keeps everything in MongoDB (settings in the mongodb section below). zMenu downloads the
+#           driver on the next start.
+# REDIS - Keeps everything in Redis (settings in the redis section below). Make sure Redis writes its
+#         data to disk (appendonly yes in redis.conf), or a restart of Redis loses it.
 # NONE - If you do not need a database, you can disable it.
 #
 # We advise you to use MARIADB or MYSQL, the SQLITE storage is only there to install the plugin and do some tests, not all features are available with SQLITE yet.
 # The plugin will work, but some features like sanctions update when launching the plugin will not work.
 # This will be fixed in future plugin updates
 storage-type: SQLITE
+
+# Name of this server, used for the variables of the "server" scope (data action with scope: server,
+# %zmenu_server_value_<key>%, /zm variables ... server ...).
+# Servers sharing one database must each have their own name. Leave empty to use a name generated
+# once and kept in plugins/zMenu/server-id.txt.
+server-id: ""
+
+# How servers sharing a MySQL or MariaDB database tell each other about changes to player and global
+# variables, so a value changed on one server is updated on the others.
+# AUTO - With MySQL, MariaDB, PostgreSQL or MongoDB, through a table (collection) of the database read
+#        every messaging-poll-interval seconds; with storage-type REDIS, through Redis pub/sub.
+#        SQLite is never shared, so it does nothing there.
+# REDIS - Through Redis pub/sub (redis section below), even with MySQL or MariaDB as storage: changes
+#         reach the other servers at once.
+# NONE - Nothing is sent: a server only sees the changes of the others when it reads them again
+#        (a player joining it, a restart).
+messaging-type: AUTO
+messaging-poll-interval: 2
+
+# Redis, used by storage-type REDIS and messaging-type REDIS. zMenu downloads the Redis client on
+# the next start after you choose one of them.
+redis:
+  # redis://[user:password@]host:port/database, or rediss:// for TLS
+  uri: "redis://localhost:6379/0"
+  # true for a Redis Cluster; uri then names one of its nodes
+  cluster: false
+  # The start of every key zMenu writes, change it when several networks share one Redis
+  key-prefix: "zmenu"
+  # Refuse to start when Redis does not write its data to disk (appendonly no)
+  require-aof: false
+
+# MongoDB, used by storage-type MONGODB.
+mongodb:
+  # mongodb://[user:password@]host:port, or a mongodb+srv:// connection string
+  uri: "mongodb://localhost:27017"
+  database: "zmenu"
+  # The start of every collection name
+  collection-prefix: "zmenu_"
+
+# When a player moves from one server to another, the new server waits up to this many milliseconds
+# for the old one to save the player's data before reading it (only with a shared database).
+session-handoff-timeout: 3000
+
+# To move to another storage-type, copy the data with /zm storage migrate <type>, then change
+# storage-type and restart. When the new type needs a driver zMenu does not have yet (POSTGRESQL,
+# REDIS), set it here and restart once before running the command, so zMenu downloads it.
+migration-target: ""
+
+# The database /zm storage migrate copies to, when it is not the one of database-configuration below,
+# for example MariaDB to PostgreSQL. Each value set here replaces the same value of
+# database-configuration for the copy only. After the copy, move these values into
+# database-configuration, change storage-type and restart.
+#migration-database-configuration:
+#  host: 127.0.0.1
+#  port: 5432
+#  user: zmenu
+#  password: 'secret'
+#  database: zmenu
 
 # Configuration of your database, it is recommended to use the database to store your data.
 database-configuration:
@@ -73,6 +137,11 @@ database-configuration:
   # A connection older than this is retired and replaced. 0 keeps connections until the pool closes.
   # Hikari requires at least 30 seconds. 1800 is 30 minutes, the same default used when this option is omitted.
   max-lifetime: 1800
+  # Extra driver properties sent with every MySQL, MariaDB or PostgreSQL connection. Examples:
+  #   useSSL: "true"                     - MySQL / MariaDB over TLS
+  #   allowPublicKeyRetrieval: "true"    - MySQL 8 without TLS ("Public Key Retrieval is not allowed")
+  #   sslmode: "disable"                 - PostgreSQL without TLS, or "require" to force it
+  properties: {}
 
 # Time in seconds for saving data in batches.
 # Instead of making an SQL query for each update, a single query will be executed every 10 seconds
@@ -324,3 +393,46 @@ close-on-damage: true
 # including the content of nested lists, in the packet that opens it, so deep nesting makes that
 # packet bigger and can disconnect the player. Lists nested deeper than this are left out.
 dialog-list-max-depth: 4
+
+# Dialog canvases draw images and text at pixel positions inside dialogs (body type dialog-canvas).
+# zMenu generates the fonts they need into plugins/zMenu/resource-pack/output, from the dialogs that use them.
+dialog-canvas:
+  resource-pack:
+    # Who adds zMenu's files to the resource pack players download:
+    # auto: the pack plugin installed on the server (Nexo, ItemsAdder or CraftEngine). With several of them,
+    #       nothing is done until one is chosen here. Without any, standalone when its url is set, else none.
+    # nexo, itemsadder, craftengine: that plugin.
+    # standalone: zMenu sends plugins/zMenu/resource-pack/zmenu-pack.zip from the url below.
+    # none: you add plugins/zMenu/resource-pack/zmenu-pack.zip (or the output folder) to your pack yourself.
+    target: auto
+    # Run the pack plugin's rebuild command (/nexo reload pack, /iazip, /ce reload pack) when zMenu's files
+    # changed after /zm reload. When false, zMenu only tells you which command to run.
+    auto-rebuild: false
+    standalone:
+      # Where you upload zmenu-pack.zip. zMenu does not host it, and sends it with its SHA-1, so upload it again
+      # each time zMenu says the pack changed.
+      url: ""
+      # Kick players who decline the pack.
+      required: false
+      # Shown when the pack is offered (MiniMessage), empty for none.
+      prompt: "<gray>Interface of the server menus"
+  # When players see the fallback text of a canvas instead of the canvas:
+  # - auto: with the standalone pack, until the player loaded it. With Nexo, ItemsAdder, CraftEngine or a pack
+  #   of server.properties, only after the player declined it or it failed, including packs sent while the
+  #   player joins.
+  # - true: until a resource pack is reported loaded.
+  # - false: never.
+  require-pack: auto
+  # How long, in seconds, the buttons of an opened canvas keep working. Opening the dialog again resets it.
+  click-lifetime-seconds: 600
+  # Download the font and textures of the vanilla client from Mojang once per Minecraft version, to measure
+  # text in the default font and to draw vanilla textures (glyph: minecraft:item/diamond).
+  # zMenu only downloads them once a loaded dialog has a canvas that needs them. They are kept in plugins/zMenu/cache/vanilla and are never added to the resource pack (except the shader
+  # of hide-focus-outline).
+  download-vanilla-assets: true
+  # Experimental: a click on a canvas makes the client draw a white outline around the dialog body. The client
+  # draws it in code, so no texture can change it; this adds the client's gui shaders to the pack, changed to
+  # skip white 1 pixel lines exactly as long as the outline of one of your canvases. Other white of the
+  # client's screens stays. It replaces the gui shaders of any other pack and needs download-vanilla-assets.
+  # debug paints instead of hiding: red = hidden, green = another white 1 pixel line, blue = other white.
+  hide-focus-outline: false

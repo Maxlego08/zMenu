@@ -324,29 +324,53 @@ public abstract class AbstractDialogInventory implements DialogInventory {
     }
 
     protected @NotNull List<DialogBody> getDialogBodiesForPlayer(@NotNull Player player, @NotNull PaperMetaUpdater componentMeta) {
+        return this.getDialogBodiesForPlayer(player, componentMeta, new Placeholders());
+    }
+
+    /**
+     * @param placeholders The placeholders of this opening, shared with the footer buttons.
+     */
+    protected @NotNull List<DialogBody> getDialogBodiesForPlayer(@NotNull Player player, @NotNull PaperMetaUpdater componentMeta, @NotNull Placeholders placeholders) {
         return this.buildDialogs(
                 player,
                 this.getDialogBodies(player),
-                componentMeta
+                componentMeta,
+                placeholders
         );
     }
 
     protected @NotNull List<DialogInput> getDialogInputsForPlayer(@NotNull Player player, @NotNull PaperMetaUpdater componentMeta) {
+        return this.getDialogInputsForPlayer(player, componentMeta, new Placeholders());
+    }
+
+    /**
+     * @param placeholders The placeholders of this opening, shared with the footer buttons.
+     */
+    protected @NotNull List<DialogInput> getDialogInputsForPlayer(@NotNull Player player, @NotNull PaperMetaUpdater componentMeta, @NotNull Placeholders placeholders) {
         return this.buildDialogs(
                 player,
                 this.getDialogInputs(player),
-                componentMeta
+                componentMeta,
+                placeholders
         );
     }
-
 
     protected <B extends DialogButton<T>, T> List<T> buildDialogs(
             Player player,
             List<B> buttons,
             @NotNull PaperMetaUpdater paperMetaUpdater
             ) {
+        return this.buildDialogs(player, buttons, paperMetaUpdater, new Placeholders());
+    }
+
+    protected <B extends DialogButton<T>, T> List<T> buildDialogs(
+            Player player,
+            List<B> buttons,
+            @NotNull PaperMetaUpdater paperMetaUpdater,
+            @NotNull Placeholders placeholders
+            ) {
         List<T> results = new ArrayList<>(buttons.size());
-        DialogRenderContext<T, DialogInventory, PaperMetaUpdater, MenuPlugin> context = new DialogRenderContext<>(results, player, this, paperMetaUpdater, new Placeholders(), this.menuPlugin);
+        DialogRenderContext<T, DialogInventory, PaperMetaUpdater, MenuPlugin> context = new DialogRenderContext<>(results, player, this, paperMetaUpdater, placeholders, this.menuPlugin);
         for (B button : buttons) {
             if (button.hasCustomRender()) {
                 button.onRender(context);

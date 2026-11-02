@@ -2,189 +2,374 @@ package fr.maxlego08.menu.storage;
 
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.MenuPlugin;
+import fr.maxlego08.menu.api.ZMenuKeys;
 import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.event.events.PlayerOpenInventoryEvent;
 import fr.maxlego08.menu.api.players.Data;
 import fr.maxlego08.menu.api.players.inventory.InventoryPlayer;
+import fr.maxlego08.menu.api.registry.KeyedRegistry;
+import fr.maxlego08.menu.api.registry.Registries;
+import fr.maxlego08.menu.api.registry.WritableRegistry;
 import fr.maxlego08.menu.api.storage.StorageManager;
-import fr.maxlego08.menu.api.storage.Tables;
 import fr.maxlego08.menu.api.storage.dto.DataDTO;
-import fr.maxlego08.menu.api.storage.dto.FirstWorldJoinDTO;
 import fr.maxlego08.menu.api.storage.dto.InventoryDTO;
-import fr.maxlego08.menu.api.storage.dto.PlayerAnimationDTO;
-import fr.maxlego08.menu.storage.migrations.FirstWorldJoinMigration;
-import fr.maxlego08.menu.storage.migrations.PlayerAnimationMigration;
-import fr.maxlego08.menu.storage.migrations.PlayerDataMigration;
-import fr.maxlego08.menu.storage.migrations.PlayerInventoriesMigration;
-import fr.maxlego08.menu.storage.migrations.PlayerOpenInventoryMigration;
-import fr.maxlego08.menu.zcore.utils.GlobalDatabaseConfiguration;
+import fr.maxlego08.menu.api.storage.spi.InventoryOpenRecord;
+import fr.maxlego08.menu.api.storage.spi.MessageBroker;
+import fr.maxlego08.menu.api.storage.spi.StorageCapability;
+import fr.maxlego08.menu.api.storage.spi.StorageContext;
+import fr.maxlego08.menu.api.storage.spi.StorageProvider;
+import fr.maxlego08.menu.api.variable.Variable;
+import fr.maxlego08.menu.api.variable.VariableRef;
+import fr.maxlego08.menu.api.variable.VariableScope;
+import fr.maxlego08.menu.storage.memory.MemoryStorageProvider;
+import fr.maxlego08.menu.storage.mongo.MongoStorageProvider;
+import fr.maxlego08.menu.storage.redis.RedisMessaging;
+import fr.maxlego08.menu.storage.redis.RedisStorageProvider;
+import fr.maxlego08.menu.storage.sql.SqlStorageProvider;
+import fr.maxlego08.menu.variables.ZVariableService;
+import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.utils.TypeSafeCache;
-import fr.maxlego08.sarah.*;
 import fr.maxlego08.sarah.database.DatabaseType;
-import fr.maxlego08.sarah.database.Schema;
-import fr.maxlego08.sarah.logger.JULogger;
-import fr.maxlego08.sarah.logger.Logger;
+import net.kyori.adventure.key.Key;
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.jetbrains.annotations.Nullable;
 import org.jspecify.annotations.NonNull;
 
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
+/**
+ * zMenu's storage, on top of the {@link StorageProvider} chosen by {@code storage-type}.
+ *
+ * <p>Player data values and the opened-inventory log are buffered here and written in batches
+ * every {@code batch-task} seconds; everything else goes straight to the provider, which applies
+ * writes in the order they are made.</p>
+ */
 public class ZStorageManager implements StorageManager {
+
+    private static final long FLUSH_TIMEOUT_SECONDS = 30;
 
     private final MenuPlugin plugin;
     private final TypeSafeCache cache = new TypeSafeCache();
-    private RequestHelper requestHelper;
-    private boolean isEnable = true;
     private final AtomicBoolean flushing = new AtomicBoolean(false);
+    private StorageProvider provider;
+    private ZVariableService variableService;
+    private RedisMessaging redisMessaging;
 
     public ZStorageManager(MenuPlugin plugin) {
         this.plugin = plugin;
     }
 
+    /**
+     * The key of the provider a {@code storage-type} value selects: the SQL provider for
+     * {@code SQLITE}, {@code MYSQL} and {@code MARIADB}, the memory provider for {@code NONE}, and
+     * otherwise the key of a provider an addon registers, such as {@code myaddon:redis}.
+     */
+    static @Nullable Key providerKey(String storageType) {
+        if (SqlStorageProvider.databaseType(storageType) != null) return ZMenuKeys.key("sql");
+        if (storageType.equalsIgnoreCase("NONE")) return ZMenuKeys.key("memory");
+        if (storageType.equalsIgnoreCase("REDIS")) return ZMenuKeys.key("redis");
+        if (storageType.equalsIgnoreCase("MONGODB") || storageType.equalsIgnoreCase("MONGO")) return ZMenuKeys.key("mongodb");
+        return ZMenuKeys.tryParse(storageType.toLowerCase(Locale.ROOT));
+    }
+
     @Override
     public void loadDatabase() {
 
+        WritableRegistry<StorageProvider> providers = this.plugin.getInventoryManager().getRegistries().writable(Registries.STORAGE_PROVIDER);
+        providers.register(this.plugin, new SqlStorageProvider());
+        providers.register(this.plugin, new MemoryStorageProvider());
+        providers.register(this.plugin, new RedisStorageProvider());
+        providers.register(this.plugin, new MongoStorageProvider());
+
+        StorageConfiguration configuration = StorageConfiguration.read(this.plugin.getConfig());
+        Key key;
         if (this.plugin.isMockBukkitServer()) {
-            fr.maxlego08.menu.zcore.logger.Logger.info("You are using a MockBukkit server, the database is disabled.");
-            this.isEnable = false;
-            return;
-        }
-
-        MigrationManager.setMigrationTableName("zmenu_migrations");
-        MigrationManager.registerMigration(new PlayerOpenInventoryMigration());
-        MigrationManager.registerMigration(new PlayerDataMigration());
-        MigrationManager.registerMigration(new PlayerInventoriesMigration());
-        MigrationManager.registerMigration(new FirstWorldJoinMigration());
-        MigrationManager.registerMigration(new PlayerAnimationMigration());
-
-        GlobalDatabaseConfiguration globalDatabaseConfiguration = new GlobalDatabaseConfiguration(this.plugin.getConfig());
-        String user = globalDatabaseConfiguration.getUser();
-        String password = globalDatabaseConfiguration.getPassword();
-        String host = globalDatabaseConfiguration.getHost();
-        String dataBase = globalDatabaseConfiguration.getDatabase();
-        String prefix = globalDatabaseConfiguration.getTablePrefix();
-        int port = globalDatabaseConfiguration.getPort();
-        boolean enableDebug = globalDatabaseConfiguration.isDebug();
-
-        String storageType = this.plugin.getConfig().getString("storage-type", "SQLITE");
-        if (storageType.equalsIgnoreCase("NONE")) {
-            fr.maxlego08.menu.zcore.logger.Logger.info("You are not using a database.");
-            this.isEnable = false;
-            return;
-        }
-
-        Logger logger = JULogger.from(this.plugin.getLogger());
-        DatabaseType databaseType = storageType.equalsIgnoreCase("SQLITE") ? DatabaseType.SQLITE : storageType.equalsIgnoreCase("MYSQL") ? DatabaseType.MYSQL : DatabaseType.MARIADB;
-        DatabaseConfiguration databaseConfiguration = new DatabaseConfiguration(prefix, user, password, port, host, dataBase, enableDebug, databaseType);
-        Long maxLifetimeMillis = globalDatabaseConfiguration.getMaxLifetimeMillis();
-        if (maxLifetimeMillis != null) {
-            databaseConfiguration = databaseConfiguration.withMaxLifetime(maxLifetimeMillis);
-        }
-
-        DatabaseConnection databaseConnection;
-        if (storageType.equalsIgnoreCase("SQLITE")) {
-            databaseConnection = new SqliteConnection(databaseConfiguration, this.plugin.getDataFolder(), logger);
+            Logger.info("You are using a MockBukkit server, data is kept in memory.");
+            key = ZMenuKeys.key("memory");
         } else {
-            databaseConnection = new HikariDatabaseConnection(databaseConfiguration, logger);
+            key = providerKey(configuration.storageType());
         }
 
-        this.requestHelper = new RequestHelper(databaseConnection, logger);
-
-        if (!databaseConnection.isValid()) {
-            fr.maxlego08.menu.zcore.logger.Logger.info("Unable to connect to database !", fr.maxlego08.menu.zcore.logger.Logger.LogType.ERROR);
+        KeyedRegistry<StorageProvider> registry = this.plugin.getInventoryManager().getRegistries().registry(Registries.STORAGE_PROVIDER);
+        Optional<StorageProvider> optional = key == null ? Optional.empty() : registry.get(key);
+        if (optional.isEmpty()) {
+            Logger.info("Unknown storage-type " + configuration.storageType() + ". Use SQLITE, MYSQL, MARIADB, POSTGRESQL, REDIS, MONGODB, NONE or the key of a storage registered by an addon.", Logger.LogType.ERROR);
             Bukkit.getPluginManager().disablePlugin(this.plugin);
             return;
-        } else {
-            fr.maxlego08.menu.zcore.logger.Logger.info("The database connection is valid ! (" + (storageType.equalsIgnoreCase("SQLITE") ? "SQLITE" : databaseConnection.getDatabaseConfiguration().getHost()) + ")");
         }
 
-        MigrationManager.setDatabaseConfiguration(databaseConnection.getDatabaseConfiguration());
-        MigrationManager.execute(databaseConnection, logger);
+        StorageProvider candidate = optional.get();
+        String serverId;
+        try {
+            serverId = configuration.resolveServerId(this.plugin.getDataFolder());
+            candidate.open(new StorageContext(this.plugin, this.plugin.getConfig(), this.plugin.getDataFolder(), this.plugin.getLogger(), serverId)).join();
+        } catch (Exception exception) {
+            Logger.error("Unable to connect to database !", exception);
+            Bukkit.getPluginManager().disablePlugin(this.plugin);
+            return;
+        }
 
-        this.startBatchTask(this.plugin.getConfig().getInt("batch-task", 10));
+        this.provider = candidate;
+        if (key.equals(ZMenuKeys.key("memory")) && !this.plugin.isMockBukkitServer()) {
+            Logger.info("You are not using a database, data is kept in memory until the server stops.");
+        }
+
+        MessageBroker broker = candidate.broker().orElse(null);
+        if (configuration.messagingType().equalsIgnoreCase("REDIS") && !key.equals(ZMenuKeys.key("redis"))) {
+            try {
+                this.redisMessaging = RedisMessaging.open(this.plugin.getConfig(), serverId, this.plugin.getLogger());
+                broker = this.redisMessaging.broker();
+            } catch (RuntimeException exception) {
+                Logger.error("Unable to connect to Redis for messaging-type REDIS, changes are not sent to the other servers", exception);
+            }
+        }
+
+        this.variableService = new ZVariableService(this.plugin, candidate.variables(), serverId, broker,
+                candidate.sessions().orElse(null), configuration.handoffTimeoutMillis());
+        if (candidate.capabilities().contains(StorageCapability.SHARED) && broker == null) {
+            Logger.info("This database can be shared by several servers, but messaging-type is NONE: a server only sees the changes of the others when it reads them again.");
+        }
+        this.variableService.enable();
+        this.plugin.getServer().getPluginManager().registerEvents(this.variableService, this.plugin);
+
+        this.startBatchTask(configuration.batchSeconds());
+    }
+
+    /**
+     * A new, unopened instance of a built-in provider, so a migration can open a second SQL
+     * storage (SQLite to MySQL) next to the one in use. Providers added by addons have a single
+     * instance, taken from the registry.
+     */
+    private @Nullable StorageProvider newProvider(Key key) {
+        if (key.equals(ZMenuKeys.key("sql"))) return new SqlStorageProvider();
+        if (key.equals(ZMenuKeys.key("redis"))) return new RedisStorageProvider();
+        if (key.equals(ZMenuKeys.key("mongodb"))) return new MongoStorageProvider();
+        if (key.equals(ZMenuKeys.key("memory"))) return new MemoryStorageProvider();
+        StorageProvider registered = this.plugin.getInventoryManager().getRegistries().registry(Registries.STORAGE_PROVIDER).get(key).orElse(null);
+        return registered == this.provider ? null : registered;
+    }
+
+    /**
+     * Copies every zMenu data of the storage in use to another storage, opened with the settings of
+     * {@code config.yml} and the given {@code storage-type}. The values set in
+     * {@code migration-database-configuration} replace those of {@code database-configuration} for
+     * the target only, so a SQL database can be copied to another one on a different host or port.
+     * The buffered changes are written first.
+     * Blocks until the copy is stored; call it off the main thread.
+     *
+     * @param storageType the target, such as {@code MYSQL} or {@code REDIS}
+     * @param progress    receives a line of text after each step
+     * @throws IllegalArgumentException when the target is unknown or is the storage in use
+     */
+    public StorageMigration.@NonNull Result migrateTo(@NonNull String storageType, @NonNull Consumer<String> progress) throws Exception {
+        if (!this.isEnable()) throw new IllegalStateException("The storage is not open");
+
+        Key key = providerKey(storageType);
+        YamlConfiguration targetConfiguration = this.migrationConfiguration(storageType);
+        if (key != null && this.isStorageInUse(key, targetConfiguration)) {
+            throw new IllegalArgumentException("storage-type " + storageType + " is the storage in use");
+        }
+        StorageProvider target = key == null ? null : this.newProvider(key);
+        if (target == null) throw new IllegalArgumentException("Unknown storage " + storageType);
+
+        this.flush();
+
+        target.open(new StorageContext(this.plugin, targetConfiguration, this.plugin.getDataFolder(), this.plugin.getLogger(), this.variableService.serverId())).join();
+        try {
+            return new StorageMigration(this.provider, target, progress).run();
+        } finally {
+            target.close().join();
+        }
+    }
+
+    /**
+     * The settings a migration target is opened with: those of {@code config.yml}, then the
+     * values of the shared {@code database-configuration.yml}, then those of
+     * {@code migration-database-configuration}. The shared file is not read again when the target
+     * opens, so it cannot replace the migration values.
+     */
+    private YamlConfiguration migrationConfiguration(String storageType) throws InvalidConfigurationException {
+        YamlConfiguration configuration = new YamlConfiguration();
+        configuration.loadFromString(this.plugin.getConfig().saveToString());
+        configuration.set("storage-type", storageType.toUpperCase(Locale.ROOT));
+        configuration.set("messaging-type", "NONE");
+
+        ConfigurationSection shared = StorageConfiguration.sharedFile();
+        copyValues(shared == null ? null : shared.getConfigurationSection("database-configuration"), configuration);
+        copyValues(this.plugin.getConfig().getConfigurationSection("migration-database-configuration"), configuration);
+        configuration.set(StorageConfiguration.USE_SHARED_FILE, false);
+        return configuration;
+    }
+
+    private static void copyValues(@Nullable ConfigurationSection source, ConfigurationSection target) {
+        if (source == null) return;
+        for (Map.Entry<String, Object> entry : source.getValues(true).entrySet()) {
+            if (!(entry.getValue() instanceof ConfigurationSection)) {
+                target.set("database-configuration." + entry.getKey(), entry.getValue());
+            }
+        }
+    }
+
+    /**
+     * Whether a migration target is the storage in use. A built-in provider other than SQL keeps
+     * its connection settings outside {@code database-configuration}, so the same provider is the
+     * same storage. Two SQL storages are the same when they are the same kind of server (MySQL and
+     * MariaDB are one kind) at the same address, with the same database and table prefix.
+     */
+    private boolean isStorageInUse(Key key, ConfigurationSection targetConfiguration) {
+        if (!key.equals(this.provider.key())) return false;
+        if (!key.equals(ZMenuKeys.key("sql"))) return true;
+
+        StorageConfiguration source = StorageConfiguration.read(this.plugin.getConfig());
+        StorageConfiguration target = StorageConfiguration.read(targetConfiguration);
+        DatabaseType sourceType = SqlStorageProvider.databaseType(source.storageType());
+        DatabaseType targetType = SqlStorageProvider.databaseType(target.storageType());
+        if (!source.tablePrefix().equals(target.tablePrefix())) return false;
+        if (sourceType == DatabaseType.SQLITE || targetType == DatabaseType.SQLITE) return sourceType == targetType;
+        boolean sameKind = sourceType == targetType || (sourceType != DatabaseType.POSTGRESQL && targetType != DatabaseType.POSTGRESQL);
+        return sameKind && source.host().equalsIgnoreCase(target.host()) && source.port() == target.port() && source.database().equals(target.database());
+    }
+
+    /**
+     * @return a few lines describing the storage in use, for {@code /zm storage status}
+     */
+    public @NonNull List<String> status() {
+        List<String> lines = new ArrayList<>();
+        if (this.provider == null) {
+            lines.add("Storage: not open");
+            return lines;
+        }
+        lines.add("Storage: " + this.provider.key().asString() + " " + this.provider.capabilities());
+        lines.add("Server id: " + this.variableService.serverId());
+        lines.add("Messaging: " + (this.redisMessaging != null ? "redis" : this.provider.broker().map(broker -> broker.getClass().getSimpleName()).orElse("none")));
+        lines.add("Owners in memory: " + this.variableService.getCachedOwners() + ", player changes waiting: " + this.variableService.getPendingCount());
+        return lines;
+    }
+
+    /**
+     * @return the variables of every scope, or null when the storage could not be opened
+     */
+    public @Nullable ZVariableService getVariableService() {
+        return this.variableService;
+    }
+
+    public CompletableFuture<Optional<String>> loadSavedInventory(@NonNull UUID playerId) {
+        if (!this.isEnable()) return CompletableFuture.completedFuture(Optional.empty());
+
+        return this.provider.savedInventories().load(playerId);
+    }
+
+    private VariableRef playerRef(UUID playerId, String key) {
+        return VariableRef.player(playerId, key);
+    }
+
+    /**
+     * @return the provider in use, or null when the storage could not be opened
+     */
+    public @Nullable StorageProvider getProvider() {
+        return this.provider;
     }
 
     private void startBatchTask(int seconds) {
 
         if (seconds <= 0) return;
 
-        if (!this.isEnable()) return;
-
-        this.plugin.getScheduler().runTimerAsync(() -> {
-            this.storeOpenInventories();
-            this.storePlayerData();
-        }, seconds, seconds, TimeUnit.SECONDS);
-    }
-
-    private void storePlayerData() {
-
-        if (!this.isEnable()) return;
-
-        List<DataDTO> dataList = this.cache.drain(DataDTO.class);
-        if (dataList.isEmpty()) return;
-
-        List<Schema> schemas = new ArrayList<>();
-        for (DataDTO dto : dataList) {
-            schemas.add(SchemaBuilder.upsert(Tables.PLAYER_DATAS, table -> {
-                table.uuid("player_id", dto.player_id()).primary();
-                table.string("key", dto.key()).primary();
-                table.string("data", dto.data());
-                table.object("expired_at", dto.expired_at() == null ? null : dto.expired_at());
-            }));
-        }
-
-        this.requestHelper.upsertMultiple(schemas);
-    }
-
-    private void storeOpenInventories() {
-
-        if (!this.isEnable()) return;
-
-        List<PlayerOpenInventoryEvent> events = this.cache.drain(PlayerOpenInventoryEvent.class);
-        if (events.isEmpty()) return;
-
-        List<Schema> schemas = new ArrayList<>();
-        for (PlayerOpenInventoryEvent event : events) {
-            if (event != null) {
-                schemas.add(SchemaBuilder.insert(Tables.PLAYER_OPEN_INVENTORIES, table -> {
-                    table.uuid("player_id", event.getPlayer().getUniqueId());
-                    table.string("plugin", event.getInventory().getPlugin().getName());
-                    table.string("inventory", event.getInventory().getFileName());
-                    table.bigInt("page", event.getPage());
-                    StringBuilder inventoriesBuilder = new StringBuilder();
-                    for (Inventory oldInventory : event.getOldInventories()) {
-                        if (oldInventory != null) {
-                            if (!inventoriesBuilder.isEmpty()) {
-                                inventoriesBuilder.append(',');
-                            }
-                            inventoriesBuilder.append(oldInventory.getFileName());
-                        }
-                    }
-                    table.string("old_inventories", inventoriesBuilder.toString());
-                }));
-            }
-        }
-        this.requestHelper.insertMultiple(schemas);
+        this.plugin.getScheduler().runTimerAsync(() -> this.storeBuffered(false), seconds, seconds, TimeUnit.SECONDS);
     }
 
     /**
-     * Writes everything still buffered, on the calling thread.
+     * Hands the buffered values and log entries to the provider.
      *
-     * <p>Deliberately synchronous. This is called from {@code onDisable}, where the plugin
-     * scheduler is being torn down, so anything handed to {@code runAsync} there would never run.</p>
+     * @param all whether to also write the player changes still waiting for their player to be
+     *            read, when zMenu stops
+     * @return completes once they are stored
+     */
+    private CompletableFuture<Void> storeBuffered(boolean all) {
+        if (!this.isEnable()) return CompletableFuture.completedFuture(null);
+
+        List<CompletableFuture<Void>> writes = new ArrayList<>();
+
+        List<InventoryOpenRecord> records = this.cache.drain(InventoryOpenRecord.class);
+        if (!records.isEmpty()) {
+            this.provider.inventoryLogs().ifPresent(store -> writes.add(this.logFailure(store.append(records), "store the opened inventories")));
+        }
+
+        if (this.variableService != null) writes.add(this.variableService.flush(all));
+
+        return CompletableFuture.allOf(writes.toArray(new CompletableFuture[0]));
+    }
+
+    private <T> CompletableFuture<T> logFailure(CompletableFuture<T> future, String action) {
+        return future.whenComplete((result, throwable) -> {
+            if (throwable != null) Logger.error("Unable to " + action, throwable);
+        });
+    }
+
+    private <T> T await(Supplier<CompletableFuture<T>> read, T fallback, String action) {
+        try {
+            return read.get().join();
+        } catch (Exception exception) {
+            Logger.error("Unable to " + action, exception);
+            return fallback;
+        }
+    }
+
+    /**
+     * Writes everything still buffered and waits until it is stored.
+     *
+     * <p>Deliberately blocking. This is called from {@code onDisable}, where the plugin scheduler
+     * is being torn down, so the server must not stop before the data is written.</p>
      */
     @Override
     public void flush() {
 
         if (!this.isEnable()) return;
 
-        this.storeOpenInventories();
-        this.storePlayerData();
+        try {
+            this.storeBuffered(true).get(FLUSH_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+        } catch (InterruptedException exception) {
+            Thread.currentThread().interrupt();
+        } catch (ExecutionException | TimeoutException exception) {
+            Logger.error("Unable to write the buffered data to the database", exception);
+        }
+    }
+
+    /**
+     * Lets the provider store what is still queued and release the database. Called once, when
+     * the plugin disables.
+     */
+    public void close() {
+
+        if (this.provider == null) return;
+
+        if (this.variableService != null) this.variableService.disable();
+        if (this.redisMessaging != null) {
+            try {
+                this.redisMessaging.close();
+            } catch (InterruptedException exception) {
+                Thread.currentThread().interrupt();
+            }
+        }
+        try {
+            this.provider.close().get(FLUSH_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+        } catch (InterruptedException exception) {
+            Thread.currentThread().interrupt();
+        } catch (ExecutionException | TimeoutException exception) {
+            Logger.error("Some database writes did not finish before the server stopped", exception);
+        }
     }
 
     /**
@@ -204,72 +389,76 @@ public class ZStorageManager implements StorageManager {
 
         if (!this.flushing.compareAndSet(false, true)) return;
 
-        this.plugin.getScheduler().runAsync(w -> {
-            try {
-                this.flush();
-            } finally {
-                this.flushing.set(false);
-            }
-        });
+        this.storeBuffered(false).whenComplete((result, throwable) -> this.flushing.set(false));
     }
 
     @Override
     public boolean isEnable() {
-        return this.isEnable;
+        return this.provider != null;
     }
 
+    /**
+     * Replaces a player data value, through the variables of the player scope.
+     */
     @Override
     public void upsertData(@NonNull UUID uuid, @NonNull Data data) {
         if (!this.isEnable()) return;
 
-        DataDTO dto = new DataDTO(uuid, data.getKey(), data.getValue().toString(), data.getExpiredAt() == 0 ? null : new Date(data.getExpiredAt()));
-        this.cache.replaceMatching(DataDTO.class, e -> e.player_id().equals(uuid) && e.key().equals(data.getKey()), dto);
+        Object value = data.getValue();
+        this.variableService.set(this.playerRef(uuid, data.getKey()), value == null ? "" : value.toString(), data.getExpiredAt());
     }
 
     @Override
     public void clearData() {
         if (!this.isEnable()) return;
 
-        this.cache.clear(DataDTO.class);
-        this.plugin.getScheduler().runAsync(w -> this.requestHelper.delete(Tables.PLAYER_DATAS, table -> {
-        }));
+        this.variableService.deleteScope(VariableScope.PLAYER);
     }
 
     @Override
     public void clearData(@NonNull UUID uniqueId) {
         if (!this.isEnable()) return;
 
-        this.cache.removeMatching(DataDTO.class, e -> e.player_id().equals(uniqueId));
-        this.plugin.getScheduler().runAsync(w -> this.requestHelper.delete(Tables.PLAYER_DATAS, table -> table.where("player_id", uniqueId)));
+        this.variableService.deleteOwner(VariableScope.PLAYER, uniqueId.toString());
     }
 
     @Override
     public void clearData(@NonNull String key) {
         if (!this.isEnable()) return;
 
-        this.cache.removeMatching(DataDTO.class, e -> e.key().equals(key));
-        this.plugin.getScheduler().runAsync(w -> this.requestHelper.delete(Tables.PLAYER_DATAS, table -> table.where("key", key)));
+        this.variableService.deleteName(VariableScope.PLAYER, key);
     }
 
     @Override
     public void removeData(@NonNull UUID uuid, @NonNull String key) {
         if (!this.isEnable()) return;
 
-        this.cache.removeMatching(DataDTO.class, e -> e.player_id().equals(uuid) && e.key().equals(key));
-        this.plugin.getScheduler().runAsync(w -> this.requestHelper.delete(Tables.PLAYER_DATAS, table -> {
-            table.where("player_id", uuid);
-            table.where("key", key);
-        }));
+        this.variableService.delete(this.playerRef(uuid, key));
     }
 
+    /**
+     * The player data values in memory: online players and players looked up recently. Player
+     * data is no longer read for every player.
+     */
     @Override
     public @NonNull List<DataDTO> loadPlayers() {
-        return this.isEnable() ? this.requestHelper.selectAll(Tables.PLAYER_DATAS, DataDTO.class) : List.of();
+        if (!this.isEnable()) return List.of();
+
+        List<DataDTO> dataList = new ArrayList<>();
+        for (Variable variable : this.variableService.getCachedScope(VariableScope.PLAYER)) {
+            dataList.add(new DataDTO(UUID.fromString(variable.ref().owner()), variable.ref().name(), variable.text(), variable.expiresAt() == 0 ? null : new Date(variable.expiresAt())));
+        }
+        return dataList;
     }
 
     @Override
     public @NonNull List<InventoryDTO> loadInventories() {
-        return this.isEnable() ? this.requestHelper.selectAll(Tables.PLAYER_INVENTORIES, InventoryDTO.class) : List.of();
+        if (!this.isEnable()) return List.of();
+
+        Map<UUID, String> inventories = this.await(() -> this.provider.savedInventories().loadAll(), Map.of(), "load the saved inventories");
+        List<InventoryDTO> dtos = new ArrayList<>(inventories.size());
+        inventories.forEach((playerId, inventory) -> dtos.add(new InventoryDTO(playerId, inventory)));
+        return dtos;
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -277,78 +466,60 @@ public class ZStorageManager implements StorageManager {
 
         if (!this.isEnable() || !Configuration.enablePlayerOpenInventoryLogs) return;
 
-        this.cache.add(event);
+        List<String> previousInventories = new ArrayList<>();
+        for (Inventory oldInventory : event.getOldInventories()) {
+            if (oldInventory != null) previousInventories.add(oldInventory.getFileName());
+        }
+        this.cache.add(new InventoryOpenRecord(event.getPlayer().getUniqueId(), event.getInventory().getPlugin().getName(),
+                event.getInventory().getFileName(), event.getPage(), previousInventories));
     }
 
     @Override
     public void removeInventory(@NonNull UUID uuid) {
-
         if (!this.isEnable()) return;
 
-        this.plugin.getScheduler().runAsync(w -> this.requestHelper.delete(Tables.PLAYER_INVENTORIES, table -> table.where("player_id", uuid)));
+        this.logFailure(this.provider.savedInventories().delete(uuid), "delete the saved inventory of " + uuid);
     }
 
     @Override
     public @NonNull Set<String> getVisitedWorlds(@NonNull UUID playerId) {
         if (!this.isEnable()) return Set.of();
 
-        return new HashSet<>(this.requestHelper.select(Tables.FIRST_WORLD_JOIN, FirstWorldJoinDTO.class, table -> table.where("player_id", playerId))
-                .stream()
-                .map(FirstWorldJoinDTO::worldName)
-                .toList());
+        return this.await(() -> this.provider.worldVisits().load(playerId), Set.of(), "load the visited worlds of " + playerId);
     }
 
     @Override
     public void markWorldVisited(@NonNull UUID playerId, @NonNull String worldName) {
         if (!this.isEnable()) return;
 
-        this.plugin.getScheduler().runAsync(w -> this.requestHelper.upsert(Tables.FIRST_WORLD_JOIN, table -> {
-            table.uuid("player_id", playerId).primary();
-            table.string("world_name", worldName).primary();
-        }));
+        this.logFailure(this.provider.worldVisits().markVisited(playerId, worldName), "store a visited world of " + playerId);
     }
 
     @Override
     public @NonNull Map<String, Long> loadPlayedAnimations(@NonNull UUID playerId) {
         if (!this.isEnable()) return Map.of();
 
-        Map<String, Long> played = new HashMap<>();
-        for (PlayerAnimationDTO dto : this.requestHelper.select(Tables.PLAYER_ANIMATIONS, PlayerAnimationDTO.class,
-                table -> table.where("player_id", playerId))) {
-            played.put(dto.animationKey(), dto.playedAt());
-        }
-        return played;
+        return this.await(() -> this.provider.animations().load(playerId), Map.of(), "load the played animations of " + playerId);
     }
 
     @Override
     public void markAnimationPlayed(@NonNull UUID playerId, @NonNull String animationKey, long playedAt) {
         if (!this.isEnable()) return;
 
-        this.plugin.getScheduler().runAsync(w -> this.requestHelper.upsert(Tables.PLAYER_ANIMATIONS, table -> {
-            table.uuid("player_id", playerId).primary();
-            table.string("animation_key", animationKey).primary();
-            table.bigInt("played_at", playedAt);
-        }));
+        this.logFailure(this.provider.animations().markPlayed(playerId, animationKey, playedAt), "store a played animation of " + playerId);
     }
 
     @Override
     public void clearPlayedAnimations(@NonNull UUID playerId, String animationKey) {
         if (!this.isEnable()) return;
 
-        this.plugin.getScheduler().runAsync(w -> this.requestHelper.delete(Tables.PLAYER_ANIMATIONS, table -> {
-            table.where("player_id", playerId);
-            if (animationKey != null) table.where("animation_key", animationKey);
-        }));
+        this.logFailure(this.provider.animations().clear(playerId, animationKey), "forget the played animations of " + playerId);
     }
 
     @Override
     public void storeInventory(@NonNull UUID uuid, @NonNull InventoryPlayer inventoryPlayer) {
-
         if (!this.isEnable()) return;
 
-        this.plugin.getScheduler().runAsync(w -> this.requestHelper.insert(Tables.PLAYER_INVENTORIES, table -> {
-            table.uuid("player_id", uuid);
-            table.string("inventory", inventoryPlayer.toInventoryString());
-        }));
+        this.logFailure(this.provider.savedInventories().save(uuid, inventoryPlayer.toInventoryString()), "store the saved inventory of " + uuid);
     }
 }

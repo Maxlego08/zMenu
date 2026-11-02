@@ -13,6 +13,7 @@ import fr.maxlego08.menu.api.command.CommandManager;
 import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.configuration.Feature;
 import fr.maxlego08.menu.api.configuration.dialog.ConfigDialogBuilder;
+import fr.maxlego08.menu.api.dialog.canvas.CanvasManager;
 import fr.maxlego08.menu.api.dupe.DupeManager;
 import fr.maxlego08.menu.api.enchantment.Enchantments;
 import fr.maxlego08.menu.api.font.FontImage;
@@ -48,7 +49,7 @@ import fr.maxlego08.menu.hooks.NexoTagResolverLoader;
 import fr.maxlego08.menu.hooks.bedrock.ZBedrockManager;
 import fr.maxlego08.menu.hooks.bedrock.listener.BedrockReplacementListener;
 import fr.maxlego08.menu.hooks.dialogs.ZDialogManager;
-import fr.maxlego08.menu.hooks.packetevents.PacketEventPlayerInventoryManager;
+import fr.maxlego08.menu.hooks.dialogs.canvas.ZCanvasManager;
 import fr.maxlego08.menu.hooks.packetevents.PacketUtils;
 import fr.maxlego08.menu.hooks.packetevents.loader.PacketEventTitleAnimationLoader;
 import fr.maxlego08.menu.hooks.paper.PaperProtocolClientVersionProvider;
@@ -60,6 +61,7 @@ import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.itemstack.ZItemStackService;
 import fr.maxlego08.menu.listener.ItemUpdaterListener;
 import fr.maxlego08.menu.nms.v1_21_R1.inventory.inventories.AnvilInventoryDefault;
+import fr.maxlego08.menu.nms.v1_21_R1.network.ConfigurationResourcePackListener;
 import fr.maxlego08.menu.nms.v1_21_R1.network.NMSMenuPacketListener;
 import fr.maxlego08.menu.pattern.ZPatternManager;
 import fr.maxlego08.menu.placeholder.ItemPlaceholders;
@@ -70,6 +72,7 @@ import fr.maxlego08.menu.registry.ZRuleLoaderRegistry;
 import fr.maxlego08.menu.save.MessageLoader;
 import fr.maxlego08.menu.sound.ZSoundService;
 import fr.maxlego08.menu.storage.ZStorageManager;
+import fr.maxlego08.menu.variables.ZVariableService;
 import fr.maxlego08.menu.website.ZWebsiteManager;
 import fr.maxlego08.menu.zcore.ComponentItemStackPlatformHelper;
 import fr.maxlego08.menu.zcore.ZPlugin;
@@ -149,6 +152,7 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
     private ItemManager itemManager = new DisabledItemManager();
     private ZWebsiteManager websiteManager;
     private DialogManager dialogManager;
+    private CanvasManager canvasManager;
     private BedrockManager bedrockManager;
     private CommandMenu commandMenu;
     private DupeManager dupeManager;
@@ -206,6 +210,7 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
 
         if (!this.isMockBukkitServer) {
             NMSMenuPacketListener.init(this);
+            ConfigurationResourcePackListener.register(this);
         }
 
         instance = this;
@@ -237,6 +242,7 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
         this.preEnable();
 
         this.storageManager.loadDatabase();
+        if (!this.isEnabled()) return;
         this.addListener(this.storageManager);
 
 
@@ -297,7 +303,9 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
                 boolean loaded = this.safeHook("Dialogs", () -> {
                     Logger.info("Paper server detected, loading Dialogs support");
                     ConfigManager configManager = new ConfigManager(this);
-                    this.dialogManager = new ZDialogManager(this, configManager);
+                    ZDialogManager zDialogManager = new ZDialogManager(this, configManager);
+                    this.dialogManager = zDialogManager;
+                    zDialogManager.enable();
                     this.addListener((ZDialogManager) this.dialogManager);
                     servicesManager.register(DialogManager.class, this.dialogManager, this, ServicePriority.Highest);
                     ConfigDialogBuilder configDialogBuilder = new ConfigDialogBuilder("zMenu Config", "zMenu Configuration");
@@ -306,6 +314,14 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
                 if (!loaded) {
                     this.dialogManager = null;
                     Configuration.HAS_DIALOG_SUPPORT = false;
+                } else {
+                    boolean canvasLoaded = this.safeHook("Dialog canvases", () -> {
+                        ZCanvasManager zCanvasManager = new ZCanvasManager(this, ((ZDialogManager) this.dialogManager).getClicks());
+                        this.canvasManager = zCanvasManager;
+                        zCanvasManager.enable();
+                        servicesManager.register(CanvasManager.class, zCanvasManager, this, ServicePriority.Highest);
+                    });
+                    if (!canvasLoaded) this.canvasManager = null;
                 }
             } else {
                 Logger.info("Paper server detected but MiniMessage format is disabled, Dialogs support will not be loaded. Enable MiniMessage format in config.yml to use Dialogs.");
@@ -404,7 +420,6 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
 
         if (this.packetManager != null) {
             this.safeHook("packetevents", () -> {
-                this.inventoryManager.registerInventoryListener(new PacketEventPlayerInventoryManager(this));
                 this.packetManager.onPostEnable();
             });
         }
@@ -574,6 +589,7 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
         if (this.inventoryHotReload != null) this.inventoryHotReload.stop();
 
         if (this.storageManager != null) this.safeDisable("storage", this.storageManager::flush);
+        if (this.storageManager instanceof ZStorageManager zStorageManager) this.safeDisable("storage writer", zStorageManager::close);
 
         this.safeDisable("configuration", () -> Configuration.getInstance().save(this.getConfig(), this.configFile));
 
@@ -589,6 +605,7 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
                     nmsMenuPacketListener.shutdown();
                 }
             });
+            this.safeDisable("configuration resource pack listener", ConfigurationResourcePackListener::unregister);
         }
 
         this.safeDisable("offline player cache", () -> OfflinePlayerCache.uninstall(this));
@@ -658,6 +675,11 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
     }
 
     @Override
+    public CanvasManager getCanvasManager() {
+        return this.canvasManager;
+    }
+
+    @Override
     public ItemManager getItemManager() {
         return this.itemManager;
     }
@@ -700,6 +722,11 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
     @Override
     public StorageManager getStorageManager() {
         return this.storageManager;
+    }
+
+    @Override
+    public ZVariableService getVariableService() {
+        return ((ZStorageManager) this.storageManager).getVariableService();
     }
 
     @Override

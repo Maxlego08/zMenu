@@ -1,14 +1,15 @@
 package fr.maxlego08.menu.hooks.dialogs.loader;
 
 import fr.maxlego08.menu.api.InventoryOption;
-import fr.maxlego08.menu.api.registry.Registries;
 import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.button.Button;
+import fr.maxlego08.menu.api.button.buttons.dialogs.body.DialogCanvasBody;
 import fr.maxlego08.menu.api.button.dialogs.BodyButton;
 import fr.maxlego08.menu.api.button.dialogs.InputButton;
 import fr.maxlego08.menu.api.enums.dialog.DialogType;
 import fr.maxlego08.menu.api.exceptions.InventoryButtonException;
 import fr.maxlego08.menu.api.exceptions.InventoryException;
+import fr.maxlego08.menu.api.registry.Registries;
 import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.api.utils.DialogFallback;
 import fr.maxlego08.menu.api.utils.InventoryReplacement;
@@ -60,10 +61,14 @@ public class DialogLoader implements Loader<AbstractDialogInventory> {
         boolean canCloseWithEscape = configuration.getBoolean("can-close-with-escape", true);
         dialogInventory.setCanCloseWithEscape(canCloseWithEscape);
 
+        EscapeActionCheck.refreshOnEscape(configuration, dialogType).ifPresent(button -> Logger.info("The dialog " + file.getName() + " runs canvas-refresh in its "
+                + button + " button, which Escape also runs: pressing Escape opens the dialog again. Put canvas-refresh on another button (a multi_action"
+                + " button, or a canvas button with refresh: true)", Logger.LogType.WARNING));
+
         boolean pause = configuration.getBoolean("pause", false);
         dialogInventory.setPause(pause);
 
-        String afterActionString = configuration.getString("after-action", "CLOSE");
+        String afterActionString = configuration.getString("after-action", configuration.getString("after_action","CLOSE"));
         try {
             dialogInventory.setAfterAction(afterActionString.toUpperCase(Locale.ROOT));
         } catch (IllegalArgumentException e) {
@@ -102,6 +107,10 @@ public class DialogLoader implements Loader<AbstractDialogInventory> {
 
         List<BodyButton> bodyButtons = this.loadButtons(configuration, file, "body", BodyButton.class, null);
         dialogInventory.setBodyButtons(bodyButtons);
+
+        if (!configuration.contains("after-action") && !configuration.contains("after_action") && !pause && bodyButtons.stream().anyMatch(body -> body instanceof DialogCanvasBody canvas && canvas.hasClickableElements())) {
+            dialogInventory.setAfterAction("NONE");
+        }
 
         List<InputButton> inputButtons = this.loadButtons(configuration, file, "inputs", InputButton.class, InputButton::setKey);
         dialogInventory.setInputButtons(inputButtons);

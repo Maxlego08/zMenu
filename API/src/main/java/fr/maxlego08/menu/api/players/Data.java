@@ -5,7 +5,12 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  * <p>A data is composed of a key, a string, and a value, an object</p>
+ *
+ * @deprecated use {@link fr.maxlego08.menu.api.variable.Variable}. {@link #add(int)} and
+ * {@link #remove(int)} change a copy, then the whole value is written; use
+ * {@code VariableService#increment} so that concurrent additions all count.
  */
+@Deprecated(since = "1.1.2.2", forRemoval = true)
 public interface Data {
 
     /**

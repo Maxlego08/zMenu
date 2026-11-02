@@ -1,11 +1,13 @@
 package fr.maxlego08.menu.hooks.dialogs;
 
-import fr.maxlego08.menu.api.ZMenuKeys;
 import fr.maxlego08.menu.api.DialogManager;
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.MenuPlugin;
+import fr.maxlego08.menu.api.ZMenuKeys;
 import fr.maxlego08.menu.api.configuration.ConfigManagerInt;
 import fr.maxlego08.menu.api.configuration.Configuration;
+import fr.maxlego08.menu.api.dialog.canvas.CanvasManager;
+import fr.maxlego08.menu.api.dialog.canvas.CanvasStateService;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.event.events.PlayerOpenInventoryEvent;
 import fr.maxlego08.menu.api.exceptions.DialogException;
@@ -13,6 +15,10 @@ import fr.maxlego08.menu.api.exceptions.DialogFileNotFound;
 import fr.maxlego08.menu.api.exceptions.InventoryException;
 import fr.maxlego08.menu.api.inventory.dialog.DialogInventory;
 import fr.maxlego08.menu.api.inventory.dialog.DialogListDialogInventory;
+import fr.maxlego08.menu.api.loader.DialogActionLoader;
+import fr.maxlego08.menu.api.registry.Registries;
+import fr.maxlego08.menu.api.registry.RegistryManager;
+import fr.maxlego08.menu.api.registry.WritableRegistry;
 import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.api.utils.DialogFallback;
 import fr.maxlego08.menu.api.utils.Loader;
@@ -20,15 +26,24 @@ import fr.maxlego08.menu.api.utils.Message;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.api.utils.record.dialogs.DialogListEntry;
 import fr.maxlego08.menu.api.utils.version.ClientVersionManager;
-import fr.maxlego08.menu.hooks.ComponentMeta;
-import fr.maxlego08.menu.hooks.dialogs.inventory.AbstractDialogInventory;
-import fr.maxlego08.menu.hooks.dialogs.loader.DialogLoader;
 import fr.maxlego08.menu.common.utils.MessageUtils;
 import fr.maxlego08.menu.common.utils.PluginUtils;
+import fr.maxlego08.menu.hooks.ComponentMeta;
+import fr.maxlego08.menu.hooks.dialogs.canvas.state.CanvasStateActions;
+import fr.maxlego08.menu.hooks.dialogs.click.DialogClicks;
+import fr.maxlego08.menu.hooks.dialogs.inventory.AbstractDialogInventory;
+import fr.maxlego08.menu.hooks.dialogs.loader.DialogLoader;
+import fr.maxlego08.menu.hooks.dialogs.loader.dialogaction.ZCustomClickDialogActionLoader;
+import fr.maxlego08.menu.hooks.dialogs.loader.dialogaction.ZStaticDialogActionLoader;
 import fr.maxlego08.menu.zcore.logger.Logger;
-import io.papermc.paper.dialog.Dialog;
+import io.papermc.paper.connection.PlayerGameConnection;
+import io.papermc.paper.dialog.DialogResponseView;
+import io.papermc.paper.event.player.PlayerCustomClickEvent;
 import io.papermc.paper.registry.RegistryAccess;
 import io.papermc.paper.registry.RegistryKey;
+import io.papermc.paper.registry.data.dialog.action.DialogAction;
+import net.kyori.adventure.nbt.api.BinaryTagHolder;
+import net.kyori.adventure.text.event.ClickCallback;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -38,14 +53,18 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Instant;
+import java.time.temporal.TemporalAmount;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.BiConsumer;
 import java.util.stream.Stream;
 
 public class ZDialogManager implements DialogManager, Listener {
@@ -55,6 +74,7 @@ public class ZDialogManager implements DialogManager, Listener {
     private final Set<String> dialogNames = ConcurrentHashMap.newKeySet();
     private final Map<String, List<AbstractDialogInventory>> dialogs = new ConcurrentHashMap<>();
     private final Map<UUID, DialogInventory> activeDialogs = new ConcurrentHashMap<>();
+    private final DialogClicks clicks = new DialogClicks(System::currentTimeMillis);
 
     private final ComponentMeta paperComponent;
 
@@ -62,6 +82,13 @@ public class ZDialogManager implements DialogManager, Listener {
         this.menuPlugin = menuPlugin;
         this.configManager = configManager;
         this.paperComponent = ((ComponentMeta) menuPlugin.getMetaUpdater());
+    }
+
+    public void enable() {
+        RegistryManager registries = this.menuPlugin.getInventoryManager().getRegistries();
+        WritableRegistry<DialogActionLoader> dialogActionLoaderWritableRegistry = registries.writable(Registries.DIALOG_ACTION);
+        dialogActionLoaderWritableRegistry.register(this.menuPlugin, new ZCustomClickDialogActionLoader());
+        dialogActionLoaderWritableRegistry.register(this.menuPlugin, new ZStaticDialogActionLoader());
     }
 
     @Override
@@ -154,6 +181,11 @@ public class ZDialogManager implements DialogManager, Listener {
         }
 
         this.validateDialogLists();
+
+        CanvasManager canvasManager = this.menuPlugin.getCanvasManager();
+        if (canvasManager != null) {
+            canvasManager.regenerate("the dialogs were loaded");
+        }
     }
 
     private void validateDialogLists() {
@@ -263,10 +295,17 @@ public class ZDialogManager implements DialogManager, Listener {
             InventoryEngine fakeInventory = this.menuPlugin.getInventoryManager().getFakeInventory();
             Placeholders placeholders = new Placeholders();
             placeholders.register("player", player.getName());
+            CanvasManager canvasManager = this.menuPlugin.getCanvasManager();
+            if (canvasManager != null) {
+                String fileName = dialogInventory.getFileName();
+                canvasManager.getStateService().onOpen(player.getUniqueId(), fileName);
+                placeholders.register(CanvasStateActions.DIALOG_PLACEHOLDER, fileName);
+                CanvasStateService state = canvasManager.getStateService();
+                placeholders.registerLookup(CanvasStateActions.PREFIX, key -> CanvasStateActions.lookup(state.get(player.getUniqueId(), fileName, key), key));
+            }
 
-            Dialog dialog = dialogInventory.buildDialog(targetPlayer, this.paperComponent, fakeInventory, placeholders);
-
-            player.showDialog(dialog);
+            Player builtFor = targetPlayer;
+            this.clicks.open(player.getUniqueId(), () -> player.showDialog(dialogInventory.buildDialog(builtFor, this.paperComponent, fakeInventory, placeholders)));
 
             this.activeDialogs.put(player.getUniqueId(), dialogInventory);
         } catch (Exception e) {
@@ -329,6 +368,33 @@ public class ZDialogManager implements DialogManager, Listener {
     @EventHandler
     public void onQuit(PlayerQuitEvent event) {
         this.activeDialogs.remove(event.getPlayer().getUniqueId());
+        this.clicks.clear(event.getPlayer().getUniqueId());
+    }
+
+    @EventHandler
+    public void onCustomClick(PlayerCustomClickEvent event) {
+        if (!event.getIdentifier().equals(DialogClicks.KEY)) return;
+        if (!(event.getCommonConnection() instanceof PlayerGameConnection connection)) return;
+        BinaryTagHolder tag = event.getTag();
+        if (tag == null) return;
+        Player player = connection.getPlayer();
+        BiConsumer<Player, DialogResponseView> action = this.clicks.use(player.getUniqueId(), tag.string());
+        if (action == null) return;
+        DialogResponseView view = event.getDialogResponseView();
+        this.menuPlugin.getScheduler().runAtEntity(player, task -> action.accept(player, view));
+    }
+
+    @Override
+    public @NotNull DialogAction clickAction(@NotNull Player viewer, @NotNull BiConsumer<Player, DialogResponseView> action, int uses, @Nullable TemporalAmount lifetime) {
+        TemporalAmount duration = lifetime == null ? ClickCallback.DEFAULT_LIFETIME : lifetime;
+        return this.clicks.dialogAction(viewer.getUniqueId(), action, uses, Instant.EPOCH.plus(duration).toEpochMilli());
+    }
+
+    /**
+     * @return The click table of the dialogs and canvases players see.
+     */
+    public @NotNull DialogClicks getClicks() {
+        return this.clicks;
     }
 
     public boolean openDialogByName(@NotNull Player player, String dialogName) {

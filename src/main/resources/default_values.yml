@@ -12,3 +12,9 @@ values:
   factory: 0
   mine: 0
   cookie: 0
+  # Used by the dialog canvas examples
+  canvas_gem: diamond
+  canvas_theme: frame
+  canvas_progress: 10
+  canvas_badge: "true"
+  canvas_nickname: "Steve"

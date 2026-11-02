@@ -2,43 +2,30 @@ package fr.maxlego08.menu.hooks.packetevents;
 
 import com.github.retrooper.packetevents.PacketEvents;
 import com.github.retrooper.packetevents.PacketEventsAPI;
-import com.github.retrooper.packetevents.event.EventManager;
+import com.github.retrooper.packetevents.event.PacketListenerCommon;
 import com.github.retrooper.packetevents.event.PacketListenerPriority;
-import com.github.retrooper.packetevents.manager.player.PlayerManager;
-import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerOpenWindow;
-import fr.maxlego08.menu.api.Inventory;
-import fr.maxlego08.menu.api.InventoryListener;
 import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.PacketManager;
-import fr.maxlego08.menu.api.configuration.Configuration;
-import fr.maxlego08.menu.api.engine.BaseInventory;
-import fr.maxlego08.menu.api.engine.InventoryEngine;
-import fr.maxlego08.menu.api.engine.ItemButton;
-import fr.maxlego08.menu.api.utils.CompatibilityUtil;
 import fr.maxlego08.menu.api.utils.PaperMetaUpdater;
-import fr.maxlego08.menu.hooks.packetevents.listener.PacketAnimationListener;
-import fr.maxlego08.menu.hooks.packetevents.listener.PacketEventClickLimiterListener;
-import fr.maxlego08.menu.hooks.packetevents.listener.PacketTitleListener;
+import fr.maxlego08.menu.hooks.packetevents.feature.ClickLimiterFeature;
+import fr.maxlego08.menu.hooks.packetevents.feature.HiddenInventoryFeature;
+import fr.maxlego08.menu.hooks.packetevents.feature.TitleAnimationFeature;
+import fr.maxlego08.menu.hooks.packetevents.feature.TitleFeature;
+import fr.maxlego08.menu.hooks.packetevents.session.PacketSessionStore;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import io.github.retrooper.packetevents.factory.spigot.SpigotPacketEventsBuilder;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.InventoryHolder;
-import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Map;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
+public class PacketUtils implements PacketManager {
 
-public class PacketUtils implements InventoryListener, PacketManager {
-
-    private PacketAnimationListener packetAnimationListener;
-    private PacketTitleListener packetTitleListener;
-    private PacketEventClickLimiterListener packetEventClickLimiterListener;
-
-    public static final Map<UUID, FakeInventory> fakeContents = new ConcurrentHashMap<>();
     private final MenuPlugin plugin;
+    private final PacketSessionStore sessions = new PacketSessionStore();
+
+    private TitleFeature titleFeature;
+    private PacketInventoryBridge inventoryBridge;
+    private PacketListenerCommon registeredListener;
 
     private boolean ownsApi;
     private boolean ready;
@@ -46,7 +33,6 @@ public class PacketUtils implements InventoryListener, PacketManager {
     public PacketUtils(MenuPlugin plugin) {
         this.plugin = plugin;
     }
-
 
     private PacketEventsAPI<?> api() {
         PacketEventsAPI<?> api = PacketEvents.getAPI();
@@ -86,21 +72,24 @@ public class PacketUtils implements InventoryListener, PacketManager {
             this.api().init();
         }
 
-        EventManager eventManager = this.api().getEventManager();
-        eventManager.registerListener(this.packetAnimationListener = new PacketAnimationListener(this.plugin), PacketListenerPriority.LOW);
-        eventManager.registerListener(this.packetTitleListener = new PacketTitleListener(), PacketListenerPriority.LOW);
-        if (Configuration.enablePacketEventClickLimiter){
-            this.packetEventClickLimiterListener = new PacketEventClickLimiterListener();
-            eventManager.registerListener(this.packetEventClickLimiterListener, PacketListenerPriority.HIGH);
-        }
+        this.titleFeature = new TitleFeature(this.sessions);
+        TitleAnimationFeature titleAnimationFeature = new TitleAnimationFeature(this.plugin);
+        HiddenInventoryFeature hiddenInventoryFeature = new HiddenInventoryFeature(this.plugin, this.sessions);
+        ClickLimiterFeature clickLimiterFeature = new ClickLimiterFeature(this.plugin);
+
+        hiddenInventoryFeature.installClearCallbacks();
+        this.inventoryBridge = new PacketInventoryBridge(this.sessions, hiddenInventoryFeature, clickLimiterFeature, titleAnimationFeature);
+
+        PacketRouter router = new PacketRouter(this.sessions, this.titleFeature, titleAnimationFeature, hiddenInventoryFeature, clickLimiterFeature);
+        this.registeredListener = this.api().getEventManager().registerListener(router, PacketListenerPriority.HIGHEST);
 
         this.ready = true;
     }
 
     @Override
     public void onPostEnable() {
-        if (this.packetEventClickLimiterListener != null) {
-            this.plugin.getInventoryManager().registerInventoryListener(this.packetEventClickLimiterListener);
+        if (this.inventoryBridge != null) {
+            this.plugin.getInventoryManager().registerInventoryListener(this.inventoryBridge);
         }
     }
 
@@ -108,75 +97,31 @@ public class PacketUtils implements InventoryListener, PacketManager {
     @SuppressWarnings("ConstantConditions")
     public void onDisable() {
         this.ready = false;
-        fakeContents.clear();
+        this.unregisterListener();
+        this.sessions.clear();
         if (this.ownsApi && PacketEvents.getAPI() != null) {
             this.api().terminate();
         }
     }
 
-    @Override
-    public boolean addItem(BaseInventory inventory, boolean inPlayerInventory, ItemButton itemButton, boolean enableAntiDupe) {
-
-        if (inPlayerInventory && fakeContents.containsKey(inventory.getPlayer().getUniqueId())) {
-
-            ItemStack itemStack = itemButton.getDisplayItem();
-            int slot = itemButton.getSlot();
-
-            FakeInventory fakeInventory = fakeContents.get(inventory.getPlayer().getUniqueId());
-            fakeInventory.put(slot, itemStack);
-            return true;
+    /**
+     * Removes zMenu's listener from packetevents. packetevents outlives zMenu when it is a plugin
+     * of its own, and would otherwise keep calling classes of a disabled zMenu, whose jar is closed.
+     */
+    @SuppressWarnings("ConstantConditions")
+    private void unregisterListener() {
+        if (this.registeredListener == null) return;
+        PacketEventsAPI<?> api = PacketEvents.getAPI();
+        if (api != null) {
+            api.getEventManager().unregisterListener(this.registeredListener);
         }
-
-        return false;
-    }
-
-    @Override
-    public void onInventoryPreOpen(Player player, BaseInventory inventory, int page, Object... objects) {
-        if (inventory instanceof InventoryEngine) {
-            fakeContents.put(player.getUniqueId(), new FakeInventory((Inventory) objects[0]));
-        }
-    }
-
-    @Override
-    public void onInventoryPostOpen(Player player, BaseInventory inventory) {
-    }
-
-    @Override
-    public void onInventoryClose(Player player, BaseInventory inventory) {
-        this.plugin.getScheduler().runAtEntityLater(player, () -> {
-            InventoryHolder newHolder = CompatibilityUtil.getTopInventory(player).getHolder();
-            if (newHolder != null && !(newHolder instanceof InventoryEngine)) {
-                fakeContents.remove(player.getUniqueId());
-            }
-        }, 1);
-    }
-
-    @Override
-    public void onButtonClick(Player player, ItemButton button) {
-        // ToDo
-    }
-
-    public PacketAnimationListener getPacketAnimationListener() {
-        return this.packetAnimationListener;
-    }
-
-    public PacketTitleListener getPacketTitleListener() {
-        return this.packetTitleListener;
+        this.registeredListener = null;
     }
 
     @Override
     public void editInventoryTitleName(@NotNull Player player, @NotNull Component title) {
         if (!this.isReady()) return;
-
-        this.packetTitleListener.getPlayerPacketInformation(player.getUniqueId()).ifPresent(playerPacketInformation -> {
-            WrapperPlayServerOpenWindow wrapperPlayServerOpenWindow = playerPacketInformation.getWrapperPlayServerOpenWindow();
-            WrapperPlayServerOpenWindow newWrapperPlayServerOpenWindow1 = new WrapperPlayServerOpenWindow(wrapperPlayServerOpenWindow.getContainerId(),
-                    wrapperPlayServerOpenWindow.getType(),
-                    title);
-            PlayerManager playerManager = this.api().getPlayerManager();
-            playerManager.sendPacket(player, newWrapperPlayServerOpenWindow1);
-            playerManager.sendPacket(player, playerPacketInformation.getWrapperPlayServerWindowItems());
-        });
+        this.titleFeature.editTitle(player, title);
     }
 
     @Override

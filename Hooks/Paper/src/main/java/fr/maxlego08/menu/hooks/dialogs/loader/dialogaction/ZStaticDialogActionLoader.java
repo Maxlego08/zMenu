@@ -1,9 +1,11 @@
 package fr.maxlego08.menu.hooks.dialogs.loader.dialogaction;
 
 import fr.maxlego08.menu.api.MenuPlugin;
+import fr.maxlego08.menu.api.ZMenuKeys;
+import fr.maxlego08.menu.api.loader.DialogActionLoader;
 import fr.maxlego08.menu.api.utils.dialogs.ZDialogAction;
 import fr.maxlego08.menu.hooks.dialogs.action.*;
-import fr.maxlego08.menu.hooks.dialogs.loader.DialogActionLoader;
+import net.kyori.adventure.key.Key;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
 
@@ -15,8 +17,8 @@ public class ZStaticDialogActionLoader implements DialogActionLoader {
     private static final String MISSING_VALUE = "Missing static action %s in file: %s";
 
     @Override
-    public @NotNull String getType() {
-        return "static";
+    public @NotNull Key key() {
+        return ZMenuKeys.key("static");
     }
 
     @Override

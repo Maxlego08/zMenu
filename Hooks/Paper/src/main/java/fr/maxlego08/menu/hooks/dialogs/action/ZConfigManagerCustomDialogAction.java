@@ -10,7 +10,6 @@ import fr.maxlego08.menu.hooks.ComponentMeta;
 import io.papermc.paper.registry.data.dialog.action.DialogAction;
 import io.papermc.paper.registry.data.dialog.input.BooleanDialogInput;
 import io.papermc.paper.registry.data.dialog.input.DialogInput;
-import net.kyori.adventure.text.event.ClickCallback;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -66,17 +65,11 @@ public class ZConfigManagerCustomDialogAction implements ZDialogAction {
             @Nullable DialogButton<?> button,
             @NotNull Placeholders placeholders
     ) {
-        ClickCallback.Options.Builder builder = ClickCallback.Options.builder();
-        builder.uses(this.usageLimit);
-        if (this.actionDurationLimit != null) {
-            builder.lifetime(this.actionDurationLimit);
-        }
-
-        return DialogAction.customClick((view, audience) -> {
+        return plugin.getDialogManager().clickAction(player, (clicker, view) -> {
             StringBuilder sb = new StringBuilder("Config Input Results:\n");
             boolean changed = false;
 
-            for (DialogInput input : inputs) {
+            for (DialogInput input : view == null ? List.<DialogInput>of() : inputs) {
                 String key = input.key();
                 FieldEntry entry = this.fieldEntries.get(key);
                 if (entry == null) continue;
@@ -97,10 +90,8 @@ public class ZConfigManagerCustomDialogAction implements ZDialogAction {
                 this.updateConsumer.accept(true);
             }
 
-            if (audience instanceof Player p) {
-                this.componentMeta.sendMessage(p, sb.toString());
-            }
-        }, builder.build());
+            this.componentMeta.sendMessage(clicker, sb.toString());
+        }, this.usageLimit, this.actionDurationLimit);
     }
 
     private Object readValue(io.papermc.paper.dialog.DialogResponseView view, String key, DialogInputType type) {

@@ -8,7 +8,6 @@ import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.api.utils.dialogs.ZDialogAction;
 import io.papermc.paper.registry.data.dialog.action.DialogAction;
 import io.papermc.paper.registry.data.dialog.input.*;
-import net.kyori.adventure.text.event.ClickCallback;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -32,13 +31,8 @@ public class ZCustomClickDialogAction implements ZDialogAction {
 
     @Override
     public DialogAction build(@NotNull List<@NotNull DialogInput> inputs, @NotNull Player player, @NotNull MenuPlugin plugin, @NotNull InventoryEngine inventoryEngine, @Nullable DialogButton<?> button, @NotNull Placeholders placeholders) {
-        ClickCallback.Options.Builder builder = ClickCallback.Options.builder();
-        builder.uses(this.usageLimit);
-        if (this.actionDurationLimit != null) {
-            builder.lifetime(this.actionDurationLimit);
-        }
-        return DialogAction.customClick((view, audience)-> {
-            for (DialogInput input : inputs) {
+        return plugin.getDialogManager().clickAction(player, (clicker, view) -> {
+            for (DialogInput input : view == null ? List.<DialogInput>of() : inputs) {
                 String key = input.key();
                 String value = null;
 
@@ -83,9 +77,9 @@ public class ZCustomClickDialogAction implements ZDialogAction {
             }
 
             for (Requirement requirement : this.requirements) {
-                requirement.execute((Player) audience, button, inventoryEngine, placeholders);
+                requirement.execute(clicker, button, inventoryEngine, placeholders);
             }
 
-        }, builder.build());
+        }, this.usageLimit, this.actionDurationLimit);
     }
 }

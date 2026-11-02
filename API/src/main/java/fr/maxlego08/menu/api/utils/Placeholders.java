@@ -93,6 +93,7 @@ public final class Placeholders {
 
     private final Placeholders parent;
     private final Map<String, String> placeholders;
+    private final Map<String, Function<String, String>> lookups = new ConcurrentHashMap<>();
 
     public Placeholders() {
         this(new ConcurrentHashMap<>(), null);
@@ -155,8 +156,26 @@ public final class Placeholders {
         for (Placeholders scope = this; scope != null; scope = scope.parent) {
             String value = scope.placeholders.get(key);
             if (value != null) return value;
+            for (Map.Entry<String, Function<String, String>> lookup : scope.lookups.entrySet()) {
+                if (!key.startsWith(lookup.getKey())) continue;
+                String found = lookup.getValue().apply(key.substring(lookup.getKey().length()));
+                if (found != null) return found;
+            }
         }
         return null;
+    }
+
+    /**
+     * Resolves every key that starts with a prefix through a function, when no value is registered for the
+     * key itself. The function is called each time the key is read, so its values are always current.
+     *
+     * @param prefix The prefix, such as {@code canvas_}.
+     * @param lookup Gives the value of the rest of the key, or null to leave the placeholder as written.
+     */
+    public void registerLookup(@NotNull String prefix, @NotNull Function<String, String> lookup) {
+        Preconditions.checkNotNull(prefix, "prefix cannot be null");
+        Preconditions.checkNotNull(lookup, "lookup cannot be null");
+        this.lookups.put(prefix, lookup);
     }
 
     /**
@@ -256,11 +275,12 @@ public final class Placeholders {
     /** Copies the placeholders registered in {@code placeholders} (that scope only, not its parents) into this scope. */
     public void merge(@NotNull Placeholders placeholders) {
         this.placeholders.putAll(placeholders.placeholders);
+        this.lookups.putAll(placeholders.lookups);
     }
 
     private boolean hasAny() {
         for (Placeholders scope = this; scope != null; scope = scope.parent) {
-            if (!scope.placeholders.isEmpty()) return true;
+            if (!scope.placeholders.isEmpty() || !scope.lookups.isEmpty()) return true;
         }
         return false;
     }

@@ -1,0 +1,81 @@
+package fr.maxlego08.menu.api.storage.spi;
+
+import fr.maxlego08.menu.api.variable.Variable;
+import fr.maxlego08.menu.api.variable.VariableRef;
+import fr.maxlego08.menu.api.variable.VariableScope;
+import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.NotNull;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+
+/**
+ * The variables of every scope: player data, per-server values and values shared by every server.
+ */
+@ApiStatus.Experimental
+public interface VariableStore {
+
+    /**
+     * @return every variable of an owner, expired ones included
+     */
+    @NotNull
+    CompletableFuture<List<Variable>> loadOwner(@NotNull VariableScope scope, @NotNull String owner);
+
+    /**
+     * @return one variable, expired or not, or empty when it does not exist
+     */
+    @NotNull
+    CompletableFuture<Optional<Variable>> load(@NotNull VariableRef ref);
+
+    /**
+     * Applies changes in the order given.
+     */
+    @NotNull
+    CompletableFuture<Void> apply(@NotNull List<VariableMutation> mutations);
+
+    /**
+     * Adds to a value in the database and reads it back, in one transaction. An expired value
+     * counts as missing: it is replaced by the amount, with {@code expiresAtIfCreated}.
+     *
+     * @return the value after the addition
+     */
+    @NotNull
+    CompletableFuture<BigDecimal> incrementAndGet(@NotNull VariableRef ref, @NotNull BigDecimal delta, long expiresAtIfCreated);
+
+    /**
+     * Deletes a name for every owner of a scope.
+     */
+    @NotNull
+    CompletableFuture<Void> deleteName(@NotNull VariableScope scope, @NotNull String name);
+
+    @NotNull
+    CompletableFuture<Void> deleteOwner(@NotNull VariableScope scope, @NotNull String owner);
+
+    @NotNull
+    CompletableFuture<Void> deleteScope(@NotNull VariableScope scope);
+
+    /**
+     * @return every owner having at least one variable in a scope, for {@link StorageCapability#EXPORT}
+     */
+    @NotNull
+    default CompletableFuture<Set<String>> owners(@NotNull VariableScope scope) {
+        return CompletableFuture.failedFuture(new UnsupportedOperationException("This store cannot list its owners"));
+    }
+
+    /**
+     * @return every name used in a scope
+     */
+    @NotNull
+    CompletableFuture<Set<String>> names(@NotNull VariableScope scope);
+
+    /**
+     * Deletes the values that expired before a time.
+     *
+     * @param now the time, in milliseconds since the epoch
+     */
+    @NotNull
+    CompletableFuture<Void> deleteExpired(long now);
+}

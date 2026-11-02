@@ -15,6 +15,7 @@ public class CommandDialog extends SubCommand<ZMenuPlugin> {
         this.addSubCommand(new CommandDialogOpen(plugin));
         this.addSubCommand(new CommandDialogReload(plugin));
         this.addSubCommand(new CommandDialogOpenConfig(plugin));
+        this.addSubCommand(new CommandDialogCanvas(plugin));
     }
 
     @Override

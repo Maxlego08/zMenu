@@ -1,11 +1,13 @@
 package fr.maxlego08.menu.hooks.dialogs.loader.dialogaction;
 
 import fr.maxlego08.menu.api.MenuPlugin;
+import fr.maxlego08.menu.api.ZMenuKeys;
+import fr.maxlego08.menu.api.loader.DialogActionLoader;
 import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.api.utils.dialogs.ZDialogAction;
 import fr.maxlego08.menu.hooks.dialogs.action.ZCustomClickDialogAction;
-import fr.maxlego08.menu.hooks.dialogs.loader.DialogActionLoader;
 import fr.maxlego08.menu.hooks.dialogs.loader.DialogInventoryTypeLoader;
+import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.event.ClickCallback;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -23,8 +25,8 @@ import java.util.concurrent.TimeUnit;
 public class ZCustomClickDialogActionLoader implements DialogActionLoader {
 
     @Override
-    public @NotNull String getType() {
-        return "custom-click";
+    public @NotNull Key key() {
+        return ZMenuKeys.key("custom_click");
     }
 
     @Override
