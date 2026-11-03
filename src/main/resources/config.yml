@@ -1,113 +1,250 @@
+# ==================================================================================================
+#  zMenu - Main configuration
+# ==================================================================================================
 #
-# Documentation: https://docs.groupez.dev/zmenu/getting-started
-# Online editor: https://minecraft-inventory-builder.com/
+#  Documentation  : https://docs.groupez.dev/zmenu/getting-started
+#  Online editor  : https://minecraft-inventory-builder.com/
 #
-# Get 23.5% off at MineStrator with: https://cashback.groupez.dev/
+#  Get 23.5% off at MineStrator with: https://cashback.groupez.dev/
+#
+#
+#  Sections of this file:
+#    1. General
+#    2. Debug & logs
+#    3. Storage
+#    4. Multi-server
+#    5. Menus
+#    6. Clicks
+#    7. Security & anti-dupe
+#    8. Performance & caches
+#    9. Dialogs
+#   10. Website (inventory builder)
+#
 
-# Turn off the parts of zMenu you do not use. A disabled feature registers nothing (no listener, command or default file).
-# Features are read when the server starts: restart the server after changing them, /zm reload does not apply them.
+
+# ==================================================================================================
+#  1. GENERAL
+# ==================================================================================================
+
+# Turn off the parts of zMenu you do not use.
+# A disabled feature registers nothing (no listener, no command, no default file).
+#
+# Features are read when the server starts:
+# restart the server after changing them, /zm reload does not apply them.
 features:
-  # Custom items of the items folder, their mechanics (itemjoin, on-click), the item update on join and /zm giveitem.
+
+  # Custom items of the items folder, their mechanics (itemjoin, on-click),
+  # the item update on join and /zm giveitem.
   custom-items: true
 
-# Enables detailed information display in the console.
+
+# Show information messages in the console,
+# for example when an inventory or a command has been loaded successfully.
+enable-information-message: true
+
+
+# Skip the update check at startup.
+skip-update-check: false
+
+
+# Create the default files (inventories, commands, patterns...) when they don't exist.
+generate-default-file: true
+
+
+# Enable MiniMessage format.
+# Enables Dialogs support (Paper 1.21.7+). MiniMessage formatting itself is always enabled.
+# More info: https://docs.advntr.dev/minimessage/index.html
+enable-mini-message-format: true
+
+
+
+# ==================================================================================================
+#  2. DEBUG & LOGS
+# ==================================================================================================
+
+# Show detailed information in the console.
 # If you encounter an issue, enable this option and send the errors to support.
 enable-debug: false
 
-# Enables execution time debugging to measure plugin performance.
-# Useful for identifying bottlenecks and optimizing performance.
+
+# Measure the execution time of the plugin.
+# Useful to identify bottlenecks and optimize performance.
 enable-debug-time: false
 
-# Enables per-operation performance debugging for inventory opening.
-# Measures and logs execution time for each step (button building, item rendering, etc.).
-# Set threshold-ms to 0 to see all operations. Use filter to focus on specific operations.
+
+# Measure and log the execution time of each step when an inventory opens
+# (button building, item rendering, etc.).
 enable-performance-debug: false
 
 performance-debug:
+
   # Minimum execution time (in ms) for an operation to appear in the output.
+  # Set to 0 to see every operation.
   threshold-ms: 10
+
   filter:
-    # DISABLED - show all operations above threshold
-    # WHITELIST - only show operations matching the list below
-    # BLACKLIST - hide operations matching the list below
-    # Supports wildcards: "buildButton.*" matches all buildButton operations
+    # DISABLED  - Show all operations above threshold-ms
+    # WHITELIST - Only show the operations matching the list below
+    # BLACKLIST - Hide the operations matching the list below
+    #
+    # Supports wildcards: "buildButton.*" matches all buildButton operations.
     mode: DISABLED
     operations: []
 
-# Enable an information message, allows you to view messages that tell you about an inventory or that an order has been successfully loaded.
-enable-information-message: true
 
-# Skip the update check
-skip-update-check: false
+# Print a message in the console when files are saved or loaded.
+enable-log-storage-file: false
 
-# Storage:
-# SQLITE - For the launch of the plugin only.
-# MYSQL - RECOMMENDED
-# MARIADB - RECOMMENDED
-# POSTGRESQL - Uses database-configuration below (set port to 5432). zMenu downloads the driver on
-#              the next start.
-# MONGODB - Keeps everything in MongoDB (settings in the mongodb section below). zMenu downloads the
-#           driver on the next start.
-# REDIS - Keeps everything in Redis (settings in the redis section below). Make sure Redis writes its
-#         data to disk (appendonly yes in redis.conf), or a restart of Redis loses it.
-# NONE - If you do not need a database, you can disable it.
+
+# How long, in seconds, to wait before logging the same failing button again.
 #
-# We advise you to use MARIADB or MYSQL, the SQLITE storage is only there to install the plugin and do some tests, not all features are available with SQLITE yet.
-# The plugin will work, but some features like sanctions update when launching the plugin will not work.
-# This will be fixed in future plugin updates
+# When the actions of a button throw an error, zMenu logs it once with the full stack trace,
+# then stays quiet about that same button for this long. Without it, a player clicking a broken
+# button produced one full stack trace per click, filling the console and the log file and
+# slowing the server down.
+#
+# Set to 0 to log every single occurrence.
+click-error-log-cooldown-seconds: 30
+
+
+
+# ==================================================================================================
+#  3. STORAGE
+# ==================================================================================================
+
+# Where zMenu stores its data.
+#
+#   SQLITE     - For the first start and for tests only.
+#   MYSQL      - RECOMMENDED
+#   MARIADB    - RECOMMENDED
+#   POSTGRESQL - Uses database-configuration below (set port to 5432).
+#                zMenu downloads the driver on the next start.
+#   MONGODB    - Keeps everything in MongoDB (see the mongodb section below).
+#                zMenu downloads the driver on the next start.
+#   REDIS      - Keeps everything in Redis (see the redis section below).
+#                Make sure Redis writes its data to disk (appendonly yes in redis.conf),
+#                or a restart of Redis loses it.
+#   NONE       - No database at all.
+#
+# We advise you to use MARIADB or MYSQL. SQLITE is only there to install the plugin and run some
+# tests: the plugin works, but not all features are available with SQLITE yet.
+# This will be fixed in future plugin updates.
 storage-type: SQLITE
 
-# Name of this server, used for the variables of the "server" scope (data action with scope: server,
-# %zmenu_server_value_<key>%, /zm variables ... server ...).
-# Servers sharing one database must each have their own name. Leave empty to use a name generated
-# once and kept in plugins/zMenu/server-id.txt.
-server-id: ""
 
-# How servers sharing a MySQL or MariaDB database tell each other about changes to player and global
-# variables, so a value changed on one server is updated on the others.
-# AUTO - With MySQL, MariaDB, PostgreSQL or MongoDB, through a table (collection) of the database read
-#        every messaging-poll-interval seconds; with storage-type REDIS, through Redis pub/sub.
-#        SQLite is never shared, so it does nothing there.
-# REDIS - Through Redis pub/sub (redis section below), even with MySQL or MariaDB as storage: changes
-#         reach the other servers at once.
-# NONE - Nothing is sent: a server only sees the changes of the others when it reads them again
-#        (a player joining it, a restart).
-messaging-type: AUTO
-messaging-poll-interval: 2
+# --- SQL database (MYSQL, MARIADB, POSTGRESQL) ----------------------------------------------------
 
-# Redis, used by storage-type REDIS and messaging-type REDIS. zMenu downloads the Redis client on
-# the next start after you choose one of them.
-redis:
-  # redis://[user:password@]host:port/database, or rediss:// for TLS
-  uri: "redis://localhost:6379/0"
-  # true for a Redis Cluster; uri then names one of its nodes
-  cluster: false
-  # The start of every key zMenu writes, change it when several networks share one Redis
-  key-prefix: "zmenu"
-  # Refuse to start when Redis does not write its data to disk (appendonly no)
-  require-aof: false
+database-configuration:
 
-# MongoDB, used by storage-type MONGODB.
+  # The prefix applied to every table.
+  # If several plugins share the same database, each one must have its own prefix.
+  # It is advisable not to change this value.
+  table-prefix: "zmenu_"
+
+  # IP address of the machine hosting the database.
+  host: 192.168.10.10
+
+  # Port of the database (MySQL / MariaDB: 3306, PostgreSQL: 5432).
+  port: 3306
+
+  # Database credentials.
+  user: homestead
+  password: 'secret'
+
+  # Name of the database.
+  database: zmenu
+
+  # Enable or not the SQL debug mode.
+  debug: false
+
+  # Maximum lifetime of a pooled MySQL or MariaDB connection, in seconds.
+  # A connection older than this is retired and replaced. 0 keeps connections until the pool closes.
+  # Hikari requires at least 30 seconds. 1800 (30 minutes) is also the default when omitted.
+  max-lifetime: 1800
+
+  # Extra driver properties sent with every MySQL, MariaDB or PostgreSQL connection. Examples:
+  #   useSSL: "true"                   - MySQL / MariaDB over TLS
+  #   allowPublicKeyRetrieval: "true"  - MySQL 8 without TLS ("Public Key Retrieval is not allowed")
+  #   sslmode: "disable"               - PostgreSQL without TLS, or "require" to force it
+  properties: {}
+
+
+# --- MongoDB (storage-type MONGODB) ---------------------------------------------------------------
+
 mongodb:
-  # mongodb://[user:password@]host:port, or a mongodb+srv:// connection string
+
+  # mongodb://[user:password@]host:port, or a mongodb+srv:// connection string.
   uri: "mongodb://localhost:27017"
+
   database: "zmenu"
-  # The start of every collection name
+
+  # The start of every collection name.
   collection-prefix: "zmenu_"
 
-# When a player moves from one server to another, the new server waits up to this many milliseconds
-# for the old one to save the player's data before reading it (only with a shared database).
-session-handoff-timeout: 3000
 
-# To move to another storage-type, copy the data with /zm storage migrate <type>, then change
-# storage-type and restart. When the new type needs a driver zMenu does not have yet (POSTGRESQL,
-# REDIS), set it here and restart once before running the command, so zMenu downloads it.
+# --- Redis (storage-type REDIS and messaging-type REDIS) ------------------------------------------
+# zMenu downloads the Redis client on the next start after you choose one of them.
+
+redis:
+
+  # redis://[user:password@]host:port/database, or rediss:// for TLS.
+  uri: "redis://localhost:6379/0"
+
+  # true for a Redis Cluster, uri then names one of its nodes.
+  cluster: false
+
+  # The start of every key zMenu writes. Change it when several networks share one Redis.
+  key-prefix: "zmenu"
+
+  # Refuse to start when Redis does not write its data to disk (appendonly no).
+  require-aof: false
+
+
+# --- Saving -----------------------------------------------------------------------------------------
+
+# Time in seconds between two batch saves.
+# Instead of running an SQL query for each update, a single query is executed every 10 seconds.
+batch-task: 10
+
+
+# Write the buffered data of a player to the database as soon as they disconnect,
+# instead of waiting for the next batch-task cycle.
+#
+# Buffered data is always written when the server stops, so this only changes how much an outright
+# crash can lose: enabled, a crash only loses what arrived since the last disconnect, instead of
+# up to a full batch-task interval for every player.
+#
+# Set to false if the extra write on each quit is too much for your database.
+# Several players leaving at the same time are already grouped into a single write.
+flush-storage-on-quit: true
+
+
+# Currently not used: player data is saved through batch-task and flush-storage-on-quit.
+seconds-save-player-data: 600
+seconds-save-player-inventories: 600
+
+
+# Save in the database the inventories opened by the players.
+enable-player-open-inventory-logs: true
+
+
+# --- Migration ------------------------------------------------------------------------------------
+
+# To move to another storage-type:
+#   1. Copy the data with /zm storage migrate <type>
+#   2. Change storage-type
+#   3. Restart
+#
+# When the new type needs a driver zMenu does not have yet (POSTGRESQL, MONGODB, REDIS), set it here and
+# restart once before running the command, so zMenu downloads it.
 migration-target: ""
 
-# The database /zm storage migrate copies to, when it is not the one of database-configuration below,
+
+# The database /zm storage migrate copies to, when it is not the one of database-configuration,
 # for example MariaDB to PostgreSQL. Each value set here replaces the same value of
-# database-configuration for the copy only. After the copy, move these values into
-# database-configuration, change storage-type and restart.
+# database-configuration for the copy only.
+#
+# After the copy, move these values into database-configuration, change storage-type and restart.
 #migration-database-configuration:
 #  host: 127.0.0.1
 #  port: 5432
@@ -115,168 +252,144 @@ migration-target: ""
 #  password: 'secret'
 #  database: zmenu
 
-# Configuration of your database, it is recommended to use the database to store your data.
-database-configuration:
-  # The prefix that will be applied to all tables,
-  # if you have several plugins with the same database, you must have one.
-  # It is advisable not to change this value
-  table-prefix: "zmenu_"
-  # IP Address of the machine the database is hosted on
-  host: 192.168.10.10
-  # Port of the database, by default, MYSQL's port is 3306
-  port: 3306
-  # Database username
-  user: homestead
-  # Database password
-  password: 'secret'
-  # Database
-  database: zmenu
-  # Enable of not the SQL debug mode
-  debug: false
-  # Maximum lifetime of a pooled MySQL or MariaDB connection, in seconds.
-  # A connection older than this is retired and replaced. 0 keeps connections until the pool closes.
-  # Hikari requires at least 30 seconds. 1800 is 30 minutes, the same default used when this option is omitted.
-  max-lifetime: 1800
-  # Extra driver properties sent with every MySQL, MariaDB or PostgreSQL connection. Examples:
-  #   useSSL: "true"                     - MySQL / MariaDB over TLS
-  #   allowPublicKeyRetrieval: "true"    - MySQL 8 without TLS ("Public Key Retrieval is not allowed")
-  #   sslmode: "disable"                 - PostgreSQL without TLS, or "require" to force it
-  properties: {}
 
-# Time in seconds for saving data in batches.
-# Instead of making an SQL query for each update, a single query will be executed every 10 seconds
-batch-task: 10
 
-# Write buffered player data to the database as soon as a player disconnects, instead of waiting
-# for the next batch-task cycle.
-# Buffered data is always written when the server stops, so this is only about how much an outright
-# crash can lose: with this enabled a crash loses only what arrived since the last disconnect,
-# instead of up to a full batch-task interval for every player.
-# Set to false if the extra write on each quit is too much for your database. Several players
-# leaving at the same time are already grouped into a single write.
-flush-storage-on-quit: true
+# ==================================================================================================
+#  4. MULTI-SERVER
+#  Only useful when several servers share the same database.
+# ==================================================================================================
 
-# Allows saving it in the database the inventories opened by the players.
-enable-player-open-inventory-logs: true
+# Name of this server, used for the variables of the "server" scope
+# (data action with scope: server, %zmenu_server_value_<key>%, /zm variables ... server ...).
+#
+# Servers sharing one database must each have their own name.
+# Leave empty to use a name generated once and kept in plugins/zMenu/server-id.txt.
+server-id: ""
 
-# Enable file storage logging.
-# When true, messages will be printed to the console when files are saved or loaded.
-enable-log-storage-file: false
 
-# Enable open inventory messages.
-# If enabled, the command "/zm open <inventory> <player> <display>" will show a message to the player.
+# How servers sharing a database tell each other about changes to player and global variables,
+# so a value changed on one server is updated on the others.
+#
+#   AUTO  - With MySQL, MariaDB, PostgreSQL or MongoDB: through a table (collection) of the
+#           database, read every messaging-poll-interval seconds.
+#           With storage-type REDIS: through Redis pub/sub.
+#           SQLite is never shared, so it does nothing there.
+#   SQL   - Always through the table of the SQL database, read every messaging-poll-interval
+#           seconds, even on SQLite (several servers on one SQLite file).
+#   REDIS - Through Redis pub/sub (see the redis section), even with MySQL or MariaDB as storage:
+#           changes reach the other servers at once.
+#   NONE  - Nothing is sent: a server only sees the changes of the others when it reads them again
+#           (a player joining it, a restart).
+messaging-type: NONE
+
+# Time in seconds between two reads of the database, used by messaging-type AUTO and SQL.
+# Decimals are allowed, minimum 0.25.
+messaging-poll-interval: 2
+
+
+# When a player moves from one server to another, the new server waits up to this many
+# milliseconds for the old one to save the data of the player before reading it.
+# Only used with a shared database.
+session-handoff-timeout: 3000
+
+
+
+# ==================================================================================================
+#  5. MENUS
+# ==================================================================================================
+
+# Name of the default menu, opened when no specific one is defined.
+main-menu: "example"
+
+
+# Open the main menu when the player presses the swap offhand key (F).
+use-swap-item-off-hand-key-to-open-main-menu: false
+
+# Only open the main menu when the player presses shift + the swap offhand key together.
+use-swap-item-off-hand-key-to-open-main-menu-needs-shift: false
+
+
+# Specific inventories to load at plugin start.
+# Add the paths of the menus you want to load manually.
+specify-path-menus: [ ]
+
+
+# Show a message to the player when the command "/zm open <inventory> <player> <display>" is used.
 enable-open-message: true
 
-# Enable MiniMessage format.
-# Enables Dialogs support (Paper 1.21.7+). MiniMessage formatting is always enabled.
-# More info: https://docs.advntr.dev/minimessage/index.html
-enable-mini-message-format: true
 
-# Enable player command in chat only.
-# Prevents players from executing commands from the console. Useful for "fake" commands not registered in Spigot.
-enable-player-command-in-chat: false
-
-# Enable player commands as OP action.
-# WARNING: This is a security-sensitive feature. Only enable if you understand the risks.
-# Allows buttons to execute commands with elevated permissions (OP or permission *).
-# Default is disabled for security reasons. Requires server restart to take effect.
-enable-player-commands-as-op-action: false
-
-# Method used to grant temporary elevated permissions.
-# ATTACHMENT: Grants permission * temporarily (safer, recommended)
-# SET_OP: Temporarily sets player as OP (use with caution)
-# BOTH: Combines both methods (maximum compatibility, use with extreme caution)
-# This setting only applies when enable-player-commands-as-op-action is true.
-op-grant-method: ATTACHMENT
-
-# Skip close actions on inventory switch.
-# Prevents certain action types from executing when a player opens a new zMenu inventory.
+# Action types that are NOT run as close actions when a player switches to another zMenu inventory.
 # This prevents actions like "open another inventory" or "go back" from reopening old menus.
-# List the action types you want to skip (e.g., "inventory", "inv", "back").
 skip-close-actions-on-inventory-switch:
   - inventory
   - inv
   - back
 
-# Enable FastEvent system.
-# Replaces some Bukkit events with a faster alternative. Enables better performance at the cost of API changes.
-# Refer to documentation before enabling this.
-enable-fast-event: false
 
-# Auto-save player data interval (in seconds).
-# Determines how often the player's data is automatically saved.
-seconds-save-player-data: 600
+# Longest an opening or closing animation may last, in milliseconds.
+# A longer one still plays, but is reported in the console and never freezes the menu,
+# so a mistyped interval cannot lock a player out of their menu.
+max-animation-duration: 10000
 
-# Auto-save inventories data interval (in seconds).
-# Determines how often the inventories are automatically saved.
-seconds-save-player-inventories: 600
 
-# Default menu name.
-# The name of the default menu to be opened if no specific one is defined.
-main-menu: "example"
+# From how many idle-animation buttons a menu drives them all from one shared timer.
+#
+#   Below this  : each idle button gets its own task, which keeps every frame exact to the tick.
+#   At or above : the menu uses a single task per viewer, however many buttons cycle, and frames
+#                 land on the next tick (only noticeable for durations that are not a multiple of 50 ms).
+#
+# Lower it on a busy server with many idle buttons. 0 always shares, a very large value never does.
+shared-idle-timer-threshold: 8
 
-# Use swap offhand key to open main menu.
-# Allows opening the default menu when the player presses the offhand (F) key.
-use-swap-item-off-hand-key-to-open-main-menu: false
 
-# Require shift + offhand key to open menu.
-# The main menu will only open when the player presses shift + offhand key together.
-use-swap-item-off-hand-key-to-open-main-menu-needs-shift: false
-
-# Specific inventories to load at plugin start.
-# Add the paths to specific menus you want loaded manually.
-specify-path-menus: [ ]
-
-# Generate default configuration files.
-# When enabled, the plugin will create default configuration files if they don't exist.
-generate-default-file: true
-
-# Hot reload of inventories.
-# When enabled, zMenu watches the inventories folder (and its subfolders) and automatically reloads an
-# inventory when its file is modified, loads it when a file is added and unloads it when the file is deleted.
-# Players viewing a reloaded inventory see the new version reopened on the same page, an unloaded inventory is closed. A file that cannot be loaded (YAML error, invalid
-# button, etc.) is not applied, the previous version stays loaded until the error is fixed.
+# --- Hot reload -----------------------------------------------------------------------------------
+# You must have zMenu+ on your server to use this feature:
+# https://minecraft-inventory-builder.com/resources/zmenu.4
+#
+# zMenu watches the inventories folder (and its subfolders) and automatically:
+#   - reloads an inventory when its file is modified,
+#   - loads it when a file is added,
+#   - unloads it when the file is deleted.
+#
+# Players viewing a reloaded inventory see the new version reopened on the same page,
+# an unloaded inventory is closed.
+# A file that cannot be loaded (YAML error, invalid button, etc.) is not applied: the previous
+# version stays loaded until the error is fixed.
+#
 # Files listed in specify-path-menus are not watched.
-# The folder is also scanned every 2 seconds, for file systems that do not send change events (Docker, WSL, network shares).
+# The folder is also scanned every 2 seconds, for file systems that do not send change events
+# (Docker, WSL, network shares).
 # Changes are logged in the console with a [HotReload] prefix, enable-debug shows more details.
-# You must have zMenu+ on your server to use this feature: https://minecraft-inventory-builder.com/resources/zmenu.4
+
 hot-reload:
+
   enable: false
+
   # Time in milliseconds to wait after the last change of a file before reloading it.
   # Text editors often write a file in several steps, this avoids reloading it several times.
   delay-milliseconds: 500
 
-# Disable double-click detection.
-# Prevents interactions from being triggered by double-clicking.
-disable-double-click-event: true
 
-# Enable anti-dupe system.
-# Automatically detects and prevents item duplication exploits.
-enable-anti-dupe: true
 
-# Notify Discord when a dupe attempt is detected.
-# Sends a message to a specified Discord webhook.
-enable-anti-dupe-discord-notification: false
+# ==================================================================================================
+#  6. CLICKS
+# ==================================================================================================
 
-# Webhook URL for anti-dupe Discord notifications.
-# Replace with your actual Discord webhook URL.
-anti-dupe-discord-webhook-url: "https://discord.com/api/webhooks/<your discord webhook url>"
-
-# Message sent to Discord when a dupe is detected.
-# Placeholders: %player%, %amount%, %itemname%.
-anti-dupe-message: "**%player%** used %amount% %itemname% from zMenu. It has been removed!"
-
-# Only run a button for a click type listed in all-clicks-type below, or one that a
-# click-requirement of that button explicitly asks for.
-# Keep this enabled. When it is off, exotic click types reach the button while every requirement
-# scoped to a normal click type is skipped, so pressing the drop key (Q), ctrl + Q or a number key
+# Only run a button for a click type listed in all-clicks-type below,
+# or one that a click-requirement of that button explicitly asks for.
+#
+# Keep this enabled! When it is off, exotic click types reach the button while every requirement
+# scoped to a normal click type is skipped: pressing the drop key (Q), ctrl + Q or a number key
 # on a button runs its actions and commands without checking any requirement at all.
+#
 # Only disable this if enforcing it breaks a menu you cannot change.
 enforce-click-types: true
 
-# List of click types supported.
+
+# Click types supported.
 # Any click type not listed here is ignored, unless a click-requirement of the button names it
 # explicitly. Requires enforce-click-types to be true.
+#
 # This is also the default list of click types used by a requirement that does not specify one.
 all-clicks-type:
   - MIDDLE
@@ -285,154 +398,262 @@ all-clicks-type:
   - SHIFT_RIGHT
   - SHIFT_LEFT
 
-# Cache used for parsed MiniMessage components (item names, lore, inventory titles, messages).
-# This cache used to be unbounded: once a player placeholder was resolved into a name or a lore
-# line, every distinct result stayed in memory for the whole uptime, which on a busy server grew
-# until the JVM ran out of heap.
-component-cache:
-  # Maximum number of parsed components kept in memory. Set to 0 for no limit (old behaviour).
-  max-size: 10000
-  # Drop an entry that has not been used for this many minutes. Set to 0 to never expire
-  # (old behaviour). This matters more than the size limit, because a component built from a
-  # player placeholder is usually used once and never again.
-  expire-minutes: 10
-  # Keep item names, lore and plain messages in separate cache namespaces.
-  # Item names and lore are cached with a formatting reset in front of them, plain messages are
-  # not, so when an item name and a message shared the same text they also shared one cache entry:
-  # whichever was parsed first won and the other one rendered wrong, most visibly as an item name
-  # that appeared italic. Set to false to restore that old, colliding behaviour.
-  fix-key-collisions: true
 
-# Enable caching of ItemStacks.
-# Caching helps improve performance by reducing object creation.
-enable-cache-item-stack: true
+# Ignore double-clicks, so they don't trigger interactions.
+disable-double-click-event: true
 
-# Longest an opening or closing animation may last, in milliseconds.
-# A longer one still plays, but is reported in the console and never freezes the menu,
-# so a mistyped interval cannot lock a player out of their menu.
-max-animation-duration: 10000
 
-# From how many idle-animation buttons a menu drives them all from one shared timer.
-# Below this, each idle button gets a task of its own, which keeps every frame exact to the tick.
-# At or above it, the menu uses a single task per viewer, however many buttons cycle,
-# and frames land on the next tick (only noticeable for durations that are not a multiple of 50 ms).
-# Lower it on a busy server with many idle buttons; 0 always shares, a very large value never does.
-shared-idle-timer-threshold: 8
+# --- Click cooldown -------------------------------------------------------------------------------
 
-# Enable click cooldown.
-# Prevents players from spamming clicks too quickly. Useful to reduce abuse or bugs.
+# Prevent players from spamming clicks too quickly. Useful to reduce abuse or bugs.
 enable-cooldown-click: true
 
-# How long, in seconds, to wait before logging the same failing button again.
-# When a button's actions throw an error, zMenu logs it once with the full stack trace and then
-# stays quiet about that same button for this long. Without it a player clicking a broken button
-# produced one full stack trace per click, which filled the console and the log file and slowed the
-# server down. Set to 0 to log every single occurrence.
-click-error-log-cooldown-seconds: 30
-
-# Cooldown duration in milliseconds between clicks.
-# Also acts as a rate limit against automated click macros. Values below ~150 make it realistic for a
-# scripted client to fire several purchases before an asynchronous economy has committed the first one.
+# Cooldown duration in milliseconds between two clicks.
+# Also acts as a rate limit against automated click macros. Values below ~150 make it realistic
+# for a scripted client to fire several purchases before an asynchronous economy has committed
+# the first one.
 cooldown-click-milliseconds: 250
 
-# Enable packet event click limiter. Limits all click packets received from players (only for zMenu inventories).
-# Prevents players from sending excessive click packets. Helps reduce packet spam and potential exploits.
-# STRONGLY RECOMMENDED on public servers: this is the only limit that applies before the click reaches
-# the server tick, and it is the layer that stops packet injection clients from bursting clicks.
+
+# --- Packet click limiter (requires PacketEvents) -------------------------------------------------
+
+# Limit all the click packets received from players (only for zMenu inventories).
+# Prevents players from sending excessive click packets, reducing packet spam and potential exploits.
+#
+# STRONGLY RECOMMENDED on public servers: this is the only limit that applies before the click
+# reaches the server tick, and it is the layer that stops packet injection clients from bursting
+# clicks.
+#
 # Requires the PacketEvents plugin to be installed, it does nothing without it.
 enable-packet-event-click-limiter: false
 
-# Packet event click limiter duration in milliseconds.
-# Minimum time required between packet-level click events. Lower values are more permissive.
+# Minimum time in milliseconds between two click packets. Lower values are more permissive.
 packet-event-click-limiter-milliseconds: 150
 
-# PlaceholderAPI cache duration in ticks (20 ticks = 1 second).
-# Defines how often placeholders should be refreshed.
-cache-placeholder-api: 20
 
-# Enable PlaceholderAPI caching.
-# Reduces the number of calls to PlaceholderAPI by caching values for a short period.
-enable-cache-placeholder-api: false
 
-# Enable download command.
-# Allows the use of the plugin's download feature (if applicable).
-enable-download-command: false
+# ==================================================================================================
+#  7. SECURITY & ANTI-DUPE
+# ==================================================================================================
 
-# Time in seconds for clean the OfflinePlayer cache
-# OfflinePlayer is a variable that represents an offline player
-cache-offline-player: 300
+# --- Anti-dupe ------------------------------------------------------------------------------------
 
-# Enable web editor sync inventories
-# Dont enable that, for now its only for development purposes
-DEV-ONLY-DONT-ENABLE-THIS: false
+# Automatically detect and prevent item duplication exploits.
+enable-anti-dupe: true
 
-# Reopen the website live-sync link automatically at startup (a few seconds after the plugin enables),
-# when this server is already linked to an account.
-# Set to false if you prefer to open it by hand with /zmenu website connect after every restart.
-enable-website-auto-connect: true
+# Send a message to a Discord webhook when a dupe attempt is detected.
+enable-anti-dupe-discord-notification: false
 
-# API URL for inventory builder
-# Do not change this value, leave the default URL; otherwise the link with the site will not work
-api-url: "https://minecraft-inventory-builder.com/api/v2/"
+# Discord webhook URL used for the anti-dupe notifications.
+anti-dupe-discord-webhook-url: "https://discord.com/api/webhooks/<your discord webhook url>"
+
+# Message sent to Discord when a dupe is detected.
+# Placeholders: %player%, %amount%, %itemname%
+anti-dupe-message: "**%player%** used %amount% %itemname% from zMenu. It has been removed!"
+
+
+# --- Ghost GUI protection -------------------------------------------------------------------------
+
 # Close the menu when the player moves away from where it was opened.
+#
 # Protects against "ghost GUI" abuse: a modified client can hide the inventory screen locally
 # without sending a close packet, then keep clicking the still-open container while running,
-# fighting or teleporting. Set to false only if you rely on menus staying open while walking.
+# fighting or teleporting.
+#
+# Set to false only if you rely on menus staying open while walking.
 close-on-move: true
 
-# Maximum distance (in blocks) a player may move from the opening location before the menu is closed.
-# Only used when close-on-move is true.
+# Maximum distance (in blocks) a player may move from the opening location before the menu
+# is closed. Only used when close-on-move is true.
 max-move-distance: 2.0
 
 # Close the menu as soon as the player takes or deals damage.
 # Prevents using menus (kits, shops, heals) during combat through a ghost GUI.
 close-on-damage: true
 
+
+# --- Commands -------------------------------------------------------------------------------------
+
+# Send the player commands of the buttons through the chat (as if the player typed them),
+# instead of executing them directly. Useful for "fake" commands not registered in Spigot.
+enable-player-command-in-chat: false
+
+
+# Allow buttons to execute player commands with elevated permissions (OP or permission *).
+#
+# WARNING: This is a security-sensitive feature. Only enable it if you understand the risks.
+# Disabled by default for security reasons. Requires a server restart to take effect.
+enable-player-commands-as-op-action: false
+
+# Method used to grant the temporary elevated permissions.
+# Only used when enable-player-commands-as-op-action is true.
+#
+#   ATTACHMENT - Grants permission * temporarily (safer, recommended)
+#   SET_OP     - Temporarily sets the player as OP (use with caution)
+#   BOTH       - Combines both methods (maximum compatibility, use with extreme caution)
+op-grant-method: ATTACHMENT
+
+
+
+# ==================================================================================================
+#  8. PERFORMANCE & CACHES
+# ==================================================================================================
+
+# Enable the FastEvent system.
+# Replaces some Bukkit events with a faster alternative: better performance, at the cost of
+# API changes. Read the documentation before enabling this.
+enable-fast-event: false
+
+
+# Cache the ItemStacks, to reduce object creation.
+enable-cache-item-stack: true
+
+
+# --- MiniMessage component cache ------------------------------------------------------------------
+# Cache used for the parsed MiniMessage components (item names, lore, inventory titles, messages).
+#
+# This cache used to be unbounded: once a player placeholder was resolved into a name or a lore
+# line, every distinct result stayed in memory for the whole uptime, which on a busy server grew
+# until the JVM ran out of heap.
+
+component-cache:
+
+  # Maximum number of parsed components kept in memory. Set to 0 for no limit (old behaviour).
+  max-size: 10000
+
+  # Drop an entry that has not been used for this many minutes. Set to 0 to never expire
+  # (old behaviour). This matters more than the size limit, because a component built from a
+  # player placeholder is usually used once and never again.
+  expire-minutes: 10
+
+  # Keep item names, lore and plain messages in separate cache namespaces.
+  # Item names and lore are cached with a formatting reset in front of them, plain messages are
+  # not. So when an item name and a message shared the same text, they also shared one cache entry:
+  # whichever was parsed first won and the other one rendered wrong, most visibly as an item name
+  # that appeared italic. Set to false to restore that old, colliding behaviour.
+  fix-key-collisions: true
+
+
+# --- PlaceholderAPI cache -------------------------------------------------------------------------
+
+# Cache the PlaceholderAPI values for a short period, to reduce the number of calls to PlaceholderAPI.
+enable-cache-placeholder-api: false
+
+# How long a cached placeholder value is kept, in milliseconds (1000 = 1 second).
+cache-placeholder-api: 20
+
+
+# --- Offline players cache ------------------------------------------------------------------------
+
+# Time in seconds before the OfflinePlayer cache is cleaned.
+cache-offline-player: 300
+
+
+
+# ==================================================================================================
+#  9. DIALOGS (Paper 1.21.7+, requires enable-mini-message-format)
+# ==================================================================================================
+
 # How many dialog_list dialogs can be nested inside each other (a list inside a list inside a list...).
+#
 # This does not limit how many dialogs a list contains. A list sends every dialog it contains,
 # including the content of nested lists, in the packet that opens it, so deep nesting makes that
 # packet bigger and can disconnect the player. Lists nested deeper than this are left out.
 dialog-list-max-depth: 4
 
+
+# --- Dialog canvas --------------------------------------------------------------------------------
 # Dialog canvases draw images and text at pixel positions inside dialogs (body type dialog-canvas).
-# zMenu generates the fonts they need into plugins/zMenu/resource-pack/output, from the dialogs that use them.
+# zMenu generates the fonts they need into plugins/zMenu/resource-pack/output,
+# from the dialogs that use them.
+
 dialog-canvas:
+
   resource-pack:
-    # Who adds zMenu's files to the resource pack players download:
-    # auto: the pack plugin installed on the server (Nexo, ItemsAdder or CraftEngine). With several of them,
-    #       nothing is done until one is chosen here. Without any, standalone when its url is set, else none.
-    # nexo, itemsadder, craftengine: that plugin.
-    # standalone: zMenu sends plugins/zMenu/resource-pack/zmenu-pack.zip from the url below.
-    # none: you add plugins/zMenu/resource-pack/zmenu-pack.zip (or the output folder) to your pack yourself.
+
+    # Who adds the files of zMenu to the resource pack players download:
+    #
+    #   auto        - The pack plugin installed on the server (Nexo, ItemsAdder or CraftEngine).
+    #                 With several of them, nothing is done until one is chosen here.
+    #                 Without any, standalone when its url is set, else none.
+    #   nexo        - Nexo
+    #   itemsadder  - ItemsAdder
+    #   craftengine - CraftEngine
+    #   standalone  - zMenu sends plugins/zMenu/resource-pack/zmenu-pack.zip from the url below.
+    #   none        - You add plugins/zMenu/resource-pack/zmenu-pack.zip (or the output folder)
+    #                 to your pack yourself.
     target: auto
-    # Run the pack plugin's rebuild command (/nexo reload pack, /iazip, /ce reload pack) when zMenu's files
-    # changed after /zm reload. When false, zMenu only tells you which command to run.
+
+    # Run the rebuild command of the pack plugin (/nexo reload pack, /iazip, /ce reload pack)
+    # when the files of zMenu changed after /zm reload.
+    # When false, zMenu only tells you which command to run.
     auto-rebuild: false
+
     standalone:
-      # Where you upload zmenu-pack.zip. zMenu does not host it, and sends it with its SHA-1, so upload it again
-      # each time zMenu says the pack changed.
+
+      # Where you upload zmenu-pack.zip. zMenu does not host it, and sends it with its SHA-1,
+      # so upload it again each time zMenu says the pack changed.
       url: ""
+
       # Kick players who decline the pack.
       required: false
+
       # Shown when the pack is offered (MiniMessage), empty for none.
       prompt: "<gray>Interface of the server menus"
+
   # When players see the fallback text of a canvas instead of the canvas:
-  # - auto: with the standalone pack, until the player loaded it. With Nexo, ItemsAdder, CraftEngine or a pack
-  #   of server.properties, only after the player declined it or it failed, including packs sent while the
-  #   player joins.
-  # - true: until a resource pack is reported loaded.
-  # - false: never.
+  #
+  #   auto  - With the standalone pack: until the player loaded it.
+  #           With Nexo, ItemsAdder, CraftEngine or a pack of server.properties: only after the
+  #           player declined it or it failed, including packs sent while the player joins.
+  #   true  - Until a resource pack is reported loaded.
+  #   false - Never.
   require-pack: auto
-  # How long, in seconds, the buttons of an opened canvas keep working. Opening the dialog again resets it.
+
+  # How long, in seconds, the buttons of an opened canvas keep working.
+  # Opening the dialog again resets it.
   click-lifetime-seconds: 600
-  # Download the font and textures of the vanilla client from Mojang once per Minecraft version, to measure
-  # text in the default font and to draw vanilla textures (glyph: minecraft:item/diamond).
-  # zMenu only downloads them once a loaded dialog has a canvas that needs them. They are kept in plugins/zMenu/cache/vanilla and are never added to the resource pack (except the shader
-  # of hide-focus-outline).
+
+  # Download the font and textures of the vanilla client from Mojang once per Minecraft version,
+  # to measure text in the default font and to draw vanilla textures (glyph: minecraft:item/diamond).
+  #
+  # zMenu only downloads them once a loaded dialog has a canvas that needs them.
+  # They are kept in plugins/zMenu/cache/vanilla and are never added to the resource pack
+  # (except the shader of hide-focus-outline).
   download-vanilla-assets: true
-  # Experimental: a click on a canvas makes the client draw a white outline around the dialog body. The client
-  # draws it in code, so no texture can change it; this adds the client's gui shaders to the pack, changed to
-  # skip white 1 pixel lines exactly as long as the outline of one of your canvases. Other white of the
-  # client's screens stays. It replaces the gui shaders of any other pack and needs download-vanilla-assets.
+
+  # Experimental: a click on a canvas makes the client draw a white outline around the dialog body.
+  # The client draws it in code, so no texture can change it. This adds the gui shaders of the
+  # client to the pack, changed to skip white 1 pixel lines exactly as long as the outline of one
+  # of your canvases. Other white of the client's screens stays.
+  #
+  # It replaces the gui shaders of any other pack and needs download-vanilla-assets.
+  #
   # debug paints instead of hiding: red = hidden, green = another white 1 pixel line, blue = other white.
   hide-focus-outline: false
+
+
+
+# ==================================================================================================
+#  10. WEBSITE (inventory builder)
+#  https://minecraft-inventory-builder.com/
+# ==================================================================================================
+
+# Allow the use of the download command of the plugin.
+enable-download-command: false
+
+
+# Reopen the website live-sync link automatically at startup (a few seconds after the plugin
+# enables), when this server is already linked to an account.
+# Set to false if you prefer to open it by hand with /zmenu website connect after every restart.
+enable-website-auto-connect: true
+
+
+# API URL of the inventory builder.
+# Do not change this value, leave the default URL, otherwise the link with the site will not work.
+api-url: "https://minecraft-inventory-builder.com/api/v2/"
+
+
+# Web editor inventories sync.
+# Do not enable this, for now it is only for development purposes.
+DEV-ONLY-DONT-ENABLE-THIS: false
