@@ -2,6 +2,7 @@
 
 ## Changes
 
+* Reorganized the default `config.yml`: the options are grouped into 10 sections (General, Debug & logs, Storage, Multi-server, Menus, Clicks, Security & anti-dupe, Performance & caches, Dialogs, Website) with clearer, more spaced comments. No key or default value changed, and existing `config.yml` files keep working as they are. Fixed comments: `cache-placeholder-api` is in milliseconds, not ticks; `messaging-type` also accepts `SQL`; `messaging-poll-interval` accepts decimals (minimum 0.25); `MONGODB` also needs a restart before `/zm storage migrate`; `enable-player-command-in-chat` sends the commands through the chat; `seconds-save-player-data` and `seconds-save-player-inventories` are not used.
 * The ItemsAdder hook now targets ItemsAdder 4 (`beer.devs:itemsadder-api` 4.0.17). ItemsAdder 3 is no longer supported.
 * `storage-type: NONE` now keeps player data, saved inventories, visited worlds and played animations in memory until the server stops, instead of not storing them at all. MockBukkit test servers use the same memory storage.
 * A value of `database-configuration.yml` (the file shared by every plugin of the server) that is not set now falls back to `config.yml` and then to the defaults of `config.yml`, as documented; a missing value was read as empty when the shared file did not exist.
