@@ -22,6 +22,7 @@
 * Added `ActionPlayerData#getScope`. `ZActionPlayerData` now takes the `MenuPlugin` and a `VariableScope`.
 * Removed the legacy `ClassicMeta` formatter. zMenu always formats items, messages and titles with MiniMessage through `ComponentMeta`. If it cannot start, zMenu logs an error and disables itself. `enable-mini-message-format` now only controls Dialogs support.
 * You must use zMenu+ to be able to use the hot reload.
+* Fixed `clear-inventory` menus not giving the player's inventory back when they open an inventory without holder, such as an InvUI window or `Bukkit.createInventory(null, ...)`, from a menu: the player kept the `player-inventory` buttons as real items in place of their own items, until they reconnected or closed another menu with `clear-inventory`.
 
 ## New Features
 
