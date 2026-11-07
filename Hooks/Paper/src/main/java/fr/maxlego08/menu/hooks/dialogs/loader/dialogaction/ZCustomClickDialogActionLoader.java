@@ -74,6 +74,9 @@ public class ZCustomClickDialogActionLoader implements DialogActionLoader {
                 }
             }
         }
-        return new ZCustomClickDialogAction(actions, usageLimit, actionDurationLimit, enablePlaceholders);
+        String fileName = file.getName();
+        String dialogName = fileName.endsWith(".yml") ? fileName.substring(0, fileName.length() - 4) : fileName;
+        String buttonName = path.contains(".") ? path.substring(path.lastIndexOf('.') + 1) : path;
+        return new ZCustomClickDialogAction(actions, usageLimit, actionDurationLimit, enablePlaceholders, dialogName, buttonName);
     }
 }

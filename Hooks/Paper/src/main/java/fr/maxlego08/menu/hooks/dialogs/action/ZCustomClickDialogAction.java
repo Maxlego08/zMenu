@@ -3,6 +3,7 @@ package fr.maxlego08.menu.hooks.dialogs.action;
 import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.button.dialogs.DialogButton;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
+import fr.maxlego08.menu.api.event.events.PlayerDialogClickEvent;
 import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.api.utils.dialogs.ZDialogAction;
@@ -21,17 +22,31 @@ public class ZCustomClickDialogAction implements ZDialogAction {
     private final int usageLimit;
     private final @Nullable TemporalAmount actionDurationLimit;
     private final Map<String, Boolean> enablePlaceholders;
+    private final @Nullable String dialogName;
+    private final @Nullable String buttonName;
 
     public ZCustomClickDialogAction(@NotNull List<@NotNull Requirement> requirements, int usageLimit, @Nullable TemporalAmount actionDurationLimit, Map<String, Boolean> enablePlaceholders) {
+        this(requirements, usageLimit, actionDurationLimit, enablePlaceholders, null, null);
+    }
+
+    public ZCustomClickDialogAction(@NotNull List<@NotNull Requirement> requirements, int usageLimit, @Nullable TemporalAmount actionDurationLimit, Map<String, Boolean> enablePlaceholders, @Nullable String dialogName, @Nullable String buttonName) {
         this.requirements = requirements;
         this.usageLimit = usageLimit;
         this.actionDurationLimit = actionDurationLimit;
         this.enablePlaceholders = enablePlaceholders;
+        this.dialogName = dialogName;
+        this.buttonName = buttonName;
     }
 
     @Override
     public DialogAction build(@NotNull List<@NotNull DialogInput> inputs, @NotNull Player player, @NotNull MenuPlugin plugin, @NotNull InventoryEngine inventoryEngine, @Nullable DialogButton<?> button, @NotNull Placeholders placeholders) {
         return plugin.getDialogManager().clickAction(player, (clicker, view) -> {
+            if (this.dialogName != null && this.buttonName != null) {
+                PlayerDialogClickEvent event = new PlayerDialogClickEvent(clicker, this.dialogName, this.buttonName);
+                event.call();
+                if (event.isCancelled()) return;
+            }
+
             for (DialogInput input : view == null ? List.<DialogInput>of() : inputs) {
                 String key = input.key();
                 String value = null;
