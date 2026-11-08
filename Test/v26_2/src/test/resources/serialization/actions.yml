@@ -17,6 +17,44 @@ actions:
   - type: message
     messages:
       - "<green>Hello %player%"
+  - type: console_command_and_message
+    commands:
+      - "say %player% clicked"
+    messages:
+      - "<green>Done"
+    stop-on-failure: true
+  - type: player_command_and_message
+    commands:
+      - "spawn"
+    messages:
+      - "&cLegacy message"
+    command-in-chat: true
+    minimessage: false
+  - type: random_console_command_and_message
+    1:
+      commands:
+        - "say one"
+      messages:
+        - "<green>One"
+      stop-on-failure: true
+    2:
+      commands:
+        - "say two"
+      messages:
+        - "<green>Two"
+  - type: random_player_command_and_message
+    1:
+      commands:
+        - "spawn"
+      messages:
+        - "<green>Spawn"
+      command-in-chat: true
+    2:
+      commands:
+        - "home"
+      messages:
+        - "&cHome"
+      minimessage: false
   - type: message
     messages:
       - "&cLegacy message"

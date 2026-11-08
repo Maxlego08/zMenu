@@ -153,6 +153,39 @@ items:
     consoleCommands:
       - "say %player% is great (message from zMenu / Basic Inventory file)"
 
+  # A fourth button that gives a random effect to the player and tells them which one they got.
+  myFourthButton:
+    # Slots that you want to put the item. Starts from 0 (https://docs.zmenu.dev/configurations/buttons#slot)
+    slot: 13
+    item:
+      material: POTION
+      name: "&dMystery potion"
+      lore:
+        - "&7Click to get a random effect !"
+    # Actions run when the player clicks the button (https://docs.zmenu.dev/configurations/actions)
+    actions:
+      # random-console-command-and-message picks one section at random (1, 2, 3...).
+      # The console runs the commands of that section, then the messages are sent to the player.
+      # Use random-player-command-and-message to make the player run the commands instead.
+      # Without "random-", console-command-and-message and player-command-and-message take
+      # "commands" and "messages" directly and always run them.
+      - type: random-console-command-and-message
+        1:
+          commands:
+            - "effect give %player% minecraft:speed 30 1"
+          messages:
+            - "<aqua>You feel faster !"
+        2:
+          commands:
+            - "effect give %player% minecraft:jump_boost 30 1"
+          messages:
+            - "<green>You feel lighter !"
+        3:
+          commands:
+            - "effect give %player% minecraft:night_vision 60"
+          messages:
+            - "<yellow>You can see in the dark !"
+
 #################################################################
 #
 # Other elements of configurations for the inventory

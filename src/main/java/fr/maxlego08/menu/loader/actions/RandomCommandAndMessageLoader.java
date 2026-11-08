@@ -31,12 +31,13 @@ public abstract class RandomCommandAndMessageLoader extends ActionLoader {
     @Override
     public Action load(@NonNull String path, @NonNull TypedMapAccessor accessor, @NonNull File file) {
         Map<String, CommandAndMessageAction> entries = new LinkedHashMap<>();
-        for (Map.Entry<String, Object> element : accessor.map().entrySet()) {
+        // YAML reads keys such as 1, 2, 3 as numbers, so the keys are not always strings.
+        for (Map.Entry<?, ?> element : ((Map<?, ?>) accessor.map()).entrySet()) {
             Map<String, Object> section = toMap(element.getValue());
             if (section == null) continue;
             TypedMapAccessor entry = new TypedMapAccessor(section);
             if (!entry.contains("commands") && !entry.contains("messages") && !entry.contains("message")) continue;
-            entries.put(element.getKey(), this.loadEntry(entry, accessor));
+            entries.put(String.valueOf(element.getKey()), this.loadEntry(entry, accessor));
         }
 
         if (entries.isEmpty()) {
