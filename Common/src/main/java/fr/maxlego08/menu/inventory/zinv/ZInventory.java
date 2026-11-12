@@ -321,7 +321,8 @@ public class ZInventory extends ZUtils implements ContainerInventorySetter {
         menuPlugin.getScheduler().runAtEntityLater(player, task -> {
             InventoryHolder newHolder = CompatibilityUtil.getTopInventory(player).getHolder();
             boolean isInNewzMenuInventory = newHolder instanceof InventoryDefault;
-            if (newHolder != null && !(newHolder instanceof InventoryDefault)) {
+            // A null holder is still another inventory (InvUI windows, Bukkit.createInventory(null, ...)), not a zMenu one
+            if (!isInNewzMenuInventory) {
 
                 List<ItemStack> sessionItems = this.clearInventory && this.clearInvType != ClearInvType.PACKET_EVENT ? this.collectSessionItems(player, inventoryDefault) : Collections.emptyList();
 
