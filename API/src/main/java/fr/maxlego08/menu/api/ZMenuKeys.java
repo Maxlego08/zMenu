@@ -55,6 +55,19 @@ public final class ZMenuKeys {
     }
 
     /**
+     * Gets the key of an inventory of zMenu named by its path inside the inventories folder, as
+     * they are with {@code enable-inventory-paths}: {@code admin/My Shop} is
+     * {@code zmenu:admin/my_shop}. Each name of the path is read as {@link #fileKey(String, String)}
+     * reads a file name, and nothing is resolved: {@code ../shop} is not {@code shop}.
+     *
+     * @param path the path, without the extension of the file and with "/" between its names
+     * @return the key
+     */
+    public static @NotNull Key inventoryPathKey(@NotNull String path) {
+        return Key.key(NAMESPACE, sanitize(path, true));
+    }
+
+    /**
      * Tells whether a reference names this key. {@code plugin:file} must match exactly, while a
      * plain {@code file} matches that file name in any namespace, as name lookups always did.
      *

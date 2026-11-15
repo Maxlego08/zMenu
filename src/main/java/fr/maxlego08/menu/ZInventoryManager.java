@@ -43,6 +43,7 @@ import fr.maxlego08.menu.common.utils.nms.ItemStackUtils;
 import fr.maxlego08.menu.common.utils.yaml.YamlParser;
 import fr.maxlego08.menu.hooks.packetevents.loader.PacketEventChangeTitleNameLoader;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
+import fr.maxlego08.menu.inventory.setter.ContainerInventorySetter;
 import fr.maxlego08.menu.inventory.zinv.ZInventory;
 import fr.maxlego08.menu.loader.InventoryLoader;
 import fr.maxlego08.menu.loader.actions.BedrockLoader;
@@ -96,6 +97,12 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     private final Map<Plugin, FastEvent> fastEventMap = new ConcurrentHashMap<>();
 
     private final Map<Key, Inventory> otherInventories = new ConcurrentHashMap<>();
+
+    /**
+     * The value of {@code enable-inventory-paths} the inventories of zMenu were loaded with. It only
+     * changes when they are all loaded again, so the keys and the references always follow the same rule.
+     */
+    private volatile boolean inventoryPaths;
 
     private final List<InventoryLoadRequirement> inventoryLoadRequirements = new ArrayList<>();
 
@@ -239,6 +246,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         if (inventory == null) return null;
 
         if (plugin == this.plugin) {
+            if (this.inventoryPaths) this.applyInventoryPath(inventory, file);
             ReloadReport report = this.registries.update(Registries.INVENTORY, ZMenuKeys.NAMESPACE, editor -> {
                 editor.remove(inventory.key());
                 editor.register(inventory);
@@ -263,12 +271,15 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
      */
     private void provideInventories(ReloadContext<Inventory> context) {
         KeyedRegistry<Inventory> next = context.registries().registry(Registries.INVENTORY);
+        boolean paths = Configuration.enableInventoryPaths;
+        context.onPublish(() -> this.inventoryPaths = paths);
 
         for (File file : this.inventoryFiles()) {
             try {
                 Inventory inventory = this.parseInventory(this.plugin, file, ZInventory.class);
                 if (inventory == null) continue;
 
+                if (paths) this.applyInventoryPath(inventory, file);
                 if (next.contains(inventory.key())) {
                     context.warn(inventory.key(), file.getPath() + " has the same name as another inventory, it is not loaded");
                     continue;
@@ -277,7 +288,8 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
                 context.onPublish(() -> this.inventoryLoaded(this.plugin, file, inventory));
             } catch (Exception exception) {
                 Logger.error(exception);
-                Optional<Inventory> previous = context.previous().stream().filter(inventory -> file.equals(inventory.getFile())).findFirst();
+                // A version loaded with the other value of enable-inventory-paths has a key this file cannot keep
+                Optional<Inventory> previous = context.previous().stream().filter(inventory -> paths == this.inventoryPaths && file.equals(inventory.getFile())).findFirst();
                 if (previous.isPresent() && !next.contains(previous.get().key())) {
                     context.register(previous.get());
                     context.warn(previous.get().key(), file.getPath() + " cannot be loaded, its previous version is kept: " + exception.getMessage());
@@ -286,6 +298,24 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
                 }
             }
         }
+    }
+
+    /**
+     * Names an inventory of zMenu by its path inside the inventories folder, such as
+     * {@code admin/shop}, when its file is in a sub folder. A file of the folder itself or of
+     * {@code specify-path-menus} keeps the key of its file name.
+     */
+    private void applyInventoryPath(Inventory inventory, File file) {
+        Path folder = new File(this.plugin.getDataFolder(), "inventories").toPath().toAbsolutePath().normalize();
+        Path path = file.toPath().toAbsolutePath().normalize();
+        Path parent = path.startsWith(folder) ? folder.relativize(path).getParent() : null;
+        if (parent == null || !(inventory instanceof ContainerInventorySetter setter)) return;
+
+        StringBuilder builder = new StringBuilder();
+        for (Path name : parent) {
+            builder.append(name).append('/');
+        }
+        setter.setKey(ZMenuKeys.inventoryPathKey(builder + inventory.getFileName()));
     }
 
     /**
@@ -403,9 +433,12 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
     /**
      * Warns when several plugins provide an inventory with the same file name: the name on its own
-     * then always opens the same one, and the plugin:name form is needed to pick another.
+     * then always opens the same one, and the plugin:name form is needed to pick another. Not with
+     * {@code enable-inventory-paths}, where the name on its own only opens an inventory of zMenu.
      */
     private void warnAboutSharedName(Inventory inventory) {
+        if (this.inventoryPaths) return;
+
         String shortName = inventory.key().value();
         List<Inventory> matches = new ArrayList<>(this.getInventories().stream()
                 .filter(other -> other.key().value().equals(shortName))
@@ -476,12 +509,34 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
     @Override
     public Optional<Inventory> findInventory(@NotNull String inventoryName) {
+        if (this.inventoryPaths && inventoryName.indexOf(':') < 0) {
+            return this.inventoryRegistry().get(ZMenuKeys.inventoryPathKey(inventoryName));
+        }
+
         Optional<Inventory> optional = this.getInventory(ZMenuKeys.inventoryKey(inventoryName));
         if (optional.isPresent() || inventoryName.indexOf(':') >= 0) return optional;
 
         return this.otherInventories.values().stream()
                 .filter(inventory -> ZMenuKeys.matches(inventory.key(), inventoryName))
                 .min(Comparator.comparing(inventory -> inventory.getPlugin().getName(), String.CASE_INSENSITIVE_ORDER));
+    }
+
+    /**
+     * @return whether the inventories of zMenu are named by their path, see {@code enable-inventory-paths}
+     */
+    public boolean usesInventoryPaths() {
+        return this.inventoryPaths;
+    }
+
+    /**
+     * Tells whether a reference written by a user names this inventory, read as
+     * {@link #findInventory(String)} reads it.
+     */
+    public boolean matches(Inventory inventory, String reference) {
+        if (this.inventoryPaths) {
+            return this.findInventory(reference).filter(found -> found.key().equals(inventory.key())).isPresent();
+        }
+        return ZMenuKeys.matches(inventory.key(), reference);
     }
 
     @Override

@@ -33,6 +33,12 @@ public class CommandMenuReloadConfig extends SubCommand<ZMenuPlugin> {
         patternManager.loadPatterns();
         this.plugin.getInventoryManager().getAnimationManager().loadAnimations();
 
+        // Inventories are named when they are loaded, so they are loaded again when enable-inventory-paths changes
+        if (Configuration.enableInventoryPaths != this.plugin.getInventoryManager().usesInventoryPaths()) {
+            this.plugin.getVInventoryManager().close();
+            this.plugin.getInventoryManager().loadInventories();
+        }
+
         MessageUtils.message(this.plugin, commandDispatch.getSender(), Message.RELOAD_FILES);
         return CommandResultType.SUCCESS;
     }

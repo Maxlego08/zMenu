@@ -37,10 +37,13 @@ public interface Inventory extends Keyed, SectionSerializable {
 
     /**
      * Returns the key of the inventory: the name of its plugin and its file name, lowercased, with
-     * every character a key cannot hold replaced by "_".
+     * every character a key cannot hold replaced by "_". With {@code enable-inventory-paths}, an
+     * inventory of zMenu in a sub folder of the inventories folder has its path there instead of
+     * its file name, such as {@code zmenu:admin/shop}.
      *
      * @return the key
      * @see ZMenuKeys#fileKey(String, String)
+     * @see ZMenuKeys#inventoryPathKey(String)
      */
     @Override
     default @NotNull Key key() {
