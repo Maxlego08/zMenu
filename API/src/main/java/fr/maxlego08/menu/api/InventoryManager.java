@@ -21,6 +21,8 @@ import fr.maxlego08.menu.api.pagination.PaginationManager;
 import fr.maxlego08.menu.api.registry.Registries;
 import fr.maxlego08.menu.api.registry.RegistryManager;
 import fr.maxlego08.menu.api.registry.WritableRegistry;
+import fr.maxlego08.menu.api.sound.SoundOption;
+import fr.maxlego08.menu.api.sound.SoundService;
 import fr.maxlego08.menu.api.utils.Message;
 import fr.maxlego08.menu.api.utils.MetaUpdater;
 import fr.maxlego08.menu.api.utils.Placeholders;
@@ -968,5 +970,36 @@ public interface InventoryManager extends Listener {
     @Deprecated(since = "1.1.2.1", forRemoval = true)
     default ItemStack deserializeItemStack(String serializedItemStack) {
         return this.getPlugin().getItemStackService().deserialize(serializedItemStack);
+    }
+
+    /**
+     * Creates a sound.
+     *
+     * @param soundName    the name of the sound
+     * @param categoryName the sound category, such as {@code MASTER}
+     * @param pitch        the pitch
+     * @param volume       the volume
+     * @return the sound
+     * @deprecated use {@link SoundService#create(String, String, float, float)}.
+     */
+    @Deprecated(forRemoval = true)
+    default SoundOption createSoundOption(String soundName, String categoryName, float pitch, float volume) {
+        return this.createSoundOption(soundName, categoryName, pitch, volume, false);
+    }
+
+    /**
+     * Creates a sound.
+     *
+     * @param soundName    the name of the sound
+     * @param categoryName the sound category, such as {@code MASTER}
+     * @param pitch        the pitch
+     * @param volume       the volume
+     * @param isCustom     ignored, {@link SoundService} detects custom sounds itself
+     * @return the sound
+     * @deprecated use {@link SoundService#create(String, String, float, float)}.
+     */
+    @Deprecated(forRemoval = true)
+    default SoundOption createSoundOption(String soundName, String categoryName, float pitch, float volume, boolean isCustom) {
+        return this.getPlugin().getSoundService().create(soundName, categoryName, pitch, volume);
     }
 }
