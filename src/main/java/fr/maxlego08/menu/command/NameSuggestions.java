@@ -2,6 +2,7 @@
 package fr.maxlego08.menu.command;
 
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
+import fr.maxlego08.menu.ZInventoryManager;
 import fr.maxlego08.menu.api.ZMenuKeys;
 import net.kyori.adventure.key.Key;
 
@@ -22,6 +23,26 @@ public final class NameSuggestions {
 
     public static void suggestKeys(SuggestionsBuilder builder, Collection<Key> keys) {
         suggest(builder, keys, Key::asString);
+    }
+
+    /**
+     * Suggests the references {@link ZInventoryManager#findInventory(String)} accepts. With
+     * {@code enable-inventory-paths}, an inventory of zMenu is only suggested by its path and one
+     * of another plugin by {@code plugin:name}.
+     */
+    public static void suggestInventories(SuggestionsBuilder builder, ZInventoryManager inventoryManager) {
+        if (!inventoryManager.usesInventoryPaths()) {
+            suggestKeys(builder, inventoryManager.getInventoryKeys());
+            return;
+        }
+
+        String input = builder.getRemainingLowerCase();
+        for (Key key : inventoryManager.getInventoryKeys()) {
+            String reference = ZMenuKeys.NAMESPACE.equals(key.namespace()) ? key.value() : key.asString();
+            if (reference.startsWith(input)) {
+                builder.suggest(reference);
+            }
+        }
     }
 
     private static <T> void suggest(SuggestionsBuilder builder, Collection<T> values, Function<T, String> mapper) {

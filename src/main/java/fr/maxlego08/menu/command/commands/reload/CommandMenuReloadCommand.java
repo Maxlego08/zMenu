@@ -1,6 +1,5 @@
 package fr.maxlego08.menu.command.commands.reload;
 
-import fr.maxlego08.menu.api.ZMenuKeys;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.command.Command;
@@ -47,7 +46,7 @@ public class CommandMenuReloadCommand extends SubCommand<ZMenuPlugin> {
             Command command = optional.get();
             this.plugin.getVInventoryManager().close(v -> {
                 InventoryDefault inventoryDefault = (InventoryDefault) v;
-                return !inventoryDefault.isClose() && command.inventory() != null && ZMenuKeys.matches(inventoryDefault.getMenuInventory().key(), command.inventory());
+                return !inventoryDefault.isClose() && command.inventory() != null && this.plugin.getInventoryManager().matches(inventoryDefault.getMenuInventory(), command.inventory());
             });
 
             Message message = commandManager.reload(command) ? Message.RELOAD_COMMAND_FILE

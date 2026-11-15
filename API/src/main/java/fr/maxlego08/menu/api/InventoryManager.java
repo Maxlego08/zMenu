@@ -192,6 +192,10 @@ public interface InventoryManager extends Listener {
      * {@code plugin:file} is looked up exactly, while a plain {@code file} is looked up in zMenu
      * first, then in the other plugins.
      *
+     * <p>With {@code enable-inventory-paths}, a plain reference only names an inventory of zMenu,
+     * by its path inside the inventories folder: {@code shop} or {@code admin/shop}. An inventory
+     * of another plugin needs {@code plugin:file}.</p>
+     *
      * @param inventoryName the reference
      * @return Optional of {@link Inventory}.
      * @see ZMenuKeys#inventoryKey(String)

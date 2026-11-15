@@ -45,6 +45,7 @@
 * Added the `features` section to `config.yml`, to turn off parts of zMenu a server does not use. A disabled feature registers nothing; a change applies after a restart, `/zm reload` only warns about it. First feature: `custom-items`, which turns off the `items` folder, its mechanics (`itemjoin`, `on-click`), the item update on join and `/zm giveitem`.
 * Added `/zm resetanimation <player> [menu]` (permission `zmenu.animation.reset`) so an animation that plays once, or has a cooldown, plays again.
 * Added the `max-animation-duration` (default 10000 ms) and `shared-idle-timer-threshold` (default 8) options to `config.yml`.
+* Added the `enable-inventory-paths` option to `config.yml` (default `false`, nothing changes while it is off). When it is on, an inventory of zMenu is named by its path inside the `inventories` folder, without `.yml`: `inventories/shop.yml` is `shop` and `inventories/admin/shop.yml` is `admin/shop`, in `/zm open`, `/zm giveopenitem`, `/zm reload inventory`, the `inventory` action and button, commands and the API. The file name alone no longer opens an inventory of a sub folder, so several files with the same name in different folders are all loaded. A name without a plugin no longer opens an inventory of another plugin, which needs `plugin:name` (`zEssentials:baltop`), and the warning about a name provided by several plugins is no longer logged. The option applies when the inventories are loaded: `/zm reload` and `/zm reload config` load them again when it changed.
 
 ## Improvements
 

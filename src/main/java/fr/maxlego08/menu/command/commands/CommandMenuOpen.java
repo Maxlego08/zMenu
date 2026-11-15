@@ -34,7 +34,7 @@ public class CommandMenuOpen extends SubCommand<ZMenuPlugin> {
         this.inventoryManager = plugin.getInventoryManager();
 
         this.addRequiredArgument(Commands.argument("inventory-name", new NonSpaceStringArgumentType()).suggests((ctx, builder) -> {
-            NameSuggestions.suggestKeys(builder, this.inventoryManager.getInventoryKeys());
+            NameSuggestions.suggestInventories(builder, plugin.getInventoryManager());
             return builder.buildFuture();
         }));
 

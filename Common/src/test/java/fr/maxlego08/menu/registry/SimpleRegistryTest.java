@@ -56,6 +56,18 @@ class SimpleRegistryTest {
     }
 
     @Test
+    void inventoryPathKeysKeepTheFoldersAndReadEachNameAsAFileName() {
+        assertEquals(Key.key("zmenu", "shop"), ZMenuKeys.inventoryPathKey("Shop"));
+        assertEquals(Key.key("zmenu", "admin/my_shop"), ZMenuKeys.inventoryPathKey("Admin/My Shop"));
+        assertEquals(Key.key("zmenu", "my-folder/caf_"), ZMenuKeys.inventoryPathKey("my-folder/café"));
+        assertEquals(ZMenuKeys.fileKey("zMenu", "My Shop"), ZMenuKeys.inventoryPathKey("My Shop"), "a file of the folder itself keeps its key");
+
+        assertEquals(Key.key("zmenu", "admin_shop"), ZMenuKeys.inventoryPathKey("admin\\shop"), "\"\\\" is not a separator");
+        assertEquals(Key.key("zmenu", "../shop"), ZMenuKeys.inventoryPathKey("../shop"), "a path is not resolved");
+        assertEquals(Key.key("zmenu", "admin_shop"), ZMenuKeys.inventoryKey("admin/shop"), "an inventory reference has no path");
+    }
+
+    @Test
     void parseReadsSpacesAndDashesAsUnderscores() {
         assertEquals(Key.key("zmenu", "play_animation"), ZMenuKeys.parse("Play Animation"));
         assertEquals(Key.key("zmenu", "play_animation"), ZMenuKeys.parse("play-animation"));
