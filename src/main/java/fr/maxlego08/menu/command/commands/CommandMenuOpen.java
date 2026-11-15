@@ -1,15 +1,14 @@
 package fr.maxlego08.menu.command.commands;
 
-import net.kyori.adventure.key.Key;
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import fr.maxlego08.menu.ZMenuPlugin;
-import fr.maxlego08.menu.command.NameSuggestions;
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.command.CommandManager;
 import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.utils.Message;
+import fr.maxlego08.menu.command.NameSuggestions;
 import fr.maxlego08.menu.common.enums.Permission;
 import fr.maxlego08.menu.common.utils.MessageUtils;
 import fr.maxlego08.menu.common.utils.command.NonSpaceStringArgumentType;
@@ -25,7 +24,6 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 public class CommandMenuOpen extends SubCommand<ZMenuPlugin> {
     private final InventoryManager inventoryManager;
@@ -36,7 +34,7 @@ public class CommandMenuOpen extends SubCommand<ZMenuPlugin> {
         this.inventoryManager = plugin.getInventoryManager();
 
         this.addRequiredArgument(Commands.argument("inventory-name", new NonSpaceStringArgumentType()).suggests((ctx, builder) -> {
-            NameSuggestions.suggest(builder, this.inventoryManager.getInventoryKeys().stream().map(Key::asString).collect(Collectors.toSet()));
+            NameSuggestions.suggestKeys(builder, this.inventoryManager.getInventoryKeys());
             return builder.buildFuture();
         }));
 
