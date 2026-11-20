@@ -414,11 +414,13 @@ public abstract class Button extends PlaceholderButton {
     }
 
     @Contract(pure = true)
+    @SuppressWarnings("deprecation")
     public List<String> buildLore(Player player) {
         return this.itemStack.getLore();
     }
 
     @Contract(pure = true)
+    @SuppressWarnings("deprecation")
     public String buildDisplayName(Player player) {
         return this.itemStack.getDisplayName();
     }

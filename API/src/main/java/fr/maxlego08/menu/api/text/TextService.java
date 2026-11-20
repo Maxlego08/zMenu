@@ -2,13 +2,18 @@ package fr.maxlego08.menu.api.text;
 
 import fr.robie.minimessageflow.FailedModifier;
 import fr.robie.minimessageflow.MiniMessageFlow;
+import fr.robie.minimessageflow.Template;
+import fr.robie.minimessageflow.TemplateList;
 import fr.robie.minimessageflow.ValueKeys;
 import net.kyori.adventure.pointer.Pointered;
+import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.bukkit.OfflinePlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -58,6 +63,47 @@ public interface TextService {
                 .failedModifier(FailedModifier.EMPTY)
                 .placeholdersInFormattedValues(true)
                 .resolver(TextService::player);
+    }
+
+    /**
+     * The root style of a line of item text (a display name, a lore line): not italic, unless the text asks for italic
+     * itself ({@code &o}, {@code <i>}, {@code <em>}, {@code <italic>}), as the client shows item text in italic by
+     * default and zMenu always turned it off. Give it to {@code Template.style}.
+     *
+     * @param text the line as written
+     * @return the style
+     */
+    static @NotNull Style itemLineStyle(@NotNull String text) {
+        boolean italic = text.contains("&o") || text.contains("<i>") || text.contains("<em>") || text.contains("<italic>");
+        return italic ? TextServices.ITALIC : TextServices.NOT_ITALIC;
+    }
+
+    /**
+     * Compiles a line of item text (a display name) with its {@link #itemLineStyle}.
+     *
+     * @param text the line as written
+     * @return the template
+     */
+    static @NotNull Template compileItemLine(@NotNull String text) {
+        return get().flow().compile(text).style(itemLineStyle(text));
+    }
+
+    /**
+     * Compiles lore lines, each with its {@link #itemLineStyle}. A line holding {@code \n} gives several lines.
+     *
+     * @param lines the lines as written
+     * @return the templates
+     */
+    static @NotNull TemplateList compileItemLines(@NotNull List<String> lines) {
+        List<String> split = new ArrayList<>(lines.size());
+        for (String line : lines) {
+            if (line.indexOf('\n') < 0) {
+                split.add(line);
+            } else {
+                Collections.addAll(split, line.split("\n"));
+            }
+        }
+        return get().flow().compileList(split).style(template -> itemLineStyle(template.source()));
     }
 
     private static @Nullable String player(@NotNull String key, @Nullable Pointered viewer) {

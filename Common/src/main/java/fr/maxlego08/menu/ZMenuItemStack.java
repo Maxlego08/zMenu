@@ -18,7 +18,11 @@ import fr.maxlego08.menu.api.itemstack.*;
 import fr.maxlego08.menu.api.loader.MaterialLoader;
 import fr.maxlego08.menu.api.registry.Registries;
 import fr.maxlego08.menu.api.utils.LoreType;
+import fr.maxlego08.menu.api.text.TextService;
 import fr.maxlego08.menu.api.utils.OfflinePlayerCache;
+import fr.maxlego08.menu.api.utils.PaperMetaUpdater;
+import fr.robie.minimessageflow.Template;
+import fr.robie.minimessageflow.TemplateList;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableInt;
 import fr.maxlego08.menu.api.utils.version.MinecraftVersion;
@@ -57,11 +61,11 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     private String tooltipStyle;
     private String durability;
     private fr.maxlego08.menu.api.itemstack.Potion potion;
-    private List<String> lore = new ArrayList<>();
+    private ItemLines lore = ItemLines.EMPTY;
     private List<ItemFlag> flags = new ArrayList<>();
-    private String displayName;
-    private Map<String, String> translatedDisplayName = new HashMap<>();
-    private Map<String, List<String>> translatedLore = new HashMap<>();
+    private @Nullable ItemLine displayName;
+    private Map<String, ItemLine> translatedDisplayName = Map.of();
+    private Map<String, ItemLines> translatedLore = Map.of();
     private boolean isGlowing;
     private ResolvableInt modelID;
     private String itemModel;
@@ -387,23 +391,41 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
      * @param useCache      whether to use the cache for the placeholders.
      */
     private void applyDisplayNameLore(Player player, Placeholders placeholders, ItemMeta itemMeta, OfflinePlayer offlinePlayer, String locale, FontImage fontImage, boolean useCache) {
+        if (offlinePlayer == null && this.inventoryManager.getPlugin().getMetaUpdater() instanceof PaperMetaUpdater metaUpdater) {
+            Template name = this.getDisplayNameTemplate(locale);
+            if (name != null) {
+                try {
+                    metaUpdater.updateDisplayName(itemMeta, name.render(placeholders.values(), player));
+                } catch (Exception exception) {
+                    Logger.info("Error with update display name for item " + this.path + " in file " + this.filePath + " (" + player + ", " + this.getDisplayNameSource() + ")", Logger.LogType.ERROR);
+                    Logger.error(exception);
+                }
+            }
+            TemplateList lore = this.getLoreTemplate(locale);
+            if (!lore.isEmpty()) {
+                metaUpdater.updateLoreComponents(itemMeta, lore.render(placeholders.values(), player), this.loreType);
+            }
+            return;
+        }
 
         String itemName = null;
         List<String> itemLore = new ArrayList<>();
 
         if (this.displayName != null) {
             try {
-                String displayName = locale == null ? this.displayName : this.translatedDisplayName.getOrDefault(locale, this.displayName);
+                ItemLine line = locale == null ? this.displayName : this.translatedDisplayName.getOrDefault(locale, this.displayName);
+                String displayName = line.source();
                 if (displayName != null)
                     itemName = fontImage.replace(this.papi(placeholders.parse(displayName), offlinePlayer == null ? player : offlinePlayer, useCache));
             } catch (Exception exception) {
-                Logger.info("Error with update display name for item " + this.path + " in file " + this.filePath + " (" + player + ", " + this.displayName + ")", Logger.LogType.ERROR);
+                Logger.info("Error with update display name for item " + this.path + " in file " + this.filePath + " (" + player + ", " + this.getDisplayNameSource() + ")", Logger.LogType.ERROR);
                 Logger.error(exception);
             }
         }
 
-        if (!this.lore.isEmpty()) {
-            List<String> lore = this.papi(placeholders.parse(locale == null ? this.lore : this.translatedLore.getOrDefault(locale, this.lore)), offlinePlayer == null ? player : offlinePlayer, useCache);
+        if (!this.lore.source().isEmpty()) {
+            ItemLines lines = locale == null ? this.lore : this.translatedLore.getOrDefault(locale, this.lore);
+            List<String> lore = this.papi(placeholders.parse(lines.source()), offlinePlayer == null ? player : offlinePlayer, useCache);
             List<String> flattened = new ArrayList<>();
             for (String str : lore) {
                 String[] parts = str.split("\n");
@@ -421,6 +443,50 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
         if (!itemLore.isEmpty()) {
             this.inventoryManager.getPlugin().getMetaUpdater().updateLore(itemMeta, itemLore, this.loreType);
         }
+    }
+
+    @Override
+    public @Nullable Template getDisplayNameTemplate(@Nullable String locale) {
+        if (locale != null) {
+            ItemLine translated = this.translatedDisplayName.get(locale);
+            if (translated != null) {
+                return translated.template();
+            }
+        }
+        return this.displayName == null ? null : this.displayName.template();
+    }
+
+    @Override
+    public @NotNull TemplateList getLoreTemplate(@Nullable String locale) {
+        if (locale != null) {
+            ItemLines translated = this.translatedLore.get(locale);
+            if (translated != null) {
+                return translated.templates();
+            }
+        }
+        return this.lore.templates();
+    }
+
+    private @NotNull ItemLine compileName(@NotNull String name) {
+        return new ItemLine(name, TextService.compileItemLine(this.withFontImages(name)));
+    }
+
+    private @NotNull ItemLines compileLore(@NotNull List<String> lore) {
+        List<String> source = List.copyOf(lore);
+        List<String> lines = new ArrayList<>(source.size());
+        for (String line : source) {
+            lines.add(this.withFontImages(line));
+        }
+        return new ItemLines(source, TextService.compileItemLines(lines));
+    }
+
+    private @Nullable String getDisplayNameSource() {
+        return this.displayName == null ? null : this.displayName.source();
+    }
+
+    private @NotNull String withFontImages(@NotNull String text) {
+        FontImage fontImage = this.inventoryManager == null ? null : this.inventoryManager.getPlugin().getFontImage();
+        return fontImage == null ? text : fontImage.replace(text);
     }
 
     private void buildNewItemStackAPI(ItemStack itemStack, ItemMeta itemMeta, Player player, Placeholders placeholders) {
@@ -640,16 +706,28 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     /**
      * @return the lore
      */
+    @Override
+    @Deprecated(since = "1.1.2.2")
     public List<String> getLore() {
-        return this.lore;
+        return new ArrayList<>(this.lore.source());
     }
 
     /**
      * @param lore the lore to set
      */
     public void setLore(List<String> lore) {
-        this.lore = lore;
+        this.lore = this.compileLore(lore);
         lore.forEach(this::updatePlaceholder);
+    }
+
+    @Override
+    public void setLoreTemplate(@NotNull TemplateList lore) {
+        List<String> lines = new ArrayList<>(lore.size());
+        for (Template template : lore.templates()) {
+            lines.add(template.source());
+        }
+        this.lore = new ItemLines(List.copyOf(lines), lore.style(template -> TextService.itemLineStyle(template.source())));
+        lines.forEach(this::updatePlaceholder);
     }
 
     /**
@@ -669,16 +747,25 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     /**
      * @return the displayName
      */
+    @Override
+    @Deprecated(since = "1.1.2.2")
     public String getDisplayName() {
-        return this.displayName;
+        return this.getDisplayNameSource();
     }
 
     /**
      * @param displayName the displayName to set
      */
     public void setDisplayName(String displayName) {
-        this.displayName = displayName;
+        this.displayName = displayName == null ? null : this.compileName(displayName);
         this.updatePlaceholder(displayName);
+    }
+
+    @Override
+    public void setDisplayNameTemplate(@Nullable Template displayName) {
+        this.displayName = displayName == null ? null
+                : new ItemLine(displayName.source(), displayName.style(TextService.itemLineStyle(displayName.source())));
+        this.updatePlaceholder(this.getDisplayNameSource());
     }
 
     /**
@@ -910,20 +997,36 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
         this.needPlaceholderAPI = string.contains("%");
     }
 
+    @Override
+    @Deprecated(since = "1.1.2.2")
     public Map<String, String> getTranslatedDisplayName() {
-        return this.translatedDisplayName;
+        Map<String, String> names = new HashMap<>(this.translatedDisplayName.size());
+        this.translatedDisplayName.forEach((locale, name) -> names.put(locale, name.source()));
+        return names;
     }
 
     public void setTranslatedDisplayName(Map<String, String> translatedDisplayName) {
-        this.translatedDisplayName = translatedDisplayName;
+        Map<String, ItemLine> names = new HashMap<>(translatedDisplayName.size());
+        translatedDisplayName.forEach((locale, name) -> {
+            if (name != null) {
+                names.put(locale, this.compileName(name));
+            }
+        });
+        this.translatedDisplayName = names;
     }
 
+    @Override
+    @Deprecated(since = "1.1.2.2")
     public Map<String, List<String>> getTranslatedLore() {
-        return this.translatedLore;
+        Map<String, List<String>> lores = new HashMap<>(this.translatedLore.size());
+        this.translatedLore.forEach((locale, lore) -> lores.put(locale, new ArrayList<>(lore.source())));
+        return lores;
     }
 
     public void setTranslatedLore(Map<String, List<String>> translatedLore) {
-        this.translatedLore = translatedLore;
+        Map<String, ItemLines> lores = new HashMap<>(translatedLore.size());
+        translatedLore.forEach((locale, lore) -> lores.put(locale, this.compileLore(lore)));
+        this.translatedLore = lores;
     }
 
     public boolean isNeedPlaceholderAPI() {
@@ -1130,8 +1233,8 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
 
         section.set("material", this.material);
 
-        if (this.displayName != null) section.set("name", this.displayName);
-        if (!this.lore.isEmpty()) section.set("lore", this.lore);
+        if (this.displayName != null) section.set("name", this.displayName.source());
+        if (!this.lore.source().isEmpty()) section.set("lore", this.lore.source());
         if (this.loreType != LoreType.REPLACE) section.set("lore-type", this.loreType.name());
         if (this.centerName) section.set("center-name", true);
         if (this.centerLore) section.set("center-lore", true);
@@ -1269,12 +1372,12 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     private void serializeTranslations(ConfigurationSection section) {
         if (!this.translatedDisplayName.isEmpty()) {
             List<Map<String, Object>> names = new ArrayList<>(this.translatedDisplayName.size());
-            this.translatedDisplayName.forEach((locale, name) -> names.add(new LinkedHashMap<>(Map.of("locale", locale, "name", name))));
+            this.translatedDisplayName.forEach((locale, name) -> names.add(new LinkedHashMap<>(Map.of("locale", locale, "name", name.source()))));
             section.set("translated-name", names);
         }
         if (!this.translatedLore.isEmpty()) {
             List<Map<String, Object>> lores = new ArrayList<>(this.translatedLore.size());
-            this.translatedLore.forEach((locale, lore) -> lores.add(new LinkedHashMap<>(Map.of("locale", locale, "lore", lore))));
+            this.translatedLore.forEach((locale, lore) -> lores.add(new LinkedHashMap<>(Map.of("locale", locale, "lore", lore.source()))));
             section.set("translated-lore", lores);
         }
     }
@@ -1285,5 +1388,49 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
                 .map(menuEnchantment -> menuEnchantment.enchantment().equals(enchantment))
                 .orElse(false);
         return readsBack ? key : enchantment.getName();
+    }
+
+    /**
+     * A line of item text: as written (saved, given by the deprecated getters) and compiled after its font images.
+     */
+    private static final class ItemLine {
+        private final String source;
+        private final transient Template template;
+
+        private ItemLine(@NotNull String source, @NotNull Template template) {
+            this.source = source;
+            this.template = template;
+        }
+
+        @NotNull String source() {
+            return this.source;
+        }
+
+        @NotNull Template template() {
+            return this.template;
+        }
+    }
+
+    /**
+     * Lore lines: as written and compiled, as {@link ItemLine}.
+     */
+    private static final class ItemLines {
+        private static final ItemLines EMPTY = new ItemLines(List.of(), TemplateList.of(List.of()));
+
+        private final List<String> source;
+        private final transient TemplateList templates;
+
+        private ItemLines(@NotNull List<String> source, @NotNull TemplateList templates) {
+            this.source = source;
+            this.templates = templates;
+        }
+
+        @NotNull List<String> source() {
+            return this.source;
+        }
+
+        @NotNull TemplateList templates() {
+            return this.templates;
+        }
     }
 }

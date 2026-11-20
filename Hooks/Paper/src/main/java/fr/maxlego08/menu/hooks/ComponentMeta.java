@@ -65,8 +65,7 @@ public class ComponentMeta implements PaperMetaUpdater {
      * @return its italic state
      */
     public static @NotNull TextDecoration.State italicState(@NotNull String text) {
-        return text.contains("&o") || text.contains("<i>") || text.contains("<em>") || text.contains("<italic>")
-                ? TextDecoration.State.TRUE : TextDecoration.State.FALSE;
+        return TextService.itemLineStyle(text).decoration(TextDecoration.ITALIC);
     }
 
     @Override

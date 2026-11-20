@@ -1,6 +1,8 @@
 package fr.maxlego08.menu.api.text;
 
 import fr.robie.minimessageflow.MiniMessageFlow;
+import net.kyori.adventure.text.format.Style;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
@@ -9,6 +11,9 @@ import java.util.Objects;
  * Where {@link TextService#get()} finds the service: the one zMenu installed, or a plain one made on first use.
  */
 final class TextServices {
+
+    static final Style ITALIC = Style.style(TextDecoration.ITALIC.withState(true));
+    static final Style NOT_ITALIC = Style.style(TextDecoration.ITALIC.withState(false));
 
     private static volatile TextService installed;
 
