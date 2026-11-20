@@ -1,5 +1,6 @@
 package fr.maxlego08.menu.api.text;
 
+import fr.maxlego08.menu.api.placeholder.LocalPlaceholder;
 import fr.robie.minimessageflow.FailedModifier;
 import fr.robie.minimessageflow.MiniMessageFlow;
 import fr.robie.minimessageflow.Template;
@@ -35,6 +36,11 @@ public interface TextService {
     @NotNull ValueKeys KEYS = ValueKeys.builder().build();
 
     /**
+     * The prefix of zMenu's own placeholders, {@code %zmenu_...%}.
+     */
+    @NotNull String ZMENU_PREFIX = "zmenu_";
+
+    /**
      * @return the installed service, or a plain one with the same options before zMenu installs its own
      */
     static @NotNull TextService get() {
@@ -53,7 +59,8 @@ public interface TextService {
     /**
      * What every instance zMenu builds has, set on its builder: {@link #KEYS}, the old modifier prefixes
      * ({@code %upper_name%}), the empty text for a modifier that does not apply (as zMenu always did), PlaceholderAPI
-     * placeholders read inside formatted values, {@code %player%} as the viewer's name.
+     * placeholders read inside formatted values, {@code %player%} as the viewer's name, zMenu's own
+     * {@code %zmenu_...%} placeholders.
      *
      * @param builder the builder of an instance
      */
@@ -62,7 +69,8 @@ public interface TextService {
                 .legacyPrefixModifiers(true)
                 .failedModifier(FailedModifier.EMPTY)
                 .placeholdersInFormattedValues(true)
-                .resolver(TextService::player);
+                .resolver(TextService::player)
+                .resolver(TextService::zmenu);
     }
 
     /**
@@ -104,6 +112,17 @@ public interface TextService {
             }
         }
         return get().flow().compileList(split).style(template -> itemLineStyle(template.source()));
+    }
+
+    /**
+     * zMenu's own placeholders ({@code %zmenu_...%}), asked directly, with or without PlaceholderAPI.
+     */
+    private static @Nullable String zmenu(@NotNull String key, @Nullable Pointered viewer) {
+        if (!key.startsWith(ZMENU_PREFIX) || !(viewer instanceof OfflinePlayer player)) {
+            return null;
+        }
+        String value = LocalPlaceholder.getInstance().onRequest(player, key.substring(ZMENU_PREFIX.length()));
+        return value == null ? null : value.replace('\uF000', '%');
     }
 
     private static @Nullable String player(@NotNull String key, @Nullable Pointered viewer) {

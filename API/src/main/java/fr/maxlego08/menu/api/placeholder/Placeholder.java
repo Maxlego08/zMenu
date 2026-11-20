@@ -8,6 +8,16 @@ import org.bukkit.entity.Player;
 
 import java.util.List;
 
+/**
+ * Replaces PlaceholderAPI's placeholders in text, and zMenu's own {@code %zmenu_...%} ones.
+ *
+ * @deprecated zMenu's text engine asks PlaceholderAPI (with {@code cache-placeholder-api}) and zMenu's own placeholders
+ * itself, for the viewer, while it renders: compile the text once and render it with
+ * {@code TextService.get().flow()} ({@code format(text, placeholders.values(), player)} for a component,
+ * {@code formatText(...)} for a {@code String}), or {@code PaperMetaUpdater#render}. The zMenu PlaceholderAPI
+ * expansion is still registered at enable.
+ */
+@Deprecated(since = "1.1.2.2")
 public interface Placeholder {
 
     String setPlaceholders(Player player, String string);
@@ -18,6 +28,10 @@ public interface Placeholder {
 
     List<String> setPlaceholders(OfflinePlayer player, List<String> list);
 
+    /**
+     * @deprecated see {@link Placeholder}.
+     */
+    @Deprecated(since = "1.1.2.2")
     class Api implements Placeholder {
         private final Placeholder localPlaceholder;
 
@@ -53,6 +67,10 @@ public interface Placeholder {
 
     }
 
+    /**
+     * @deprecated see {@link Placeholder}.
+     */
+    @Deprecated(since = "1.1.2.2")
     class Local implements Placeholder {
 
         private static String restorePercent(String string) {
@@ -85,6 +103,10 @@ public interface Placeholder {
 
     }
 
+    /**
+     * @deprecated see {@link Placeholder}.
+     */
+    @Deprecated(since = "1.1.2.2")
     class Placeholders {
 
         private static Placeholder placeholder;

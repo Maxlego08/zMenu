@@ -1,17 +1,23 @@
 package fr.maxlego08.menu.api.text;
 
 import fr.maxlego08.menu.api.configuration.Configuration;
+import fr.maxlego08.menu.api.placeholder.LocalPlaceholder;
 import fr.robie.minimessageflow.MiniMessageFlow;
+import fr.robie.minimessageflow.Placeholder;
 import fr.robie.minimessageflow.Template;
 import fr.robie.minimessageflow.Values;
+import net.kyori.adventure.pointer.Pointered;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.minimessage.tag.Tag;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
+import org.bukkit.OfflinePlayer;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Proxy;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -82,5 +88,19 @@ class TextServiceTest {
         } finally {
             TextService.install(previous);
         }
+    }
+
+    @Test
+    @DisplayName("zMenu's own %zmenu_...% placeholders are asked directly, for an OfflinePlayer viewer only")
+    void zmenuPlaceholders() {
+        LocalPlaceholder.getInstance().register("textservicetest_", (player, value) -> "ok-" + value + "-" + player.getName());
+        Pointered viewer = (Pointered) Proxy.newProxyInstance(TextServiceTest.class.getClassLoader(),
+                new Class<?>[]{Pointered.class, OfflinePlayer.class},
+                (proxy, method, arguments) -> method.getName().equals("getName") ? "Steve"
+                        : method.isDefault() ? InvocationHandler.invokeDefault(proxy, method, arguments) : null);
+        MiniMessageFlow flow = TextService.get().flow();
+        assertEquals("ok-a-Steve", PLAIN.serialize(flow.format("%zmenu_textservicetest_a%", Placeholder.empty(), viewer)));
+        assertEquals("%zmenu_textservicetest_a%", PLAIN.serialize(flow.format("%zmenu_textservicetest_a%", Placeholder.empty(), null)));
+        assertEquals("%zmenu_nothing%", PLAIN.serialize(flow.format("%zmenu_nothing%", Placeholder.empty(), viewer)));
     }
 }
