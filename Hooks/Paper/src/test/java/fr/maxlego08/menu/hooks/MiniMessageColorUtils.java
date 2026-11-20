@@ -7,6 +7,10 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * The conversion zMenu used before MiniMessageFlow: legacy codes rewritten as MiniMessage tags by regular
+ * expressions, before a MiniMessage parse. Kept as the reference the parity tests compare MiniMessageFlow with.
+ */
 public class MiniMessageColorUtils {
     private static final Pattern LEGACY_HEX_PATTERN = Pattern.compile("§x(§[0-9a-fA-F]){6}");
     private static final Pattern HEX_SHORT_PATTERN = Pattern.compile("(?<!<)(?<!:)(?<!</)(&?)#([a-fA-F0-9]{6})");
