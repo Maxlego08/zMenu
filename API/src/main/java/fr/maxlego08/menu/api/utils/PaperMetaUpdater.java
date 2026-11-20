@@ -3,7 +3,11 @@ package fr.maxlego08.menu.api.utils;
 import fr.maxlego08.menu.api.text.TextService;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.meta.ItemMeta;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.jetbrains.annotations.NotNull;
@@ -47,6 +51,30 @@ public interface PaperMetaUpdater extends MetaUpdater {
      * Sets an item's lore, already formatted.
      */
     void updateLoreComponents(@NotNull ItemMeta itemMeta, @NotNull List<Component> lore, @NotNull LoreType loreType);
+
+    /**
+     * Creates a chest inventory with a formatted title.
+     *
+     * @param title  the title
+     * @param size   the size, a multiple of 9
+     * @param holder the holder
+     * @return the inventory
+     */
+    default @NotNull Inventory createInventory(@NotNull Component title, int size, @Nullable InventoryHolder holder) {
+        return Bukkit.createInventory(holder, size, title);
+    }
+
+    /**
+     * Creates an inventory of a type with a formatted title.
+     *
+     * @param title  the title
+     * @param type   the type
+     * @param holder the holder
+     * @return the inventory
+     */
+    default @NotNull Inventory createInventory(@NotNull Component title, @NotNull InventoryType type, @Nullable InventoryHolder holder) {
+        return Bukkit.createInventory(holder, type, title);
+    }
 
     default String getMiniMessage(Component component) {
         return component == null ? null : MiniMessage.miniMessage().serialize(component);

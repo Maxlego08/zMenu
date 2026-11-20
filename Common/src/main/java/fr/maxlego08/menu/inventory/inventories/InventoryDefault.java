@@ -61,6 +61,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
  * @author Maxlego08
@@ -173,16 +174,25 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
             Player targetPlayer = this.getTargetPlayer();
             this.perfDebug.end();
 
-            this.perfDebug.start("openInventory.papiInventoryName");
-            String parsedName = super.papi(placeholders.parse(inventoryName), targetPlayer, false);
-            this.perfDebug.end();
-
             if (this.inventory instanceof ContainerInventory containerInventory) {
                 this.perfDebug.start("openInventory.createMetaInventory");
-                if (containerInventory.getType() == InventoryType.CHEST && containerInventory instanceof ChestInventory chestInventory) {
-                    super.createMetaInventory(parsedName, chestInventory.size());
+                boolean chest = containerInventory.getType() == InventoryType.CHEST && containerInventory instanceof ChestInventory;
+                int size = chest ? ((ChestInventory) containerInventory).size() : 0;
+                if (this.plugin.getMetaUpdater() instanceof PaperMetaUpdater metaUpdater) {
+                    Component title = metaUpdater.render(inventoryName, placeholders, targetPlayer);
+                    Supplier<String> name = () -> super.papi(placeholders.parse(inventoryName), targetPlayer, false);
+                    if (chest) {
+                        super.createMetaInventory(title, name, size);
+                    } else {
+                        super.createMetaInventory(title, name, containerInventory.getType());
+                    }
                 } else {
-                    super.createMetaInventory(parsedName, containerInventory.getType());
+                    String parsedName = super.papi(placeholders.parse(inventoryName), targetPlayer, false);
+                    if (chest) {
+                        super.createMetaInventory(parsedName, size);
+                    } else {
+                        super.createMetaInventory(parsedName, containerInventory.getType());
+                    }
                 }
                 this.perfDebug.end();
 
