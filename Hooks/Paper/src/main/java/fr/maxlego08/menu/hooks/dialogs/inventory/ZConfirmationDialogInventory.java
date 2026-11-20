@@ -128,14 +128,14 @@ public class ZConfirmationDialogInventory extends AbstractDialogInventory implem
                 builder.empty()
                         .type(io.papermc.paper.registry.data.dialog.type.DialogType.confirmation(
                                 ActionButton.create(
-                                        paperComponent.getComponent(this.menuPlugin.parse(player, this.yesActionButtonRecord.label())),
-                                        paperComponent.getComponent(this.menuPlugin.parse(player, this.yesActionButtonRecord.tooltip())),
+                                        paperComponent.render(this.yesActionButtonRecord.label(), null, player),
+                                        paperComponent.render(this.yesActionButtonRecord.tooltip(), null, player),
                                         this.yesActionButtonRecord.width(),
                                         this.yesActionButtonRecord.action().build(dialogInputsForPlayer, player, this.menuPlugin, inventoryEngine, null, placeholders)
                                 ),
                                 ActionButton.create(
-                                        paperComponent.getComponent(this.menuPlugin.parse(player, this.noActionButtonRecord.label())),
-                                        paperComponent.getComponent(this.menuPlugin.parse(player, this.noActionButtonRecord.tooltip())),
+                                        paperComponent.render(this.noActionButtonRecord.label(), null, player),
+                                        paperComponent.render(this.noActionButtonRecord.tooltip(), null, player),
                                         this.noActionButtonRecord.width(),
                                         this.noActionButtonRecord.action().build(dialogInputsForPlayer, player, this.menuPlugin, inventoryEngine, null, placeholders)
                                 )

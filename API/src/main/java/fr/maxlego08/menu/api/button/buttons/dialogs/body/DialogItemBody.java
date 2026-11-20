@@ -60,8 +60,7 @@ public class DialogItemBody extends VanillaDialogBody {
         if (!this.descriptionMessages.isEmpty()) {
             List<Component> descComponents = new ArrayList<>();
             for (String descMessage : this.descriptionMessages) {
-                String parsedMessage = plugin.parse(player, placeholders.parse(descMessage));
-                descComponents.add(metaUpdater.getComponent(parsedMessage));
+                descComponents.add(metaUpdater.render(descMessage, placeholders, player));
             }
 
             Component finalDescComponent;

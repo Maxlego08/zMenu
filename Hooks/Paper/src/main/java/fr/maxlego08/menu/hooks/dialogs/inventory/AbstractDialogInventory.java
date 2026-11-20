@@ -307,9 +307,9 @@ public abstract class AbstractDialogInventory implements DialogInventory {
     }
 
     protected DialogBase createDialogBase(@NotNull PaperMetaUpdater paperComponent, @NotNull Player player, @NotNull List<DialogBody> dialogBodies, @NotNull List<DialogInput> dialogInputs) {
-        DialogBase.Builder builder = DialogBase.builder(paperComponent.getComponent(this.menuPlugin.parse(player, this.name)));
+        DialogBase.Builder builder = DialogBase.builder(paperComponent.render(this.name, null, player));
         if (!this.externalTitle.isEmpty()) {
-            builder.externalTitle(paperComponent.getComponent(this.menuPlugin.parse(player, this.externalTitle)));
+            builder.externalTitle(paperComponent.render(this.externalTitle, null, player));
         }
         builder.canCloseWithEscape(this.canCloseWithEscape);
         builder.pause(this.pause);

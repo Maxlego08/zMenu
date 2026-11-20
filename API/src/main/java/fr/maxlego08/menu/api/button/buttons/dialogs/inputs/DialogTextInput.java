@@ -54,7 +54,6 @@ public class DialogTextInput extends VanillaDialogInput {
         Placeholders placeholders = context.getPlaceholders();
         MenuPlugin plugin = context.getPlugin();
 
-        String label = plugin.parse(player, placeholders.parse(this.label));
         Optional<Supplier<String>> defaultTextSupplierX = this.getDefaultTextSupplierX();
         String defaultText = plugin.parse(player, placeholders.parse(defaultTextSupplierX.map(Supplier::get).orElse(this.defaultText)));
 
@@ -73,6 +72,6 @@ public class DialogTextInput extends VanillaDialogInput {
             }
             defaultText = defaultText.substring(0, maxLength);
         }
-        return DialogInput.text(this.key, this.width, context.getMetaUpdater().getComponent(label), this.labelVisible, defaultText, maxLength, multilineOptions);
+        return DialogInput.text(this.key, this.width, context.getMetaUpdater().render(this.label, placeholders, player), this.labelVisible, defaultText, maxLength, multilineOptions);
     }
 }

@@ -202,8 +202,8 @@ public class ZDialogListDialogInventory extends AbstractButtonUtilsInventory imp
                 (viewer, view) -> this.menuPlugin.getDialogManager().openDialog(viewer, this), ClickCallback.UNLIMITED_USES, null);
         String tooltip = this.backButton.tooltip();
         return ActionButton.create(
-                paperComponent.getComponent(this.menuPlugin.parse(player, this.backButton.label())),
-                tooltip.isEmpty() ? null : paperComponent.getComponent(this.menuPlugin.parse(player, tooltip)),
+                paperComponent.render(this.backButton.label(), null, player),
+                tooltip.isEmpty() ? null : paperComponent.render(tooltip, null, player),
                 this.backButton.width(),
                 action
         );

@@ -36,12 +36,12 @@ public class DialogSingleOptionInput extends VanillaDialogInput {
         PaperMetaUpdater paperMetaUpdater = context.getMetaUpdater();
         MenuPlugin plugin = context.getPlugin();
 
-        Component label = paperMetaUpdater.getComponent(plugin.parse(player, placeholders.parse(this.label)));
+        Component label = paperMetaUpdater.render(this.label, placeholders, player);
         List<SingleOptionDialogInput.OptionEntry> finalOptions = new ArrayList<>();
         for (SingleOption option : this.singleOptions) {
             finalOptions.add(SingleOptionDialogInput.OptionEntry.create(
                     option.id(),
-                    paperMetaUpdater.getComponent(plugin.parse(player, placeholders.parse(option.display()))),
+                    paperMetaUpdater.render(option.display(), placeholders, player),
                     option.initialValue()));
         }
 

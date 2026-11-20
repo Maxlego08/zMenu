@@ -39,8 +39,7 @@ public class DialogPlainMessageBody extends VanillaDialogBody {
 
         List<Component> components = new ArrayList<>();
         for (String message : localizedMessageList) {
-            String parsedMessage = plugin.parse(player, placeholders.parse(message));
-            components.add(metaUpdater.getComponent(parsedMessage));
+            components.add(metaUpdater.render(message, placeholders, player));
         }
         Component finalComponent;
         if (components.size() == 1) {

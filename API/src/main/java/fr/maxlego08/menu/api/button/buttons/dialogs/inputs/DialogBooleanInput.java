@@ -44,7 +44,7 @@ public class DialogBooleanInput extends VanillaDialogInput {
         MenuPlugin plugin = context.getPlugin();
 
         String key = this.key;
-        Component label = context.getMetaUpdater().getComponent(plugin.parse(player, placeholders.parse(this.getLabel())));
+        Component label = context.getMetaUpdater().render(this.getLabel(), placeholders, player);
         boolean initialValue = this.getInitialValueSupplierX().map(Supplier::get).orElseGet(() -> Boolean.parseBoolean(plugin.parse(player, placeholders.parse(this.initialValue))));
 
         String onTrueText = plugin.parse(player, placeholders.parse(this.onTrueText));

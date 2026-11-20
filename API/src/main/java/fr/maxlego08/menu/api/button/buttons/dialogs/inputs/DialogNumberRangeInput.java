@@ -55,7 +55,7 @@ public class DialogNumberRangeInput extends VanillaDialogInput {
         Placeholders placeholders = context.getPlaceholders();
         MenuPlugin plugin = context.getPlugin();
 
-        Component label = context.getMetaUpdater().getComponent(plugin.parse(player, placeholders.parse(this.label)));
+        Component label = context.getMetaUpdater().render(this.label, placeholders, player);
         String labelFormat = plugin.parse(player, placeholders.parse(this.labelFormat));
 
         float start = this.start;
