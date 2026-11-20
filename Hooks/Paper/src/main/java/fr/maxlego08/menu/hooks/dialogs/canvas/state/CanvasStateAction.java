@@ -89,7 +89,7 @@ public final class CanvasStateAction extends Action {
 
     private @NotNull String parse(@NotNull Player player, @NotNull Placeholders placeholders, @NotNull String text) {
         String local = placeholders.parse(text);
-        if (!local.equals(text) && SINGLE_PLACEHOLDER.matcher(text).matches()) return local;
+        if (!local.equals(text) && SINGLE_PLACEHOLDER.matcher(text).matches()) return local.replace('\uF000', '%');
         return this.plugin.parse(player, local);
     }
 

@@ -24,7 +24,7 @@ public final class BedrockInputPlaceholders {
     private static void generic(Placeholders p, String key, Object raw) {
         if (raw instanceof Boolean b) toggle(p, key, b);
         else if (raw instanceof Number n) p.register(key, format(n.doubleValue()));
-        else p.register(key, raw.toString());
+        else p.registerRaw(key, raw.toString());
     }
 
     private static void slider(Placeholders p, String key, double v, SliderComponent slider) {

@@ -1,5 +1,8 @@
 package fr.maxlego08.menu.api.utils;
 
+import fr.maxlego08.menu.api.text.TextService;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -160,5 +163,19 @@ class PlaceholdersTest {
         placeholders.register("a#b", "hash");
         assertEquals("spaced hash", placeholders.parse("%my key% %a#b%"));
         assertEquals("spaced", placeholders.flatten().get("my key"));
+    }
+
+    @Test
+    @DisplayName("Player input: hidden from PlaceholderAPI in text, shown as typed in a template")
+    void rawInputPercent() {
+        Placeholders placeholders = new Placeholders();
+        placeholders.registerRaw("typed", "%server_ip% <red>hi");
+        placeholders.register("configured", "%server_ip%");
+
+        assertEquals("%server_ip% <red>hi", placeholders.get("typed"));
+        assertEquals("say \uF000server_ip\uF000 <red>hi %server_ip%", placeholders.parse("say %typed% %configured%"));
+
+        Component rendered = TextService.get().flow().format("%typed%", placeholders.values(), null);
+        assertEquals("%server_ip% <red>hi", PlainTextComponentSerializer.plainText().serialize(rendered));
     }
 }

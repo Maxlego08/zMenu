@@ -321,8 +321,10 @@ public final class Placeholders {
      * Registers text a player typed (an anvil, a dialog input, a command argument) in the current scope: shown
      * exactly as written in a compiled template, never read as colour codes, MiniMessage tags or placeholders, so a
      * player cannot colour a menu or add a click to it. Modifiers still apply ({@code %new_text.max:16%}).
-     * {@link #parse(String)} still writes it as it is. A null key is ignored and a null value is stored as an empty
-     * string.
+     * {@link #parse(String)} writes it with its {@code %} hidden from PlaceholderAPI (as {@code U+F000}, which
+     * zMenu's PlaceholderAPI pass and {@code MenuPlugin#parse} turn back into {@code %}), so a command or a message
+     * built as text cannot run a placeholder the player typed. A null key is ignored and a null value is stored as an
+     * empty string.
      */
     public void registerRaw(@Nullable String key, @Nullable String value) {
         if (key == null) return;
@@ -378,7 +380,15 @@ public final class Placeholders {
     public String parse(@NotNull String string) {
         Preconditions.checkNotNull(string, "string cannot be null");
         if (string.indexOf('%') < 0 || !this.hasAny()) return string;
-        return parseInternal(string, this::get);
+        return parseInternal(string, this::textValue);
+    }
+
+    /**
+     * A value as {@link #parse(String)} writes it: a raw value's {@code %} hidden from PlaceholderAPI.
+     */
+    private @Nullable String textValue(@NotNull String key) {
+        String value = this.get(key);
+        return value != null && value.indexOf('%') >= 0 && this.isRaw(key) ? value.replace('%', '\uF000') : value;
     }
 
     /**

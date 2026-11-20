@@ -85,14 +85,14 @@ public class AnvilInventoryDefault extends InventoryDefault implements AnvilInve
                     }
 
                     placeholders.register("type", textChange.type().name());
-                    placeholders.register("old_text", textChange.oldText());
+                    placeholders.registerRaw("old_text", textChange.oldText());
                     switch (textChange.type()) {
                         case ADDED, REMOVED -> {
-                            placeholders.register("char", String.valueOf(textChange.changedChar()));
-                            placeholders.register("new_text", textChange.newText());
+                            placeholders.registerRaw("char", String.valueOf(textChange.changedChar()));
+                            placeholders.registerRaw("new_text", textChange.newText());
                         }
-                        case CLEARED -> placeholders.register("new_text", "");
-                        case REPLACED, EQUAL -> placeholders.register("new_text", textChange.newText());
+                        case CLEARED -> placeholders.registerRaw("new_text", "");
+                        case REPLACED, EQUAL -> placeholders.registerRaw("new_text", textChange.newText());
                     }
 
                     for (Requirement requirement : anvilInventory.getRenameRequirements()) {

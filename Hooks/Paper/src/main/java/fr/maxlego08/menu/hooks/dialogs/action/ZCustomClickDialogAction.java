@@ -69,11 +69,11 @@ public class ZCustomClickDialogAction implements ZDialogAction {
                     continue;
                 }
 
-                if (!this.enablePlaceholders.getOrDefault(typeKey, this.enablePlaceholders.getOrDefault("", false))) {
-                    value = value.replace("%", "\uF000");
+                if (this.enablePlaceholders.getOrDefault(typeKey, this.enablePlaceholders.getOrDefault("", false))) {
+                    placeholders.register(key, value);
+                } else {
+                    placeholders.registerRaw(key, value);
                 }
-
-                placeholders.register(key, value);
             }
 
             for (Requirement requirement : this.requirements) {

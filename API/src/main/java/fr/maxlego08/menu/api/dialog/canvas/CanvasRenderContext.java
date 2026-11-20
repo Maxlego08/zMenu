@@ -91,7 +91,7 @@ public record CanvasRenderContext(@NotNull MenuPlugin plugin, @NotNull CanvasMan
         if (cached != null) return cached;
         String local = this.placeholders.parse(text);
         boolean ownValue = !local.equals(text) && PLACEHOLDER.matcher(text).matches();
-        String value = ownValue ? local : this.plugin.parse(this.player, local);
+        String value = ownValue ? local.replace('\uF000', '%') : this.plugin.parse(this.player, local);
         cache.put(text, value);
         return value;
     }
