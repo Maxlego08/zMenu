@@ -3,6 +3,9 @@ package fr.maxlego08.menu.hooks.dialogs.canvas;
 import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.dialog.canvas.CanvasRenderContext;
 import fr.maxlego08.menu.api.utils.Placeholders;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Proxy;
@@ -52,5 +55,16 @@ public class CanvasRenderContextTest {
         CanvasRenderContext nested = first.with(Map.of("value", "3"));
         assertEquals("bow 3", nested.resolve("%entry% %value%"));
         assertEquals("bow", nested.resolve("%entry%"));
+    }
+
+    @Test
+    public void formatEscapesThePlaceholdersOnlyWhenAsked() {
+        CanvasRenderContext context = this.context().with(Map.of("nick", "<red>Steve"));
+        Component escaped = context.format("<green>Hi %nick%");
+        assertEquals("Hi <red>Steve", PlainTextComponentSerializer.plainText().serialize(escaped));
+        assertEquals(NamedTextColor.GREEN, escaped.children().isEmpty() ? escaped.color() : escaped.children().getFirst().color());
+
+        Component formatted = context.format("<green>Hi %nick%", false);
+        assertEquals("Hi Steve", PlainTextComponentSerializer.plainText().serialize(formatted));
     }
 }

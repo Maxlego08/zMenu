@@ -3,8 +3,10 @@ package fr.maxlego08.menu.api.dialog.canvas;
 import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.inventory.dialog.DialogInventory;
+import fr.maxlego08.menu.api.text.TextService;
 import fr.maxlego08.menu.api.utils.PaperMetaUpdater;
 import fr.maxlego08.menu.api.utils.Placeholders;
+import fr.robie.minimessageflow.Values;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.entity.Player;
@@ -106,16 +108,20 @@ public record CanvasRenderContext(@NotNull MenuPlugin plugin, @NotNull CanvasMan
     }
 
     /**
-     * Resolves placeholders and formats a text for the player.
+     * Formats a text for the player with the canvas's placeholders and PlaceholderAPI. The text is compiled once
+     * (MiniMessageFlow keeps it by text) and rendered with the values of this context.
      *
      * @param text               The text as written in the configuration.
-     * @param escapePlaceholders True to show the MiniMessage tags a placeholder gives as text, so a value a
-     *                           player writes, such as a nickname, cannot add colors, fonts or clicks.
+     * @param escapePlaceholders True to show the MiniMessage tags and colour codes a placeholder gives as text, so a
+     *                           value a player writes, such as a nickname, cannot add colors, fonts or clicks.
      * @return The formatted text.
      */
     public @NotNull Component format(@NotNull String text, boolean escapePlaceholders) {
-        if (!escapePlaceholders) return this.metaUpdater.getComponent(this.resolve(text));
-        return this.metaUpdater.getComponent(resolveEscaped(text, this::resolve));
+        Values values = this.placeholders.values();
+        if (escapePlaceholders) {
+            values = values.child().rawValues(true);
+        }
+        return TextService.get().flow().format(text, values, this.player);
     }
 
     /**
