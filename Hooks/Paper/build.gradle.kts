@@ -8,6 +8,9 @@ dependencies {
     compileOnly(projects.common)
     compileOnly(libs.adventure.text.minimessage)
     compileOnly(libs.paper.api)
+    implementation(libs.paper.minimessageflow) {
+        exclude(group = "org.jetbrains")
+    }
 
     testImplementation(projects.common)
     testImplementation(libs.paper.api)

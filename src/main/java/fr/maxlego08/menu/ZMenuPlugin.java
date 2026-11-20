@@ -45,6 +45,8 @@ import fr.maxlego08.menu.dupe.PDCDupeManager;
 import fr.maxlego08.menu.enchantment.ZEnchantments;
 import fr.maxlego08.menu.font.EmptyFont;
 import fr.maxlego08.menu.hooks.ComponentMeta;
+import fr.maxlego08.menu.hooks.text.PaperTextService;
+import fr.maxlego08.menu.api.text.TextService;
 import fr.maxlego08.menu.hooks.NexoTagResolverLoader;
 import fr.maxlego08.menu.hooks.bedrock.ZBedrockManager;
 import fr.maxlego08.menu.hooks.bedrock.listener.BedrockReplacementListener;
@@ -167,6 +169,11 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
 
     public ZMenuPlugin(Boolean isMockBukkitServer) {
         this.isMockBukkitServer = isMockBukkitServer != null && isMockBukkitServer;
+        try {
+            TextService.install(new PaperTextService(this));
+        } catch (RuntimeException | LinkageError exception) {
+            this.getLogger().log(java.util.logging.Level.WARNING, "Unable to set up MiniMessageFlow's Paper integration, zMenu formats text without it", exception);
+        }
 
         new BukkitLogger(this.getDescription().getFullName());
 
@@ -268,6 +275,7 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
         this.vinventoryManager = new VInventoryManager(this);
 
         ServicesManager servicesManager = this.getServer().getServicesManager();
+        servicesManager.register(TextService.class, TextService.get(), this, ServicePriority.Highest);
         servicesManager.register(InventoryManager.class, this.inventoryManager, this, ServicePriority.Highest);
         servicesManager.register(ButtonManager.class, this.buttonManager, this, ServicePriority.Highest);
         servicesManager.register(CommandManager.class, this.commandManager, this, ServicePriority.Highest);

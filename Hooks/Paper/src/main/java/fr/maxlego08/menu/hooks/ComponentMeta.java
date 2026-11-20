@@ -3,6 +3,7 @@ package fr.maxlego08.menu.hooks;
 import com.google.common.base.Preconditions;
 import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.configuration.Configuration;
+import fr.maxlego08.menu.api.text.TextService;
 import fr.maxlego08.menu.api.utils.LoreType;
 import fr.maxlego08.menu.api.utils.PaperMetaUpdater;
 import fr.maxlego08.menu.api.utils.SimpleCache;
@@ -63,6 +64,7 @@ public class ComponentMeta extends MiniMessageColorUtils implements PaperMetaUpd
 
         this.withStandardTags();
         this.buildMiniMessage();
+        TextService.get().configure();
     }
 
     @Override
@@ -84,11 +86,13 @@ public class ComponentMeta extends MiniMessageColorUtils implements PaperMetaUpd
             builder.tags(tagBuilder.build());
         }
         this.MINI_MESSAGE = builder.build();
+        TextService.get().tags(List.copyOf(this.tagResolvers.subList(1, this.tagResolvers.size())));
     }
 
     @Override
     public void clearCache() {
         this.cache.clear();
+        TextService.get().configure();
     }
 
     /**

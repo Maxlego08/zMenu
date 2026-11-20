@@ -33,6 +33,7 @@ jedis-mock = "1.1.4"
 mongodb-driver = "5.2.0"
 mongo-java-server = "1.45.0"
 paper-dispatch = "1.1.0"
+minimessageflow = "1.5.0-local"
 faststats = "0.30.1"
 
 # Integration Hooks
@@ -115,6 +116,8 @@ viaversion = { group = "com.viaversion", name = "viaversion-api", version.ref = 
 breweryx = { group = "com.dre.brewery", name = "BreweryX", version.ref = "breweryx" }
 denizen = { group= "com.denizenscript", name = "denizen", version.ref = "denizen" }
 paperdispatch = { group = "com.github.1robie.paper-dispatch", name = "paper-dispatch", version.ref = "paper-dispatch" }
+minimessageflow = { group = "fr.robie.minimessageflow", name = "minimessageflow", version.ref = "minimessageflow" }
+paper-minimessageflow = { group = "fr.robie.minimessageflow", name = "paper-minimessageflow", version.ref = "minimessageflow" }
 
 # Testing
 junit-bom = { group = "org.junit", name = "junit-bom", version.ref = "junit-bom" }
@@ -128,6 +131,7 @@ mockbukkit262 = { group = "org.mockbukkit.mockbukkit", name = "mockbukkit-v26.2"
 shadow = { id = "com.gradleup.shadow", version.ref = "shadow" }
 groupez-repository = { id = "re.alwyn974.groupez.repository", version.ref = "groupez" }
 groupez-publish = { id = "re.alwyn974.groupez.publish", version.ref = "groupez" }
+jmh = { id = "me.champeau.jmh", version = "0.7.4" }
 
 # Platforms
 paperweight = { id = "io.papermc.paperweight.userdev", version.ref = "paperweight" }

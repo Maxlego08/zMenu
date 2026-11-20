@@ -533,6 +533,12 @@ component-cache:
   # that appeared italic. Set to false to restore that old, colliding behaviour.
   fix-key-collisions: true
 
+# How the number modifiers (%price.comma%, %price.2f%, %amount.add:1%) read and write separators.
+#   auto     - reads 1,234 as 1234 and 1,5 as 1.5, writes 1,234.50 (default)
+#   english  - reads and writes 1,234.50 only
+#   european - reads 1.234,50 and 1 234,50, writes 1.234,50
+number-style: auto
+
 
 # --- PlaceholderAPI cache -------------------------------------------------------------------------
 

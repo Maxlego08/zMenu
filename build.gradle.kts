@@ -27,6 +27,11 @@ allprojects {
     version = rootProject.version
 
     repositories {
+        mavenLocal {
+            content {
+                includeGroup("fr.robie.minimessageflow")
+            }
+        }
         mavenCentral()
 
         maven {
@@ -130,6 +135,9 @@ allprojects {
         implementation(rootLibs.currenciesapi)
         implementation(rootLibs.folialib)
         implementation(rootLibs.paperdispatch)
+        implementation(rootLibs.minimessageflow) {
+            exclude(group = "org.jetbrains")
+        }
 
         implementation(rootLibs.xseries)
         implementation(rootLibs.fastStatsBukkit)
@@ -274,6 +282,7 @@ tasks {
         relocate("net.objecthunter.exp4j", "fr.maxlego08.menu.hooks.exp4j")
         relocate("org.java_websocket", "fr.maxlego08.menu.hooks.java_websocket")
         relocate("fr.robie.paperdispatch", "fr.maxlego08.menu.hooks.paperdispatch")
+        relocate("fr.robie.minimessageflow", "fr.maxlego08.menu.hooks.minimessageflow")
         relocate("dev.faststats", "fr.maxlego08.menu.hooks.faststats")
 
         rootProject.extra.properties["sha"]?.let { sha ->
