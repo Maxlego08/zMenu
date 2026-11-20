@@ -5,6 +5,10 @@ import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.common.utils.ActionHelper;
 import org.bukkit.entity.Player;
+import fr.robie.minimessageflow.Template;
+import fr.robie.minimessageflow.TemplateList;
+import fr.robie.minimessageflow.Values;
+import net.kyori.adventure.inventory.Book;
 import org.jspecify.annotations.NonNull;
 
 import java.util.Arrays;
@@ -18,16 +22,24 @@ public class OpenBookAction extends ActionHelper {
     private final String title;
     private final String author;
     private final List<String> lines;
+    private final transient Template titleTemplate;
+    private final transient Template authorTemplate;
+    private final transient TemplateList pageTemplates;
 
     public OpenBookAction(String title, String author, List<String> lines) {
         this.title = title;
         this.author = author;
         this.lines = lines;
+        this.titleTemplate = compile(title);
+        this.authorTemplate = compile(author);
+        this.pageTemplates = compile(lines);
     }
 
     @Override
     protected void execute(@NonNull Player player, Button button, @NonNull InventoryEngine inventory, @NonNull Placeholders placeholders) {
-        inventory.getPlugin().getMetaUpdater().openBook(player, this.papi(this.title, player), this.papi(this.author, player), this.papi(this.lines, player));
+        Values values = placeholders.values();
+        player.openBook(Book.book(render(this.titleTemplate, values, player), render(this.authorTemplate, values, player),
+                this.pageTemplates.render(values, player)));
     }
 
     @Override

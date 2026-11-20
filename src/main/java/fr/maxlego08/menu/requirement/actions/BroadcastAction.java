@@ -7,6 +7,9 @@ import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.common.utils.ActionHelper;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import fr.robie.minimessageflow.TemplateList;
+import fr.robie.minimessageflow.Values;
+import net.kyori.adventure.text.Component;
 import org.jspecify.annotations.NonNull;
 
 import java.util.ArrayList;
@@ -18,15 +21,18 @@ public class BroadcastAction extends ActionHelper {
     private final List<String> messages;
     private final boolean miniMessage;
     private final List<Permissible> requirements;
+    private final transient TemplateList templates;
 
     public BroadcastAction(List<String> messages, boolean miniMessage, List<Permissible> requirements) {
         this.messages = messages;
         this.miniMessage = miniMessage;
         this.requirements = requirements;
+        this.templates = miniMessage ? compile(messages) : null;
     }
 
     @Override
     public void execute(@NonNull Player sender, Button button, @NonNull InventoryEngine inventory, @NonNull Placeholders placeholders) {
+        Values senderValues = this.miniMessage ? placeholders.values().child().set("sender", sender.getName()) : null;
         Bukkit.getOnlinePlayers().forEach(player -> {
             boolean allowed = true;
             if (!this.requirements.isEmpty()) {
@@ -37,17 +43,18 @@ public class BroadcastAction extends ActionHelper {
                     }
                 }
             }
-            if (allowed) {
-                this.papi(placeholders.parse(this.messages), player).forEach(message -> {
-                    message = message.replace("%sender%", sender.getName());
-                    message = message.replace("%receiver%", player.getName());
-                    if (this.miniMessage) {
-                        inventory.getPlugin().getMetaUpdater().sendMessage(player, message);
-                    } else {
-                        player.sendMessage(message);
-                    }
-                });
+            if (!allowed) {
+                return;
             }
+            if (senderValues != null) {
+                Values values = senderValues.child().set("receiver", player.getName());
+                for (Component message : this.templates.render(values, player)) {
+                    player.sendMessage(message);
+                }
+                return;
+            }
+            this.papi(placeholders.parse(this.messages), player).forEach(message ->
+                    player.sendMessage(message.replace("%sender%", sender.getName()).replace("%receiver%", player.getName())));
         });
     }
 
