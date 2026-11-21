@@ -122,11 +122,11 @@ public final class CanvasStateAction extends Action {
 
         if (next == null) {
             state.remove(player.getUniqueId(), dialogName, this.key);
-            placeholders.register(CanvasStateActions.PREFIX + this.key, "");
+            placeholders.registerRaw(CanvasStateActions.PREFIX + this.key, "");
             return;
         }
         state.set(player.getUniqueId(), dialogName, this.key, next, this.keep);
-        placeholders.register(CanvasStateActions.PREFIX + this.key, next);
+        placeholders.registerRaw(CanvasStateActions.PREFIX + this.key, next);
     }
 
     private @NotNull String cycle(@Nullable String current) {

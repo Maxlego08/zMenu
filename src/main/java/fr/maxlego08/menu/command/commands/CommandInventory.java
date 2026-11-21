@@ -129,7 +129,7 @@ public class CommandInventory extends VCommand {
                         }
                     }
 
-                    placeholders.register(argument.getArgument(), result);
+                    placeholders.registerRaw(argument.getArgument(), result);
                     playerArguments.put(argument.getArgument(), value.toString());
                 }
             }

@@ -301,7 +301,7 @@ public class ZDialogManager implements DialogManager, Listener {
                 canvasManager.getStateService().onOpen(player.getUniqueId(), fileName);
                 placeholders.register(CanvasStateActions.DIALOG_PLACEHOLDER, fileName);
                 CanvasStateService state = canvasManager.getStateService();
-                placeholders.registerLookup(CanvasStateActions.PREFIX, key -> CanvasStateActions.lookup(state.get(player.getUniqueId(), fileName, key), key));
+                placeholders.registerRawLookup(CanvasStateActions.PREFIX, key -> CanvasStateActions.lookup(state.get(player.getUniqueId(), fileName, key), key));
             }
 
             Player builtFor = targetPlayer;

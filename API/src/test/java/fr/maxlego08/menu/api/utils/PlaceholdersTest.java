@@ -178,4 +178,19 @@ class PlaceholdersTest {
         Component rendered = TextService.get().flow().format("%typed%", placeholders.values(), null);
         assertEquals("%server_ip% <red>hi", PlainTextComponentSerializer.plainText().serialize(rendered));
     }
+
+    @Test
+    @DisplayName("A raw lookup is raw: shown as typed in a template, its % hidden from PlaceholderAPI in text")
+    void rawLookup() {
+        Placeholders placeholders = new Placeholders();
+        placeholders.registerRawLookup("state_", key -> key.equals("name") ? "<red>%server_ip%" : null);
+        placeholders.registerLookup("fmt_", key -> "<red>x");
+
+        assertTrue(placeholders.isRaw("state_name"));
+        assertFalse(placeholders.isRaw("fmt_any"));
+        assertEquals("\uF000server_ip\uF000", placeholders.parse("%state_name%").substring(5));
+
+        Component rendered = TextService.get().flow().format("%state_name% %fmt_any%", placeholders.values(), null);
+        assertEquals("<red>%server_ip% x", PlainTextComponentSerializer.plainText().serialize(rendered));
+    }
 }

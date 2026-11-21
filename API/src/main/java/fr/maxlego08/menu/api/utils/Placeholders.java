@@ -247,6 +247,11 @@ public final class Placeholders {
         for (Placeholders scope = this; scope != null; scope = scope.parent) {
             if (scope.extra.containsKey(key)) return scope.rawExtra.contains(key);
         }
+        for (Values layer = this.values; layer != null; layer = layer.parent()) {
+            for (int i = 0; i < layer.lookupCount(); i++) {
+                if (key.startsWith(layer.lookupPrefix(i))) return !layer.isLookupFormatted(i);
+            }
+        }
         return false;
     }
 
@@ -262,6 +267,22 @@ public final class Placeholders {
         Preconditions.checkNotNull(lookup, "lookup cannot be null");
         synchronized (this) {
             this.values.lookupFormatted(prefix, lookup);
+            this.any = true;
+        }
+    }
+
+    /**
+     * As {@link #registerLookup}, for values that may hold text a player typed: they are placed as written, as with
+     * {@link #registerRaw}.
+     *
+     * @param prefix The prefix, such as {@code canvas_}.
+     * @param lookup Gives the value of the rest of the key, or null to leave the placeholder as written.
+     */
+    public void registerRawLookup(@NotNull String prefix, @NotNull Function<String, String> lookup) {
+        Preconditions.checkNotNull(prefix, "prefix cannot be null");
+        Preconditions.checkNotNull(lookup, "lookup cannot be null");
+        synchronized (this) {
+            this.values.lookup(prefix, lookup);
             this.any = true;
         }
     }
