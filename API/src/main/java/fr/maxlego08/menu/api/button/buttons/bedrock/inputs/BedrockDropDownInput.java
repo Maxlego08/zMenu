@@ -1,5 +1,7 @@
 package fr.maxlego08.menu.api.button.buttons.bedrock.inputs;
 
+import fr.robie.minimessageflow.Template;
+import fr.maxlego08.menu.api.text.TextService;
 import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.context.BedrockRenderContext;
 import fr.maxlego08.menu.api.enums.bedrock.BedrockComponentType;
@@ -16,10 +18,19 @@ import java.util.List;
 
 public class BedrockDropDownInput extends VanillaBedrockInput {
     private final List<BedrockSimpleOption> options;
+    /**
+     * The options' names compiled once.
+     */
+    private final transient List<Template> optionTemplates;
 
     public BedrockDropDownInput(@NotNull String text, @NotNull List<@NotNull BedrockSimpleOption> options) {
         super(BedrockComponentType.DROP_DOWN, text);
         this.options = options;
+        List<Template> templates = new ArrayList<>(options.size());
+        for (BedrockSimpleOption option : options) {
+            templates.add(TextService.get().flow().compile(option.optionName()));
+        }
+        this.optionTemplates = templates;
     }
 
     @Override
@@ -29,16 +40,15 @@ public class BedrockDropDownInput extends VanillaBedrockInput {
         MetaUpdater metaUpdater = context.getMetaUpdater();
         MenuPlugin menuPlugin = context.getPlugin();
 
-        String text = menuPlugin.parse(player, placeholders.parse(this.text));
         List<String> options = new ArrayList<>();
         int defaultOption = 0;
         for (int i = 0; i < this.options.size(); i++) {
             BedrockSimpleOption option = this.options.get(i);
-            options.add(metaUpdater.getLegacyMessage(menuPlugin.parse(player, placeholders.parse(option.optionName()))));
+            options.add(TextService.legacy(this.optionTemplates.get(i), placeholders, player));
             if (option.initialValue()) {
                 defaultOption = i;
             }
         }
-        return DropdownComponent.of(metaUpdater.getLegacyMessage(text), options, defaultOption);
+        return DropdownComponent.of(this.legacyText(context), options, defaultOption);
     }
 }

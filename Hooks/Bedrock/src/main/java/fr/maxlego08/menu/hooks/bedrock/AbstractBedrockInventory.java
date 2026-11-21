@@ -1,5 +1,7 @@
 package fr.maxlego08.menu.hooks.bedrock;
 
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import fr.maxlego08.menu.api.text.TextService;
 import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.animation.TitleAnimation;
 import fr.maxlego08.menu.api.button.Button;
@@ -57,15 +59,20 @@ public abstract class AbstractBedrockInventory<B extends FormBuilder<B, F, R>, F
 
     @Override
     public String getName(@NotNull Player player, InventoryEngine inventoryDefault, Placeholders placeholders) {
+        return this.menuPlugin.parse(player, placeholders.parse(this.configuredName(player, inventoryDefault, placeholders)));
+    }
+
+    /**
+     * The name as written: the conditional name of highest priority the player has, else the inventory's.
+     */
+    private @NotNull String configuredName(@NotNull Player player, InventoryEngine inventoryDefault, Placeholders placeholders) {
         if (!this.conditionalNames.isEmpty()) {
             Optional<ConditionalName> optional = this.conditionalNames.stream().filter(conditionalName -> conditionalName.hasPermission(player, null, inventoryDefault, placeholders)).max(Comparator.comparingInt(ConditionalName::priority));
-
             if (optional.isPresent()) {
-                ConditionalName conditionalName = optional.get();
-                return this.menuPlugin.parse(player, placeholders.parse(conditionalName.name()));
+                return optional.get().name();
             }
         }
-        return this.menuPlugin.parse(player, placeholders.parse(this.name));
+        return this.name;
     }
 
     @Override
@@ -168,11 +175,11 @@ public abstract class AbstractBedrockInventory<B extends FormBuilder<B, F, R>, F
     }
 
     protected String getLegacyTitle(Player player, InventoryEngine inventoryEngine, Placeholders placeholders) {
-        return this.menuPlugin.getMetaUpdater().getLegacyMessage(this.getName(player, inventoryEngine, placeholders));
+        return this.getLegacyMessage(player, placeholders, this.configuredName(player, inventoryEngine, placeholders));
     }
 
     protected String getLegacyMessage(Player player, Placeholders placeholders, String message) {
-        return this.menuPlugin.getMetaUpdater().getLegacyMessage(this.menuPlugin.parse(player, placeholders.parse(message)));
+        return LegacyComponentSerializer.legacySection().serialize(TextService.get().flow().format(message, placeholders.values(), player));
     }
 
     protected <C, T extends Button> List<C> renderButtons(

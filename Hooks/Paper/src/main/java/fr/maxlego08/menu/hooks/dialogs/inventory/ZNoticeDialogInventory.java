@@ -69,15 +69,15 @@ public class ZNoticeDialogInventory extends AbstractDialogInventory implements N
     public Dialog buildDialog(@NotNull Player player, @NotNull PaperMetaUpdater paperComponent, @NotNull InventoryEngine inventoryEngine, @NotNull Placeholders placeholders) {
         List<DialogBody> dialogBodiesForPlayer = this.getDialogBodiesForPlayer(player, paperComponent, placeholders);
         List<DialogInput> dialogInputsForPlayer = this.getDialogInputsForPlayer(player, paperComponent, placeholders);
-        ActionButtonRecord parsedRecord = this.actionButtonRecord.parse(player);
+        ActionButtonRecord record = this.actionButtonRecord;
         return Dialog.create(builder ->
                 builder.empty()
                         .type(io.papermc.paper.registry.data.dialog.type.DialogType.notice(
                                 ActionButton.create(
-                                        paperComponent.getComponent(parsedRecord.label()),
-                                        paperComponent.getComponent(parsedRecord.tooltip()),
-                                        parsedRecord.width(),
-                                        parsedRecord.action().build(dialogInputsForPlayer, player, this.menuPlugin, inventoryEngine, null, placeholders)
+                                        paperComponent.render(record.label(), placeholders, player),
+                                        paperComponent.render(record.tooltip(), placeholders, player),
+                                        record.width(),
+                                        record.action().build(dialogInputsForPlayer, player, this.menuPlugin, inventoryEngine, null, placeholders)
                                 )
                         )
                         ).base(

@@ -50,7 +50,7 @@ public class ZServerLinksDialogInventory extends AbstractButtonUtilsInventory im
         return Dialog.create(builder -> {
             builder.empty()
                     .type(io.papermc.paper.registry.data.dialog.type.DialogType.serverLinks(
-                            this.exitOrBackButton(this.actionButton != null ? this.createActionButton(this.actionButton.parse(player), dialogInputsForPlayer, paperComponent, placeholders, player, inventoryEngine, null) : null),
+                            this.exitOrBackButton(this.actionButton != null ? this.createActionButton(this.actionButton, dialogInputsForPlayer, paperComponent, placeholders, player, inventoryEngine, null) : null),
                             this.numberOfColumns,
                             this.buttonWidth
                     ))

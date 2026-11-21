@@ -1,14 +1,12 @@
 package fr.maxlego08.menu.api.text;
 
 import fr.maxlego08.menu.api.placeholder.LocalPlaceholder;
-import fr.robie.minimessageflow.FailedModifier;
-import fr.robie.minimessageflow.MiniMessageFlow;
-import fr.robie.minimessageflow.Template;
-import fr.robie.minimessageflow.TemplateList;
-import fr.robie.minimessageflow.ValueKeys;
+import fr.maxlego08.menu.api.utils.Placeholders;
+import fr.robie.minimessageflow.*;
 import net.kyori.adventure.pointer.Pointered;
 import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.OfflinePlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -112,6 +110,21 @@ public interface TextService {
             }
         }
         return get().flow().compileList(split).style(template -> itemLineStyle(template.source()));
+    }
+
+    /**
+     * Renders a template with zMenu's values for a viewer, as legacy text ({@code §} codes), for what only takes text
+     * (Bedrock forms, toasts).
+     *
+     * @param template     the template, compiled once
+     * @param placeholders the values, or null
+     * @param viewer       the viewer, or null
+     * @return the legacy text
+     */
+    static @NotNull String legacy(@NotNull Template template, @Nullable Placeholders placeholders, @Nullable Pointered viewer) {
+        return LegacyComponentSerializer.legacySection().serialize(placeholders == null
+                ? template.render(fr.robie.minimessageflow.Placeholder.empty(), viewer)
+                : template.render(placeholders.values(), viewer));
     }
 
     /**

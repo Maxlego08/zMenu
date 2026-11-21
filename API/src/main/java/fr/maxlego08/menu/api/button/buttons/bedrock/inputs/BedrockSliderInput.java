@@ -32,7 +32,6 @@ public class BedrockSliderInput extends VanillaBedrockInput {
         MetaUpdater metaUpdater = context.getMetaUpdater();
         MenuPlugin menuPlugin = context.getPlugin();
 
-        String text = menuPlugin.parse(player, placeholders.parse(this.text));
         float start = this.start;
         float end = this.end;
         float step = this.step;
@@ -49,7 +48,7 @@ public class BedrockSliderInput extends VanillaBedrockInput {
             }
             initialValueFloat = (start + end) / 2;
         }
-        return SliderComponent.of(metaUpdater.getLegacyMessage(text), start, end, step, initialValueFloat);
+        return SliderComponent.of(this.legacyText(context), start, end, step, initialValueFloat);
     }
 
 

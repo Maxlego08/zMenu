@@ -23,6 +23,6 @@ public class BedrockLabel extends VanillaBedrockInput {
         MetaUpdater metaUpdater = context.getMetaUpdater();
         MenuPlugin menuPlugin = context.getPlugin();
 
-        return LabelComponent.of(metaUpdater.getLegacyMessage(menuPlugin.parse(player, placeholders.parse(this.text))));
+        return LabelComponent.of(this.legacyText(context));
     }
 }

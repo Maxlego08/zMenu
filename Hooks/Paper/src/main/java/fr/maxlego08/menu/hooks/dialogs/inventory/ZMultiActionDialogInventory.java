@@ -66,8 +66,8 @@ public class ZMultiActionDialogInventory extends AbstractButtonUtilsInventory im
         return Dialog.create(builder -> {
             builder.empty()
                     .type(io.papermc.paper.registry.data.dialog.type.DialogType.multiAction(
-                            this.createActionButtons(dialogInputsForPlayer, this.getActionButtons(player), paperComponent, placeholders, player, inventoryEngine, null),
-                            this.exitOrBackButton(this.exitButton != null ? this.createActionButton(this.exitButton.parse(player), dialogInputsForPlayer, paperComponent, placeholders, player, inventoryEngine, null) : null),
+                            this.createActionButtons(dialogInputsForPlayer, this.actionButtons, paperComponent, placeholders, player, inventoryEngine, null),
+                            this.exitOrBackButton(this.exitButton != null ? this.createActionButton(this.exitButton, dialogInputsForPlayer, paperComponent, placeholders, player, inventoryEngine, null) : null),
                             this.numberOfColumns
                     ))
                     .base(

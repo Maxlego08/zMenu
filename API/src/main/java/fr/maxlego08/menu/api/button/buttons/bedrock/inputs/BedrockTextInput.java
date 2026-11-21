@@ -25,8 +25,7 @@ public class BedrockTextInput extends VanillaBedrockInput {
         MetaUpdater metaUpdater = context.getMetaUpdater();
         MenuPlugin menuPlugin = context.getPlugin();
 
-        String text = menuPlugin.parse(player, placeholders.parse(this.text));
         String defaultText = menuPlugin.parse(player, placeholders.parse(this.defaultText));
-        return InputComponent.of(metaUpdater.getLegacyMessage(text), defaultText);
+        return InputComponent.of(this.legacyText(context), defaultText);
     }
 }

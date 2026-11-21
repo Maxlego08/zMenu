@@ -1,5 +1,7 @@
 package fr.maxlego08.menu.api.button.buttons.bedrock.components;
 
+import fr.robie.minimessageflow.Template;
+import fr.maxlego08.menu.api.text.TextService;
 import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.context.BedrockRenderContext;
 import fr.maxlego08.menu.api.enums.bedrock.BedrockImageType;
@@ -13,6 +15,10 @@ public class BasicBedrockComponentButton extends BedrockComponentButton {
     private final String text;
     private final BedrockImageType imageType;
     private final String imageData;
+    /**
+     * {@link #text} compiled once, or null before it is needed.
+     */
+    private transient Template textTemplate;
 
     public BasicBedrockComponentButton(@NotNull String text) {
         this.text = text;
@@ -36,7 +42,11 @@ public class BasicBedrockComponentButton extends BedrockComponentButton {
         Player player = context.getPlayer();
         Placeholders placeholders = context.getPlaceholders();
 
-        String parsedText = this.parseAndColor(this.text, player, placeholders, plugin);
+        Template template = this.textTemplate;
+        if (template == null) {
+            template = this.textTemplate = TextService.get().flow().compile(this.text);
+        }
+        String parsedText = TextService.legacy(template, placeholders, player);
         if (this.imageType != BedrockImageType.NONE && this.imageData != null) {
             String parsedImageData = this.parseAndColor(this.imageData, player, placeholders, plugin);
             return ButtonComponent.of(parsedText, FormImage.Type.valueOf(this.imageType.toString()), parsedImageData);

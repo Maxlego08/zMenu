@@ -25,8 +25,7 @@ public class BedrockToggleInput extends VanillaBedrockInput {
         MetaUpdater metaUpdater = context.getMetaUpdater();
         MenuPlugin menuPlugin = context.getPlugin();
 
-        String text = menuPlugin.parse(player, placeholders.parse(this.text));
         boolean defaultValue = Boolean.parseBoolean(menuPlugin.parse(player, placeholders.parse(this.defaultValue)));
-        return ToggleComponent.of(metaUpdater.getLegacyMessage(text), defaultValue);
+        return ToggleComponent.of(this.legacyText(context), defaultValue);
     }
 }
