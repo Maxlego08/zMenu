@@ -10,7 +10,9 @@ import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.loader.MaterialLoader;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.utils.Placeholders;
+import fr.maxlego08.menu.api.text.TextService;
 import fr.maxlego08.menu.api.utils.toast.ToastType;
+import fr.robie.minimessageflow.Template;
 import fr.maxlego08.menu.loader.actions.ToastLoader;
 import org.bukkit.entity.Player;
 import org.jspecify.annotations.NonNull;
@@ -26,6 +28,7 @@ public class ToastAction extends Action {
     private final ToastType toastType;
     private final String modelId;
     private final boolean glowing;
+    private final transient Template messageTemplate;
 
     public ToastAction(MenuPlugin plugin, String material, String message, ToastType toastType, String modelId, boolean glowing) {
         this.plugin = plugin;
@@ -34,6 +37,7 @@ public class ToastAction extends Action {
         this.toastType = toastType;
         this.modelId = modelId;
         this.glowing = glowing;
+        this.messageTemplate = TextService.get().flow().compile(message);
     }
 
     @Override
@@ -77,7 +81,7 @@ public class ToastAction extends Action {
         }
 
         if (Configuration.enableToast) {
-            this.plugin.getToastHelper().showToast(finalMaterial, this.plugin.getMetaUpdater().getLegacyMessage(this.plugin.parse(player, placeholders.parse(this.message))), this.toastType, finalModel, this.glowing, player);
+            this.plugin.getToastHelper().showToast(finalMaterial, TextService.legacy(this.messageTemplate, placeholders, player), this.toastType, finalModel, this.glowing, player);
         }
     }
 

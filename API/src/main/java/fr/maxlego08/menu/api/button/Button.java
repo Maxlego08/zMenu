@@ -15,10 +15,13 @@ import fr.maxlego08.menu.api.requirement.data.ActionPlayerData;
 import fr.maxlego08.menu.api.requirement.permissible.PermissionPermissible;
 import fr.maxlego08.menu.api.requirement.permissible.PlaceholderPermissible;
 import fr.maxlego08.menu.api.sound.SoundOption;
+import fr.maxlego08.menu.api.text.TextService;
 import fr.maxlego08.menu.api.utils.OpenLink;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.api.utils.TextChange;
 import fr.maxlego08.menu.zcore.utils.PerformanceDebug;
+import fr.robie.minimessageflow.TemplateList;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.ConfigurationSection;
@@ -46,6 +49,10 @@ public abstract class Button extends PlaceholderButton {
     private boolean closeInventory = false;
     private boolean useCache = true;
     private List<String> messages = new ArrayList<>();
+    /**
+     * {@link #messages} compiled once, or null while there are none.
+     */
+    private transient @Nullable TemplateList messageTemplates;
     private SoundOption soundOption;
     private String playerHead;
     private OpenLink openLink;
@@ -136,6 +143,7 @@ public abstract class Button extends PlaceholderButton {
     @NotNull
     public Button setMessages(@NotNull List<String> messages) {
         this.messages = messages;
+        this.messageTemplates = messages.isEmpty() ? null : TextService.get().flow().compileList(messages);
         return this;
     }
 
@@ -283,7 +291,13 @@ public abstract class Button extends PlaceholderButton {
             if (this.openLink != null) {
                 this.openLink.send(player, this.messages);
             } else {
-                this.messages.forEach(message -> this.plugin.getMetaUpdater().sendMessage(player, this.plugin.parse(player, placeholders.parse(message))));
+                TemplateList templates = this.messageTemplates;
+                if (templates == null) {
+                    templates = this.messageTemplates = TextService.get().flow().compileList(this.messages);
+                }
+                for (Component message : templates.render(placeholders.values(), player)) {
+                    player.sendMessage(message);
+                }
             }
         }
 
