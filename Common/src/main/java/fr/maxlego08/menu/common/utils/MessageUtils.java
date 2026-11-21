@@ -2,10 +2,14 @@ package fr.maxlego08.menu.common.utils;
 
 import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.utils.IMessage;
+import fr.maxlego08.menu.api.text.TextService;
 import fr.maxlego08.menu.api.utils.Message;
+import fr.robie.minimessageflow.Placeholder;
+import net.kyori.adventure.text.Component;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Allows you to manage messages sent to players and the console
@@ -25,9 +29,9 @@ public abstract class MessageUtils extends LocationUtils {
      */
     public static void messageWO(MenuPlugin plugin, CommandSender sender, IMessage message, Object... args) {
         if (!message.getMessages().isEmpty()) {
-            message.getMessages().forEach(msg -> plugin.getMetaUpdater().sendMessage(sender, getMessage(msg, args)));
+            message.getMessages().forEach(msg -> sender.sendMessage(format(sender, msg, args)));
         } else {
-            plugin.getMetaUpdater().sendMessage(sender, getMessage(message, args));
+            sender.sendMessage(format(sender, message.getMessage(), args));
         }
     }
 
@@ -41,7 +45,7 @@ public abstract class MessageUtils extends LocationUtils {
      *                example, %test% and then the value
      */
     public static void messageWO(MenuPlugin plugin, CommandSender sender, String message, Object... args) {
-        plugin.getMetaUpdater().sendMessage(sender, getMessage(message, args));
+        sender.sendMessage(format(sender, message, args));
     }
 
     /**
@@ -54,7 +58,7 @@ public abstract class MessageUtils extends LocationUtils {
      *                example %test% and then the value
      */
     public static void message(MenuPlugin plugin, CommandSender sender, String message, Object... args) {
-        plugin.getMetaUpdater().sendMessage(sender, Message.PREFIX.msg() + getMessage(message, args));
+        sender.sendMessage(format(sender, Message.PREFIX.msg() + message, args));
     }
 
     /**
@@ -78,13 +82,13 @@ public abstract class MessageUtils extends LocationUtils {
 
                     break;
                 case ACTION:
-                    plugin.getMetaUpdater().sendAction(player, getMessage(message, args));
+                    player.sendActionBar(format(sender, message.getMessage(), args));
                     break;
                 case TCHAT:
                     if (!message.getMessages().isEmpty()) {
-                        message.getMessages().forEach(msg -> plugin.getMetaUpdater().sendMessage(sender, Message.PREFIX.msg() + getMessage(msg, args)));
+                        message.getMessages().forEach(msg -> sender.sendMessage(format(sender, Message.PREFIX.msg() + msg, args)));
                     } else {
-                        plugin.getMetaUpdater().sendMessage(sender, Message.PREFIX.msg() + getMessage(message, args));
+                        sender.sendMessage(format(sender, Message.PREFIX.msg() + message.getMessage(), args));
                     }
                     break;
                 default:
@@ -92,11 +96,38 @@ public abstract class MessageUtils extends LocationUtils {
             }
         } else {
             if (!message.getMessages().isEmpty()) {
-                message.getMessages().forEach(msg -> plugin.getMetaUpdater().sendMessage(sender, Message.PREFIX.msg() + getMessage(msg, args)));
+                message.getMessages().forEach(msg -> sender.sendMessage(format(sender, Message.PREFIX.msg() + msg, args)));
             } else {
-                plugin.getMetaUpdater().sendMessage(sender, Message.PREFIX.msg() + getMessage(message, args));
+                sender.sendMessage(format(sender, Message.PREFIX.msg() + message.getMessage(), args));
             }
         }
+    }
+
+    /**
+     * Formats a message as written, its arguments given as values: the text stays the same from one call to the next,
+     * so it is compiled once. An argument named {@code %key%} is a value of the message (read as formatted text, as
+     * before); any other is replaced in the text.
+     *
+     * @param sender  the viewer
+     * @param message the message as written
+     * @param args    the arguments, in pairs
+     * @return the formatted message
+     */
+    public static @NotNull Component format(@NotNull CommandSender sender, @NotNull String message, Object... args) {
+        if (args.length % 2 != 0) throw new IllegalArgumentException("Number of invalid arguments. Arguments must be in pairs.");
+        if (args.length == 0) return TextService.get().flow().format(message, Placeholder.empty(), sender);
+        Placeholder.Builder values = Placeholder.builder();
+        for (int i = 0; i < args.length; i += 2) {
+            if (args[i] == null || args[i + 1] == null) throw new IllegalArgumentException("Keys and replacement values must not be null.");
+            String key = args[i].toString();
+            String value = args[i + 1].toString();
+            if (key.length() > 2 && key.charAt(0) == '%' && key.charAt(key.length() - 1) == '%' && key.indexOf('%', 1) == key.length() - 1) {
+                values.registerFormatted(key.substring(1, key.length() - 1), value);
+            } else {
+                message = message.replace(key, value);
+            }
+        }
+        return TextService.get().flow().format(message, values.build(), sender);
     }
 
     public static String getMessage(IMessage message, Object... args) {

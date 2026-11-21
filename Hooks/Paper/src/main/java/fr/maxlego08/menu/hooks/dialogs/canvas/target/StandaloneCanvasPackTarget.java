@@ -11,7 +11,7 @@ import fr.maxlego08.menu.zcore.logger.Logger;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.resource.ResourcePackInfo;
 import net.kyori.adventure.resource.ResourcePackRequest;
-import net.kyori.adventure.text.minimessage.MiniMessage;
+import fr.maxlego08.menu.api.text.TextService;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -99,7 +99,7 @@ public final class StandaloneCanvasPackTarget implements CanvasPackTarget, Liste
                 .packs(ResourcePackInfo.resourcePackInfo(PACK_ID, uri, pack.sha1()))
                 .required(settings.standaloneRequired())
                 .replace(false);
-        if (!settings.standalonePrompt().isBlank()) builder.prompt(MiniMessage.miniMessage().deserialize(settings.standalonePrompt()));
+        if (!settings.standalonePrompt().isBlank()) builder.prompt(TextService.get().flow().format(settings.standalonePrompt()));
         return builder.build();
     }
 
