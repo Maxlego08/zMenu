@@ -37,8 +37,8 @@ public abstract class AbstractButtonUtilsInventory extends AbstractDialogInvento
         if (actionButtonRecord == null) {
             return null;
         }
-        return ActionButton.create(paperComponent.render(actionButtonRecord.label(), placeholders, player),
-                paperComponent.render(actionButtonRecord.tooltip(), placeholders, player), actionButtonRecord.width(),
+        return ActionButton.create(actionButtonRecord.labelTemplate().render(placeholders.values(), player),
+                actionButtonRecord.tooltipTemplate().render(placeholders.values(), player), actionButtonRecord.width(),
                 actionButtonRecord.action().build(inputs, player, this.menuPlugin, inventoryEngine, button, placeholders));
     }
 

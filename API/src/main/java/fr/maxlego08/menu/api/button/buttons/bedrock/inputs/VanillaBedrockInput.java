@@ -1,9 +1,9 @@
 package fr.maxlego08.menu.api.button.buttons.bedrock.inputs;
 
 import fr.maxlego08.menu.api.context.BedrockRenderContext;
-import fr.robie.minimessageflow.Template;
-import fr.maxlego08.menu.api.text.TextService;
 import fr.maxlego08.menu.api.enums.bedrock.BedrockComponentType;
+import fr.maxlego08.menu.api.text.TextService;
+import fr.robie.minimessageflow.Template;
 import org.jetbrains.annotations.NotNull;
 
 public abstract class VanillaBedrockInput extends BedrockInputButton {
@@ -18,6 +18,10 @@ public abstract class VanillaBedrockInput extends BedrockInputButton {
         this.type = type;
         this.text = text;
         this.textTemplate = TextService.get().flow().compile(text);
+    }
+
+    public @NotNull Template getTextTemplate() {
+        return this.textTemplate;
     }
 
     /**

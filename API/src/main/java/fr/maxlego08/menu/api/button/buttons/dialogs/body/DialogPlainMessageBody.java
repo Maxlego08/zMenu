@@ -4,8 +4,10 @@ import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.context.DialogRenderContext;
 import fr.maxlego08.menu.api.enums.dialog.DialogBodyType;
 import fr.maxlego08.menu.api.inventory.dialog.DialogInventory;
+import fr.maxlego08.menu.api.text.TextService;
 import fr.maxlego08.menu.api.utils.PaperMetaUpdater;
 import fr.maxlego08.menu.api.utils.Placeholders;
+import fr.robie.minimessageflow.TemplateList;
 import io.papermc.paper.registry.data.dialog.body.DialogBody;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.JoinConfiguration;
@@ -13,34 +15,33 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 public class DialogPlainMessageBody extends VanillaDialogBody {
-    private final List<String> messages;
-    private final Map<String, List<String>> localizedMessages;
+    private final TemplateList messages;
+    private final Map<String, TemplateList> localizedMessages;
 
     public DialogPlainMessageBody(List<String> messages, int width, @Nullable Map<String, List<String>> localizedMessages) {
         super(DialogBodyType.PLAIN_MESSAGE, width);
-        this.messages = messages;
-        this.localizedMessages = localizedMessages != null ? localizedMessages : Map.of();
+        this.messages = TextService.get().flow().compileList(messages);
+        if (localizedMessages != null) {
+            Map<String, TemplateList> localized = new HashMap<>(localizedMessages.size());
+            localizedMessages.forEach((locale, lines) -> localized.put(locale, TextService.get().flow().compileList(lines)));
+            this.localizedMessages = Map.copyOf(localized);
+        } else {
+            this.localizedMessages = Map.of();
+        }
     }
 
     @Override
     public DialogBody build(@NotNull DialogRenderContext<DialogBody, DialogInventory, PaperMetaUpdater, MenuPlugin> context) {
         Player player = context.getPlayer();
         Placeholders placeholders = context.getPlaceholders();
-        PaperMetaUpdater metaUpdater = context.getMetaUpdater();
-        MenuPlugin plugin = context.getPlugin();
 
-        List<String> localizedMessageList = this.localizedMessages.getOrDefault(player.getLocale(), this.messages);
+        List<Component> components = this.localizedMessages.getOrDefault(player.getLocale(), this.messages).render(placeholders.values(), player);
 
-        List<Component> components = new ArrayList<>();
-        for (String message : localizedMessageList) {
-            components.add(metaUpdater.render(message, placeholders, player));
-        }
         Component finalComponent;
         if (components.size() == 1) {
             finalComponent = components.getFirst();

@@ -4,8 +4,9 @@ import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.context.BedrockRenderContext;
 import fr.maxlego08.menu.api.enums.bedrock.BedrockComponentType;
-import fr.maxlego08.menu.api.utils.MetaUpdater;
+import fr.maxlego08.menu.api.text.TextService;
 import fr.maxlego08.menu.api.utils.Placeholders;
+import fr.robie.minimessageflow.TextTemplate;
 import org.bukkit.entity.Player;
 import org.geysermc.cumulus.component.Component;
 import org.geysermc.cumulus.component.SliderComponent;
@@ -15,27 +16,26 @@ public class BedrockSliderInput extends VanillaBedrockInput {
     private final float start;
     private final float end;
     private final float step;
-    private final String initialValue;
+    private final TextTemplate initialValueTemplate;
 
     public BedrockSliderInput(@NotNull String text, float start, float end, float step,@NotNull String initialValue) {
         super(BedrockComponentType.SLIDER, text);
         this.start = start;
         this.end = end;
         this.step = step;
-        this.initialValue = initialValue;
+        this.initialValueTemplate = TextService.get().flow().compileText(initialValue);
     }
 
     @Override
     public Component build(@NotNull BedrockRenderContext<Component> context) {
         Player player = context.getPlayer();
         Placeholders placeholders = context.getPlaceholders();
-        MetaUpdater metaUpdater = context.getMetaUpdater();
         MenuPlugin menuPlugin = context.getPlugin();
 
         float start = this.start;
         float end = this.end;
         float step = this.step;
-        String initialValue = menuPlugin.parse(player, placeholders.parse(this.initialValue));
+        String initialValue = this.initialValueTemplate.render(placeholders.values(), player);
         float initialValueFloat;
         try {
             initialValueFloat = Float.parseFloat(initialValue);

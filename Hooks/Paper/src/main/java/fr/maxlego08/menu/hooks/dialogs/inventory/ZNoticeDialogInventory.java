@@ -27,32 +27,32 @@ public class ZNoticeDialogInventory extends AbstractDialogInventory implements N
 
     @Override
     public String getLabel() {
-        return this.actionButtonRecord.label();
+        return this.actionButtonRecord.labelTemplate().source();
     }
 
     @Override
     public String getLabel(Player player) {
-        return this.menuPlugin.parse(player, this.actionButtonRecord.label());
+        return this.menuPlugin.parse(player, this.actionButtonRecord.labelTemplate().source());
     }
 
     @Override
     public void setLabel(String label) {
-        this.actionButtonRecord = new ActionButtonRecord(label, this.actionButtonRecord.tooltip(), this.actionButtonRecord.width(), this.actionButtonRecord.action());
+        this.actionButtonRecord = this.actionButtonRecord.withLabel(label);
     }
 
     @Override
     public String getLabelTooltip() {
-        return this.actionButtonRecord.tooltip();
+        return this.actionButtonRecord.tooltipTemplate().source();
     }
 
     @Override
     public String getLabelTooltip(Player player) {
-        return this.menuPlugin.parse(player, this.actionButtonRecord.tooltip());
+        return this.menuPlugin.parse(player, this.actionButtonRecord.tooltipTemplate().source());
     }
 
     @Override
     public void setLabelTooltip(String labelTooltip) {
-        this.actionButtonRecord = new ActionButtonRecord(this.actionButtonRecord.label(), labelTooltip, this.actionButtonRecord.width(), this.actionButtonRecord.action());
+        this.actionButtonRecord = this.actionButtonRecord.withTooltip(labelTooltip);
     }
 
     @Override
@@ -62,7 +62,7 @@ public class ZNoticeDialogInventory extends AbstractDialogInventory implements N
 
     @Override
     public void setLabelWidth(int labelWidth) {
-        this.actionButtonRecord = new ActionButtonRecord(this.actionButtonRecord.label(), this.actionButtonRecord.tooltip(), labelWidth, this.actionButtonRecord.action());
+        this.actionButtonRecord = this.actionButtonRecord.withWidth(labelWidth);
     }
 
     @Override
@@ -74,8 +74,8 @@ public class ZNoticeDialogInventory extends AbstractDialogInventory implements N
                 builder.empty()
                         .type(io.papermc.paper.registry.data.dialog.type.DialogType.notice(
                                 ActionButton.create(
-                                        paperComponent.render(record.label(), placeholders, player),
-                                        paperComponent.render(record.tooltip(), placeholders, player),
+                                        record.labelTemplate().render(placeholders.values(), player),
+                                        record.tooltipTemplate().render(placeholders.values(), player),
                                         record.width(),
                                         record.action().build(dialogInputsForPlayer, player, this.menuPlugin, inventoryEngine, null, placeholders)
                                 )

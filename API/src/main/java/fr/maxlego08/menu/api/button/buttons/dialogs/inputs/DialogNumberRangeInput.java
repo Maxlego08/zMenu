@@ -5,9 +5,12 @@ import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.context.DialogRenderContext;
 import fr.maxlego08.menu.api.enums.dialog.DialogInputType;
 import fr.maxlego08.menu.api.inventory.dialog.DialogInventory;
+import fr.maxlego08.menu.api.text.TextService;
 import fr.maxlego08.menu.api.utils.PaperMetaUpdater;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.zcore.logger.Logger;
+import fr.robie.minimessageflow.TextTemplate;
+import fr.robie.minimessageflow.Values;
 import io.papermc.paper.registry.data.dialog.input.DialogInput;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
@@ -18,12 +21,12 @@ import java.util.function.Supplier;
 
 public class DialogNumberRangeInput extends VanillaDialogInput {
     private final int width;
-    private final String labelFormat;
+    private final TextTemplate labelFormat;
     private final float start;
     private final float end;
     private final float step;
 
-    private final String initialValue;
+    private final TextTemplate initialValue;
     private final Supplier<Float> initialValueSupplier;
 
     public DialogNumberRangeInput(
@@ -37,11 +40,11 @@ public class DialogNumberRangeInput extends VanillaDialogInput {
     ) {
         super(DialogInputType.NUMBER_RANGE, label);
         this.width = Math.clamp(width, 1, 1024);
-        this.labelFormat = labelFormat;
+        this.labelFormat = TextService.get().flow().compileText(labelFormat);
         this.start = start;
         this.end = end;
         this.step = step;
-        this.initialValue = initialValue;
+        this.initialValue = TextService.get().flow().compileText(initialValue);
         this.initialValueSupplier = null;
     }
 
@@ -53,10 +56,11 @@ public class DialogNumberRangeInput extends VanillaDialogInput {
     public DialogInput build(@NotNull DialogRenderContext<DialogInput, DialogInventory, PaperMetaUpdater, MenuPlugin> context) {
         Player player = context.getPlayer();
         Placeholders placeholders = context.getPlaceholders();
-        MenuPlugin plugin = context.getPlugin();
 
-        Component label = context.getMetaUpdater().render(this.label, placeholders, player);
-        String labelFormat = plugin.parse(player, placeholders.parse(this.labelFormat));
+        Values values = placeholders.values();
+
+        Component label = this.getLabelTemplate().render(values, player);
+        String labelFormat = this.labelFormat.render(values, player);
 
         float start = this.start;
         float end = this.end;
@@ -65,7 +69,7 @@ public class DialogNumberRangeInput extends VanillaDialogInput {
         Optional<Supplier<Float>> initialValueSupplierX = this.getInitialValueSupplierX();
         float initialValue = initialValueSupplierX.map(Supplier::get).orElseGet(() -> {
             try {
-                return Float.parseFloat(plugin.parse(player, placeholders.parse(this.initialValue)));
+                return Float.parseFloat(this.initialValue.render(values, player));
             } catch (NumberFormatException e) {
                 return (start + end) / 2;
             }

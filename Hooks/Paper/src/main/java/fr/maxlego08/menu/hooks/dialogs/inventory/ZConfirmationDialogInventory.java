@@ -7,6 +7,7 @@ import fr.maxlego08.menu.api.inventory.dialog.ConfirmationDialogInventory;
 import fr.maxlego08.menu.api.utils.PaperMetaUpdater;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.api.utils.record.dialogs.ActionButtonRecord;
+import fr.robie.minimessageflow.Placeholder;
 import io.papermc.paper.dialog.Dialog;
 import io.papermc.paper.registry.data.dialog.ActionButton;
 import io.papermc.paper.registry.data.dialog.body.DialogBody;
@@ -40,62 +41,62 @@ public class ZConfirmationDialogInventory extends AbstractDialogInventory implem
 
     @Override
     public void setYesText(String yesText) {
-        this.yesActionButtonRecord = new ActionButtonRecord(yesText, this.yesActionButtonRecord.tooltip(), this.yesActionButtonRecord.width(), this.yesActionButtonRecord.action());
+        this.yesActionButtonRecord = this.yesActionButtonRecord.withLabel(yesText);
     }
 
     @Override
     public void setNoText(String noText) {
-        this.noActionButtonRecord = new ActionButtonRecord(noText, this.noActionButtonRecord.tooltip(), this.noActionButtonRecord.width(), this.noActionButtonRecord.action());
+        this.noActionButtonRecord = this.noActionButtonRecord.withLabel(noText);
     }
 
     @Override
     public void setYesTooltip(String yesTooltip) {
-        this.yesActionButtonRecord = new ActionButtonRecord(this.yesActionButtonRecord.label(), yesTooltip, this.yesActionButtonRecord.width(), this.yesActionButtonRecord.action());
+        this.yesActionButtonRecord = this.yesActionButtonRecord.withTooltip(yesTooltip);
     }
 
     @Override
     public void setNoTooltip(String noTooltip) {
-        this.noActionButtonRecord = new ActionButtonRecord(this.noActionButtonRecord.label(), noTooltip, this.noActionButtonRecord.width(), this.noActionButtonRecord.action());
+        this.noActionButtonRecord = this.noActionButtonRecord.withTooltip(noTooltip);
     }
 
     @Override
     public String getYesText() {
-        return this.yesActionButtonRecord.label();
+        return this.yesActionButtonRecord.labelTemplate().source();
     }
 
     @Override
     public String getYesText(Player player) {
-        return this.menuPlugin.parse(player, this.yesActionButtonRecord.label());
+        return this.menuPlugin.parse(player, this.yesActionButtonRecord.labelTemplate().source());
     }
 
     @Override
     public String getNoText() {
-        return this.noActionButtonRecord.label();
+        return this.noActionButtonRecord.labelTemplate().source();
     }
 
     @Override
     public String getNoText(Player player) {
-        return this.menuPlugin.parse(player, this.noActionButtonRecord.label());
+        return this.menuPlugin.parse(player, this.noActionButtonRecord.labelTemplate().source());
     }
 
     @Override
     public String getYesTooltip() {
-        return this.yesActionButtonRecord.tooltip();
+        return this.yesActionButtonRecord.tooltipTemplate().source();
     }
 
     @Override
     public String getYesTooltip(Player player) {
-        return this.menuPlugin.parse(player, this.yesActionButtonRecord.tooltip());
+        return this.menuPlugin.parse(player, this.yesActionButtonRecord.tooltipTemplate().source());
     }
 
     @Override
     public String getNoTooltip() {
-        return this.noActionButtonRecord.tooltip();
+        return this.noActionButtonRecord.tooltipTemplate().source();
     }
 
     @Override
     public String getNoTooltip(Player player) {
-        return this.menuPlugin.parse(player, this.noActionButtonRecord.tooltip());
+        return this.menuPlugin.parse(player, this.noActionButtonRecord.tooltipTemplate().source());
     }
 
     @Override
@@ -110,12 +111,12 @@ public class ZConfirmationDialogInventory extends AbstractDialogInventory implem
 
     @Override
     public void setYesWidth(int yesWidth) {
-        this.yesActionButtonRecord = new ActionButtonRecord(this.yesActionButtonRecord.label(), this.yesActionButtonRecord.tooltip(), yesWidth, this.yesActionButtonRecord.action());
+        this.yesActionButtonRecord = this.yesActionButtonRecord.withWidth(yesWidth);
     }
 
     @Override
     public void setNoWidth(int noWidth) {
-        this.noActionButtonRecord = new ActionButtonRecord(this.noActionButtonRecord.label(), this.noActionButtonRecord.tooltip(), noWidth, this.noActionButtonRecord.action());
+        this.noActionButtonRecord = this.noActionButtonRecord.withWidth(noWidth);
     }
 
     @Override
@@ -128,14 +129,14 @@ public class ZConfirmationDialogInventory extends AbstractDialogInventory implem
                 builder.empty()
                         .type(io.papermc.paper.registry.data.dialog.type.DialogType.confirmation(
                                 ActionButton.create(
-                                        paperComponent.render(this.yesActionButtonRecord.label(), null, player),
-                                        paperComponent.render(this.yesActionButtonRecord.tooltip(), null, player),
+                                        this.yesActionButtonRecord.labelTemplate().render(Placeholder.empty(), player),
+                                        this.yesActionButtonRecord.tooltipTemplate().render(Placeholder.empty(), player),
                                         this.yesActionButtonRecord.width(),
                                         this.yesActionButtonRecord.action().build(dialogInputsForPlayer, player, this.menuPlugin, inventoryEngine, null, placeholders)
                                 ),
                                 ActionButton.create(
-                                        paperComponent.render(this.noActionButtonRecord.label(), null, player),
-                                        paperComponent.render(this.noActionButtonRecord.tooltip(), null, player),
+                                        this.noActionButtonRecord.labelTemplate().render(Placeholder.empty(), player),
+                                        this.noActionButtonRecord.tooltipTemplate().render(Placeholder.empty(), player),
                                         this.noActionButtonRecord.width(),
                                         this.noActionButtonRecord.action().build(dialogInputsForPlayer, player, this.menuPlugin, inventoryEngine, null, placeholders)
                                 )

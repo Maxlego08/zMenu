@@ -8,6 +8,7 @@ import fr.maxlego08.menu.api.inventory.dialog.DialogInventory;
 import fr.maxlego08.menu.api.utils.PaperMetaUpdater;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.api.utils.record.dialogs.SingleOption;
+import fr.robie.minimessageflow.Values;
 import io.papermc.paper.registry.data.dialog.input.DialogInput;
 import io.papermc.paper.registry.data.dialog.input.SingleOptionDialogInput;
 import net.kyori.adventure.text.Component;
@@ -33,15 +34,14 @@ public class DialogSingleOptionInput extends VanillaDialogInput {
     public DialogInput build(@NotNull DialogRenderContext<DialogInput, DialogInventory, PaperMetaUpdater, MenuPlugin> context) {
         Player player = context.getPlayer();
         Placeholders placeholders = context.getPlaceholders();
-        PaperMetaUpdater paperMetaUpdater = context.getMetaUpdater();
-        MenuPlugin plugin = context.getPlugin();
 
-        Component label = paperMetaUpdater.render(this.label, placeholders, player);
-        List<SingleOptionDialogInput.OptionEntry> finalOptions = new ArrayList<>();
+        Values values = placeholders.values();
+        Component label = this.getLabelTemplate().render(values, player);
+        List<SingleOptionDialogInput.OptionEntry> finalOptions = new ArrayList<>(this.singleOptions.size());
         for (SingleOption option : this.singleOptions) {
             finalOptions.add(SingleOptionDialogInput.OptionEntry.create(
-                    option.id(),
-                    paperMetaUpdater.render(option.display(), placeholders, player),
+                    option.idTemplate().render(values, player),
+                    option.displayTemplate().render(values, player),
                     option.initialValue()));
         }
 
