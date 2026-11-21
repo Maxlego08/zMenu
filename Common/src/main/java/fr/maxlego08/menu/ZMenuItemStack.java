@@ -23,6 +23,7 @@ import fr.maxlego08.menu.api.utils.OfflinePlayerCache;
 import fr.maxlego08.menu.api.utils.PaperMetaUpdater;
 import fr.robie.minimessageflow.Template;
 import fr.robie.minimessageflow.TemplateList;
+import fr.robie.minimessageflow.TextTemplate;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableInt;
 import fr.maxlego08.menu.api.utils.version.MinecraftVersion;
@@ -31,6 +32,7 @@ import fr.maxlego08.menu.common.utils.itemstack.MenuItemStackFromItemStack;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.utils.PerformanceDebug;
 import net.kyori.adventure.key.Key;
+import net.kyori.adventure.pointer.Pointered;
 import org.bukkit.*;
 import org.bukkit.block.banner.Pattern;
 import org.bukkit.configuration.ConfigurationSection;
@@ -52,14 +54,14 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     private final String filePath;
     private final String path;
     private final List<ItemComponent> itemComponents = new ArrayList<>();
-    private String material;
-    private String targetPlayer;
-    private String amount;
+    private @Nullable TextTemplate material;
+    private @Nullable TextTemplate targetPlayer;
+    private @Nullable TextTemplate amount;
     private AmountType amountType = AmountType.SET;
-    private String url;
-    private String data;
+    private @Nullable TextTemplate url;
+    private @Nullable TextTemplate data;
     private String tooltipStyle;
-    private String durability;
+    private @Nullable TextTemplate durability;
     private fr.maxlego08.menu.api.itemstack.Potion potion;
     private TemplateList lore = TemplateList.of(List.of());
     private List<ItemFlag> flags = new ArrayList<>();
@@ -68,7 +70,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     private Map<String, TemplateList> translatedLore = Map.of();
     private boolean isGlowing;
     private ResolvableInt modelID;
-    private String itemModel;
+    private @Nullable TextTemplate itemModel;
     private String equippedModel;
     private Map<Enchantment, Integer> enchantments = new HashMap<>();
     private boolean clearDefaultAttributes = false;
@@ -138,7 +140,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
 
         performanceDebug.start("build.createDefaultMaterial");
         if (this.material == null) {
-            this.material = "STONE";
+            this.material = TextService.text("STONE");
         }
         performanceDebug.end();
 
@@ -211,12 +213,12 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     }
 
     private boolean shouldUseCache(boolean useCache) {
-        var isItem = this.material != null && (this.material.equals("PLAYER_HEAD") || this.material.equals("SKULL_ITEM")) && this.url == null;
+        var isItem = this.material != null && (source(this.material).equals("PLAYER_HEAD") || source(this.material).equals("SKULL_ITEM")) && this.url == null;
         return !this.needPlaceholderAPI && this.cacheItemStack != null && Configuration.enableCacheItemStack && useCache && !isItem;
     }
 
     private OfflinePlayer resolveOfflinePlayer(Player player, Placeholders placeholders) {
-        return this.targetPlayer != null ? OfflinePlayerCache.get(this.papi(placeholders.parse(this.targetPlayer), player, false)) : null;
+        return this.targetPlayer != null ? OfflinePlayerCache.get(this.dataText(this.targetPlayer, placeholders, player)) : null;
     }
 
     private ItemStack createItemStack(Player player, Placeholders placeholders, OfflinePlayer offlinePlayer, int amount) {
@@ -231,7 +233,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     }
 
     private Material resolveMaterial(Player player, Placeholders placeholders, OfflinePlayer offlinePlayer) {
-        String papiMaterial = this.papi(placeholders.parse(this.material), offlinePlayer == null ? player : offlinePlayer, true);
+        String papiMaterial = this.dataText(this.material, placeholders, offlinePlayer == null ? player : offlinePlayer);
 
         try {
             return papiMaterial != null ? Material.getMaterial(papiMaterial.toUpperCase(Locale.ROOT)) : null;
@@ -241,10 +243,10 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     }
 
     private ItemStack resolveCustomItem(Player player, Placeholders placeholders, Material material) {
-        String papiMaterial = this.papi(placeholders.parse(this.material), player, true);
         if (material != null && !material.equals(Material.AIR)) {
             return null;
         }
+        String papiMaterial = this.dataText(this.material, placeholders, player);
 
         if (papiMaterial != null && papiMaterial.contains(":")) {
             String[] values = papiMaterial.split(":", 2);
@@ -266,12 +268,12 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
         if (material == null) {
             material = Material.STONE;
         }
-        return this.data != null && !this.data.isEmpty() ? new ItemStack(material, amount, Byte.parseByte(this.papi(this.data, player, false))) : new ItemStack(material);
+        return this.data != null && !source(this.data).isEmpty() ? new ItemStack(material, amount, Byte.parseByte(this.dataText(this.data, new Placeholders(), player))) : new ItemStack(material);
     }
 
     private ItemStack applySpecialItemStack(Player player, OfflinePlayer offlinePlayer, Placeholders placeholders, int amount, ItemStack itemStack) {
-        if (this.url != null && !this.url.equalsIgnoreCase("null")) {
-            String urlResult = this.papi(this.url, player, false);
+        if (this.url != null && !source(this.url).equalsIgnoreCase("null")) {
+            String urlResult = this.dataText(this.url, placeholders, player);
             if (urlResult != null) {
                 itemStack = this.createSkull(urlResult);
             }
@@ -478,6 +480,31 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
         return sources;
     }
 
+    /**
+     * A data text (material, amount...) with its placeholders read: zMenu's values and PlaceholderAPI for the viewer.
+     * It was compiled when it was set; a text without placeholders is given as it is. A viewer that is an offline player (not an
+     * audience) is read through PlaceholderAPI's offline API as before.
+     */
+    private @Nullable String dataText(@Nullable TextTemplate template, @NotNull Placeholders placeholders, @Nullable OfflinePlayer viewer) {
+        if (template == null) {
+            return null;
+        }
+        if (template.isStatic()) {
+            return template.source();
+        }
+        if (viewer != null && !(viewer instanceof Pointered)) {
+            return this.papi(placeholders.parse(template.source()), viewer, true);
+        }
+        return template.render(placeholders.values(), (Pointered) viewer);
+    }
+
+    /**
+     * The text as written of a data field, or null when it is not set.
+     */
+    private static @Nullable String source(@Nullable TextTemplate template) {
+        return template == null ? null : template.source();
+    }
+
     private @Nullable String getDisplayNameSource() {
         return this.displayName == null ? null : this.displayName.source();
     }
@@ -571,28 +598,28 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
      * @return the target player
      */
     public String getTargetPlayer() {
-        return this.targetPlayer;
+        return source(this.targetPlayer);
     }
 
     /**
      * @param targetPlayer the targetPlayer to set
      */
     public void setTargetPlayer(String targetPlayer) {
-        this.targetPlayer = targetPlayer;
+        this.targetPlayer = TextService.text(targetPlayer);
     }
 
     /**
      * @return the material
      */
     public String getMaterial() {
-        return this.material;
+        return source(this.material);
     }
 
     /**
      * @param material the material to set
      */
     public void setMaterial(String material) {
-        this.material = material;
+        this.material = TextService.text(material);
         this.updatePlaceholder(material);
     }
 
@@ -600,14 +627,14 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
      * @return the amount
      */
     public String getAmount() {
-        return this.amount;
+        return source(this.amount);
     }
 
     /**
      * @param amount the amount to set
      */
     public void setAmount(String amount) {
-        this.amount = amount;
+        this.amount = TextService.text(amount);
         this.updatePlaceholder(amount);
     }
 
@@ -616,28 +643,28 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
      */
     @Nullable
     public String getUrl() {
-        return this.url;
+        return source(this.url);
     }
 
     /**
      * @param url the url to set
      */
     public void setUrl(String url) {
-        this.url = url;
+        this.url = TextService.text(url);
     }
 
     /**
      * @return the data
      */
     public String getData() {
-        return this.data;
+        return source(this.data);
     }
 
     /**
      * @param data the data to set
      */
     public void setData(String data) {
-        this.data = data;
+        this.data = TextService.text(data);
     }
 
     /**
@@ -646,14 +673,14 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     public int getDurability() {
         int dura = 1;
         try {
-            dura = Integer.parseInt(this.durability);
+            dura = Integer.parseInt(source(this.durability));
         } catch (Exception ignored) {
         }
         return dura;
     }
 
     public String getDura() {
-        return this.durability;
+        return source(this.durability);
     }
 
     @Override
@@ -665,7 +692,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     public int parseDura(OfflinePlayer offlinePlayer, Placeholders placeholders) {
         int amount = 1;
         try {
-            amount = Integer.parseInt(this.papi(placeholders.parse(this.durability), offlinePlayer, true));
+            amount = Integer.parseInt(this.dataText(this.durability, placeholders, offlinePlayer));
         } catch (Exception ignored) {
         }
         return amount;
@@ -675,11 +702,11 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
      * @param durability the durability to set
      */
     public void setDurability(int durability) {
-        this.durability = Integer.toString(durability);
+        this.durability = TextService.text(Integer.toString(durability));
     }
 
     public void setDurability(String durability) {
-        this.durability = durability;
+        this.durability = TextService.text(durability);
     }
 
     /**
@@ -902,11 +929,11 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
 
     @Override
     public String getItemModelString() {
-        return this.itemModel;
+        return source(this.itemModel);
     }
 
     private NamespacedKey parseItemModel(@Nullable Player player, @NotNull Placeholders placeholders) {
-        String itemModel = this.papi(placeholders.parse(this.itemModel), player, true);
+        String itemModel = this.dataText(this.itemModel, placeholders, player);
         if (itemModel == null) {
             return null;
         }
@@ -924,12 +951,12 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
 
     @Override
     public void setItemModel(NamespacedKey itemModel) {
-        this.itemModel = itemModel != null ? itemModel.toString() : null;
+        this.itemModel = TextService.text(itemModel != null ? itemModel.toString() : null);
     }
 
     @Override
     public void setItemModel(String itemModel) {
-        this.itemModel = itemModel;
+        this.itemModel = TextService.text(itemModel);
     }
 
     @Override
@@ -951,7 +978,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     public int parseAmount(Player player, Placeholders placeholders) {
         int amount = 1;
         try {
-            amount = Integer.parseInt(this.papi(placeholders.parse(this.amount), player, true));
+            amount = Integer.parseInt(this.dataText(this.amount, placeholders, player));
         } catch (Exception ignored) {
         }
         return amount;
@@ -961,7 +988,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     public int parseAmount(OfflinePlayer offlinePlayer, Placeholders placeholders) {
         int amount = 1;
         try {
-            amount = Integer.parseInt(this.papi(placeholders.parse(this.amount), offlinePlayer, true));
+            amount = Integer.parseInt(this.dataText(this.amount, placeholders, offlinePlayer));
         } catch (Exception ignored) {
         }
         return Math.clamp(amount, 1, 99);
@@ -1203,9 +1230,10 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
 
     public boolean isDynamicMaterial() {
         if (this.material == null) return false;
-        if (this.material.contains("%")) return true;
-        if (this.material.contains(":")) {
-            String[] values = this.material.split(":", 2);
+        if (!this.material.isStatic()) return true;
+        String material = this.material.source();
+        if (material.contains(":")) {
+            String[] values = material.split(":", 2);
             if (values.length == 2) {
                 return this.findMaterialLoader(values[0]).isPresent();
             }
@@ -1221,7 +1249,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     @Override
     public void serialize(@NotNull ConfigurationSection section) {
 
-        section.set("material", this.material);
+        section.set("material", source(this.material));
 
         if (this.displayName != null) section.set("name", this.displayName.source());
         if (!this.lore.isEmpty()) section.set("lore", sources(this.lore));
@@ -1236,21 +1264,21 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
             section.set("model-id", modelId);
         }
         try {
-            if (Integer.parseInt(this.data) > 0) section.set("data", this.data);
+            if (Integer.parseInt(source(this.data)) > 0) section.set("data", source(this.data));
         } catch (Exception ignored) {
-            section.set("data", this.data);
+            section.set("data", source(this.data));
         }
-        if (this.durability != null) section.set("durability", this.durability);
-        if (this.amount != null && !this.amount.equals("1")) {
+        if (this.durability != null) section.set("durability", source(this.durability));
+        if (this.amount != null && !source(this.amount).equals("1")) {
             try {
-                section.set("amount", Integer.parseInt(this.amount));
+                section.set("amount", Integer.parseInt(source(this.amount)));
             } catch (NumberFormatException exception) {
-                section.set("amount", this.amount);
+                section.set("amount", source(this.amount));
             }
         }
         if (this.amountType != AmountType.SET) section.set("amount-type", this.amountType.name());
-        if (this.targetPlayer != null) section.set("target", this.targetPlayer);
-        if (this.url != null) section.set("url", this.url);
+        if (this.targetPlayer != null) section.set("target", source(this.targetPlayer));
+        if (this.url != null) section.set("url", source(this.url));
 
         if (this.potion != null) {
             Color potionColor = this.potion.getColor();
@@ -1355,7 +1383,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
         if (this.attributeShowInTooltip != null) section.set("attribute-show-in-tooltip", this.attributeShowInTooltip);
         if (this.itemRarity != null) section.set("item-rarity", this.itemRarity.name());
         if (this.tooltipStyle != null) section.set("tooltip-style", this.tooltipStyle);
-        if (this.itemModel != null) section.set("item-model", this.itemModel);
+        if (this.itemModel != null) section.set("item-model", source(this.itemModel));
         if (this.equippedModel != null) section.set("equipped-model", this.equippedModel);
     }
 

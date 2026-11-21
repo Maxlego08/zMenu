@@ -16,6 +16,7 @@ import fr.maxlego08.menu.common.utils.itemstack.MenuItemStackFromItemStack;
 import fr.maxlego08.menu.common.utils.nms.ItemStackUtils;
 import fr.maxlego08.menu.loader.MenuItemStackLoader;
 import fr.maxlego08.menu.zcore.utils.PerformanceDebug;
+import fr.robie.minimessageflow.TextTemplate;
 import net.kyori.adventure.key.Key;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -69,10 +70,11 @@ public class ZItemStackService extends ZUtils implements ItemStackService {
         PerformanceDebug performanceDebug = PerformanceDebug.create("Skull item stack processing");
 
         performanceDebug.start("papi");
-        String name = this.papi(this.plugin.parse(player, placeholders.parse(button.getPlayerHead().replace("%player%", player.getName()))), player, true);
+        TextTemplate owner = button.getPlayerHeadTemplate();
+        String name = owner == null ? null : owner.render(placeholders.values(), player);
         performanceDebug.end();
 
-        if (!PlayerUtil.isValidMinecraftUsername(name)) {
+        if (name == null || !PlayerUtil.isValidMinecraftUsername(name)) {
             performanceDebug.printSummary();
             return itemStack;
         }

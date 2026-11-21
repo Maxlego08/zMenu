@@ -7,9 +7,11 @@ import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.enums.PlaceholderAction;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.permissible.PlaceholderPermissible;
+import fr.maxlego08.menu.api.text.TextService;
 import fr.maxlego08.menu.api.utils.OfflinePlayerCache;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.zcore.logger.Logger;
+import fr.robie.minimessageflow.TextTemplate;
 import net.objecthunter.exp4j.ExpressionBuilder;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -26,10 +28,10 @@ import java.util.Objects;
 public class ZPlaceholderPermissible extends PlaceholderPermissible {
 
     private final PlaceholderAction action;
-    private final String placeholder;
-    private final String value;
-    private final String targetPlayer;
     private final boolean enableMathExpression;
+    private final TextTemplate placeholder;
+    private final TextTemplate value;
+    private final TextTemplate targetPlayer;
 
     /**
      * Constructs a ZPlaceholderPermissible with the specified placeholder action, placeholder key, and value.
@@ -41,19 +43,19 @@ public class ZPlaceholderPermissible extends PlaceholderPermissible {
     public ZPlaceholderPermissible(PlaceholderAction action, String placeholder, String value, String targetPlayer, List<Action> denyActions, List<Action> successActions, boolean enableMathExpression) {
         super(denyActions, successActions);
         this.action = action;
-        this.placeholder = placeholder;
-        this.value = value;
-        this.targetPlayer = targetPlayer;
         this.enableMathExpression = enableMathExpression;
+        this.placeholder = TextService.text(placeholder);
+        this.value = TextService.text(value);
+        this.targetPlayer = TextService.text(targetPlayer);
     }
 
     @Override
     protected void serializeProperties(@NonNull Map<String, Object> map) {
         map.put("type", "placeholder");
-        map.put("placeholder", this.placeholder);
+        map.put("placeholder", TextService.source(this.placeholder));
         map.put("action", this.action.name());
-        map.put("value", this.value);
-        if (this.targetPlayer != null) map.put("target", this.targetPlayer);
+        map.put("value", TextService.source(this.value));
+        if (this.targetPlayer != null) map.put("target", TextService.source(this.targetPlayer));
         if (this.enableMathExpression) map.put("math", true);
     }
 
@@ -72,12 +74,12 @@ public class ZPlaceholderPermissible extends PlaceholderPermissible {
         String valueAsString;
         String resultAsString;
 
-        if (this.targetPlayer == null || this.targetPlayer.equalsIgnoreCase("null")) {
+        if (this.targetPlayer == null || TextService.source(this.targetPlayer).equalsIgnoreCase("null")) {
 
-            valueAsString = plugin.parse(player, placeholders.parse(this.placeholder));
-            resultAsString = plugin.parse(player, placeholders.parse(this.value));
+            valueAsString = TextService.render(this.placeholder, placeholders, player);
+            resultAsString = TextService.render(this.value, placeholders, player);
         } else {
-            String parsedTargetPlayer = plugin.parse(player, placeholders.parse(this.targetPlayer));
+            String parsedTargetPlayer = TextService.render(this.targetPlayer, placeholders, player);
 
             java.util.UUID uuid;
             try {
@@ -89,8 +91,8 @@ public class ZPlaceholderPermissible extends PlaceholderPermissible {
             OfflinePlayer offlinePlayer = uuid != null
                     ? Objects.requireNonNull(fr.robie.paperdispatch.cache.OfflinePlayerCache.getGlobalInstance()).get(uuid)
                     : OfflinePlayerCache.get(parsedTargetPlayer);
-            valueAsString = plugin.parse(offlinePlayer.hasPlayedBefore() ? offlinePlayer : player, placeholders.parse(this.placeholder));
-            resultAsString = plugin.parse(offlinePlayer.hasPlayedBefore() ? offlinePlayer : player, placeholders.parse(this.value));
+            valueAsString = plugin.parse(offlinePlayer.hasPlayedBefore() ? offlinePlayer : player, placeholders.parse(TextService.source(this.placeholder)));
+            resultAsString = plugin.parse(offlinePlayer.hasPlayedBefore() ? offlinePlayer : player, placeholders.parse(TextService.source(this.value)));
         }
 
         if (this.action.equals(PlaceholderAction.BOOLEAN)) {
@@ -162,7 +164,7 @@ public class ZPlaceholderPermissible extends PlaceholderPermissible {
      */
     @Override
     public String getPlaceholder() {
-        return this.placeholder;
+        return TextService.source(this.placeholder);
     }
 
     /**
@@ -172,7 +174,7 @@ public class ZPlaceholderPermissible extends PlaceholderPermissible {
      */
     @Override
     public String getValue() {
-        return this.value;
+        return TextService.source(this.value);
     }
 
     /**

@@ -128,6 +128,39 @@ public interface TextService {
     }
 
     /**
+     * Compiles configured text read as text (a command, an amount, a material, a permission...): only its
+     * {@code %key%} placeholders are read, every value placed as written.
+     *
+     * @param text the text as written, or null
+     * @return the template, or null for null text
+     */
+    static @Nullable TextTemplate text(@Nullable String text) {
+        return text == null ? null : get().flow().compileText(text);
+    }
+
+    /**
+     * Renders configured text compiled with {@link #text(String)} with zMenu's values and PlaceholderAPI for a viewer.
+     *
+     * @param template     the template, or null
+     * @param placeholders the values
+     * @param viewer       the viewer, or null
+     * @return the text, or null for a null template
+     */
+    static @Nullable String render(@Nullable TextTemplate template, @NotNull Placeholders placeholders, @Nullable Pointered viewer) {
+        return template == null ? null : template.render(placeholders.values(), viewer);
+    }
+
+    /**
+     * The text as written of a template compiled with {@link #text(String)}.
+     *
+     * @param template the template, or null
+     * @return its source, or null for a null template
+     */
+    static @Nullable String source(@Nullable TextTemplate template) {
+        return template == null ? null : template.source();
+    }
+
+    /**
      * zMenu's own placeholders ({@code %zmenu_...%}), asked directly, with or without PlaceholderAPI.
      */
     private static @Nullable String zmenu(@NotNull String key, @Nullable Pointered viewer) {

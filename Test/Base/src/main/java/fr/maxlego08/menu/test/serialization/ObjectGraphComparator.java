@@ -2,6 +2,7 @@ package fr.maxlego08.menu.test.serialization;
 
 import fr.robie.minimessageflow.Template;
 import fr.robie.minimessageflow.TemplateList;
+import fr.robie.minimessageflow.TextTemplate;
 import org.bukkit.plugin.Plugin;
 
 import java.io.File;
@@ -81,6 +82,12 @@ public final class ObjectGraphComparator {
             case Template expectedTemplate when actual instanceof Template actualTemplate -> {
                 if (!expectedTemplate.source().equals(actualTemplate.source())) {
                     differences.add(path + ": expected text " + describe(expectedTemplate.source()) + " but was " + describe(actualTemplate.source()));
+                }
+                return;
+            }
+            case TextTemplate expectedText when actual instanceof TextTemplate actualText -> {
+                if (!expectedText.source().equals(actualText.source())) {
+                    differences.add(path + ": expected text " + describe(expectedText.source()) + " but was " + describe(actualText.source()));
                 }
                 return;
             }

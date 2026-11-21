@@ -21,6 +21,7 @@ import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.api.utils.TextChange;
 import fr.maxlego08.menu.zcore.utils.PerformanceDebug;
 import fr.robie.minimessageflow.TemplateList;
+import fr.robie.minimessageflow.TextTemplate;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
@@ -55,6 +56,10 @@ public abstract class Button extends PlaceholderButton {
     private transient @Nullable TemplateList messageTemplates;
     private SoundOption soundOption;
     private String playerHead;
+    /**
+     * {@link #playerHead} compiled once, or null without one.
+     */
+    private transient @Nullable TextTemplate playerHeadTemplate;
     private OpenLink openLink;
     private boolean isUpdated = false;
     private boolean isMasterButtonUpdated = false;
@@ -176,7 +181,20 @@ public abstract class Button extends PlaceholderButton {
     @Contract("_ -> this")
     public Button setPlayerHead(@Nullable String playerHead) {
         this.playerHead = playerHead;
+        this.playerHeadTemplate = playerHead == null ? null : TextService.get().flow().compileText(playerHead);
         return this;
+    }
+
+    /**
+     * @return the head's owner compiled once, its placeholders read for the viewer, or null without one
+     */
+    @Contract(pure = true)
+    public @Nullable TextTemplate getPlayerHeadTemplate() {
+        TextTemplate template = this.playerHeadTemplate;
+        if (template == null && this.playerHead != null) {
+            template = this.playerHeadTemplate = TextService.get().flow().compileText(this.playerHead);
+        }
+        return template;
     }
 
     @Contract(pure = true)
