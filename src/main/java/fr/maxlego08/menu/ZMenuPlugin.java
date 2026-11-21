@@ -29,6 +29,7 @@ import fr.maxlego08.menu.api.players.inventory.InventoriesPlayer;
 import fr.maxlego08.menu.api.registry.Registries;
 import fr.maxlego08.menu.api.sound.SoundService;
 import fr.maxlego08.menu.api.storage.StorageManager;
+import fr.maxlego08.menu.api.text.TextService;
 import fr.maxlego08.menu.api.utils.EnumInventory;
 import fr.maxlego08.menu.api.utils.MetaUpdater;
 import fr.maxlego08.menu.api.utils.toast.ToastHelper;
@@ -45,8 +46,6 @@ import fr.maxlego08.menu.dupe.PDCDupeManager;
 import fr.maxlego08.menu.enchantment.ZEnchantments;
 import fr.maxlego08.menu.font.EmptyFont;
 import fr.maxlego08.menu.hooks.ComponentMeta;
-import fr.maxlego08.menu.hooks.text.PaperTextService;
-import fr.maxlego08.menu.api.text.TextService;
 import fr.maxlego08.menu.hooks.NexoTagResolverLoader;
 import fr.maxlego08.menu.hooks.bedrock.ZBedrockManager;
 import fr.maxlego08.menu.hooks.bedrock.listener.BedrockReplacementListener;
@@ -56,6 +55,7 @@ import fr.maxlego08.menu.hooks.packetevents.PacketUtils;
 import fr.maxlego08.menu.hooks.packetevents.loader.PacketEventTitleAnimationLoader;
 import fr.maxlego08.menu.hooks.paper.PaperProtocolClientVersionProvider;
 import fr.maxlego08.menu.hooks.protocolsupport.ProtocolSupportClientVersionProvider;
+import fr.maxlego08.menu.hooks.text.PaperTextService;
 import fr.maxlego08.menu.hooks.viaversion.ViaVersionClientVersionProvider;
 import fr.maxlego08.menu.inventory.InventoryHotReload;
 import fr.maxlego08.menu.inventory.VInventoryManager;
@@ -365,6 +365,7 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
 
         this.safeHook("material loaders", this::registerMaterialLoaders);
         this.safeHook("plugin hooks", this::registerHooks);
+        this.applyFontImages();
 
         this.inventoryManager.load();
         this.commandManager.loadCommands();
@@ -470,6 +471,16 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
         } catch (ClassNotFoundException e) {
             return false;
         }
+    }
+
+
+    /**
+     * Gives the font images of the font plugin found by the hooks to the text engine, which applies them when it
+     * compiles text, so every configured text gets them and keeps its source as written. Nothing to do without one.
+     */
+    private void applyFontImages() {
+        FontImage fontImage = this.fontImage;
+        TextService.get().flow().preprocessor(fontImage instanceof EmptyFont ? null : fontImage::replace);
     }
 
     /**
