@@ -8,12 +8,12 @@ import fr.maxlego08.menu.api.enums.MenuItemRarity;
 import fr.maxlego08.menu.api.itemstack.*;
 import fr.maxlego08.menu.api.text.TextService;
 import fr.maxlego08.menu.api.utils.LoreType;
+import fr.robie.minimessageflow.Template;
+import fr.robie.minimessageflow.TemplateList;
 import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
-import fr.robie.minimessageflow.Template;
-import fr.robie.minimessageflow.TemplateList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -237,8 +237,20 @@ public interface MenuItemStackContext {
      * Indicates whether PlaceholderAPI is required for this item stack.
      *
      * @return {@code true} if PlaceholderAPI is needed.
+     * @deprecated use {@link #isStatic()}: true when the item is not static.
      */
+    @Deprecated(since = "1.1.2.2")
     boolean isNeedPlaceholderAPI();
+
+    /**
+     * Whether the built item is the same for every player and every build, so it can be kept and given again: all its
+     * texts, values and components are static, it has no translations and no target player.
+     *
+     * @return true when the item never changes
+     */
+    default boolean isStatic() {
+        return !this.isNeedPlaceholderAPI();
+    }
 
     /**
      * Retrieves the cached item stack when caching is enabled.

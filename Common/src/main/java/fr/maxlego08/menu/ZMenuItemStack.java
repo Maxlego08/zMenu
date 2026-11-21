@@ -99,6 +99,15 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     private TrimConfiguration trimConfiguration;
 
     private transient ItemStack cacheItemStack;
+    /**
+     * The text engine's revision the cached item was built at: an older one is built again.
+     */
+    private transient int cacheRevision;
+    /**
+     * {@link #isStatic()} and the text engine's revision it was found at.
+     */
+    private transient volatile int staticRevision = Integer.MIN_VALUE;
+    private transient volatile boolean staticValue;
 
     public ZMenuItemStack(InventoryManager inventoryManager, String filePath, String path) {
         this.inventoryManager = inventoryManager;
@@ -124,6 +133,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
 
     @Override
     public ItemStack build(BuildContext context) {
+        int revision = TextService.get().flow().revision();
         Player player = context.getPlayer();
         boolean useCache = context.isUseCache();
         Placeholders placeholders = context.getPlaceholders();
@@ -193,8 +203,9 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
         performanceDebug.end();
 
 
-        if (!this.needPlaceholderAPI && Configuration.enableCacheItemStack) {
+        if (Configuration.enableCacheItemStack && this.isStatic()) {
             this.cacheItemStack = itemStack;
+            this.cacheRevision = revision;
         }
 
         performanceDebug.printSummary();
@@ -213,8 +224,48 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     }
 
     private boolean shouldUseCache(boolean useCache) {
-        var isItem = this.material != null && (source(this.material).equals("PLAYER_HEAD") || source(this.material).equals("SKULL_ITEM")) && this.url == null;
-        return !this.needPlaceholderAPI && this.cacheItemStack != null && Configuration.enableCacheItemStack && useCache && !isItem;
+        return useCache && Configuration.enableCacheItemStack && this.cacheItemStack != null
+                && this.cacheRevision == TextService.get().flow().revision() && this.isStatic();
+    }
+
+    /**
+     * Drops the built item kept, and what was found about it: called when the item changes.
+     */
+    private void invalidateCache() {
+        this.cacheItemStack = null;
+        this.staticRevision = Integer.MIN_VALUE;
+    }
+
+    /**
+     * The item is the same for every player and every build: every text, value and component is static (no
+     * placeholder, no value tag, no nested item that depends on the player), it has no translations, no target
+     * player, no material read per player and is not a player head without a texture. Found once per revision of the
+     * text engine (a tag added later can make a text dynamic).
+     */
+    @Override
+    public boolean isStatic() {
+        int revision = TextService.get().flow().revision();
+        if (this.staticRevision == revision) {
+            return this.staticValue;
+        }
+        boolean value = this.computeStatic();
+        this.staticValue = value;
+        this.staticRevision = revision;
+        return value;
+    }
+
+    private boolean computeStatic() {
+        if (this.needPlaceholderAPI || this.targetPlayer != null || this.isDynamicMaterial()) {
+            return false;
+        }
+        if (!this.translatedDisplayName.isEmpty() || !this.translatedLore.isEmpty()) {
+            return false;
+        }
+        String material = source(this.material);
+        if (this.url == null && ("PLAYER_HEAD".equals(material) || "SKULL_ITEM".equals(material))) {
+            return false;
+        }
+        return StaticCheck.isStatic(this.displayName) && StaticCheck.isStatic(this.lore) && StaticCheck.fieldsStatic(this);
     }
 
     private OfflinePlayer resolveOfflinePlayer(Player player, Placeholders placeholders) {
@@ -605,6 +656,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
      * @param targetPlayer the targetPlayer to set
      */
     public void setTargetPlayer(String targetPlayer) {
+        this.invalidateCache();
         this.targetPlayer = TextService.text(targetPlayer);
     }
 
@@ -619,8 +671,8 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
      * @param material the material to set
      */
     public void setMaterial(String material) {
+        this.invalidateCache();
         this.material = TextService.text(material);
-        this.updatePlaceholder(material);
     }
 
     /**
@@ -634,8 +686,8 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
      * @param amount the amount to set
      */
     public void setAmount(String amount) {
+        this.invalidateCache();
         this.amount = TextService.text(amount);
-        this.updatePlaceholder(amount);
     }
 
     /**
@@ -650,6 +702,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
      * @param url the url to set
      */
     public void setUrl(String url) {
+        this.invalidateCache();
         this.url = TextService.text(url);
     }
 
@@ -664,6 +717,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
      * @param data the data to set
      */
     public void setData(String data) {
+        this.invalidateCache();
         this.data = TextService.text(data);
     }
 
@@ -702,10 +756,12 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
      * @param durability the durability to set
      */
     public void setDurability(int durability) {
+        this.invalidateCache();
         this.durability = TextService.text(Integer.toString(durability));
     }
 
     public void setDurability(String durability) {
+        this.invalidateCache();
         this.durability = TextService.text(durability);
     }
 
@@ -720,6 +776,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
      * @param potion the potion to set
      */
     public void setPotion(Potion potion) {
+        this.invalidateCache();
         this.potion = potion;
     }
 
@@ -736,16 +793,14 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
      * @param lore the lore to set
      */
     public void setLore(List<String> lore) {
+        this.invalidateCache();
         this.lore = TextService.compileItemLines(lore);
-        lore.forEach(this::updatePlaceholder);
     }
 
     @Override
     public void setLoreTemplate(@NotNull TemplateList lore) {
+        this.invalidateCache();
         this.lore = lore.style(template -> TextService.itemLineStyle(template.source()));
-        for (Template template : lore.templates()) {
-            this.updatePlaceholder(template.source());
-        }
     }
 
     /**
@@ -759,6 +814,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
      * @param flags the flags to set
      */
     public void setFlags(List<ItemFlag> flags) {
+        this.invalidateCache();
         this.flags = flags;
     }
 
@@ -775,14 +831,14 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
      * @param displayName the displayName to set
      */
     public void setDisplayName(String displayName) {
+        this.invalidateCache();
         this.displayName = displayName == null ? null : TextService.compileItemLine(displayName);
-        this.updatePlaceholder(displayName);
     }
 
     @Override
     public void setDisplayNameTemplate(@Nullable Template displayName) {
+        this.invalidateCache();
         this.displayName = displayName == null ? null : displayName.style(TextService.itemLineStyle(displayName.source()));
-        this.updatePlaceholder(this.getDisplayNameSource());
     }
 
     /**
@@ -796,6 +852,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
      * @param isGlowing the isGlowing to set
      */
     public void setGlowing(boolean isGlowing) {
+        this.invalidateCache();
         this.isGlowing = isGlowing;
     }
 
@@ -813,6 +870,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
      * @param modelID the modelID to set
      */
     public void setModelID(String modelID) {
+        this.invalidateCache();
         if (modelID == null) {
             this.modelID = null;
             return;
@@ -822,13 +880,13 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
         } catch (NumberFormatException e) {
             this.modelID = ResolvableInt.of(modelID);
         }
-        this.updatePlaceholder(modelID);
     }
 
     /**
      * @param modelID the modelID to set
      */
     public void setModelID(int modelID) {
+        this.invalidateCache();
         this.modelID = ResolvableInt.of(modelID);
     }
 
@@ -843,6 +901,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
      * @param enchantments the enchantments to set
      */
     public void setEnchantments(Map<Enchantment, Integer> enchantments) {
+        this.invalidateCache();
         this.enchantments = enchantments;
     }
 
@@ -857,6 +916,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
      * @param attributes the attributes to set.
      */
     public void setAttributes(List<AttributeWrapper> attributes) {
+        this.invalidateCache();
         this.attributes = attributes;
     }
 
@@ -867,6 +927,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
 
     @Override
     public void setAttributeMergeStrategy(AttributeMergeStrategy attributeMergeStrategy) {
+        this.invalidateCache();
         this.attributeMergeStrategy = attributeMergeStrategy;
     }
 
@@ -881,6 +942,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
      * @param banner the banner to set
      */
     public void setBanner(Banner banner) {
+        this.invalidateCache();
         this.banner = banner;
     }
 
@@ -895,6 +957,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
      * @param firework the firework to set
      */
     public void setFirework(Firework firework) {
+        this.invalidateCache();
         this.firework = firework;
     }
 
@@ -909,6 +972,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
      * @param leatherArmor the leather armor to set
      */
     public void setLeatherArmor(LeatherArmor leatherArmor) {
+        this.invalidateCache();
         this.leatherArmor = leatherArmor;
     }
 
@@ -919,6 +983,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
 
     @Override
     public void setToolTipStyle(String toolTipStyle) {
+        this.invalidateCache();
         this.tooltipStyle = toolTipStyle;
     }
 
@@ -951,11 +1016,13 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
 
     @Override
     public void setItemModel(NamespacedKey itemModel) {
+        this.invalidateCache();
         this.itemModel = TextService.text(itemModel != null ? itemModel.toString() : null);
     }
 
     @Override
     public void setItemModel(String itemModel) {
+        this.invalidateCache();
         this.itemModel = TextService.text(itemModel);
     }
 
@@ -1001,17 +1068,8 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
 
     @Override
     public void setAmountType(AmountType amountType) {
+        this.invalidateCache();
         this.amountType = amountType;
-    }
-
-    /**
-     * Let's know if the ItemStack needs a placeholder, if not then the ItemStack will be cached
-     *
-     * @param string - Current string
-     */
-    private void updatePlaceholder(String string) {
-        if (string == null || this.needPlaceholderAPI) return;
-        this.needPlaceholderAPI = string.contains("%");
     }
 
     @Override
@@ -1023,6 +1081,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     }
 
     public void setTranslatedDisplayName(Map<String, String> translatedDisplayName) {
+        this.invalidateCache();
         Map<String, Template> names = new HashMap<>(translatedDisplayName.size());
         translatedDisplayName.forEach((locale, name) -> {
             if (name != null) {
@@ -1041,16 +1100,30 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     }
 
     public void setTranslatedLore(Map<String, List<String>> translatedLore) {
+        this.invalidateCache();
         Map<String, TemplateList> lores = new HashMap<>(translatedLore.size());
         translatedLore.forEach((locale, lore) -> lores.put(locale, TextService.compileItemLines(lore)));
         this.translatedLore = lores;
     }
 
+    /**
+     * @deprecated use {@link #isStatic()}; true when the item is not static.
+     */
+    @Override
+    @Deprecated(since = "1.1.2.2")
     public boolean isNeedPlaceholderAPI() {
-        return this.needPlaceholderAPI;
+        return !this.isStatic();
     }
 
+    /**
+     * @param needPlaceholderAPI true to never keep the built item, whatever {@link #isStatic()} finds
+     * @deprecated the item finds whether it can be kept ({@link #isStatic()}); kept to force an item to be built each
+     * time.
+     */
+    @Override
+    @Deprecated(since = "1.1.2.2")
     public void setNeedPlaceholderAPI(boolean needPlaceholderAPI) {
+        this.invalidateCache();
         this.needPlaceholderAPI = needPlaceholderAPI;
     }
 
@@ -1067,6 +1140,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     }
 
     public void setMaxStackSize(int maxStackSize) {
+        this.invalidateCache();
         this.maxStackSize = maxStackSize;
     }
 
@@ -1075,6 +1149,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     }
 
     public void setMaxDamage(int maxDamage) {
+        this.invalidateCache();
         this.maxDamage = maxDamage;
     }
 
@@ -1083,6 +1158,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     }
 
     public void setDamage(int damage) {
+        this.invalidateCache();
         this.damage = damage;
     }
 
@@ -1091,6 +1167,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     }
 
     public void setRepairCost(int repairCost) {
+        this.invalidateCache();
         this.repairCost = repairCost;
     }
 
@@ -1099,6 +1176,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     }
 
     public void setUnbreakableEnabled(Boolean unbreakableEnabled) {
+        this.invalidateCache();
         this.unbreakableEnabled = unbreakableEnabled;
     }
 
@@ -1107,6 +1185,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     }
 
     public void setUnbreakableShowInTooltip(Boolean unbreakableShowInTooltip) {
+        this.invalidateCache();
         this.unbreakableShowInTooltip = unbreakableShowInTooltip;
     }
 
@@ -1115,6 +1194,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     }
 
     public void setFireResistant(Boolean fireResistant) {
+        this.invalidateCache();
         this.fireResistant = fireResistant;
     }
 
@@ -1123,6 +1203,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     }
 
     public void setHideTooltip(Boolean hideTooltip) {
+        this.invalidateCache();
         this.hideTooltip = hideTooltip;
     }
 
@@ -1131,6 +1212,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     }
 
     public void setHideAdditionalTooltip(Boolean hideAdditionalTooltip) {
+        this.invalidateCache();
         this.hideAdditionalTooltip = hideAdditionalTooltip;
     }
 
@@ -1139,6 +1221,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     }
 
     public void setEnchantmentGlint(Boolean enchantmentGlint) {
+        this.invalidateCache();
         this.enchantmentGlint = enchantmentGlint;
     }
 
@@ -1147,6 +1230,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     }
 
     public void setEnchantmentShowInTooltip(Boolean enchantmentShowInTooltip) {
+        this.invalidateCache();
         this.enchantmentShowInTooltip = enchantmentShowInTooltip;
     }
 
@@ -1155,6 +1239,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     }
 
     public void setAttributeShowInTooltip(Boolean attributeShowInTooltip) {
+        this.invalidateCache();
         this.attributeShowInTooltip = attributeShowInTooltip;
     }
 
@@ -1163,6 +1248,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     }
 
     public void setItemRarity(MenuItemRarity itemRarity) {
+        this.invalidateCache();
         this.itemRarity = itemRarity;
     }
 
@@ -1171,6 +1257,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     }
 
     public void setTrimConfiguration(TrimConfiguration trimConfiguration) {
+        this.invalidateCache();
         this.trimConfiguration = trimConfiguration;
     }
 
@@ -1179,6 +1266,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     }
 
     public void setCenterLore(boolean centerLore) {
+        this.invalidateCache();
         this.centerLore = centerLore;
     }
 
@@ -1187,6 +1275,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     }
 
     public void setCenterName(boolean centerName) {
+        this.invalidateCache();
         this.centerName = centerName;
     }
 
@@ -1195,6 +1284,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     }
 
     public void setLoreType(LoreType loreType) {
+        this.invalidateCache();
         this.loreType = loreType;
     }
 
@@ -1205,6 +1295,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
 
     @Override
     public void setEquippedModel(String equippedModel) {
+        this.invalidateCache();
         this.equippedModel = equippedModel;
     }
 
@@ -1215,6 +1306,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
 
     @Override
     public void setClearDefaultAttributes(boolean clearDefaultAttributes) {
+        this.invalidateCache();
         this.clearDefaultAttributes = clearDefaultAttributes;
     }
 

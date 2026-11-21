@@ -44,12 +44,25 @@ public abstract class ParsableResolvable<T> implements Resolvable<T> {
             return null;
         }
 
+        return this.parse(this.expressionTemplate(expression).render(context.getPlaceholders().values(), context.getPlayer()));
+    }
+
+    private @NotNull TextTemplate expressionTemplate(@NotNull String expression) {
         TextTemplate template = this.expressionTemplate;
         if (template == null) {
             template = TextService.get().flow().compileText(expression);
             this.expressionTemplate = template;
         }
-        return this.parse(template.render(context.getPlaceholders().values(), context.getPlayer()));
+        return template;
+    }
+
+    /**
+     * Static when it holds a value, or an expression without placeholders.
+     */
+    @Override
+    public boolean isStatic() {
+        String expression = this.expression;
+        return expression == null || this.expressionTemplate(expression).isStatic();
     }
 
     public boolean isDynamic() {

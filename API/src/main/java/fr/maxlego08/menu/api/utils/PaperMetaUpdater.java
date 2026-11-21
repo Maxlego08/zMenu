@@ -1,6 +1,7 @@
 package fr.maxlego08.menu.api.utils;
 
 import fr.maxlego08.menu.api.text.TextService;
+import fr.robie.minimessageflow.ValueTag;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
@@ -16,7 +17,24 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 public interface PaperMetaUpdater extends MetaUpdater {
+    /**
+     * Adds MiniMessage tags whose output is always the same (a font's glyphs): they are read once, when a text is
+     * compiled. For a tag whose output changes with the viewer or with time, use {@link #withValueTag}.
+     *
+     * @param tagResolver the tags
+     */
     void withTagResolver(@NotNull TagResolver tagResolver);
+
+    /**
+     * Adds a tag computed at each render, for the viewer ({@code <name:args>}, also {@code %name:args%}): a value
+     * that changes with the player or with time. A text using it is never kept as a built item.
+     *
+     * @param name the tag's name
+     * @param tag  computes the value
+     */
+    default void withValueTag(@NotNull String name, @NotNull ValueTag tag) {
+        this.getTextService().flow().valueTag(name, tag);
+    }
 
     void buildMiniMessage();
 

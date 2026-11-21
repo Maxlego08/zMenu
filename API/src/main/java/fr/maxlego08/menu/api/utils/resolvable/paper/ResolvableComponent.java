@@ -55,6 +55,14 @@ public final class ResolvableComponent extends ParsableResolvable<Component> {
         return template.render(context.getPlaceholders().values(), context.getPlayer());
     }
 
+    /**
+     * Static when it holds a component, or text without placeholders or value tags.
+     */
+    @Override
+    public boolean isStatic() {
+        return this.template == null || this.template.isStatic();
+    }
+
     @Override
     protected @Nullable Component parse(@NotNull String value) {
         return this.paperMetaUpdater.getComponent(value);
