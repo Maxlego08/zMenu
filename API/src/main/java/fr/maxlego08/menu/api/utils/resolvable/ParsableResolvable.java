@@ -1,10 +1,10 @@
 package fr.maxlego08.menu.api.utils.resolvable;
 
 import fr.maxlego08.menu.api.context.BuildContext;
-import fr.maxlego08.menu.api.placeholder.Placeholder;
+import fr.maxlego08.menu.api.text.TextService;
+import fr.robie.minimessageflow.TextTemplate;
 import org.bukkit.Keyed;
 import org.bukkit.NamespacedKey;
-import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -15,6 +15,11 @@ import java.util.function.Function;
 public abstract class ParsableResolvable<T> implements Resolvable<T> {
     private final @Nullable T resolvedValue;
     private final @Nullable String expression;
+    /**
+     * The expression compiled as text, on first use (a subclass that resolves it otherwise never compiles it): its
+     * placeholders, zMenu's and PlaceholderAPI's, read from the build's values for its player.
+     */
+    private transient volatile @Nullable TextTemplate expressionTemplate;
 
     protected ParsableResolvable(@Nullable T resolvedValue, @Nullable String expression) {
         if ((resolvedValue == null) == (expression == null)) {
@@ -39,15 +44,12 @@ public abstract class ParsableResolvable<T> implements Resolvable<T> {
             return null;
         }
 
-        Player player = context.getPlayer();
-
-        String parsedValue = Placeholder.Placeholders.getPlaceholder()
-                .setPlaceholders(
-                        player,
-                        context.getPlaceholders().parse(expression)
-                );
-
-        return this.parse(parsedValue);
+        TextTemplate template = this.expressionTemplate;
+        if (template == null) {
+            template = TextService.get().flow().compileText(expression);
+            this.expressionTemplate = template;
+        }
+        return this.parse(template.render(context.getPlaceholders().values(), context.getPlayer()));
     }
 
     public boolean isDynamic() {

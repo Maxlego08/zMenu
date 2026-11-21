@@ -14,6 +14,8 @@ import fr.maxlego08.menu.api.utils.record.dialogs.ActionButtonRecord;
 import fr.maxlego08.menu.api.utils.record.dialogs.DialogListBackButton;
 import fr.maxlego08.menu.api.utils.record.dialogs.DialogListEntry;
 import fr.maxlego08.menu.zcore.logger.Logger;
+import fr.robie.minimessageflow.Placeholder;
+import fr.robie.minimessageflow.Template;
 import io.papermc.paper.dialog.Dialog;
 import io.papermc.paper.registry.RegistryAccess;
 import io.papermc.paper.registry.RegistryKey;
@@ -200,10 +202,10 @@ public class ZDialogListDialogInventory extends AbstractButtonUtilsInventory imp
     private ActionButton createBackButton(@NotNull Player player, @NotNull PaperMetaUpdater paperComponent) {
         DialogAction action = this.menuPlugin.getDialogManager().clickAction(player,
                 (viewer, view) -> this.menuPlugin.getDialogManager().openDialog(viewer, this), ClickCallback.UNLIMITED_USES, null);
-        String tooltip = this.backButton.tooltip();
+        Template tooltip = this.backButton.tooltipTemplate();
         return ActionButton.create(
-                paperComponent.render(this.backButton.label(), null, player),
-                tooltip.isEmpty() ? null : paperComponent.render(tooltip, null, player),
+                this.backButton.labelTemplate().render(Placeholder.empty(), player),
+                tooltip.source().isEmpty() ? null : tooltip.render(Placeholder.empty(), player),
                 this.backButton.width(),
                 action
         );
