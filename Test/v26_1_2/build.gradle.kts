@@ -9,6 +9,7 @@ dependencies {
     testImplementation(libs.paperApi2612)
     testImplementation(libs.mockbukkit2612)
     testRuntimeOnly(libs.reflections)
+    testImplementation(libs.floodgate) // ZBedrockManager is built in the tests, without Geyser
     paperweightDevelopmentBundle(libs.paperDevBundle2612)
 }
 

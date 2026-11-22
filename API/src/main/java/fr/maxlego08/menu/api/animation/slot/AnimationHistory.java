@@ -1,5 +1,7 @@
 package fr.maxlego08.menu.api.animation.slot;
 
+import fr.maxlego08.menu.api.Inventory;
+import fr.maxlego08.menu.api.ZMenuKeys;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -16,6 +18,18 @@ import java.util.UUID;
  * @see AnimationManager#getHistory()
  */
 public interface AnimationHistory {
+
+    /**
+     * Gets the key the animation of an inventory is remembered under: its plugin and its name,
+     * such as {@code zMenu:shop}, {@code zEssentials:baltop}, or {@code zMenu:admin/shop} for a
+     * file of a sub folder with {@code enable-inventory-paths}.
+     *
+     * @param inventory The inventory.
+     * @return the key, to give to {@link #forget(UUID, String)} for example.
+     */
+    static @NotNull String key(@NotNull Inventory inventory) {
+        return inventory.getPlugin().getName() + ":" + ZMenuKeys.inventoryReference(inventory, "inventories");
+    }
 
     /**
      * Reads back which animations a player has already seen, when they join.

@@ -2,6 +2,7 @@
 package fr.maxlego08.menu.command;
 
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
+import fr.maxlego08.menu.ZInventoryManager;
 import fr.maxlego08.menu.api.ZMenuKeys;
 import net.kyori.adventure.key.Key;
 
@@ -22,6 +23,36 @@ public final class NameSuggestions {
 
     public static void suggestKeys(SuggestionsBuilder builder, Collection<Key> keys) {
         suggest(builder, keys, Key::asString);
+    }
+
+    /**
+     * Suggests the references {@link ZInventoryManager#findInventory(String)} accepts. With
+     * {@code enable-inventory-paths}, an inventory of zMenu is only suggested by its path and one
+     * of another plugin by {@code plugin:name}.
+     */
+    public static void suggestInventories(SuggestionsBuilder builder, ZInventoryManager inventoryManager) {
+        suggestReferences(builder, inventoryManager.getInventoryKeys().stream().map(Key::asString).toList(), inventoryManager.usesInventoryPaths());
+    }
+
+    /**
+     * Suggests names written {@code plugin:name}, such as the dialogs or the bedrock inventories.
+     * With {@code enable-inventory-paths}, one of zMenu is only suggested without its plugin and one
+     * of another plugin only with it, as the references are read then; otherwise as {@link #suggest} does.
+     */
+    public static void suggestReferences(SuggestionsBuilder builder, Collection<String> qualifiedNames, boolean inventoryPaths) {
+        if (!inventoryPaths) {
+            suggest(builder, qualifiedNames);
+            return;
+        }
+
+        String input = builder.getRemainingLowerCase();
+        for (String qualified : qualifiedNames) {
+            boolean ownName = qualified.toLowerCase(Locale.ROOT).startsWith(ZMenuKeys.NAMESPACE + ":");
+            String reference = ownName ? shortNameOf(qualified) : qualified;
+            if (reference.toLowerCase(Locale.ROOT).startsWith(input)) {
+                builder.suggest(reference);
+            }
+        }
     }
 
     private static <T> void suggest(SuggestionsBuilder builder, Collection<T> values, Function<T, String> mapper) {

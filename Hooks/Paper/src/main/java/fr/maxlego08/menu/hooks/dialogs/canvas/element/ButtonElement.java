@@ -1,5 +1,6 @@
 package fr.maxlego08.menu.hooks.dialogs.canvas.element;
 
+import fr.maxlego08.menu.hooks.dialogs.ZDialogManager;
 import fr.maxlego08.menu.api.dialog.canvas.CanvasBuilder;
 import fr.maxlego08.menu.api.dialog.canvas.CanvasElement;
 import fr.maxlego08.menu.api.dialog.canvas.CanvasLayoutable;
@@ -170,7 +171,7 @@ public final class ButtonElement implements CanvasElement, CanvasLayoutable {
         for (Action action : this.actions) action.preExecute(player, null, context.engine(), placeholders);
 
         DialogInventory dialog = context.dialog();
-        if (this.refresh && dialog != null) context.canvasManager().reopen(player, dialog.getPlugin().getName() + ":" + dialog.getFileName());
+        if (this.refresh && dialog != null) context.canvasManager().reopen(player, dialog.getPlugin().getName() + ":" + ZDialogManager.reference(dialog));
     }
 
     @Override

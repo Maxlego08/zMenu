@@ -314,6 +314,13 @@ use-swap-item-off-hand-key-to-open-main-menu-needs-shift: false
 specify-path-menus: [ ]
 
 
+# Allow inventories to be referenced by their relative path inside the inventories folder.
+# When enabled, folder inventories require their full relative path.
+# Inventories from other plugins require their plugin namespace.
+# Dialogs and bedrock inventories follow the same rule inside the dialogs and bedrock folders.
+enable-inventory-paths: false
+
+
 # Show a message to the player when the command "/zm open <inventory> <player> <display>" is used.
 enable-open-message: true
 
