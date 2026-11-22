@@ -8,6 +8,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 /**
  * One moment in the life of a {@link TemporaryItem}: what it looks like from then on, or the moment
@@ -48,8 +50,14 @@ public record AnimationKeyframe(@NotNull AnimationAnchor at, @Nullable MenuItemS
      * Writes this keyframe the way a {@code frames} entry is read back.
      *
      * @param section the section of the keyframe
+     * @deprecated use {@link #serialize(Section)}, zMenu reads its files with BoostedYAML.
      */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     public void serialize(@NotNull ConfigurationSection section) {
+        YamlSections.write(section, copy -> this.serialize(copy));
+    }
+
+    public void serialize(@NotNull Section section) {
         section.set("at", this.at.serialize());
 
         if (this.isRemoval()) {
@@ -57,7 +65,7 @@ public record AnimationKeyframe(@NotNull AnimationAnchor at, @Nullable MenuItemS
         } else {
             if (this.item != null) this.item.serialize(section.createSection("item"));
             if (!this.choices.isEmpty()) {
-                ConfigurationSection choicesSection = section.createSection("choices");
+                Section choicesSection = section.createSection("choices");
                 for (int index = 0; index < this.choices.size(); index++) {
                     this.choices.get(index).serialize(choicesSection.createSection(String.valueOf(index + 1)));
                 }

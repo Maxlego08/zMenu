@@ -8,18 +8,37 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.*;
+import dev.dejvokep.boostedyaml.YamlDocument;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 public class InventoryLoadRequirement {
 
     private final Plugin plugin;
     private final YamlConfiguration configuration;
+    private final YamlDocument document;
     private final Class<? extends Inventory> classz;
     private final File file;
     private final Map<InventoryRequirementType, List<String>> requirements = new HashMap<>();
 
+    /**
+     * @deprecated use {@link #InventoryLoadRequirement(Plugin, YamlDocument, Class, File)}, zMenu reads its files with BoostedYAML.
+     */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     public InventoryLoadRequirement(Plugin plugin, YamlConfiguration configuration, Class<? extends Inventory> classz, File file) {
+        this(plugin, configuration, YamlSections.toDocument(configuration), classz, file);
+    }
+
+    /**
+     * {@link #getConfiguration()} is then a Bukkit copy of the document.
+     */
+    public InventoryLoadRequirement(Plugin plugin, YamlDocument document, Class<? extends Inventory> classz, File file) {
+        this(plugin, YamlSections.toBukkit(document), document, classz, file);
+    }
+
+    private InventoryLoadRequirement(Plugin plugin, YamlConfiguration configuration, YamlDocument document, Class<? extends Inventory> classz, File file) {
         this.plugin = plugin;
         this.configuration = configuration;
+        this.document = document;
         this.classz = classz;
         this.file = file;
         for (InventoryRequirementType value : InventoryRequirementType.values()) {
@@ -39,10 +58,20 @@ public class InventoryLoadRequirement {
         return this.plugin;
     }
 
+    /**
+     * @deprecated use {@link #getDocument()}, zMenu reads its files with BoostedYAML.
+     */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     @Contract(pure = true)
     @NotNull
     public YamlConfiguration getConfiguration() {
         return this.configuration;
+    }
+
+    @Contract(pure = true)
+    @NotNull
+    public YamlDocument getDocument() {
+        return this.document;
     }
 
     @Contract(pure = true)

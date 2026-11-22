@@ -29,6 +29,9 @@ import org.jetbrains.annotations.Nullable;
 import java.io.File;
 import java.util.*;
 import java.util.function.Function;
+import dev.dejvokep.boostedyaml.YamlDocument;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 @SuppressWarnings("unused")
 public abstract class ItemComponentLoader implements Keyed {
@@ -77,8 +80,23 @@ public abstract class ItemComponentLoader implements Keyed {
         this.plugin = plugin;
     }
 
+    /**
+     * @deprecated use {@link #load(MenuItemStackContext, File, YamlDocument, String, Section)}, zMenu reads its files with BoostedYAML.
+     */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     @Nullable
     public abstract ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection);
+
+    /**
+     * Loads the component of an item. zMenu calls this method, override it.
+     * By default it reads a Bukkit copy with the deprecated method, which existing addons override.
+     * <p>BoostedYAML is loaded by zMenu: an addon that calls this method must also declare it.
+     */
+    @Nullable
+    public ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlDocument configuration, @NotNull String path, @Nullable Section componentSection) {
+        YamlConfiguration copy = YamlSections.toBukkit(configuration);
+        return this.load(context, file, copy, path, YamlSections.toBukkit(copy, componentSection));
+    }
 
     /**
      * Builds this component from the data an item already has, to turn an item into a menu item.
@@ -208,6 +226,10 @@ public abstract class ItemComponentLoader implements Keyed {
     // Utils methods ||
     //**************//
 
+    /**
+     * @deprecated use the same method with a BoostedYAML {@link Section}, zMenu reads its files with BoostedYAML.
+     */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     @Nullable
     protected <T> T resolveValue(ConfigurationSection configuration, String path, Function<Number, T> numberMapper, Function<String, T> stringMapper) {
         Object value = configuration.get(path);
@@ -223,12 +245,20 @@ public abstract class ItemComponentLoader implements Keyed {
         return null;
     }
 
+    /**
+     * @deprecated use the same method with a BoostedYAML {@link Section}, zMenu reads its files with BoostedYAML.
+     */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     @NotNull
     protected <T> T resolveValue(ConfigurationSection configuration, String path, Function<Number, T> numberMapper, Function<String, T> stringMapper, T defaultValue) {
         T value = this.resolveValue(configuration, path, numberMapper, stringMapper);
         return value != null ? value : defaultValue;
     }
 
+    /**
+     * @deprecated use the same method with a BoostedYAML {@link Section}, zMenu reads its files with BoostedYAML.
+     */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     @Nullable
     protected ResolvableInt asResolvableInt(ConfigurationSection configuration, String path) {
         return this.resolveValue(
@@ -239,6 +269,10 @@ public abstract class ItemComponentLoader implements Keyed {
         );
     }
 
+    /**
+     * @deprecated use the same method with a BoostedYAML {@link Section}, zMenu reads its files with BoostedYAML.
+     */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     @NotNull
     protected ResolvableInt asResolvableInt(ConfigurationSection configuration, String path, int defaultValue) {
         return this.resolveValue(
@@ -250,6 +284,10 @@ public abstract class ItemComponentLoader implements Keyed {
         );
     }
 
+    /**
+     * @deprecated use the same method with a BoostedYAML {@link Section}, zMenu reads its files with BoostedYAML.
+     */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     @Nullable
     protected ResolvableFloat asResolvableFloat(ConfigurationSection configuration, String path) {
         return this.resolveValue(
@@ -260,6 +298,10 @@ public abstract class ItemComponentLoader implements Keyed {
         );
     }
 
+    /**
+     * @deprecated use the same method with a BoostedYAML {@link Section}, zMenu reads its files with BoostedYAML.
+     */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     @NotNull
     protected ResolvableFloat asResolvableFloat(ConfigurationSection configuration, String path, float defaultValue) {
         return this.resolveValue(
@@ -271,6 +313,10 @@ public abstract class ItemComponentLoader implements Keyed {
         );
     }
 
+    /**
+     * @deprecated use the same method with a BoostedYAML {@link Section}, zMenu reads its files with BoostedYAML.
+     */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     @Nullable
     protected ResolvableDouble asResolvableDouble(ConfigurationSection configuration, String path) {
         return this.resolveValue(
@@ -281,6 +327,10 @@ public abstract class ItemComponentLoader implements Keyed {
         );
     }
 
+    /**
+     * @deprecated use the same method with a BoostedYAML {@link Section}, zMenu reads its files with BoostedYAML.
+     */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     @NotNull
     protected ResolvableDouble asResolvableDouble(ConfigurationSection configuration, String path, double defaultValue) {
         return this.resolveValue(
@@ -292,6 +342,10 @@ public abstract class ItemComponentLoader implements Keyed {
         );
     }
 
+    /**
+     * @deprecated use the same method with a BoostedYAML {@link Section}, zMenu reads its files with BoostedYAML.
+     */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     @Nullable
     protected ResolvableLong asResolvableLong(ConfigurationSection configuration, String path) {
         return this.resolveValue(
@@ -302,6 +356,10 @@ public abstract class ItemComponentLoader implements Keyed {
         );
     }
 
+    /**
+     * @deprecated use the same method with a BoostedYAML {@link Section}, zMenu reads its files with BoostedYAML.
+     */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     @NotNull
     protected ResolvableLong asResolvableLong(ConfigurationSection configuration, String path, long defaultValue) {
         return this.resolveValue(
@@ -313,6 +371,10 @@ public abstract class ItemComponentLoader implements Keyed {
         );
     }
 
+    /**
+     * @deprecated use the same method with a BoostedYAML {@link Section}, zMenu reads its files with BoostedYAML.
+     */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     @Nullable
     protected ResolvableBoolean asResolvableBoolean(ConfigurationSection configuration, String path) {
         Object value = configuration.get(path);
@@ -328,12 +390,20 @@ public abstract class ItemComponentLoader implements Keyed {
         return null;
     }
 
+    /**
+     * @deprecated use the same method with a BoostedYAML {@link Section}, zMenu reads its files with BoostedYAML.
+     */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     @NotNull
     protected ResolvableBoolean asResolvableBoolean(ConfigurationSection configuration, String path, boolean defaultValue) {
         ResolvableBoolean value = this.asResolvableBoolean(configuration, path);
         return value != null ? value : ResolvableBoolean.of(defaultValue);
     }
 
+    /**
+     * @deprecated use the same method with a BoostedYAML {@link Section}, zMenu reads its files with BoostedYAML.
+     */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     @Nullable
     protected ResolvableSound asResolvableSound(ConfigurationSection configuration, String path) {
         Object value = configuration.get(path);
@@ -346,12 +416,20 @@ public abstract class ItemComponentLoader implements Keyed {
         return null;
     }
 
+    /**
+     * @deprecated use the same method with a BoostedYAML {@link Section}, zMenu reads its files with BoostedYAML.
+     */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     @NotNull
     protected ResolvableSound asResolvableSound(ConfigurationSection configuration, String path, Sound defaultValue) {
         ResolvableSound value = this.asResolvableSound(configuration, path);
         return value != null ? value : ResolvableSound.of(defaultValue);
     }
 
+    /**
+     * @deprecated use the same method with a BoostedYAML {@link Section}, zMenu reads its files with BoostedYAML.
+     */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     @Nullable
     protected ResolvableNamespacedKey asResolvableKey(ConfigurationSection configuration, String path) {
         Object value = configuration.get(path);
@@ -364,6 +442,10 @@ public abstract class ItemComponentLoader implements Keyed {
         return null;
     }
 
+    /**
+     * @deprecated use the same method with a BoostedYAML {@link Section}, zMenu reads its files with BoostedYAML.
+     */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     @NotNull
     protected ResolvableNamespacedKey asResolvableKey(ConfigurationSection configuration, String path, NamespacedKey defaultValue) {
         ResolvableNamespacedKey value = this.asResolvableKey(configuration, path);
@@ -371,6 +453,10 @@ public abstract class ItemComponentLoader implements Keyed {
     }
 
 
+    /**
+     * @deprecated use the same method with a BoostedYAML {@link Section}, zMenu reads its files with BoostedYAML.
+     */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     @Nullable
     protected <E extends Enum<E>> ResolvableEnum<E> asResolvableEnum(ConfigurationSection configuration, String path, Class<E> enumClass
     ) {
@@ -383,6 +469,10 @@ public abstract class ItemComponentLoader implements Keyed {
         return null;
     }
 
+    /**
+     * @deprecated use the same method with a BoostedYAML {@link Section}, zMenu reads its files with BoostedYAML.
+     */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     @NotNull
     protected <E extends Enum<E>> ResolvableEnum<E> asResolvableEnum(ConfigurationSection configuration, String path, Class<E> enumClass, E defaultValue) {
         ResolvableEnum<E> value = this.asResolvableEnum(configuration, path, enumClass);
@@ -407,5 +497,188 @@ public abstract class ItemComponentLoader implements Keyed {
         }
 
         return Optional.empty();
+    }
+
+    @Nullable
+    protected <T> T resolveValue(Section configuration, String path, Function<Number, T> numberMapper, Function<String, T> stringMapper) {
+        Object value = configuration.get(path);
+
+        if (value instanceof Number number) {
+            return numberMapper.apply(number);
+        }
+
+        if (value instanceof String string) {
+            return stringMapper.apply(string);
+        }
+
+        return null;
+    }
+
+    @NotNull
+    protected <T> T resolveValue(Section configuration, String path, Function<Number, T> numberMapper, Function<String, T> stringMapper, T defaultValue) {
+        T value = this.resolveValue(configuration, path, numberMapper, stringMapper);
+        return value != null ? value : defaultValue;
+    }
+
+    @Nullable
+    protected ResolvableInt asResolvableInt(Section configuration, String path) {
+        return this.resolveValue(
+                configuration,
+                path,
+                number -> ResolvableInt.of(number.intValue()),
+                ResolvableInt::of
+        );
+    }
+
+    @NotNull
+    protected ResolvableInt asResolvableInt(Section configuration, String path, int defaultValue) {
+        return this.resolveValue(
+                configuration,
+                path,
+                number -> ResolvableInt.of(number.intValue()),
+                ResolvableInt::of,
+                ResolvableInt.of(defaultValue)
+        );
+    }
+
+    @Nullable
+    protected ResolvableFloat asResolvableFloat(Section configuration, String path) {
+        return this.resolveValue(
+                configuration,
+                path,
+                number -> ResolvableFloat.of(number.floatValue()),
+                ResolvableFloat::of
+        );
+    }
+
+    @NotNull
+    protected ResolvableFloat asResolvableFloat(Section configuration, String path, float defaultValue) {
+        return this.resolveValue(
+                configuration,
+                path,
+                number -> ResolvableFloat.of(number.floatValue()),
+                ResolvableFloat::of,
+                ResolvableFloat.of(defaultValue)
+        );
+    }
+
+    @Nullable
+    protected ResolvableDouble asResolvableDouble(Section configuration, String path) {
+        return this.resolveValue(
+                configuration,
+                path,
+                number -> ResolvableDouble.of(number.doubleValue()),
+                ResolvableDouble::of
+        );
+    }
+
+    @NotNull
+    protected ResolvableDouble asResolvableDouble(Section configuration, String path, double defaultValue) {
+        return this.resolveValue(
+                configuration,
+                path,
+                number -> ResolvableDouble.of(number.doubleValue()),
+                ResolvableDouble::of,
+                ResolvableDouble.of(defaultValue)
+        );
+    }
+
+    @Nullable
+    protected ResolvableLong asResolvableLong(Section configuration, String path) {
+        return this.resolveValue(
+                configuration,
+                path,
+                number -> ResolvableLong.of(number.longValue()),
+                ResolvableLong::of
+        );
+    }
+
+    @NotNull
+    protected ResolvableLong asResolvableLong(Section configuration, String path, long defaultValue) {
+        return this.resolveValue(
+                configuration,
+                path,
+                number -> ResolvableLong.of(number.longValue()),
+                ResolvableLong::of,
+                ResolvableLong.of(defaultValue)
+        );
+    }
+
+    @Nullable
+    protected ResolvableBoolean asResolvableBoolean(Section configuration, String path) {
+        Object value = configuration.get(path);
+
+        if (value instanceof Boolean bool) {
+            return ResolvableBoolean.of(bool);
+        }
+
+        if (value instanceof String expression) {
+            return ResolvableBoolean.of(expression);
+        }
+
+        return null;
+    }
+
+    @NotNull
+    protected ResolvableBoolean asResolvableBoolean(Section configuration, String path, boolean defaultValue) {
+        ResolvableBoolean value = this.asResolvableBoolean(configuration, path);
+        return value != null ? value : ResolvableBoolean.of(defaultValue);
+    }
+
+    @Nullable
+    protected ResolvableSound asResolvableSound(Section configuration, String path) {
+        Object value = configuration.get(path);
+
+        if (value instanceof String expression) {
+            Optional<Sound> sound = this.getSound(expression);
+            return sound.map(ResolvableSound::of).orElseGet(() -> ResolvableSound.of(expression));
+        }
+
+        return null;
+    }
+
+    @NotNull
+    protected ResolvableSound asResolvableSound(Section configuration, String path, Sound defaultValue) {
+        ResolvableSound value = this.asResolvableSound(configuration, path);
+        return value != null ? value : ResolvableSound.of(defaultValue);
+    }
+
+    @Nullable
+    protected ResolvableNamespacedKey asResolvableKey(Section configuration, String path) {
+        Object value = configuration.get(path);
+
+        if (value instanceof String expression) {
+            Optional<NamespacedKey> key = Optional.ofNullable(NamespacedKey.fromString(expression));
+            return key.map(ResolvableNamespacedKey::of).orElseGet(() -> ResolvableNamespacedKey.of(expression));
+        }
+
+        return null;
+    }
+
+    @NotNull
+    protected ResolvableNamespacedKey asResolvableKey(Section configuration, String path, NamespacedKey defaultValue) {
+        ResolvableNamespacedKey value = this.asResolvableKey(configuration, path);
+        return value != null ? value : ResolvableNamespacedKey.of(defaultValue);
+    }
+
+    @Nullable
+    protected <E extends Enum<E>> ResolvableEnum<E> asResolvableEnum(Section configuration, String path, Class<E> enumClass
+    ) {
+        Object value = configuration.get(path);
+
+        if (value instanceof String string) {
+            return ResolvableEnum.auto(enumClass, string);
+        }
+
+        return null;
+    }
+
+    @NotNull
+    protected <E extends Enum<E>> ResolvableEnum<E> asResolvableEnum(Section configuration, String path, Class<E> enumClass, E defaultValue) {
+        ResolvableEnum<E> value = this.asResolvableEnum(configuration, path, enumClass);
+
+        return value != null
+                ? value
+                : ResolvableEnum.of(enumClass, defaultValue);
     }
 }

@@ -12,6 +12,8 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 /**
  * A value of a canvas key that may hold placeholders: zMenu placeholders, then PlaceholderAPI, are resolved
@@ -47,7 +49,7 @@ public final class CanvasValue<T> {
         return new CanvasValue<>(String.valueOf(value), value, value, text -> value);
     }
 
-    private static <T> @NotNull CanvasValue<T> read(@NotNull ConfigurationSection section, @NotNull String key, @NotNull T fallback,
+    private static <T> @NotNull CanvasValue<T> read(@NotNull Section section, @NotNull String key, @NotNull T fallback,
                                                     @NotNull Function<String, T> parser, @NotNull String expected, @NotNull String where) {
         if (!section.contains(key)) return new CanvasValue<>(String.valueOf(fallback), fallback, fallback, parser);
         String raw = String.valueOf(section.get(key)).trim();
@@ -67,8 +69,14 @@ public final class CanvasValue<T> {
      * @param max      The largest value allowed.
      * @param where    Which element is read, for error messages.
      * @return The value.
+     * @deprecated use the same method with a BoostedYAML {@link Section}, zMenu reads its files with BoostedYAML.
      */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     public static @NotNull CanvasValue<Integer> number(@NotNull ConfigurationSection section, @NotNull String key, int fallback, int min, int max, @NotNull String where) {
+        return number(YamlSections.toDocument(section), key, fallback, min, max, where);
+    }
+
+    public static @NotNull CanvasValue<Integer> number(@NotNull Section section, @NotNull String key, int fallback, int min, int max, @NotNull String where) {
         return read(section, key, fallback, text -> {
             try {
                 long value = Math.round(Double.parseDouble(text));
@@ -81,15 +89,27 @@ public final class CanvasValue<T> {
 
     /**
      * Reads a text, which any result is.
+     * @deprecated use the same method with a BoostedYAML {@link Section}, zMenu reads its files with BoostedYAML.
      */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     public static @NotNull CanvasValue<String> text(@NotNull ConfigurationSection section, @NotNull String key, @NotNull String fallback, @NotNull String where) {
+        return text(YamlSections.toDocument(section), key, fallback, where);
+    }
+
+    public static @NotNull CanvasValue<String> text(@NotNull Section section, @NotNull String key, @NotNull String fallback, @NotNull String where) {
         return read(section, key, fallback, text -> text, "a text", where);
     }
 
     /**
      * Reads {@code true}/{@code false} (also {@code yes}/{@code no} and {@code 1}/{@code 0}).
+     * @deprecated use the same method with a BoostedYAML {@link Section}, zMenu reads its files with BoostedYAML.
      */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     public static @NotNull CanvasValue<Boolean> bool(@NotNull ConfigurationSection section, @NotNull String key, boolean fallback, @NotNull String where) {
+        return bool(YamlSections.toDocument(section), key, fallback, where);
+    }
+
+    public static @NotNull CanvasValue<Boolean> bool(@NotNull Section section, @NotNull String key, boolean fallback, @NotNull String where) {
         return read(section, key, fallback, text -> switch (text.toLowerCase(Locale.ROOT)) {
             case "true", "yes", "1" -> Boolean.TRUE;
             case "false", "no", "0" -> Boolean.FALSE;
@@ -99,8 +119,15 @@ public final class CanvasValue<T> {
 
     /**
      * Reads the name of a constant of an enum, in any case, with {@code -} read as {@code _}.
+     * @deprecated use the same method with a BoostedYAML {@link Section}, zMenu reads its files with BoostedYAML.
      */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     public static <E extends Enum<E>> @NotNull CanvasValue<E> enumeration(@NotNull ConfigurationSection section, @NotNull String key, @NotNull Class<E> type,
+                                                                           @NotNull E fallback, @NotNull String where) {
+        return enumeration(YamlSections.toDocument(section), key, type, fallback, where);
+    }
+
+    public static <E extends Enum<E>> @NotNull CanvasValue<E> enumeration(@NotNull Section section, @NotNull String key, @NotNull Class<E> type,
                                                                            @NotNull E fallback, @NotNull String where) {
         return read(section, key, fallback, text -> {
             try {
@@ -113,8 +140,14 @@ public final class CanvasValue<T> {
 
     /**
      * Reads a key such as {@code minecraft:blocks}; a value without namespace is in {@code minecraft}.
+     * @deprecated use the same method with a BoostedYAML {@link Section}, zMenu reads its files with BoostedYAML.
      */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     public static @NotNull CanvasValue<Key> key(@NotNull ConfigurationSection section, @NotNull String key, @NotNull Key fallback, @NotNull String where) {
+        return key(YamlSections.toDocument(section), key, fallback, where);
+    }
+
+    public static @NotNull CanvasValue<Key> key(@NotNull Section section, @NotNull String key, @NotNull Key fallback, @NotNull String where) {
         return read(section, key, fallback, text -> {
             String value = text.toLowerCase(Locale.ROOT);
             int separator = value.indexOf(':');
@@ -181,8 +214,14 @@ public final class CanvasValue<T> {
      *
      * @param section The section.
      * @param key     The key.
+     * @deprecated use {@link #serialize(Section, String)}, zMenu reads its files with BoostedYAML.
      */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     public void serialize(@NotNull ConfigurationSection section, @NotNull String key) {
+        YamlSections.write(section, copy -> this.serialize(copy, key));
+    }
+
+    public void serialize(@NotNull Section section, @NotNull String key) {
         if (this.fixed == null) {
             section.set(key, this.raw);
         } else if (this.fixed instanceof Number || this.fixed instanceof Boolean) {

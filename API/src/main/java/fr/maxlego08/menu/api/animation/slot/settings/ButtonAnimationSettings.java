@@ -4,6 +4,8 @@ import fr.maxlego08.menu.api.sound.SoundOption;
 import org.bukkit.configuration.ConfigurationSection;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 /**
  * How a single button takes part in the opening animation of its inventory.
@@ -55,8 +57,14 @@ public record ButtonAnimationSettings(boolean enabled, int group, long delay, @N
      *
      * @param buttonSection                the section of the button
      * @param allowTemporaryItemsByDefault whether the class of the button lets temporary items cover it
+     * @deprecated use {@link #serialize(Section, boolean)}, zMenu reads its files with BoostedYAML.
      */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     public void serialize(@NotNull ConfigurationSection buttonSection, boolean allowTemporaryItemsByDefault) {
+        YamlSections.write(buttonSection, copy -> this.serialize(copy, allowTemporaryItemsByDefault));
+    }
+
+    public void serialize(@NotNull Section buttonSection, boolean allowTemporaryItemsByDefault) {
         if (this.equals(allowTemporaryItemsByDefault ? DEFAULT : NOT_COVERABLE)) return;
 
         if (!this.enabled) {
@@ -64,7 +72,7 @@ public record ButtonAnimationSettings(boolean enabled, int group, long delay, @N
             return;
         }
 
-        ConfigurationSection section = buttonSection.createSection("animation");
+        Section section = buttonSection.createSection("animation");
         if (this.group != 1) section.set("group", this.group);
         if (this.delay != 0) section.set("delay", this.delay);
         if (this.sound != null) this.sound.serialize(section.createSection("sound"));

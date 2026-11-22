@@ -12,6 +12,9 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.plugin.Plugin;
 
 import java.io.File;
+import dev.dejvokep.boostedyaml.YamlDocument;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 /**
  * Represents a button option within a plugin's user interface.
@@ -47,8 +50,19 @@ public interface ButtonOption {
      * @param buttonManager The button manager to use for button-related operations.
      * @param itemStackLoader The loader to use for loading {@link MenuItemStack} instances.
      * @param file The file from which the configuration is loaded.
+     * @deprecated use {@link #loadButton(Button, YamlDocument, String, InventoryManager, ButtonManager, Loader, File)}, zMenu reads its files with BoostedYAML.
      */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     void loadButton(Button button, YamlConfiguration configuration, String path, InventoryManager inventoryManager, ButtonManager buttonManager, Loader<MenuItemStack> itemStackLoader, File file);
+
+    /**
+     * Configures a button from its document. zMenu calls this method, override it.
+     * By default it reads a Bukkit copy with the deprecated method, which existing addons override.
+     * <p>BoostedYAML is loaded by zMenu: an addon that calls this method must also declare it.
+     */
+    default void loadButton(Button button, YamlDocument configuration, String path, InventoryManager inventoryManager, ButtonManager buttonManager, Loader<MenuItemStack> itemStackLoader, File file) {
+        this.loadButton(button, YamlSections.toBukkit(configuration), path, inventoryManager, buttonManager, itemStackLoader, file);
+    }
 
     /**
      * Handles a click event on a button by a player.
@@ -72,8 +86,19 @@ public interface ButtonOption {
      *
      * @param button  The button being serialized.
      * @param section The section of the button.
+     * @deprecated use {@link #serialize(Button, Section)}, zMenu reads its files with BoostedYAML.
      */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     default void serialize(Button button, ConfigurationSection section) {
+    }
+
+    /**
+     * Writes the keys this option reads. zMenu calls this method, override it.
+     * By default it writes through the deprecated method, which existing addons override.
+     * <p>BoostedYAML is loaded by zMenu: an addon that calls this method must also declare it.
+     */
+    default void serialize(Button button, Section section) {
+        YamlSections.write(section, copy -> this.serialize(button, copy));
     }
 }
 

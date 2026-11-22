@@ -18,6 +18,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 
 /**
@@ -157,6 +158,24 @@ public final class YamlSections {
                 to.set(key, value);
             }
         }
+    }
+
+    /**
+     * Runs a writer of Bukkit's types on a copy of the section, then copies what it wrote into the section.
+     */
+    public static void write(@NotNull Section section, @NotNull Consumer<ConfigurationSection> writer) {
+        YamlConfiguration copy = toBukkit(section);
+        writer.accept(copy);
+        copy(copy, section);
+    }
+
+    /**
+     * Runs a writer of BoostedYAML's types on a copy of the Bukkit section, then copies what it wrote into it.
+     */
+    public static void write(@NotNull ConfigurationSection section, @NotNull Consumer<Section> writer) {
+        YamlDocument copy = toDocument(section);
+        writer.accept(copy);
+        copy(copy, section);
     }
 
     /**

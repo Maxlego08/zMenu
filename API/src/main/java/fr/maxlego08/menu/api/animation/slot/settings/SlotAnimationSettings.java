@@ -13,6 +13,8 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 /**
  * Settings of the animation played when an inventory opens.
@@ -128,9 +130,16 @@ public record SlotAnimationSettings(
      *
      * @param section the animation section
      * @throws UnsupportedOperationException if a group uses an animation that cannot be serialized
+     * @deprecated use {@link #serialize(Section)}, zMenu reads its files with BoostedYAML.
      */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     @Override
     public void serialize(@NotNull ConfigurationSection section) {
+        YamlSections.write(section, copy -> this.serialize(copy));
+    }
+
+    @Override
+    public void serialize(@NotNull Section section) {
         if (!this.files.isEmpty()) {
             section.set("file", this.files.size() == 1 ? this.files.getFirst() : this.files);
             return;
@@ -139,7 +148,7 @@ public record SlotAnimationSettings(
         this.defaults.serialize(section, null);
 
         if (!this.groups.isEmpty()) {
-            ConfigurationSection groupsSection = section.createSection("groups");
+            Section groupsSection = section.createSection("groups");
             new TreeMap<>(this.groups).forEach((number, group) -> group.serialize(groupsSection.createSection(String.valueOf(number)), this.defaults));
         }
 
@@ -147,7 +156,7 @@ public record SlotAnimationSettings(
         if (this.play != AnimationPlayMode.ALWAYS) section.set("play", this.play.name());
 
         if (!this.temporaryItems.isEmpty()) {
-            ConfigurationSection itemsSection = section.createSection("temporary-items");
+            Section itemsSection = section.createSection("temporary-items");
             this.temporaryItems.forEach(temporaryItem -> temporaryItem.serialize(itemsSection.createSection(temporaryItem.name())));
         }
 
@@ -155,7 +164,7 @@ public record SlotAnimationSettings(
         if (this.chance != 100) section.set("chance", this.chance);
 
         if (!this.variants.isEmpty()) {
-            ConfigurationSection variantsSection = section.createSection("variants");
+            Section variantsSection = section.createSection("variants");
             this.variants.forEach(variant -> variant.serialize(variantsSection.createSection(variant.name())));
         }
 

@@ -5,6 +5,8 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 /**
  * Decides in which order the slots of an inventory are revealed when it opens.
@@ -49,8 +51,19 @@ public interface SlotAnimation {
      * @param section the section of the group the animation belongs to
      * @throws UnsupportedOperationException if this animation has no type a file can name, such as
      *                                       one built in code
+     * @deprecated use {@link #serialize(Section)}, zMenu reads its files with BoostedYAML.
      */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     default void serialize(@NotNull ConfigurationSection section) {
         throw new UnsupportedOperationException(this.getClass().getName() + " cannot be serialized");
+    }
+
+    /**
+     * Writes this object's keys into a section. zMenu calls this method, override it.
+     * By default it writes through the deprecated method, which existing addons override.
+     * <p>BoostedYAML is loaded by zMenu: an addon that calls this method must also declare it.
+     */
+    default void serialize(@NotNull Section section) {
+        YamlSections.write(section, copy -> this.serialize(copy));
     }
 }

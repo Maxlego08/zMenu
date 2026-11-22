@@ -8,6 +8,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 /**
  * Allows you to manage a sound
@@ -73,11 +75,22 @@ public interface SoundOption {
      * Writes this sound into a section of its own, with the keys of {@link #serialize(Map)}.
      *
      * @param section The section to write into.
+     * @deprecated use {@link #serialize(Section)}, zMenu reads its files with BoostedYAML.
      */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     default void serialize(@NotNull ConfigurationSection section) {
         Map<String, Object> map = new LinkedHashMap<>();
         this.serialize(map);
         map.forEach(section::set);
+    }
+
+    /**
+     * Writes this object's keys into a section. zMenu calls this method, override it.
+     * By default it writes through the deprecated method, which existing addons override.
+     * <p>BoostedYAML is loaded by zMenu: an addon that calls this method must also declare it.
+     */
+    default void serialize(@NotNull Section section) {
+        YamlSections.write(section, copy -> this.serialize(copy));
     }
 
 }

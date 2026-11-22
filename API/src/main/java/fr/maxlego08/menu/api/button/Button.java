@@ -35,6 +35,8 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiConsumer;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 @SuppressWarnings("unused")
 public abstract class Button extends PlaceholderButton {
@@ -729,7 +731,9 @@ public abstract class Button extends PlaceholderButton {
      * @param section       The section to write into.
      * @param inventorySize The size of the inventory the button is in, to write slots relative to their page.
      * @throws UnsupportedOperationException If this button, or something it holds, cannot be serialized.
+     * @deprecated use {@link #serialize(Section, int)}, zMenu reads its files with BoostedYAML.
      */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     public void serialize(@NotNull ConfigurationSection section, int inventorySize) {
         this.serializeProperties(section);
 
@@ -812,14 +816,37 @@ public abstract class Button extends PlaceholderButton {
     }
 
     /**
+     * Writes this button's keys into its section. zMenu calls this method, override it.
+     * By default it writes through the deprecated method, which existing addons override.
+     * <p>BoostedYAML is loaded by zMenu: an addon that calls this method must also declare it.
+     *
+     * @param section       The section of the button.
+     * @param inventorySize The size of the inventory, to write the slots.
+     */
+    public void serialize(@NotNull Section section, int inventorySize) {
+        YamlSections.write(section, copy -> this.serialize(copy, inventorySize));
+    }
+
+    /**
      * Writes the options specific to this type of button, starting with its {@code type} key when
      * it is not the default {@code NONE}.
      *
      * @param section The section of the button.
      * @throws UnsupportedOperationException If this type of button cannot be serialized.
+     * @deprecated use {@link #serializeProperties(Section)}, zMenu reads its files with BoostedYAML.
      */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     protected void serializeProperties(@NotNull ConfigurationSection section) {
         throw new UnsupportedOperationException("The button " + this.buttonName + " of type " + this.getClass().getName() + " cannot be serialized yet");
+    }
+
+    /**
+     * Writes the keys specific to this type of button. Override it.
+     * By default it writes through the deprecated method, which existing addons override.
+     * <p>BoostedYAML is loaded by zMenu: an addon that calls this method must also declare it.
+     */
+    protected void serializeProperties(@NotNull Section section) {
+        YamlSections.write(section, copy -> this.serializeProperties(copy));
     }
 
     private static List<Object> compressSlots(List<Integer> slots, int pageOffset) {

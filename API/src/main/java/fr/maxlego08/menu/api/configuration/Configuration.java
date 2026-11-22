@@ -20,6 +20,10 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import dev.dejvokep.boostedyaml.YamlDocument;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
+import java.util.function.BiConsumer;
 
 
 public class Configuration {
@@ -551,7 +555,15 @@ public class Configuration {
         return features;
     }
 
+    /**
+     * @deprecated use {@link #load(Section)}, zMenu reads its files with BoostedYAML.
+     */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     public void load(@NotNull FileConfiguration fileConfiguration) {
+        this.load(YamlSections.toDocument(fileConfiguration));
+    }
+
+    public void load(@NotNull Section fileConfiguration) {
 
         enabledFeatures.clear();
         for (Feature feature : Feature.values()) {
@@ -577,7 +589,7 @@ public class Configuration {
         useSwapItemOffHandKeyToOpenMainMenu = fileConfiguration.getBoolean(ConfigPath.USE_SWAP_ITEM_OFF_HAND_KEY_TO_OPEN_MAIN_MENU.getPath());
         useSwapItemOffHandKeyToOpenMainMenuNeedsShift = fileConfiguration.getBoolean(ConfigPath.USE_SWAP_ITEM_OFF_HAND_KEY_TO_OPEN_MAIN_MENU_NEEDS_SHIFT.getPath());
 
-        specifyPathMenus = fileConfiguration.getStringList(ConfigPath.SPECIFY_PATH_MENUS.getPath());
+        specifyPathMenus = YamlSections.getStringList(fileConfiguration, ConfigPath.SPECIFY_PATH_MENUS.getPath());
         enableInventoryPaths = fileConfiguration.getBoolean(ConfigPath.ENABLE_INVENTORY_PATHS.getPath(), false);
         generateDefaultFile = fileConfiguration.getBoolean(ConfigPath.GENERATE_DEFAULT_FILE.getPath());
         enableHotReload = fileConfiguration.getBoolean(ConfigPath.ENABLE_HOT_RELOAD.getPath(), false);
@@ -589,7 +601,7 @@ public class Configuration {
         antiDupeDiscordWebhookUrl = fileConfiguration.getString(ConfigPath.ANTI_DUPE_DISCORD_WEBHOOK_URL.getPath());
         antiDupeMessage = fileConfiguration.getString(ConfigPath.ANTI_DUPE_MESSAGE.getPath());
 
-        List<String> clickTypeStrings = fileConfiguration.getStringList(ConfigPath.ALL_CLICKS_TYPE.getPath());
+        List<String> clickTypeStrings = YamlSections.getStringList(fileConfiguration, ConfigPath.ALL_CLICKS_TYPE.getPath());
         List<ClickType> clickTypes = new ArrayList<>(clickTypeStrings.size());
         for (String name : clickTypeStrings) {
             try {
@@ -639,8 +651,8 @@ public class Configuration {
 
         enablePerformanceDebug = fileConfiguration.getBoolean(ConfigPath.ENABLE_PERFORMANCE_DEBUG.getPath(), false);
         performanceThresholdMs = fileConfiguration.getLong(ConfigPath.PERFORMANCE_DEBUG_THRESHOLD_MS.getPath(), 10L);
-        performanceFilterOperations = fileConfiguration.getStringList(ConfigPath.PERFORMANCE_DEBUG_FILTER_OPERATIONS.getPath());
-        skipCloseActionsOnInventorySwitch = fileConfiguration.getStringList(ConfigPath.SKIP_CLOSE_ACTIONS_ON_INVENTORY_SWITCH.getPath());
+        performanceFilterOperations = YamlSections.getStringList(fileConfiguration, ConfigPath.PERFORMANCE_DEBUG_FILTER_OPERATIONS.getPath());
+        skipCloseActionsOnInventorySwitch = YamlSections.getStringList(fileConfiguration, ConfigPath.SKIP_CLOSE_ACTIONS_ON_INVENTORY_SWITCH.getPath());
         try {
             performanceFilterMode = PerformanceFilterMode.valueOf(fileConfiguration.getString(ConfigPath.PERFORMANCE_DEBUG_FILTER_MODE.getPath(), PerformanceFilterMode.DISABLED.name()).toUpperCase(Locale.ROOT));
         } catch (IllegalArgumentException e) {
@@ -652,88 +664,114 @@ public class Configuration {
         // the one-arg getBoolean would silently turn the feature OFF on every already-installed server.
         enableWebsiteAutoConnect = fileConfiguration.getBoolean(ConfigPath.ENABLE_WEBSITE_AUTO_CONNECT.getPath(), true);
 
-        List<String> loadedHosts = fileConfiguration.getStringList(ConfigPath.ALLOWED_DOWNLOADABLE_WEBSITE.getPath());
+        List<String> loadedHosts = YamlSections.getStringList(fileConfiguration, ConfigPath.ALLOWED_DOWNLOADABLE_WEBSITE.getPath());
         if (!loadedHosts.isEmpty()) {
             allowedDownloadableWebsite = loadedHosts;
         }
     }
 
+    /**
+     * @deprecated use {@link #save(YamlDocument)}, zMenu reads its files with BoostedYAML.
+     */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     public void save(@NotNull FileConfiguration fileConfiguration, @NotNull File file) {
         if (!updated) {
             return;
         }
-        fileConfiguration.set(ConfigPath.ENABLE_DEBUG.getPath(), enableDebug);
-        fileConfiguration.set(ConfigPath.ENABLE_DEBUG_TIME.getPath(), enableDebugTime);
-        fileConfiguration.set(ConfigPath.ENABLE_INFORMATION_MESSAGE.getPath(), enableInformationMessage);
-        fileConfiguration.set(ConfigPath.ENABLE_LOG_STORAGE_FILE.getPath(), enableLogStorageFile);
-        fileConfiguration.set(ConfigPath.SKIP_UPDATE_CHECK.getPath(), skipUpdateCheck);
-        fileConfiguration.set(ConfigPath.ENABLE_OPEN_MESSAGE.getPath(), enableOpenMessage);
-        fileConfiguration.set(ConfigPath.ENABLE_MINI_MESSAGE_FORMAT.getPath(), enableMiniMessageFormat);
-        fileConfiguration.set(ConfigPath.ENABLE_PLAYER_COMMAND_IN_CHAT.getPath(), enablePlayerCommandInChat);
-        fileConfiguration.set(ConfigPath.ENABLE_FAST_EVENT.getPath(), enableFastEvent);
+        this.write(fileConfiguration::set);
+        updated = false;
+        try {
+            fileConfiguration.save(file);
+        } catch (IOException exception) {
+            Bukkit.getLogger().warning("[zMenu] Unable to save config file: " + exception.getMessage());
+        }
+    }
 
-        fileConfiguration.set(ConfigPath.SECONDS_SAVE_PLAYER_DATA.getPath(), secondsSavePlayerData);
-        fileConfiguration.set(ConfigPath.SECONDS_SAVE_PLAYER_INVENTORIES.getPath(), secondsSavePlayerInventories);
+    /**
+     * Writes the options changed in game into {@code config.yml}, keeping its comments.
+     *
+     * @param document the document of {@code config.yml}
+     */
+    public void save(@NotNull YamlDocument document) {
+        if (!updated) {
+            return;
+        }
+        this.write(document::set);
+        updated = false;
+        try {
+            document.save();
+        } catch (IOException exception) {
+            Bukkit.getLogger().warning("[zMenu] Unable to save config file: " + exception.getMessage());
+        }
+    }
 
-        fileConfiguration.set(ConfigPath.MAIN_MENU.getPath(), mainMenu);
-        fileConfiguration.set(ConfigPath.USE_SWAP_ITEM_OFF_HAND_KEY_TO_OPEN_MAIN_MENU.getPath(), useSwapItemOffHandKeyToOpenMainMenu);
-        fileConfiguration.set(ConfigPath.USE_SWAP_ITEM_OFF_HAND_KEY_TO_OPEN_MAIN_MENU_NEEDS_SHIFT.getPath(), useSwapItemOffHandKeyToOpenMainMenuNeedsShift);
+    private void write(BiConsumer<String, Object> fileConfiguration) {
+        fileConfiguration.accept(ConfigPath.ENABLE_DEBUG.getPath(), enableDebug);
+        fileConfiguration.accept(ConfigPath.ENABLE_DEBUG_TIME.getPath(), enableDebugTime);
+        fileConfiguration.accept(ConfigPath.ENABLE_INFORMATION_MESSAGE.getPath(), enableInformationMessage);
+        fileConfiguration.accept(ConfigPath.ENABLE_LOG_STORAGE_FILE.getPath(), enableLogStorageFile);
+        fileConfiguration.accept(ConfigPath.SKIP_UPDATE_CHECK.getPath(), skipUpdateCheck);
+        fileConfiguration.accept(ConfigPath.ENABLE_OPEN_MESSAGE.getPath(), enableOpenMessage);
+        fileConfiguration.accept(ConfigPath.ENABLE_MINI_MESSAGE_FORMAT.getPath(), enableMiniMessageFormat);
+        fileConfiguration.accept(ConfigPath.ENABLE_PLAYER_COMMAND_IN_CHAT.getPath(), enablePlayerCommandInChat);
+        fileConfiguration.accept(ConfigPath.ENABLE_FAST_EVENT.getPath(), enableFastEvent);
 
-        fileConfiguration.set(ConfigPath.SPECIFY_PATH_MENUS.getPath(), specifyPathMenus);
-        fileConfiguration.set(ConfigPath.ENABLE_INVENTORY_PATHS.getPath(), enableInventoryPaths);
-        fileConfiguration.set(ConfigPath.GENERATE_DEFAULT_FILE.getPath(), generateDefaultFile);
-        fileConfiguration.set(ConfigPath.ENABLE_HOT_RELOAD.getPath(), enableHotReload);
-        fileConfiguration.set(ConfigPath.HOT_RELOAD_DELAY_MILLISECONDS.getPath(), hotReloadDelayMilliseconds);
-        fileConfiguration.set(ConfigPath.DISABLE_DOUBLE_CLICK_EVENT.getPath(), disableDoubleClickEvent);
+        fileConfiguration.accept(ConfigPath.SECONDS_SAVE_PLAYER_DATA.getPath(), secondsSavePlayerData);
+        fileConfiguration.accept(ConfigPath.SECONDS_SAVE_PLAYER_INVENTORIES.getPath(), secondsSavePlayerInventories);
 
-        fileConfiguration.set(ConfigPath.ENABLE_ANTI_DUPE.getPath(), enableAntiDupe);
-        fileConfiguration.set(ConfigPath.ENABLE_ANTI_DUPE_DISCORD_NOTIFICATION.getPath(), enableAntiDupeDiscordNotification);
-        fileConfiguration.set(ConfigPath.ANTI_DUPE_DISCORD_WEBHOOK_URL.getPath(), antiDupeDiscordWebhookUrl);
-        fileConfiguration.set(ConfigPath.ANTI_DUPE_MESSAGE.getPath(), antiDupeMessage);
+        fileConfiguration.accept(ConfigPath.MAIN_MENU.getPath(), mainMenu);
+        fileConfiguration.accept(ConfigPath.USE_SWAP_ITEM_OFF_HAND_KEY_TO_OPEN_MAIN_MENU.getPath(), useSwapItemOffHandKeyToOpenMainMenu);
+        fileConfiguration.accept(ConfigPath.USE_SWAP_ITEM_OFF_HAND_KEY_TO_OPEN_MAIN_MENU_NEEDS_SHIFT.getPath(), useSwapItemOffHandKeyToOpenMainMenuNeedsShift);
+
+        fileConfiguration.accept(ConfigPath.SPECIFY_PATH_MENUS.getPath(), specifyPathMenus);
+        fileConfiguration.accept(ConfigPath.ENABLE_INVENTORY_PATHS.getPath(), enableInventoryPaths);
+        fileConfiguration.accept(ConfigPath.GENERATE_DEFAULT_FILE.getPath(), generateDefaultFile);
+        fileConfiguration.accept(ConfigPath.ENABLE_HOT_RELOAD.getPath(), enableHotReload);
+        fileConfiguration.accept(ConfigPath.HOT_RELOAD_DELAY_MILLISECONDS.getPath(), hotReloadDelayMilliseconds);
+        fileConfiguration.accept(ConfigPath.DISABLE_DOUBLE_CLICK_EVENT.getPath(), disableDoubleClickEvent);
+
+        fileConfiguration.accept(ConfigPath.ENABLE_ANTI_DUPE.getPath(), enableAntiDupe);
+        fileConfiguration.accept(ConfigPath.ENABLE_ANTI_DUPE_DISCORD_NOTIFICATION.getPath(), enableAntiDupeDiscordNotification);
+        fileConfiguration.accept(ConfigPath.ANTI_DUPE_DISCORD_WEBHOOK_URL.getPath(), antiDupeDiscordWebhookUrl);
+        fileConfiguration.accept(ConfigPath.ANTI_DUPE_MESSAGE.getPath(), antiDupeMessage);
 
         List<String> clickTypeNames = new ArrayList<>(allClicksType.size());
         for (ClickType clickType : allClicksType) {
             clickTypeNames.add(clickType.name());
         }
-        fileConfiguration.set(ConfigPath.ALL_CLICKS_TYPE.getPath(), clickTypeNames);
+        fileConfiguration.accept(ConfigPath.ALL_CLICKS_TYPE.getPath(), clickTypeNames);
 
-        fileConfiguration.set(ConfigPath.ENABLE_CACHE_ITEM_STACK.getPath(), enableCacheItemStack);
-        fileConfiguration.set(ConfigPath.MAX_ANIMATION_DURATION.getPath(), maxAnimationDuration);
-        fileConfiguration.set(ConfigPath.SHARED_IDLE_TIMER_THRESHOLD.getPath(), sharedIdleTimerThreshold);
-        fileConfiguration.set(ConfigPath.ENABLE_COOLDOWN_CLICK.getPath(), enableCooldownClick);
-        fileConfiguration.set(ConfigPath.COOLDOWN_CLICK_MILLISECONDS.getPath(), cooldownClickMilliseconds);
-        fileConfiguration.set(ConfigPath.CACHE_PLACEHOLDER_API.getPath(), cachePlaceholderAPI);
-        fileConfiguration.set(ConfigPath.ENABLE_CACHE_PLACEHOLDER_API.getPath(), enableCachePlaceholderAPI);
-        fileConfiguration.set(ConfigPath.ENABLE_DOWNLOAD_COMMAND.getPath(), enableDownloadCommand);
-        fileConfiguration.set(ConfigPath.ENABLE_PLAYER_OPEN_INVENTORY_LOGS.getPath(), enablePlayerOpenInventoryLogs);
-        fileConfiguration.set(ConfigPath.ENABLE_PLAYER_COMMANDS_AS_OP_ACTION.getPath(), enablePlayerCommandsAsOPAction);
-        fileConfiguration.set(ConfigPath.OP_GRANT_METHOD.getPath(), opGrantMethod.name());
-        fileConfiguration.set(ConfigPath.ENABLE_TOAST.getPath(), enableToast);
-        fileConfiguration.set(ConfigPath.SKIP_CLOSE_ACTIONS_ON_INVENTORY_SWITCH.getPath(), skipCloseActionsOnInventorySwitch);
-        fileConfiguration.set(ConfigPath.ENABLE_PACKET_EVENT_CLICK_LIMITER.getPath(), enablePacketEventClickLimiter);
-        fileConfiguration.set(ConfigPath.PACKET_EVENT_CLICK_LIMITER_MILLISECONDS.getPath(), packetEventClickLimiterMilliseconds);
-        fileConfiguration.set(ConfigPath.ENFORCE_CLICK_TYPES.getPath(), enforceClickTypes);
-        fileConfiguration.set(ConfigPath.COMPONENT_CACHE_MAX_SIZE.getPath(), componentCacheMaxSize);
-        fileConfiguration.set(ConfigPath.COMPONENT_CACHE_EXPIRE_MINUTES.getPath(), componentCacheExpireMinutes);
-        fileConfiguration.set(ConfigPath.FIX_COMPONENT_CACHE_KEY_COLLISIONS.getPath(), fixComponentCacheKeyCollisions);
-        fileConfiguration.set(ConfigPath.FLUSH_STORAGE_ON_QUIT.getPath(), flushStorageOnQuit);
-        fileConfiguration.set(ConfigPath.CLICK_ERROR_LOG_COOLDOWN_SECONDS.getPath(), clickErrorLogCooldownSeconds);
-        fileConfiguration.set(ConfigPath.CLOSE_INVENTORY_ON_MOVE.getPath(), closeInventoryOnMove);
-        fileConfiguration.set(ConfigPath.MAX_MOVE_DISTANCE.getPath(), maxMoveDistance);
-        fileConfiguration.set(ConfigPath.CLOSE_INVENTORY_ON_DAMAGE.getPath(), closeInventoryOnDamage);
-        fileConfiguration.set(ConfigPath.DIALOG_LIST_MAX_DEPTH.getPath(), dialogListMaxDepth);
-        fileConfiguration.set(ConfigPath.ENABLE_PERFORMANCE_DEBUG.getPath(), enablePerformanceDebug);
-        fileConfiguration.set(ConfigPath.PERFORMANCE_DEBUG_THRESHOLD_MS.getPath(), performanceThresholdMs);
-        fileConfiguration.set(ConfigPath.PERFORMANCE_DEBUG_FILTER_MODE.getPath(), performanceFilterMode.name());
-        fileConfiguration.set(ConfigPath.PERFORMANCE_DEBUG_FILTER_OPERATIONS.getPath(), performanceFilterOperations);
-        fileConfiguration.set(ConfigPath.ALLOWED_DOWNLOADABLE_WEBSITE.getPath(), allowedDownloadableWebsite);
-        fileConfiguration.set(ConfigPath.ENABLE_WEBSITE_AUTO_CONNECT.getPath(), enableWebsiteAutoConnect);
-        updated = false;
-        try {
-            fileConfiguration.save(file);
-        } catch (IOException e) {
-            Bukkit.getLogger().warning("[zMenu] Unable to save config file: " + e.getMessage());
-        }
+        fileConfiguration.accept(ConfigPath.ENABLE_CACHE_ITEM_STACK.getPath(), enableCacheItemStack);
+        fileConfiguration.accept(ConfigPath.MAX_ANIMATION_DURATION.getPath(), maxAnimationDuration);
+        fileConfiguration.accept(ConfigPath.SHARED_IDLE_TIMER_THRESHOLD.getPath(), sharedIdleTimerThreshold);
+        fileConfiguration.accept(ConfigPath.ENABLE_COOLDOWN_CLICK.getPath(), enableCooldownClick);
+        fileConfiguration.accept(ConfigPath.COOLDOWN_CLICK_MILLISECONDS.getPath(), cooldownClickMilliseconds);
+        fileConfiguration.accept(ConfigPath.CACHE_PLACEHOLDER_API.getPath(), cachePlaceholderAPI);
+        fileConfiguration.accept(ConfigPath.ENABLE_CACHE_PLACEHOLDER_API.getPath(), enableCachePlaceholderAPI);
+        fileConfiguration.accept(ConfigPath.ENABLE_DOWNLOAD_COMMAND.getPath(), enableDownloadCommand);
+        fileConfiguration.accept(ConfigPath.ENABLE_PLAYER_OPEN_INVENTORY_LOGS.getPath(), enablePlayerOpenInventoryLogs);
+        fileConfiguration.accept(ConfigPath.ENABLE_PLAYER_COMMANDS_AS_OP_ACTION.getPath(), enablePlayerCommandsAsOPAction);
+        fileConfiguration.accept(ConfigPath.OP_GRANT_METHOD.getPath(), opGrantMethod.name());
+        fileConfiguration.accept(ConfigPath.ENABLE_TOAST.getPath(), enableToast);
+        fileConfiguration.accept(ConfigPath.SKIP_CLOSE_ACTIONS_ON_INVENTORY_SWITCH.getPath(), skipCloseActionsOnInventorySwitch);
+        fileConfiguration.accept(ConfigPath.ENABLE_PACKET_EVENT_CLICK_LIMITER.getPath(), enablePacketEventClickLimiter);
+        fileConfiguration.accept(ConfigPath.PACKET_EVENT_CLICK_LIMITER_MILLISECONDS.getPath(), packetEventClickLimiterMilliseconds);
+        fileConfiguration.accept(ConfigPath.ENFORCE_CLICK_TYPES.getPath(), enforceClickTypes);
+        fileConfiguration.accept(ConfigPath.COMPONENT_CACHE_MAX_SIZE.getPath(), componentCacheMaxSize);
+        fileConfiguration.accept(ConfigPath.COMPONENT_CACHE_EXPIRE_MINUTES.getPath(), componentCacheExpireMinutes);
+        fileConfiguration.accept(ConfigPath.FIX_COMPONENT_CACHE_KEY_COLLISIONS.getPath(), fixComponentCacheKeyCollisions);
+        fileConfiguration.accept(ConfigPath.FLUSH_STORAGE_ON_QUIT.getPath(), flushStorageOnQuit);
+        fileConfiguration.accept(ConfigPath.CLICK_ERROR_LOG_COOLDOWN_SECONDS.getPath(), clickErrorLogCooldownSeconds);
+        fileConfiguration.accept(ConfigPath.CLOSE_INVENTORY_ON_MOVE.getPath(), closeInventoryOnMove);
+        fileConfiguration.accept(ConfigPath.MAX_MOVE_DISTANCE.getPath(), maxMoveDistance);
+        fileConfiguration.accept(ConfigPath.CLOSE_INVENTORY_ON_DAMAGE.getPath(), closeInventoryOnDamage);
+        fileConfiguration.accept(ConfigPath.DIALOG_LIST_MAX_DEPTH.getPath(), dialogListMaxDepth);
+        fileConfiguration.accept(ConfigPath.ENABLE_PERFORMANCE_DEBUG.getPath(), enablePerformanceDebug);
+        fileConfiguration.accept(ConfigPath.PERFORMANCE_DEBUG_THRESHOLD_MS.getPath(), performanceThresholdMs);
+        fileConfiguration.accept(ConfigPath.PERFORMANCE_DEBUG_FILTER_MODE.getPath(), performanceFilterMode.name());
+        fileConfiguration.accept(ConfigPath.PERFORMANCE_DEBUG_FILTER_OPERATIONS.getPath(), performanceFilterOperations);
+        fileConfiguration.accept(ConfigPath.ALLOWED_DOWNLOADABLE_WEBSITE.getPath(), allowedDownloadableWebsite);
+        fileConfiguration.accept(ConfigPath.ENABLE_WEBSITE_AUTO_CONNECT.getPath(), enableWebsiteAutoConnect);
     }
 
     private enum ConfigPath {
