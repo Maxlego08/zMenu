@@ -1,0 +1,32 @@
+### default-actions
+fr.maxlego08.menu.pattern.ZActionsPattern
+  ZActionsPattern.name = default-actions (String)
+  ZActionsPattern.actions = List (1)
+      - fr.maxlego08.menu.requirement.actions.SoundAction
+          SoundAction.soundOption = fr.maxlego08.menu.sound.ZSoundOption
+              ZSoundOption.sound = XSound(entity.villager.yes) (XSound)
+              ZSoundOption.category = MASTER (Category)
+              ZSoundOption.soundAsString = ENTITY_VILLAGER_YES (String)
+              ZSoundOption.pitch = 1.0 (Float)
+              ZSoundOption.volume = 1.0 (Float)
+              ZSoundOption.isCustom = false (Boolean)
+          Action.denyChanceActions = List (0)
+          Action.delay = 0 (Integer)
+          Action.chance = 100.0 (Float)
+          Action.debug = false (Boolean)
+          Action.type = sound (String)
+  ZActionsPattern.denyActions = List (1)
+      - fr.maxlego08.menu.requirement.actions.SoundAction
+          SoundAction.soundOption = fr.maxlego08.menu.sound.ZSoundOption
+              ZSoundOption.sound = XSound(entity.villager.no) (XSound)
+              ZSoundOption.category = MASTER (Category)
+              ZSoundOption.soundAsString = ENTITY_VILLAGER_NO (String)
+              ZSoundOption.pitch = 1.0 (Float)
+              ZSoundOption.volume = 1.0 (Float)
+              ZSoundOption.isCustom = false (Boolean)
+          Action.denyChanceActions = List (0)
+          Action.delay = 0 (Integer)
+          Action.chance = 100.0 (Float)
+          Action.debug = false (Boolean)
+          Action.type = sound (String)
+

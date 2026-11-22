@@ -1,0 +1,118 @@
+### advanced_command commands.advanced_command.
+fr.maxlego08.menu.ZCommand
+  ZCommand.plugin = <wiring>
+  ZCommand.command = advanced_command (String)
+  ZCommand.aliases = List (1)
+      - zai (String)
+  ZCommand.consoleCanUse = false (Boolean)
+  ZCommand.permission = zmenu.admin (String)
+  ZCommand.inventory = advanced_inventory (String)
+  ZCommand.arguments = List (0)
+  ZCommand.actions = List (0)
+  ZCommand.subCommands = List (0)
+  ZCommand.actions_requirements = List (0)
+  ZCommand.denyMessage = null
+  ZCommand.path = commands.advanced_command. (String)
+
+### basic_command commands.basic_command.
+fr.maxlego08.menu.ZCommand
+  ZCommand.plugin = <wiring>
+  ZCommand.command = basic_command (String)
+  ZCommand.aliases = List (0)
+  ZCommand.consoleCanUse = false (Boolean)
+  ZCommand.permission = zmenu.basic (String)
+  ZCommand.inventory = basic_inventory (String)
+  ZCommand.arguments = List (0)
+  ZCommand.actions = List (0)
+  ZCommand.subCommands = List (0)
+  ZCommand.actions_requirements = List (0)
+  ZCommand.denyMessage = null
+  ZCommand.path = commands.basic_command. (String)
+
+### openbook commands.openbook.
+fr.maxlego08.menu.ZCommand
+  ZCommand.plugin = <wiring>
+  ZCommand.command = openbook (String)
+  ZCommand.aliases = List (0)
+  ZCommand.consoleCanUse = false (Boolean)
+  ZCommand.permission = zmenu.open.book (String)
+  ZCommand.inventory = null
+  ZCommand.arguments = List (0)
+  ZCommand.actions = List (1)
+      - fr.maxlego08.menu.requirement.actions.OpenBookAction
+          OpenBookAction.title = &cTest (String)
+          OpenBookAction.author = Maxlego08 (String)
+          OpenBookAction.lines = List (1)
+              -      #34ebe8zMenu<newline><newline><newline><hover:show_text:"#34eba8Open an url !"><click:open_url:"https://minecraft-inventory-builder.com/">#f0af24Open URL<reset> (String)
+          Action.denyChanceActions = List (0)
+          Action.delay = 0 (Integer)
+          Action.chance = 100.0 (Float)
+          Action.debug = false (Boolean)
+          Action.type = book (String)
+  ZCommand.subCommands = List (0)
+  ZCommand.actions_requirements = List (0)
+  ZCommand.denyMessage = null
+  ZCommand.path = commands.openbook. (String)
+
+### pro_command commands.pro_command.
+fr.maxlego08.menu.ZCommand
+  ZCommand.plugin = <wiring>
+  ZCommand.command = pro_command (String)
+  ZCommand.aliases = List (0)
+  ZCommand.consoleCanUse = false (Boolean)
+  ZCommand.permission = zmenu.pro (String)
+  ZCommand.inventory = pro_inventory (String)
+  ZCommand.arguments = List (0)
+  ZCommand.actions = List (0)
+  ZCommand.subCommands = List (0)
+  ZCommand.actions_requirements = List (0)
+  ZCommand.denyMessage = null
+  ZCommand.path = commands.pro_command. (String)
+
+### punish commands.punish.
+fr.maxlego08.menu.ZCommand
+  ZCommand.plugin = <wiring>
+  ZCommand.command = punish (String)
+  ZCommand.aliases = List (1)
+      - sanction (String)
+  ZCommand.consoleCanUse = false (Boolean)
+  ZCommand.permission = admin.punish (String)
+  ZCommand.inventory = example_punish (String)
+  ZCommand.arguments = List (2)
+      - fr.maxlego08.menu.ZCommandArgument
+          ZCommandArgument.commandArgumentType = online-player (String)
+          ZCommandArgument.argument = target (String)
+          ZCommandArgument.inventory = null
+          ZCommandArgument.isRequired = true (Boolean)
+          ZCommandArgument.performMainAction = true (Boolean)
+          ZCommandArgument.actions = List (0)
+          ZCommandArgument.autoCompletion = List (0)
+          ZCommandArgument.defaultValue = null
+      - fr.maxlego08.menu.ZCommandArgument
+          ZCommandArgument.commandArgumentType = STRING (String)
+          ZCommandArgument.argument = reason (String)
+          ZCommandArgument.inventory = null
+          ZCommandArgument.isRequired = true (Boolean)
+          ZCommandArgument.performMainAction = true (Boolean)
+          ZCommandArgument.actions = List (1)
+              - fr.maxlego08.menu.requirement.actions.MessageAction
+                  MessageAction.messages = List (1)
+                      - &7You will put a punishment to the player &f&n%target%&r &7with the reason&8: &f%reason% (String)
+                  MessageAction.miniMessage = true (Boolean)
+                  Action.denyChanceActions = List (0)
+                  Action.delay = 0 (Integer)
+                  Action.chance = 100.0 (Float)
+                  Action.debug = false (Boolean)
+                  Action.type = message (String)
+          ZCommandArgument.autoCompletion = List (4)
+              - cheat (String)
+              - chat (String)
+              - skin (String)
+              - other (String)
+          ZCommandArgument.defaultValue = null
+  ZCommand.actions = List (0)
+  ZCommand.subCommands = List (0)
+  ZCommand.actions_requirements = List (0)
+  ZCommand.denyMessage = null
+  ZCommand.path = commands.punish. (String)
+
