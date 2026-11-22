@@ -1,19 +1,14 @@
 package fr.maxlego08.menu.inventory.inventories;
 
 import com.tcoded.folialib.wrapper.task.WrappedTask;
-import fr.maxlego08.menu.api.Inventory;
-import fr.maxlego08.menu.api.MenuItemStack;
 import fr.maxlego08.menu.animation.compile.AnimationCompiler;
 import fr.maxlego08.menu.animation.compile.AnimationStep;
 import fr.maxlego08.menu.animation.compile.CompiledAnimation;
 import fr.maxlego08.menu.animation.compile.StepAction;
+import fr.maxlego08.menu.api.Inventory;
+import fr.maxlego08.menu.api.MenuItemStack;
 import fr.maxlego08.menu.api.MenuPlugin;
-import fr.maxlego08.menu.api.animation.slot.Animation;
-import fr.maxlego08.menu.api.animation.slot.AnimationContext;
-import fr.maxlego08.menu.api.animation.slot.AnimationHistory;
-import fr.maxlego08.menu.api.animation.slot.AnimationPlayMode;
-import fr.maxlego08.menu.api.animation.slot.AnimationPlayback;
-import fr.maxlego08.menu.api.animation.slot.AnimationSlots;
+import fr.maxlego08.menu.api.animation.slot.*;
 import fr.maxlego08.menu.api.animation.slot.settings.AnimationVariant;
 import fr.maxlego08.menu.api.animation.slot.settings.ButtonAnimationSettings;
 import fr.maxlego08.menu.api.animation.slot.settings.SlotAnimationGroup;
@@ -35,13 +30,15 @@ import fr.maxlego08.menu.api.pattern.Pattern;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.RefreshRequirement;
 import fr.maxlego08.menu.api.requirement.Requirement;
-import fr.maxlego08.menu.api.utils.Placeholders;
+import fr.maxlego08.menu.api.text.TextService;
 import fr.maxlego08.menu.api.utils.PaperMetaUpdater;
+import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.inventory.VInventory;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.utils.PerformanceDebug;
 import fr.robie.minimessageflow.Template;
 import fr.robie.minimessageflow.TemplateList;
+import fr.robie.minimessageflow.TextTemplate;
 import fr.robie.minimessageflow.Values;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
@@ -170,7 +167,7 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
             this.perfDebug.end();
 
             this.perfDebug.start("openInventory.resolveInventoryName");
-            String inventoryName = this.plugin.getFontImage().replace(this.inventory.getName(player, this, placeholders));
+            Template inventoryName = this.inventory.getNameTemplate(player, this, placeholders);
             Player targetPlayer = this.getTargetPlayer();
             this.perfDebug.end();
 
@@ -178,21 +175,12 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
                 this.perfDebug.start("openInventory.createMetaInventory");
                 boolean chest = containerInventory.getType() == InventoryType.CHEST && containerInventory instanceof ChestInventory;
                 int size = chest ? ((ChestInventory) containerInventory).size() : 0;
-                if (this.plugin.getMetaUpdater() instanceof PaperMetaUpdater metaUpdater) {
-                    Component title = metaUpdater.render(inventoryName, placeholders, targetPlayer);
-                    Supplier<String> name = () -> super.papi(placeholders.parse(inventoryName), targetPlayer, false);
-                    if (chest) {
-                        super.createMetaInventory(title, name, size);
-                    } else {
-                        super.createMetaInventory(title, name, containerInventory.getType());
-                    }
+                Component title = inventoryName.render(placeholders.values(), targetPlayer);
+                Supplier<String> name = () -> TextService.get().flow().formatText(inventoryName.source(), placeholders.values(), targetPlayer);
+                if (chest) {
+                    super.createMetaInventory(title, name, size);
                 } else {
-                    String parsedName = super.papi(placeholders.parse(inventoryName), targetPlayer, false);
-                    if (chest) {
-                        super.createMetaInventory(parsedName, size);
-                    } else {
-                        super.createMetaInventory(parsedName, containerInventory.getType());
-                    }
+                    super.createMetaInventory(title, name, containerInventory.getType());
                 }
                 this.perfDebug.end();
 
@@ -1359,9 +1347,9 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
             return false;
         }
 
-        if (targetPlayer == this.player && this.plugin.getMetaUpdater() instanceof PaperMetaUpdater metaUpdater
-                && button.getItemStack() instanceof MenuItemStack menuItemStack && BUILDS_CONFIGURED_TEXT.get(button.getClass())) {
-            return this.renderMetaUpdates(menuItemStack, metaUpdater, itemStack, itemMeta, refreshLore, refreshName, slot, placeholders);
+        if (targetPlayer == this.player && button.getItemStack() instanceof MenuItemStack menuItemStack && BUILDS_CONFIGURED_TEXT.get(button.getClass())) {
+            return this.renderMetaUpdates(menuItemStack, (PaperMetaUpdater) this.plugin.getMetaUpdater(), itemStack, itemMeta, refreshLore, refreshName, slot,
+                    placeholders);
         }
 
         if (refreshLore) {
@@ -1468,11 +1456,11 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
         if (this.inventory == null || this.player == null) {
             return this.player;
         }
-        String targetPlaceholder = this.inventory.getTargetPlayerNamePlaceholder();
-        if (targetPlaceholder == null || targetPlaceholder.isEmpty()) {
+        TextTemplate targetPlaceholder = this.inventory.getTargetPlayerNameTemplate();
+        if (targetPlaceholder == null || targetPlaceholder.source().isEmpty()) {
             return this.player;
         }
-        String targetName = this.papi(targetPlaceholder, this.player, false);
+        String targetName = targetPlaceholder.render(this.openPlaceholders.values(), this.player);
         if (targetName == null || targetName.isEmpty()) {
             return this.player;
         }

@@ -28,7 +28,7 @@ public class DialogDynamicInputButtonLoader extends DialogDynamicAbstractLoader 
     protected @Nullable Button wrap(Button button, String buttonName, String start, String end) {
         if (button instanceof VanillaDialogInput inputButton && !button.hasCustomRender()) {
             inputButton.setKey(buttonName);
-            return new DialogDynamicButton(this.plugin, buttonName, start, end, inputButton);
+            return new DialogDynamicButton(buttonName, start, end, inputButton);
         }
         return null;
     }

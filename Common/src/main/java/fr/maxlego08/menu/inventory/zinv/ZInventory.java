@@ -1,11 +1,6 @@
 package fr.maxlego08.menu.inventory.zinv;
 
-import fr.maxlego08.menu.api.InventoryManager;
-import fr.maxlego08.menu.api.InventoryOptionType;
-import fr.maxlego08.menu.api.registry.Registries;
-import fr.maxlego08.menu.api.InventoryOption;
-import fr.maxlego08.menu.api.MenuItemStack;
-import fr.maxlego08.menu.api.MenuPlugin;
+import fr.maxlego08.menu.api.*;
 import fr.maxlego08.menu.api.animation.TitleAnimation;
 import fr.maxlego08.menu.api.animation.slot.settings.SlotAnimationSettings;
 import fr.maxlego08.menu.api.button.Button;
@@ -16,11 +11,15 @@ import fr.maxlego08.menu.api.engine.InventoryResult;
 import fr.maxlego08.menu.api.inventory.ContainerInventory;
 import fr.maxlego08.menu.api.pattern.Pattern;
 import fr.maxlego08.menu.api.players.inventory.InventoriesPlayer;
+import fr.maxlego08.menu.api.registry.Registries;
 import fr.maxlego08.menu.api.requirement.*;
+import fr.maxlego08.menu.api.text.TextService;
 import fr.maxlego08.menu.api.utils.*;
 import fr.maxlego08.menu.common.utils.ZUtils;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.inventory.setter.ContainerInventorySetter;
+import fr.robie.minimessageflow.Template;
+import fr.robie.minimessageflow.TextTemplate;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -44,6 +43,7 @@ public class ZInventory extends ZUtils implements ContainerInventorySetter {
     private final List<ConditionalName> conditionalNames = new ArrayList<>();
     private InventoryReplacement inventoryReplacement;
     private Map<String, String> translatedNames = new HashMap<>();
+    private final transient Map<String, Template> nameTemplates = new java.util.concurrent.ConcurrentHashMap<>();
     private List<Pattern> patterns = new ArrayList<>();
     private MenuItemStack fillItemStack;
     private boolean fillItemUseCache = true;
@@ -56,7 +56,7 @@ public class ZInventory extends ZUtils implements ContainerInventorySetter {
     private Requirement openRequirement;
     private OpenWithItem openWithItem;
     private InventoryType type = InventoryType.CHEST;
-    private String targetPlayerNamePlaceholder = null;
+    private @Nullable TextTemplate targetPlayerName;
     private TitleAnimation titleAnimation;
     private SlotAnimationSettings slotAnimation;
     private SlotAnimationSettings closeAnimation;
@@ -111,6 +111,11 @@ public class ZInventory extends ZUtils implements ContainerInventorySetter {
 
         String locale = this.findPlayerLocale(player);
         return locale == null ? this.name : this.translatedNames.getOrDefault(locale, this.name);
+    }
+
+    @Override
+    public @NotNull Template getNameTemplate(@NotNull Player player, InventoryEngine inventoryDefault, fr.maxlego08.menu.api.utils.Placeholders placeholders) {
+        return this.nameTemplates.computeIfAbsent(this.getName(player, inventoryDefault, placeholders), name -> TextService.get().flow().compile(name));
     }
 
     @Override
@@ -459,8 +464,13 @@ public class ZInventory extends ZUtils implements ContainerInventorySetter {
     }
 
     @Override
+    public @Nullable TextTemplate getTargetPlayerNameTemplate() {
+        return this.targetPlayerName;
+    }
+
+    @Override
     public String getTargetPlayerNamePlaceholder() {
-        return this.targetPlayerNamePlaceholder;
+        return TextService.source(this.targetPlayerName);
     }
 
     @Override
@@ -495,7 +505,7 @@ public class ZInventory extends ZUtils implements ContainerInventorySetter {
 
     @Override
     public void setTargetPlayerNamePlaceholder(String targetPlaceholder) {
-        this.targetPlayerNamePlaceholder = targetPlaceholder;
+        this.targetPlayerName = TextService.text(targetPlaceholder);
     }
 
     @Override
@@ -568,8 +578,8 @@ public class ZInventory extends ZUtils implements ContainerInventorySetter {
         if (this.clearInventory) section.set("clear-inventory", true);
         if (this.clearInvType != ClearInvType.DEFAULT) section.set("clear-inventory-type", this.clearInvType.name());
         if (this.shouldCancelItemPickup()) section.set("cancel-item-pickup", true);
-        if (!"%player_name%".equals(this.targetPlayerNamePlaceholder)) {
-            section.set("target-player-name-placeholder", this.targetPlayerNamePlaceholder);
+        if (!"%player_name%".equals(TextService.source(this.targetPlayerName))) {
+            section.set("target-player-name-placeholder", TextService.source(this.targetPlayerName));
         }
         if (!this.isClickLimiterEnabled) section.set("click-limiter-enabled", false);
 

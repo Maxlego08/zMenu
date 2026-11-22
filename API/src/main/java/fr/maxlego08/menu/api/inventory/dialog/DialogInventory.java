@@ -68,6 +68,12 @@ public interface DialogInventory extends Inventory {
      */
     List<InputButton> getDialogInputs(Player player);
 
+    /**
+     * The dialog's name and external title as text for a player.
+     *
+     * @deprecated the dialog renders its compiled name and external title itself; this text form will be removed.
+     */
+    @Deprecated(since = "1.1.2.2", forRemoval = true)
     ZDialogInventoryBuild getBuild(Player player);
 
     /**

@@ -5,6 +5,8 @@ import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.DefaultButtonValue;
 import fr.maxlego08.menu.api.loader.ButtonLoader;
 import fr.maxlego08.menu.api.utils.Loader;
+import fr.maxlego08.menu.api.utils.Placeholders;
+import fr.robie.minimessageflow.TextTemplate;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -45,9 +47,9 @@ public abstract class DialogDynamicAbstractLoader extends ButtonLoader {
     @Nullable
     protected abstract Button wrap(Button button, String buttonName, String start, String end);
 
-    public static int stringToInt(MenuPlugin plugin, String str, @NotNull Player player) {
+    public static int stringToInt(@NotNull TextTemplate number, @NotNull Placeholders placeholders, @NotNull Player player) {
         try {
-            return Integer.parseInt(plugin.parse(player, str));
+            return Integer.parseInt(number.render(placeholders.values(), player));
         } catch (NumberFormatException e) {
             return 0;
         }

@@ -277,7 +277,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
         ItemStack itemStack = this.resolveCustomItem(player, placeholders, material);
 
         if (itemStack == null) {
-            itemStack = this.createDefaultItemStack(player, material, amount);
+            itemStack = this.createDefaultItemStack(player, material, amount, placeholders);
         }
 
         return itemStack;
@@ -315,11 +315,11 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
         return null;
     }
 
-    private ItemStack createDefaultItemStack(Player player, Material material, int amount) {
+    private ItemStack createDefaultItemStack(Player player, Material material, int amount, Placeholders placeholders) {
         if (material == null) {
             material = Material.STONE;
         }
-        return this.data != null && !source(this.data).isEmpty() ? new ItemStack(material, amount, Byte.parseByte(this.dataText(this.data, new Placeholders(), player))) : new ItemStack(material);
+        return this.data != null && !source(this.data).isEmpty() ? new ItemStack(material, amount, Byte.parseByte(this.dataText(this.data, placeholders, player))) : new ItemStack(material);
     }
 
     private ItemStack applySpecialItemStack(Player player, OfflinePlayer offlinePlayer, Placeholders placeholders, int amount, ItemStack itemStack) {
@@ -444,7 +444,8 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
      * @param useCache      whether to use the cache for the placeholders.
      */
     private void applyDisplayNameLore(Player player, Placeholders placeholders, ItemMeta itemMeta, OfflinePlayer offlinePlayer, String locale, FontImage fontImage, boolean useCache) {
-        if (offlinePlayer == null && this.inventoryManager.getPlugin().getMetaUpdater() instanceof PaperMetaUpdater metaUpdater) {
+        if (offlinePlayer == null) {
+            PaperMetaUpdater metaUpdater = (PaperMetaUpdater) this.inventoryManager.getPlugin().getMetaUpdater();
             Template name = this.getDisplayNameTemplate(locale);
             if (name != null) {
                 try {

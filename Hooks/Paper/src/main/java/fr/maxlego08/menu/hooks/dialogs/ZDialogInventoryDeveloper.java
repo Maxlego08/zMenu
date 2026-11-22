@@ -7,8 +7,6 @@ import fr.maxlego08.menu.config.ConfigFieldContext;
 import fr.maxlego08.menu.hooks.dialogs.inventory.ZConfirmationDialogInventory;
 import io.papermc.paper.registry.data.dialog.input.DialogInput;
 import io.papermc.paper.registry.data.dialog.input.SingleOptionDialogInput;
-import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -25,26 +23,6 @@ public class ZDialogInventoryDeveloper extends ZConfirmationDialogInventory {
 
     public ConfigFieldContext getContext() {
         return this.context;
-    }
-
-    @Override
-    protected @NotNull List<DialogInput> getDialogInputsForPlayer(@NotNull Player player, @NotNull PaperMetaUpdater componentMeta) {
-        List<DialogInput> inputs = new ArrayList<>(this.context.size());
-        for (ConfigFieldContext.ConfigFieldEntry entry : this.context.getEntries().values()) {
-            Field field = entry.field();
-            var configOption = entry.configOption();
-            String key = configOption.key().isEmpty() ? field.getName() : configOption.key();
-            DialogInput input = switch (entry.resolvedType()) {
-                case BOOLEAN -> this.buildBooleanInput(key, entry, componentMeta);
-                case NUMBER_RANGE -> this.buildNumberRangeInput(key, entry, componentMeta);
-                case TEXT -> this.buildTextInput(key, entry, componentMeta);
-                case SINGLE_OPTION -> this.buildSingleOptionInput(key, entry, componentMeta);
-            };
-            if (input != null) {
-                inputs.add(input);
-            }
-        }
-        return inputs;
     }
 
     private DialogInput buildBooleanInput(String key, ConfigFieldContext.ConfigFieldEntry entry, PaperMetaUpdater componentMeta) {

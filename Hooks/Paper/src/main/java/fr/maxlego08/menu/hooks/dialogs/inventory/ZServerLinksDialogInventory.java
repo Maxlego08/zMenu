@@ -55,7 +55,7 @@ public class ZServerLinksDialogInventory extends AbstractButtonUtilsInventory im
                             this.buttonWidth
                     ))
                     .base(
-                            this.createDialogBase(paperComponent, player, dialogBodiesForPlayer, dialogInputsForPlayer)
+                            this.createDialogBase(player, dialogBodiesForPlayer, dialogInputsForPlayer, placeholders)
                     );
         });
     }

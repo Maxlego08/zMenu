@@ -71,7 +71,7 @@ public class ZMultiActionDialogInventory extends AbstractButtonUtilsInventory im
                             this.numberOfColumns
                     ))
                     .base(
-                            this.createDialogBase(paperComponent, player, dialogBodiesForPlayer, dialogInputsForPlayer)
+                            this.createDialogBase(player, dialogBodiesForPlayer, dialogInputsForPlayer, placeholders)
                     );
         });
     }

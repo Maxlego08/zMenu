@@ -307,7 +307,7 @@ public abstract class Button extends PlaceholderButton {
 
         if (!this.messages.isEmpty()) {
             if (this.openLink != null) {
-                this.openLink.send(player, this.messages);
+                this.openLink.send(player, this.messages, placeholders);
             } else {
                 TemplateList templates = this.messageTemplates;
                 if (templates == null) {

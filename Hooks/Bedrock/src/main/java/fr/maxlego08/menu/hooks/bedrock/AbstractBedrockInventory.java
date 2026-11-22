@@ -1,6 +1,7 @@
 package fr.maxlego08.menu.hooks.bedrock;
 
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import fr.robie.minimessageflow.Template;
+import fr.robie.minimessageflow.TextTemplate;
 import fr.maxlego08.menu.api.text.TextService;
 import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.animation.TitleAnimation;
@@ -19,12 +20,15 @@ import org.geysermc.cumulus.form.Form;
 import org.geysermc.cumulus.form.util.FormBuilder;
 import org.geysermc.cumulus.response.FormResponse;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class AbstractBedrockInventory<B extends FormBuilder<B, F, R>, F extends Form, R extends FormResponse> implements BedrockInventory<B, F, R> {
 
@@ -32,12 +36,15 @@ public abstract class AbstractBedrockInventory<B extends FormBuilder<B, F, R>, F
     private final String fileName;
     private File file;
 
-    private final String name;
+    private final Template name;
+    private final TextTemplate nameText;
+    private final Map<ConditionalName, Template> conditionalTemplates = new ConcurrentHashMap<>();
+    private final Map<ConditionalName, TextTemplate> conditionalTexts = new ConcurrentHashMap<>();
     private final BedrockType bedrockType;
 
     private final List<Requirement> actions = new ArrayList<>();
     private final List<ConditionalName> conditionalNames = new ArrayList<>();
-    private String targetPlayerNamePlaceholder;
+    private @Nullable TextTemplate targetPlayerName;
     private Requirement openRequirement;
     private InventoryReplacement inventoryReplacement;
 
@@ -47,32 +54,36 @@ public abstract class AbstractBedrockInventory<B extends FormBuilder<B, F, R>, F
 
     public AbstractBedrockInventory(@NotNull MenuPlugin plugin, @NotNull String fileName, @NotNull String name, @NotNull BedrockType bedrockType) {
         this.menuPlugin = plugin;
-        this.name = name;
+        this.name = TextService.get().flow().compile(name);
+        this.nameText = TextService.get().flow().compileText(name);
         this.fileName = fileName.endsWith(".yml") ? fileName.replace(".yml", "") : fileName;
         this.bedrockType = bedrockType;
     }
 
     @Override
     public String getName() {
-        return this.name;
+        return this.name.source();
     }
 
     @Override
     public String getName(@NotNull Player player, InventoryEngine inventoryDefault, Placeholders placeholders) {
-        return this.menuPlugin.parse(player, placeholders.parse(this.configuredName(player, inventoryDefault, placeholders)));
+        ConditionalName chosen = this.chosenName(player, inventoryDefault, placeholders);
+        TextTemplate text = chosen == null ? this.nameText
+                : this.conditionalTexts.computeIfAbsent(chosen, conditional -> TextService.get().flow().compileText(conditional.name()));
+        return text.render(placeholders.values(), player);
     }
 
     /**
-     * The name as written: the conditional name of highest priority the player has, else the inventory's.
+     * The conditional name of highest priority the player has, or null for the inventory's own name.
      */
-    private @NotNull String configuredName(@NotNull Player player, InventoryEngine inventoryDefault, Placeholders placeholders) {
+    private @Nullable ConditionalName chosenName(@NotNull Player player, InventoryEngine inventoryDefault, Placeholders placeholders) {
         if (!this.conditionalNames.isEmpty()) {
             Optional<ConditionalName> optional = this.conditionalNames.stream().filter(conditionalName -> conditionalName.hasPermission(player, null, inventoryDefault, placeholders)).max(Comparator.comparingInt(ConditionalName::priority));
             if (optional.isPresent()) {
-                return optional.get().name();
+                return optional.get();
             }
         }
-        return this.name;
+        return null;
     }
 
     @Override
@@ -122,8 +133,13 @@ public abstract class AbstractBedrockInventory<B extends FormBuilder<B, F, R>, F
     }
 
     @Override
+    public @Nullable TextTemplate getTargetPlayerNameTemplate() {
+        return this.targetPlayerName;
+    }
+
+    @Override
     public String getTargetPlayerNamePlaceholder() {
-        return this.targetPlayerNamePlaceholder;
+        return TextService.source(this.targetPlayerName);
     }
 
     @Override
@@ -175,11 +191,10 @@ public abstract class AbstractBedrockInventory<B extends FormBuilder<B, F, R>, F
     }
 
     protected String getLegacyTitle(Player player, InventoryEngine inventoryEngine, Placeholders placeholders) {
-        return this.getLegacyMessage(player, placeholders, this.configuredName(player, inventoryEngine, placeholders));
-    }
-
-    protected String getLegacyMessage(Player player, Placeholders placeholders, String message) {
-        return LegacyComponentSerializer.legacySection().serialize(TextService.get().flow().format(message, placeholders.values(), player));
+        ConditionalName chosen = this.chosenName(player, inventoryEngine, placeholders);
+        Template title = chosen == null ? this.name
+                : this.conditionalTemplates.computeIfAbsent(chosen, conditional -> TextService.get().flow().compile(conditional.name()));
+        return TextService.legacy(title, placeholders, player);
     }
 
     protected <C, T extends Button> List<C> renderButtons(
@@ -218,7 +233,7 @@ public abstract class AbstractBedrockInventory<B extends FormBuilder<B, F, R>, F
     }
 
     public void setTargetPlayerNamePlaceholder(String targetPlaceholder) {
-        this.targetPlayerNamePlaceholder = targetPlaceholder;
+        this.targetPlayerName = TextService.text(targetPlaceholder);
     }
 
     public void setRequirements(List<Requirement> actions) {

@@ -14,7 +14,6 @@ import fr.maxlego08.menu.api.utils.record.dialogs.ActionButtonRecord;
 import fr.maxlego08.menu.api.utils.record.dialogs.DialogListBackButton;
 import fr.maxlego08.menu.api.utils.record.dialogs.DialogListEntry;
 import fr.maxlego08.menu.zcore.logger.Logger;
-import fr.robie.minimessageflow.Placeholder;
 import fr.robie.minimessageflow.Template;
 import io.papermc.paper.dialog.Dialog;
 import io.papermc.paper.registry.RegistryAccess;
@@ -113,7 +112,7 @@ public class ZDialogListDialogInventory extends AbstractButtonUtilsInventory imp
 
         // Built before entering this list's frame, so a nested list receives the back button of its parent
         ActionButton exitAction = this.exitOrBackButton(this.exitButton != null ? this.createActionButton(this.exitButton, dialogInputsForPlayer, paperComponent, placeholders, player, inventoryEngine, null) : null);
-        ActionButton backAction = this.backButton.enabled() ? this.createBackButton(player, paperComponent) : null;
+        ActionButton backAction = this.backButton.enabled() ? this.createBackButton(player, paperComponent, placeholders) : null;
 
         List<Dialog> dialogs = DialogListBuildContext.within(this, backAction, () -> this.buildEntries(player, paperComponent, inventoryEngine, placeholders));
 
@@ -124,7 +123,7 @@ public class ZDialogListDialogInventory extends AbstractButtonUtilsInventory imp
                         this.numberOfColumns,
                         this.buttonWidth
                 ))
-                .base(this.createDialogBase(paperComponent, player, dialogBodiesForPlayer, dialogInputsForPlayer)));
+                .base(this.createDialogBase(player, dialogBodiesForPlayer, dialogInputsForPlayer, placeholders)));
     }
 
     private List<Dialog> buildEntries(@NotNull Player player, @NotNull PaperMetaUpdater paperComponent, @NotNull InventoryEngine inventoryEngine, @NotNull Placeholders placeholders) {
@@ -199,13 +198,13 @@ public class ZDialogListDialogInventory extends AbstractButtonUtilsInventory imp
         return success >= requirement.getMinimumRequirements();
     }
 
-    private ActionButton createBackButton(@NotNull Player player, @NotNull PaperMetaUpdater paperComponent) {
+    private ActionButton createBackButton(@NotNull Player player, @NotNull PaperMetaUpdater paperComponent, @NotNull Placeholders placeholders) {
         DialogAction action = this.menuPlugin.getDialogManager().clickAction(player,
                 (viewer, view) -> this.menuPlugin.getDialogManager().openDialog(viewer, this), ClickCallback.UNLIMITED_USES, null);
         Template tooltip = this.backButton.tooltipTemplate();
         return ActionButton.create(
-                this.backButton.labelTemplate().render(Placeholder.empty(), player),
-                tooltip.source().isEmpty() ? null : tooltip.render(Placeholder.empty(), player),
+                this.backButton.labelTemplate().render(placeholders.values(), player),
+                tooltip.source().isEmpty() ? null : tooltip.render(placeholders.values(), player),
                 this.backButton.width(),
                 action
         );

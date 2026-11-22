@@ -14,6 +14,7 @@ import fr.maxlego08.menu.api.exceptions.DialogFileNotFound;
 import fr.maxlego08.menu.api.exceptions.InventoryException;
 import fr.maxlego08.menu.api.inventory.bedrock.BedrockInventory;
 import fr.maxlego08.menu.api.requirement.Requirement;
+import fr.maxlego08.menu.api.text.TextService;
 import fr.maxlego08.menu.api.utils.Loader;
 import fr.maxlego08.menu.api.utils.Message;
 import fr.maxlego08.menu.api.utils.MetaUpdater;
@@ -22,6 +23,7 @@ import fr.maxlego08.menu.hooks.bedrock.loader.BedrockLoader;
 import fr.maxlego08.menu.hooks.bedrock.loader.builder.BedrockBuilderManager;
 import fr.maxlego08.menu.common.utils.PluginUtils;
 import fr.maxlego08.menu.zcore.logger.Logger;
+import fr.robie.minimessageflow.Placeholder;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -225,7 +227,8 @@ public class ZBedrockManager extends BedrockBuilderManager implements BedrockMan
         } else playerOpenInventoryEvent.call();
         if (playerOpenInventoryEvent.isCancelled()) return;
 
-        Player targetPlayer = Bukkit.getPlayer(this.menuPlugin.parse(player, bedrockInventory.getTargetPlayerNamePlaceholder()));
+        Player targetPlayer = Bukkit.getPlayer(bedrockInventory.getTargetPlayerNameTemplate() == null ? player.getName()
+                : bedrockInventory.getTargetPlayerNameTemplate().render(Placeholder.empty(), player));
         if (targetPlayer == null) {
             targetPlayer = player;
         }

@@ -4,6 +4,7 @@ import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.button.buttons.bedrock.components.BedrockComponentButton;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.enums.bedrock.BedrockType;
+import fr.maxlego08.menu.api.text.TextService;
 import fr.maxlego08.menu.api.utils.MetaUpdater;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import org.bukkit.entity.Player;
@@ -26,7 +27,7 @@ public class ZSimpleBedrockInventory extends AbstractBedrockComponentInventory<S
         Placeholders placeholders = this.createPlaceholders(player);
         SimpleForm.Builder builder = SimpleForm.builder()
                 .title(this.getLegacyTitle(player, inventoryEngine, placeholders))
-                .content(this.getLegacyMessage(player, placeholders, this.content));
+                .content(TextService.legacy(this.contentTemplate, placeholders, player));
 
         List<BedrockComponentButton> visibleButtons = this.filterByViewRequirement(this.bodyButtons, player, inventoryEngine, placeholders);
         List<BedrockComponentButton> expandedButtons = new ArrayList<>();

@@ -4,9 +4,11 @@ import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.enums.dialog.DialogType;
 import fr.maxlego08.menu.api.inventory.dialog.NoticeDialogInventory;
+import fr.maxlego08.menu.api.text.TextService;
 import fr.maxlego08.menu.api.utils.PaperMetaUpdater;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.api.utils.record.dialogs.ActionButtonRecord;
+import fr.robie.minimessageflow.Placeholder;
 import io.papermc.paper.dialog.Dialog;
 import io.papermc.paper.registry.data.dialog.ActionButton;
 import io.papermc.paper.registry.data.dialog.body.DialogBody;
@@ -31,8 +33,9 @@ public class ZNoticeDialogInventory extends AbstractDialogInventory implements N
     }
 
     @Override
+    @Deprecated(since = "1.1.2.2", forRemoval = true)
     public String getLabel(Player player) {
-        return this.menuPlugin.parse(player, this.actionButtonRecord.labelTemplate().source());
+        return TextService.get().flow().formatText(this.actionButtonRecord.labelTemplate().source(), Placeholder.empty(), player);
     }
 
     @Override
@@ -46,8 +49,9 @@ public class ZNoticeDialogInventory extends AbstractDialogInventory implements N
     }
 
     @Override
+    @Deprecated(since = "1.1.2.2", forRemoval = true)
     public String getLabelTooltip(Player player) {
-        return this.menuPlugin.parse(player, this.actionButtonRecord.tooltipTemplate().source());
+        return TextService.get().flow().formatText(this.actionButtonRecord.tooltipTemplate().source(), Placeholder.empty(), player);
     }
 
     @Override
@@ -81,7 +85,7 @@ public class ZNoticeDialogInventory extends AbstractDialogInventory implements N
                                 )
                         )
                         ).base(
-                                this.createDialogBase(paperComponent, player, dialogBodiesForPlayer, dialogInputsForPlayer)
+                                this.createDialogBase(player, dialogBodiesForPlayer, dialogInputsForPlayer, placeholders)
                         )
         );
     }

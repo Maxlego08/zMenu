@@ -97,9 +97,9 @@ public class ZActionPlayerData extends ZUtils implements ActionPlayerData {
         return placeholders.parse(this.papi(template.source(), player, false));
     }
 
-    private long seconds(OfflinePlayer player) {
+    private long seconds(OfflinePlayer player, Placeholders placeholders) {
         try {
-            return this.seconds == null ? 0 : Long.parseLong(this.text(this.seconds, new Placeholders(), player));
+            return this.seconds == null ? 0 : Long.parseLong(this.text(this.seconds, placeholders, player));
         } catch (Exception e) {
             return 0;
         }
@@ -112,7 +112,7 @@ public class ZActionPlayerData extends ZUtils implements ActionPlayerData {
 
     @Override
     public @NonNull Data toData(OfflinePlayer player, @NonNull Placeholders placeholders) {
-        long seconds = this.seconds(player);
+        long seconds = this.seconds(player, placeholders);
         long expiredAt = seconds == 0 ? 0 : System.currentTimeMillis() + (1000 * seconds);
         String result = this.text(this.valueText, placeholders, player);
         String dataValue = result;
@@ -177,7 +177,7 @@ public class ZActionPlayerData extends ZUtils implements ActionPlayerData {
             case ADD, SUBTRACT -> {
                 BigDecimal amount = this.evaluate(this.text(this.valueText, placeholders, player));
                 if (amount == null) return;
-                long seconds = this.seconds(player);
+                long seconds = this.seconds(player, placeholders);
                 variables.increment(ref, this.type == ActionPlayerDataType.ADD ? amount : amount.negate(), seconds == 0 ? null : Duration.ofSeconds(seconds));
             }
         }

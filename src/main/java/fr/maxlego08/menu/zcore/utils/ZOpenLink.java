@@ -2,12 +2,13 @@ package fr.maxlego08.menu.zcore.utils;
 
 import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.utils.OpenLink;
+import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.common.utils.ZUtils;
 import fr.maxlego08.menu.api.text.TextService;
 import fr.robie.minimessageflow.MiniMessageFlow;
-import fr.robie.minimessageflow.Placeholder;
 import fr.robie.minimessageflow.Template;
 import fr.robie.minimessageflow.TemplateList;
+import fr.robie.minimessageflow.Values;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.JoinConfiguration;
 import net.kyori.adventure.text.event.ClickEvent;
@@ -79,20 +80,26 @@ public class ZOpenLink extends ZUtils implements OpenLink {
      */
     @Override
     public void send(@NonNull Player player, @NonNull List<String> messages) {
+        this.send(player, messages, new Placeholders());
+    }
+
+    @Override
+    public void send(@NonNull Player player, @NonNull List<String> messages, @NonNull Placeholders placeholders) {
+        Values values = placeholders.values();
         MiniMessageFlow flow = TextService.get().flow();
         for (String message : messages) {
             int at = this.messageTemplate == null ? -1 : message.indexOf(this.replace);
             if (at < 0) {
-                player.sendMessage(flow.format(message, Placeholder.empty(), player));
+                player.sendMessage(flow.format(message, values, player));
                 continue;
             }
-            Component click = this.messageTemplate.render(Placeholder.empty(), player)
+            Component click = this.messageTemplate.render(values, player)
                     .clickEvent(ClickEvent.openUrl(this.link))
-                    .hoverEvent(HoverEvent.showText(Component.join(JoinConfiguration.newlines(), this.hoverTemplates.render(Placeholder.empty(), player))));
+                    .hoverEvent(HoverEvent.showText(Component.join(JoinConfiguration.newlines(), this.hoverTemplates.render(values, player))));
             player.sendMessage(Component.text()
-                    .append(flow.format(message.substring(0, at), Placeholder.empty(), player))
+                    .append(flow.format(message.substring(0, at), values, player))
                     .append(click)
-                    .append(flow.format(message.substring(at + this.replace.length()), Placeholder.empty(), player))
+                    .append(flow.format(message.substring(at + this.replace.length()), values, player))
                     .build());
         }
     }

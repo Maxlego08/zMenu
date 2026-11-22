@@ -34,6 +34,13 @@ public class BasicBedrockComponentButton extends BedrockComponentButton {
         this.imageDataTemplate = imageData != null ? TextService.get().flow().compileText(imageData) : null;
     }
 
+    /**
+     * @return the button's text, compiled once
+     */
+    public @NotNull Template getTextTemplate() {
+        return this.textTemplate;
+    }
+
     public @NotNull String getText() {
         return this.textTemplate.source();
     }

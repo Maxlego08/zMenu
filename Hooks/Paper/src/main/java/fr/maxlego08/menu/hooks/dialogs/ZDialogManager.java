@@ -20,6 +20,7 @@ import fr.maxlego08.menu.api.registry.Registries;
 import fr.maxlego08.menu.api.registry.RegistryManager;
 import fr.maxlego08.menu.api.registry.WritableRegistry;
 import fr.maxlego08.menu.api.requirement.Requirement;
+import fr.maxlego08.menu.api.text.TextService;
 import fr.maxlego08.menu.api.utils.DialogFallback;
 import fr.maxlego08.menu.api.utils.Loader;
 import fr.maxlego08.menu.api.utils.Message;
@@ -36,6 +37,7 @@ import fr.maxlego08.menu.hooks.dialogs.loader.DialogLoader;
 import fr.maxlego08.menu.hooks.dialogs.loader.dialogaction.ZCustomClickDialogActionLoader;
 import fr.maxlego08.menu.hooks.dialogs.loader.dialogaction.ZStaticDialogActionLoader;
 import fr.maxlego08.menu.zcore.logger.Logger;
+import fr.robie.minimessageflow.Placeholder;
 import io.papermc.paper.connection.PlayerGameConnection;
 import io.papermc.paper.dialog.DialogResponseView;
 import io.papermc.paper.event.player.PlayerCustomClickEvent;
@@ -281,7 +283,8 @@ public class ZDialogManager implements DialogManager, Listener {
         if (playerOpenInventoryEvent.isCancelled()) return;
 
 
-        Player targetPlayer = Bukkit.getPlayer(this.menuPlugin.parse(player, dialogInventory.getTargetPlayerNamePlaceholder()));
+        Player targetPlayer = Bukkit.getPlayer(dialogInventory.getTargetPlayerNameTemplate() == null ? player.getName()
+                : dialogInventory.getTargetPlayerNameTemplate().render(Placeholder.empty(), player));
         if (targetPlayer == null) {
             targetPlayer = player;
         }
