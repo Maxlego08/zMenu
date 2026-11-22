@@ -125,6 +125,9 @@ allprojects {
         compileOnly(rootLibs.placeholderapi)
         compileOnly(rootLibs.reflections)
         compileOnly(rootLibs.floodgate)
+        // Loaded at runtime by ZMenuPluginLoader, never shaded
+        compileOnly(rootLibs.boostedyaml)
+        testImplementation(rootLibs.boostedyaml)
 
         implementation(rootLibs.sarah)
         implementation(rootLibs.currenciesapi)

@@ -38,6 +38,7 @@ faststats = "0.30.1"
 # Integration Hooks
 placeholderapi = "2.12.3"
 reflections = "0.10.2"
+boostedyaml = "1.3.8"
 slimefun4 = "RC-36"
 oraxen = "1.218.0"
 packetevents = "2.13.0"
@@ -93,6 +94,7 @@ fastStatsBukkit = { group = "dev.faststats.metrics", name = "bukkit", version.re
 # Integration Hooks
 placeholderapi = { group = "me.clip", name = "placeholderapi", version.ref = "placeholderapi" }
 reflections = { group = "org.reflections", name = "reflections", version.ref = "reflections" }
+boostedyaml = { group = "dev.dejvokep", name = "boosted-yaml", version.ref = "boostedyaml" }
 slimefun4 = { group = "com.github.Slimefun", name = "Slimefun4", version.ref = "slimefun4" }
 oraxen = { group = "io.th0rgal", name = "oraxen", version.ref = "oraxen" }
 packetevents = { group = "com.github.retrooper", name = "packetevents-spigot", version.ref = "packetevents" }
