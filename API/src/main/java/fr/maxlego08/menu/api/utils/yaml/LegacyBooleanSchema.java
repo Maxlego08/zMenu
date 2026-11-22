@@ -1,4 +1,4 @@
-package fr.maxlego08.menu.zcore.utils;
+package fr.maxlego08.menu.api.utils.yaml;
 
 import dev.dejvokep.boostedyaml.libs.org.snakeyaml.engine.v2.api.ConstructNode;
 import dev.dejvokep.boostedyaml.libs.org.snakeyaml.engine.v2.nodes.ScalarNode;

@@ -1,5 +1,7 @@
 package fr.maxlego08.menu.players;
 
+import dev.dejvokep.boostedyaml.YamlDocument;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
 import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.placeholder.LocalPlaceholder;
 import fr.maxlego08.menu.api.players.Data;
@@ -13,10 +15,9 @@ import fr.maxlego08.menu.api.variable.VariableScope;
 import fr.maxlego08.menu.common.utils.builder.TimerBuilder;
 import fr.maxlego08.menu.variables.ZVariableService;
 import fr.maxlego08.menu.zcore.logger.Logger;
+import fr.maxlego08.menu.zcore.utils.VersionedYamlFile;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NonNull;
 
@@ -119,16 +120,18 @@ public class ZDataManager implements DataManager {
     @Override
     public void loadDefaultValues() {
         File file = new File(this.plugin.getDataFolder(), "default_values.yml");
-        if (!file.exists()) {
-            this.plugin.saveResource("default_values.yml", false);
+        YamlDocument configuration;
+        try {
+            configuration = VersionedYamlFile.open(file, () -> this.plugin.getResource("default_values.yml"), this.plugin.getLogger(), Set.of(), true, Map.of());
+        } catch (Exception exception) {
+            Logger.error(exception);
+            return;
         }
-
-        YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
-        ConfigurationSection configurationSection = configuration.getConfigurationSection("values");
+        Section configurationSection = configuration.getSection("values");
         if (configurationSection == null) return;
 
         this.defaultValues.clear();
-        configurationSection.getKeys(false).forEach(key -> this.defaultValues.put(key, configuration.getString("values." + key)));
+        configurationSection.getRoutesAsStrings(false).forEach(key -> this.defaultValues.put(key, configuration.getString("values." + key)));
     }
 
     /**

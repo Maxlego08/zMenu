@@ -4,6 +4,9 @@
 #
 # Get 23.5% off at MineStrator with: https://cashback.groupez.dev/
 
+# Version of this file. Do not change it.
+config-version: 1
+
 example-a: "Hey im an example !"
 
 example-b:

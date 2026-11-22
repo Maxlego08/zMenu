@@ -255,9 +255,10 @@ dependencies {
 
 tasks {
     // -Dzmenu.it.<backend>=host:port runs the storage tests against a real server, see RealDatabases
+    // -Dzmenu.generateMessages=true writes src/main/resources/messages.yml from the Message enum, see MessagesFileTest
     test {
         System.getProperties().stringPropertyNames()
-            .filter { it.startsWith("zmenu.it.") }
+            .filter { it.startsWith("zmenu.it.") || it == "zmenu.generateMessages" }
             .forEach { systemProperty(it, System.getProperty(it)) }
     }
 

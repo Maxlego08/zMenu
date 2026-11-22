@@ -1,6 +1,7 @@
 package fr.maxlego08.menu.zcore.utils;
 
 import dev.dejvokep.boostedyaml.YamlDocument;
+import fr.maxlego08.menu.api.utils.yaml.LegacyBooleanSchema;
 import dev.dejvokep.boostedyaml.block.Block;
 import dev.dejvokep.boostedyaml.block.Comments;
 import dev.dejvokep.boostedyaml.block.implementation.Section;
@@ -42,6 +43,8 @@ import java.util.logging.Logger;
 public final class VersionedYamlFile {
 
     public static final String VERSION_ROUTE = "config-version";
+    // Getters read the file only, like a Bukkit configuration without defaults: every key is there after the update
+    private static final GeneralSettings GENERAL = GeneralSettings.builder().setUseDefaults(false).build();
 
     private VersionedYamlFile() {
     }
@@ -50,9 +53,10 @@ public final class VersionedYamlFile {
      * @param file          the file of the data folder
      * @param defaults      opens the defaults, which must contain {@value #VERSION_ROUTE}
      * @param ignoredRoutes sections with free keys, kept as the user wrote them
+     * @param keepAll       for a file whose keys are all free: no key is removed and the types are not checked
      * @param migrations    changes to apply when updating to a version, by version
      */
-    public static YamlDocument open(File file, Supplier<InputStream> defaults, Logger logger, Set<String> ignoredRoutes, Map<String, Consumer<YamlDocument>> migrations) throws IOException {
+    public static YamlDocument open(File file, Supplier<InputStream> defaults, Logger logger, Set<String> ignoredRoutes, boolean keepAll, Map<String, Consumer<YamlDocument>> migrations) throws IOException {
         if (!file.exists()) {
             File parent = file.getAbsoluteFile().getParentFile();
             if (parent != null) parent.mkdirs();
@@ -63,7 +67,7 @@ public final class VersionedYamlFile {
 
         YamlDocument document;
         try (InputStream inputStream = defaults.get()) {
-            document = YamlDocument.create(file, inputStream, GeneralSettings.DEFAULT, LegacyBooleanSchema.loaderSettings(), LegacyBooleanSchema.dumperSettings(), UpdaterSettings.DEFAULT);
+            document = YamlDocument.create(file, inputStream, GENERAL, LegacyBooleanSchema.loaderSettings(), LegacyBooleanSchema.dumperSettings(), UpdaterSettings.DEFAULT);
         }
 
         int target = document.getDefaults().getInt(VERSION_ROUTE);
@@ -79,7 +83,7 @@ public final class VersionedYamlFile {
             String version = String.valueOf(target);
             UpdaterSettings.Builder settings = UpdaterSettings.builder()
                     .setVersioning(new BasicVersioning(VERSION_ROUTE))
-                    .setKeepAll(false)
+                    .setKeepAll(keepAll)
                     // A value whose type changed is the user's, it is reported below instead of being replaced
                     .setMergeRule(MergeRule.MAPPING_AT_SECTION, true)
                     .setMergeRule(MergeRule.SECTION_AT_MAPPING, true)
@@ -91,7 +95,7 @@ public final class VersionedYamlFile {
             logger.info(file.getName() + " updated from version " + from + " to " + target + ", previous file saved as " + file.getName() + ".bak-v" + from);
         }
 
-        validate(file.getName(), document, document.getDefaults(), ignoredRoutes, logger);
+        if (!keepAll) validate(file.getName(), document, document.getDefaults(), ignoredRoutes, logger);
         return document;
     }
 

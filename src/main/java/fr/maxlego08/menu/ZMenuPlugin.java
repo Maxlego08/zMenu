@@ -2,6 +2,7 @@ package fr.maxlego08.menu;
 
 import com.tcoded.folialib.FoliaLib;
 import com.tcoded.folialib.impl.PlatformScheduler;
+import dev.dejvokep.boostedyaml.YamlDocument;
 import dev.faststats.bukkit.BukkitContext;
 import fr.maxlego08.menu.api.*;
 import fr.maxlego08.menu.api.annotations.AutoFontImage;
@@ -200,7 +201,7 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
     public void onLoad() {
         // Before anything reads config.yml, the defaults are copied or merged by BoostedYAML
         try {
-            VersionedYamlFile.open(this.configFile, () -> this.getResource("config.yml"), this.getLogger(), Set.of("migration-database-configuration", "database-configuration.properties"), Map.of());
+            VersionedYamlFile.open(this.configFile, () -> this.getResource("config.yml"), this.getLogger(), Set.of("migration-database-configuration", "database-configuration.properties"), false, Map.of());
         } catch (Exception exception) {
             this.getLogger().log(Level.SEVERE, "Unable to update config.yml", exception);
         }
@@ -866,12 +867,16 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
 
         this.globalPlaceholders.clear();
         File file = new File(this.getDataFolder(), "global-placeholders.yml");
-        if (!file.exists()) {
-            this.saveResource("global-placeholders.yml", false);
+        YamlDocument configuration;
+        try {
+            configuration = VersionedYamlFile.open(file, () -> this.getResource("global-placeholders.yml"), this.getLogger(), Set.of(), true, Map.of());
+        } catch (Exception exception) {
+            this.getLogger().log(Level.SEVERE, "Unable to load global-placeholders.yml", exception);
+            return;
         }
-
-        YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
-        configuration.getKeys(false).forEach(key -> this.globalPlaceholders.put(key, configuration.get(key)));
+        configuration.getRoutesAsStrings(false).stream()
+                .filter(key -> !key.equals(VersionedYamlFile.VERSION_ROUTE))
+                .forEach(key -> this.globalPlaceholders.put(key, configuration.get(key)));
     }
 
     @Override

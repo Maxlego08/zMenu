@@ -1,6 +1,7 @@
 package fr.maxlego08.menu.zcore.utils;
 
 import dev.dejvokep.boostedyaml.YamlDocument;
+import fr.maxlego08.menu.api.utils.yaml.LegacyBooleanSchema;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -47,7 +48,7 @@ class VersionedYamlFileTest {
     }
 
     private YamlDocument open(File file) throws IOException {
-        return VersionedYamlFile.open(file, defaults(), Logger.getLogger("test"), Set.of("free"), Map.of());
+        return VersionedYamlFile.open(file, defaults(), Logger.getLogger("test"), Set.of("free"), false, Map.of());
     }
 
     @Test
