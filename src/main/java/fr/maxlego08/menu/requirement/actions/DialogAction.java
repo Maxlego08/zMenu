@@ -6,11 +6,13 @@ import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.command.CommandManager;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.inventory.dialog.DialogInventory;
+import fr.maxlego08.menu.api.text.TextService;
 import fr.maxlego08.menu.api.utils.Message;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.common.utils.ActionHelper;
 import fr.maxlego08.menu.common.utils.MessageUtils;
 import fr.maxlego08.menu.zcore.utils.InventoryArgument;
+import fr.robie.minimessageflow.TextTemplate;
 import org.bukkit.entity.Player;
 import org.jspecify.annotations.NonNull;
 
@@ -20,13 +22,13 @@ import java.util.Optional;
 
 public class DialogAction extends ActionHelper {
     private final DialogManager dialogManager;
-    private final String dialog;
+    private final TextTemplate dialog;
     private final String plugin;
     private final InventoryArgument inventoryArgument;
 
     public DialogAction(DialogManager dialogManager, CommandManager commandManager, String dialog, String plugin, List<String> arguments) {
         this.dialogManager = dialogManager;
-        this.dialog = dialog;
+        this.dialog = TextService.text(dialog);
         this.plugin = plugin;
         this.inventoryArgument = new InventoryArgument(commandManager, arguments);
     }
@@ -38,7 +40,7 @@ public class DialogAction extends ActionHelper {
             Inventory fromInventory = inventory.getMenuInventory();
             List<Inventory> oldInventories = inventory.getOldInventories();
 
-            String dialogName = this.papi(placeholders.parse(this.dialog), player);
+            String dialogName = TextService.render(this.dialog, placeholders, player);
             Optional<DialogInventory> optional = this.plugin == null ? this.dialogManager.getDialog(dialogName) : this.dialogManager.getDialog(this.plugin, dialogName);
             if (optional.isPresent()) {
                 oldInventories.add(fromInventory);
@@ -46,7 +48,7 @@ public class DialogAction extends ActionHelper {
                 this.inventoryArgument.process(player,placeholders);
                 this.dialogManager.openDialog(player, optional.get(), oldInventories);
             } else {
-                MessageUtils.message(inventory.getPlugin(), player, Message.INVENTORY_NOT_FOUND, "%name%", fromInventory.getFileName(), "%toName%", this.dialog, "%plugin%", this.plugin == null ? "zMenu" : this.plugin);
+                MessageUtils.message(inventory.getPlugin(), player, Message.INVENTORY_NOT_FOUND, "%name%", fromInventory.getFileName(), "%toName%", TextService.source(this.dialog), "%plugin%", this.plugin == null ? "zMenu" : this.plugin);
             }
         });
     }
@@ -54,7 +56,7 @@ public class DialogAction extends ActionHelper {
     @Override
     protected void serializeProperties(@NonNull Map<String, Object> map) {
         map.put("type", "dialog");
-        map.put("dialog", this.dialog);
+        map.put("dialog", TextService.source(this.dialog));
         if (this.plugin != null) map.put("plugin", this.plugin);
         List<String> arguments = this.inventoryArgument.getArguments();
         if (arguments != null && !arguments.isEmpty()) map.put("arguments", arguments);

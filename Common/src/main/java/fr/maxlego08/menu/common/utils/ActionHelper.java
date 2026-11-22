@@ -3,8 +3,10 @@ package fr.maxlego08.menu.common.utils;
 import fr.maxlego08.menu.api.placeholder.Placeholder;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.text.TextService;
+import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.robie.minimessageflow.Template;
 import fr.robie.minimessageflow.TemplateList;
+import fr.robie.minimessageflow.TextTemplate;
 import fr.robie.minimessageflow.Values;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.title.Title;
@@ -13,6 +15,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public abstract class ActionHelper extends Action {
@@ -51,6 +55,48 @@ public abstract class ActionHelper extends Action {
                                           long start, long duration, long end) {
         Title.Times times = Title.Times.times(Duration.ofMillis(start), Duration.ofMillis(duration), Duration.ofMillis(end));
         return Title.title(render(title, values, player), render(subtitle, values, player), times);
+    }
+
+    /**
+     * Compiles lines read as text (commands, chat lines), once: their placeholders only, values placed as written.
+     */
+    protected static @NotNull List<TextTemplate> texts(@Nullable List<String> lines) {
+        if (lines == null || lines.isEmpty()) {
+            return List.of();
+        }
+        List<TextTemplate> templates = new ArrayList<>(lines.size());
+        for (String line : lines) {
+            templates.add(TextService.get().flow().compileText(line));
+        }
+        return List.copyOf(templates);
+    }
+
+    /**
+     * The lines as written, for the configuration.
+     */
+    protected static @NotNull List<String> sources(@NotNull List<TextTemplate> templates) {
+        List<String> lines = new ArrayList<>(templates.size());
+        for (TextTemplate template : templates) {
+            lines.add(template.source());
+        }
+        return lines;
+    }
+
+    /**
+     * The lines rendered for a player with the menu's values and PlaceholderAPI, a line holding a line break giving
+     * several. A value a player typed is placed as written: its placeholders are never read.
+     */
+    protected static @NotNull List<String> render(@NotNull List<TextTemplate> templates, @NotNull Placeholders placeholders, @Nullable Player player) {
+        List<String> lines = new ArrayList<>(templates.size());
+        for (TextTemplate template : templates) {
+            String line = template.render(placeholders.values(), player);
+            if (line.indexOf('\n') < 0) {
+                lines.add(line);
+            } else {
+                Collections.addAll(lines, line.split("\n"));
+            }
+        }
+        return lines;
     }
 
     protected String papi(String string, Player player) {

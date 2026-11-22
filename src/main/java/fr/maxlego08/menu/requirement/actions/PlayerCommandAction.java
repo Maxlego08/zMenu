@@ -4,6 +4,7 @@ import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.common.utils.ActionHelper;
+import fr.robie.minimessageflow.TextTemplate;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.jspecify.annotations.NonNull;
@@ -13,11 +14,11 @@ import java.util.Map;
 
 public class PlayerCommandAction extends ActionHelper {
 
-    private final List<String> commands;
+    private final List<TextTemplate> commands;
     private final boolean inChat;
 
     public PlayerCommandAction(List<String> commands, boolean inChat) {
-        this.commands = commands;
+        this.commands = texts(commands);
         this.inChat = inChat;
     }
 
@@ -25,7 +26,7 @@ public class PlayerCommandAction extends ActionHelper {
     protected void execute(@NonNull Player player, Button button, @NonNull InventoryEngine inventory, @NonNull Placeholders placeholders) {
         var scheduler = inventory.getPlugin().getScheduler();
         scheduler.runAtEntity(player, w-> {
-           this.parseAndFlattenCommands(this.papi(placeholders.parse(this.commands), player), player).forEach(command -> {
+           render(this.commands, placeholders, player).forEach(command -> {
                if (this.inChat) {
                    player.chat("/" + command);
                } else {
@@ -38,7 +39,7 @@ public class PlayerCommandAction extends ActionHelper {
     @Override
     protected void serializeProperties(@NonNull Map<String, Object> map) {
         map.put("type", "player-command");
-        map.put("commands", this.commands);
+        map.put("commands", sources(this.commands));
         if (this.inChat) map.put("command-in-chat", true);
     }
 }

@@ -6,11 +6,13 @@ import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.command.CommandManager;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.inventory.bedrock.BedrockInventory;
+import fr.maxlego08.menu.api.text.TextService;
 import fr.maxlego08.menu.api.utils.Message;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.common.utils.ActionHelper;
 import fr.maxlego08.menu.common.utils.MessageUtils;
 import fr.maxlego08.menu.zcore.utils.InventoryArgument;
+import fr.robie.minimessageflow.TextTemplate;
 import org.bukkit.entity.Player;
 import org.jspecify.annotations.NonNull;
 
@@ -20,13 +22,13 @@ import java.util.Optional;
 
 public class BedrockAction extends ActionHelper {
     private final BedrockManager bedrockManager;
-    private final String bedrockInventory;
+    private final TextTemplate bedrockInventory;
     private final String plugin;
     private final InventoryArgument inventoryArgument;
 
     public BedrockAction(BedrockManager bedrockManager, CommandManager commandManager, String bedrockInventory, String plugin, List<String> arguments) {
         this.bedrockManager = bedrockManager;
-        this.bedrockInventory = bedrockInventory;
+        this.bedrockInventory = TextService.text(bedrockInventory);
         this.plugin = plugin;
         this.inventoryArgument = new InventoryArgument(commandManager, arguments);
     }
@@ -38,7 +40,7 @@ public class BedrockAction extends ActionHelper {
             Inventory fromInventory = inventory.getMenuInventory();
             List<Inventory> oldInventories = inventory.getOldInventories();
 
-            String dialogName = this.papi(placeholders.parse(this.bedrockInventory), player);
+            String dialogName = TextService.render(this.bedrockInventory, placeholders, player);
             Optional<? extends BedrockInventory<?, ?, ?>> optional = this.plugin == null ? this.bedrockManager.getBedrockInventory(dialogName) : this.bedrockManager.getBedrockInventory(this.plugin, dialogName);
             if (optional.isPresent()) {
                 oldInventories.add(fromInventory);
@@ -46,7 +48,7 @@ public class BedrockAction extends ActionHelper {
                 this.inventoryArgument.process(player);
                 this.bedrockManager.openBedrockInventory(player, optional.get(), oldInventories);
             } else {
-                MessageUtils.message(inventory.getPlugin(), player, Message.INVENTORY_NOT_FOUND, "%name%", fromInventory.getFileName(), "%toName%", this.bedrockInventory, "%plugin%", this.plugin == null ? "zMenu" : this.plugin);
+                MessageUtils.message(inventory.getPlugin(), player, Message.INVENTORY_NOT_FOUND, "%name%", fromInventory.getFileName(), "%toName%", TextService.source(this.bedrockInventory), "%plugin%", this.plugin == null ? "zMenu" : this.plugin);
             }
         });
     }
@@ -54,7 +56,7 @@ public class BedrockAction extends ActionHelper {
     @Override
     protected void serializeProperties(@NonNull Map<String, Object> map) {
         map.put("type", "bedrock");
-        map.put("bedrock", this.bedrockInventory);
+        map.put("bedrock", TextService.source(this.bedrockInventory));
         if (this.plugin != null) map.put("plugin", this.plugin);
         List<String> arguments = this.inventoryArgument.getArguments();
         if (arguments != null && !arguments.isEmpty()) map.put("arguments", arguments);

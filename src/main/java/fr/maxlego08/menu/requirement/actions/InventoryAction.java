@@ -6,11 +6,13 @@ import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.command.CommandManager;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
+import fr.maxlego08.menu.api.text.TextService;
 import fr.maxlego08.menu.api.utils.Message;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.common.utils.ActionHelper;
 import fr.maxlego08.menu.common.utils.MessageUtils;
 import fr.maxlego08.menu.zcore.utils.InventoryArgument;
+import fr.robie.minimessageflow.TextTemplate;
 import org.bukkit.entity.Player;
 import org.jspecify.annotations.NonNull;
 
@@ -21,7 +23,7 @@ import java.util.Optional;
 public class InventoryAction extends ActionHelper {
 
     private final InventoryManager inventoryManager;
-    private final String inventory;
+    private final TextTemplate inventory;
     private final String plugin;
     private final InventoryArgument inventoryArgument;
     private String stringPage;
@@ -29,7 +31,7 @@ public class InventoryAction extends ActionHelper {
 
     public InventoryAction(InventoryManager inventoryManager, CommandManager commandManager, String inventory, String plugin, String page, List<String> arguments) {
         this.inventoryManager = inventoryManager;
-        this.inventory = inventory;
+        this.inventory = TextService.text(inventory);
         this.plugin = plugin;
         if (page.contains("%")) {
             this.stringPage = page;
@@ -42,7 +44,7 @@ public class InventoryAction extends ActionHelper {
     @Override
     protected void serializeProperties(@NonNull Map<String, Object> map) {
         map.put("type", "inventory");
-        map.put("inventory", this.inventory);
+        map.put("inventory", TextService.source(this.inventory));
         if (this.plugin != null) map.put("plugin", this.plugin);
         if (this.stringPage != null) map.put("page", this.stringPage);
         else if (this.intPage != 1) map.put("page", this.intPage);
@@ -58,7 +60,7 @@ public class InventoryAction extends ActionHelper {
             Inventory fromInventory = inventory.getMenuInventory();
             List<Inventory> oldInventories = inventory.getOldInventories();
 
-            String inventoryName = this.papi(placeholders.parse(this.inventory), player);
+            String inventoryName = TextService.render(this.inventory, placeholders, player);
             Optional<Inventory> optional = this.plugin == null ? this.inventoryManager.findInventory(inventoryName) : this.inventoryManager.getInventory(ZMenuKeys.fileKey(this.plugin, inventoryName));
             if (optional.isPresent()) {
 
@@ -69,7 +71,7 @@ public class InventoryAction extends ActionHelper {
                 inventory.closeWithAnimation(() -> this.inventoryManager.openInventory(player, optional.get(), page, oldInventories));
 
             } else {
-                MessageUtils.message(inventory.getPlugin(), player, Message.INVENTORY_NOT_FOUND, "%name%", fromInventory.getFileName(), "%toName%", this.inventory, "%plugin%", this.plugin == null ? "zMenu" : this.plugin);
+                MessageUtils.message(inventory.getPlugin(), player, Message.INVENTORY_NOT_FOUND, "%name%", fromInventory.getFileName(), "%toName%", TextService.source(this.inventory), "%plugin%", this.plugin == null ? "zMenu" : this.plugin);
             }
         });
     }

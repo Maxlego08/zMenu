@@ -4,8 +4,10 @@ import com.tcoded.folialib.impl.PlatformScheduler;
 import com.tcoded.folialib.wrapper.task.WrappedTask;
 import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.configuration.Configuration;
+import fr.maxlego08.menu.api.text.TextService;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.zcore.logger.Logger;
+import fr.robie.minimessageflow.TextTemplate;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
@@ -16,7 +18,10 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.IdentityHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 
 public abstract class PerformButton extends SlotButton {
@@ -29,6 +34,10 @@ public abstract class PerformButton extends SlotButton {
     private List<String> consoleLeftCommands = new ArrayList<>();
     private List<String> consolePermissionCommands = new ArrayList<>();
     private String consolePermission;
+    /**
+     * Each command list compiled once, by list (a setter gives a new list): read as text, values placed as written.
+     */
+    private final transient Map<List<String>, List<TextTemplate>> compiledCommands = Collections.synchronizedMap(new IdentityHashMap<>());
 
     @Contract(pure = true)
     @NotNull
@@ -40,6 +49,7 @@ public abstract class PerformButton extends SlotButton {
      * @param commands the commands to set
      */
     public void setCommands(@NotNull List<String> commands) {
+        this.compiledCommands.clear();
         this.commands = commands;
     }
 
@@ -53,6 +63,7 @@ public abstract class PerformButton extends SlotButton {
      * @param leftCommands the left click commands to set
      */
     public void setLeftCommands(@NotNull List<String> leftCommands) {
+        this.compiledCommands.clear();
         this.leftCommands = leftCommands;
     }
 
@@ -66,6 +77,7 @@ public abstract class PerformButton extends SlotButton {
      * @param rightCommands the right click commands to set
      */
     public void setRightCommands(@NotNull List<String> rightCommands) {
+        this.compiledCommands.clear();
         this.rightCommands = rightCommands;
     }
 
@@ -79,6 +91,7 @@ public abstract class PerformButton extends SlotButton {
      * @param consoleCommands the consoleCommands to set
      */
     public void setConsoleCommands(@NotNull List<String> consoleCommands) {
+        this.compiledCommands.clear();
         this.consoleCommands = consoleCommands;
     }
 
@@ -92,6 +105,7 @@ public abstract class PerformButton extends SlotButton {
      * @param consolePermissionCommands the consolePermissionCommands to set
      */
     public void setConsolePermissionCommands(@NotNull List<String> consolePermissionCommands) {
+        this.compiledCommands.clear();
         this.consolePermissionCommands = consolePermissionCommands;
     }
 
@@ -118,6 +132,7 @@ public abstract class PerformButton extends SlotButton {
      * @param consoleRightCommands the consoleRightCommands to set
      */
     public void setConsoleRightCommands(@NotNull List<String> consoleRightCommands) {
+        this.compiledCommands.clear();
         this.consoleRightCommands = consoleRightCommands;
     }
 
@@ -131,6 +146,7 @@ public abstract class PerformButton extends SlotButton {
      * @param consoleLeftCommands the consoleLeftCommands to set
      */
     public void setConsoleLeftCommands(@NotNull List<String> consoleLeftCommands) {
+        this.compiledCommands.clear();
         this.consoleLeftCommands = consoleLeftCommands;
     }
 
@@ -167,14 +183,17 @@ public abstract class PerformButton extends SlotButton {
      */
     @Contract(pure = true)
     private void execute(@NotNull MenuPlugin plugin, @NotNull Player player, @NotNull List<String> strings, @NotNull PlatformScheduler scheduler, @NotNull Placeholders placeholders, @NotNull CommandSender executor) {
-        strings.forEach(command -> {
-            command = placeholders.parse(command.replace("%player%", player.getName()));
+        if (strings.isEmpty()) {
+            return;
+        }
+        List<TextTemplate> templates = this.compiledCommands.computeIfAbsent(strings, PerformButton::compile);
+        templates.forEach(template -> {
+            String command = template.render(placeholders.values(), player);
             try {
                 if (executor instanceof Player && Configuration.enablePlayerCommandInChat) {
-                    player.chat("/" + plugin.parse(player, command));
+                    player.chat("/" + command);
                 } else {
-                    String finalCommand = command;
-                    Consumer<WrappedTask> task = w -> Bukkit.dispatchCommand(executor, plugin.parse(player, finalCommand));
+                    Consumer<WrappedTask> task = w -> Bukkit.dispatchCommand(executor, command);
                     if (executor instanceof Entity entity) {
                         scheduler.runAtEntity(entity, task);
                     } else {
@@ -188,5 +207,13 @@ public abstract class PerformButton extends SlotButton {
                 }
             }
         });
+    }
+
+    private static @NotNull List<TextTemplate> compile(@NotNull List<String> commands) {
+        List<TextTemplate> templates = new ArrayList<>(commands.size());
+        for (String command : commands) {
+            templates.add(TextService.get().flow().compileText(command));
+        }
+        return List.copyOf(templates);
     }
 }
