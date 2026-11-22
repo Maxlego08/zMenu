@@ -4,6 +4,7 @@ import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.pagination.PaginationManager;
 import fr.maxlego08.menu.api.requirement.Action;
+import fr.maxlego08.menu.api.text.TextService;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -49,7 +50,7 @@ public class ResetPaginationAction extends Action {
             case CONTEXT -> {
                 for (String contextId : this.contextIds) {
                     if (!contextId.isEmpty()) {
-                        this.paginationManager.reset(player.getUniqueId(), inventoryEngine.getPlugin().parse(player, placeholders.parse(contextId)));
+                        this.paginationManager.reset(player.getUniqueId(), TextService.get().flow().formatText(contextId, placeholders.values(), player));
                     }
                 }
             }

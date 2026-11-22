@@ -2,6 +2,7 @@ package fr.maxlego08.menu.requirement.actions;
 
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
+import fr.maxlego08.menu.api.text.TextService;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.common.utils.ActionHelper;
 import fr.robie.minimessageflow.TextTemplate;
@@ -18,7 +19,7 @@ public class PlayerCommandAction extends ActionHelper {
     private final boolean inChat;
 
     public PlayerCommandAction(List<String> commands, boolean inChat) {
-        this.commands = texts(commands);
+        this.commands = TextService.texts(commands);
         this.inChat = inChat;
     }
 
@@ -39,7 +40,7 @@ public class PlayerCommandAction extends ActionHelper {
     @Override
     protected void serializeProperties(@NonNull Map<String, Object> map) {
         map.put("type", "player-command");
-        map.put("commands", sources(this.commands));
+        map.put("commands", TextService.sources(this.commands));
         if (this.inChat) map.put("command-in-chat", true);
     }
 }

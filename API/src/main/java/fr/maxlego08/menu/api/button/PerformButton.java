@@ -186,7 +186,7 @@ public abstract class PerformButton extends SlotButton {
         if (strings.isEmpty()) {
             return;
         }
-        List<TextTemplate> templates = this.compiledCommands.computeIfAbsent(strings, PerformButton::compile);
+        List<TextTemplate> templates = this.compiledCommands.computeIfAbsent(strings, TextService::texts);
         templates.forEach(template -> {
             String command = template.render(placeholders.values(), player);
             try {
@@ -209,11 +209,4 @@ public abstract class PerformButton extends SlotButton {
         });
     }
 
-    private static @NotNull List<TextTemplate> compile(@NotNull List<String> commands) {
-        List<TextTemplate> templates = new ArrayList<>(commands.size());
-        for (String command : commands) {
-            templates.add(TextService.get().flow().compileText(command));
-        }
-        return List.copyOf(templates);
-    }
 }

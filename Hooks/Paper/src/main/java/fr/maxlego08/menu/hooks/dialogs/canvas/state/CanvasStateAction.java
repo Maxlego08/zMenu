@@ -6,8 +6,10 @@ import fr.maxlego08.menu.api.dialog.canvas.CanvasManager;
 import fr.maxlego08.menu.api.dialog.canvas.CanvasStateService;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.requirement.Action;
+import fr.maxlego08.menu.api.text.TextService;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.zcore.logger.Logger;
+import fr.robie.minimessageflow.TextTemplate;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -17,7 +19,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.regex.Pattern;
 
 /**
  * Changes the state of a dialog canvas: {@code canvas-set}, {@code canvas-toggle}, {@code canvas-cycle},
@@ -32,7 +33,6 @@ import java.util.regex.Pattern;
 public final class CanvasStateAction extends Action {
 
     private static final Set<String> REPORTED = ConcurrentHashMap.newKeySet();
-    private static final Pattern SINGLE_PLACEHOLDER = Pattern.compile("%[^%\\s]+%");
 
     /**
      * What the action does.
@@ -61,12 +61,12 @@ public final class CanvasStateAction extends Action {
 
     private final MenuPlugin plugin;
     private final Operation operation;
-    private final String dialog;
+    private final TextTemplate dialog;
     private final String key;
-    private final String value;
+    private final TextTemplate value;
     private final List<String> values;
     private final boolean reverse;
-    private final String amount;
+    private final TextTemplate amount;
     private final Double min;
     private final Double max;
     private final CanvasStateService.Keep keep;
@@ -76,28 +76,22 @@ public final class CanvasStateAction extends Action {
                              @NotNull CanvasStateService.Keep keep) {
         this.plugin = plugin;
         this.operation = operation;
-        this.dialog = dialog;
+        this.dialog = TextService.text(dialog);
         this.key = key;
-        this.value = value;
+        this.value = TextService.text(value);
         this.values = List.copyOf(values);
         this.reverse = reverse;
-        this.amount = amount;
+        this.amount = TextService.text(amount);
         this.min = min;
         this.max = max;
         this.keep = keep;
-    }
-
-    private @NotNull String parse(@NotNull Player player, @NotNull Placeholders placeholders, @NotNull String text) {
-        String local = placeholders.parse(text);
-        if (!local.equals(text) && SINGLE_PLACEHOLDER.matcher(text).matches()) return local.replace('\uF000', '%');
-        return this.plugin.parse(player, local);
     }
 
     @Override
     protected void execute(@NotNull Player player, @Nullable Button button, @NotNull InventoryEngine inventoryEngine, @NotNull Placeholders placeholders) {
         CanvasManager canvasManager = this.plugin.getCanvasManager();
         if (canvasManager == null) return;
-        String dialogName = this.dialog == null ? placeholders.get(CanvasStateActions.DIALOG_PLACEHOLDER) : this.parse(player, placeholders, this.dialog);
+        String dialogName = this.dialog == null ? placeholders.get(CanvasStateActions.DIALOG_PLACEHOLDER) : TextService.render(this.dialog, placeholders, player);
         if (dialogName == null || dialogName.isBlank()) {
             if (REPORTED.add(this.operation.type() + ":" + this.key)) {
                 Logger.info("The action " + this.operation.type() + " runs outside a dialog, so it needs dialog: <dialog file name>", Logger.LogType.WARNING);
@@ -113,7 +107,7 @@ public final class CanvasStateAction extends Action {
         CanvasStateService state = canvasManager.getStateService();
         String current = state.get(player.getUniqueId(), dialogName, this.key);
         String next = switch (this.operation) {
-            case SET -> this.value == null ? "" : this.parse(player, placeholders, this.value);
+            case SET -> this.value == null ? "" : TextService.render(this.value, placeholders, player);
             case TOGGLE -> "true".equalsIgnoreCase(current) ? "false" : "true";
             case CYCLE -> this.cycle(current);
             case ADD -> this.add(player, placeholders, current);
@@ -138,7 +132,7 @@ public final class CanvasStateAction extends Action {
 
     private @NotNull String add(@NotNull Player player, @NotNull Placeholders placeholders, @Nullable String current) {
         double base = number(current, 0);
-        double result = base + number(this.amount == null ? "1" : this.parse(player, placeholders, this.amount), 0);
+        double result = base + number(this.amount == null ? "1" : TextService.render(this.amount, placeholders, player), 0);
         if (this.min != null) result = Math.max(this.min, result);
         if (this.max != null) result = Math.min(this.max, result);
         return format(result);
@@ -170,18 +164,18 @@ public final class CanvasStateAction extends Action {
     @Override
     protected void serializeProperties(@NotNull Map<String, Object> map) {
         map.put("type", this.operation.type());
-        if (this.dialog != null) map.put("dialog", this.dialog);
+        if (this.dialog != null) map.put("dialog", TextService.source(this.dialog));
         if (this.operation == Operation.REFRESH) return;
         map.put("key", this.key);
         if (this.keep != CanvasStateService.Keep.OPEN) map.put("keep", this.keep.name().toLowerCase(Locale.ROOT));
         switch (this.operation) {
-            case SET -> map.put("value", this.value);
+            case SET -> map.put("value", TextService.source(this.value));
             case CYCLE -> {
                 map.put("values", this.values);
                 if (this.reverse) map.put("reverse", true);
             }
             case ADD -> {
-                if (this.amount != null) map.put("amount", this.amount);
+                if (this.amount != null) map.put("amount", TextService.source(this.amount));
                 if (this.min != null) map.put("min", this.min);
                 if (this.max != null) map.put("max", this.max);
             }

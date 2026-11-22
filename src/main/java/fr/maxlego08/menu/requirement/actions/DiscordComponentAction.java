@@ -1,5 +1,6 @@
 package fr.maxlego08.menu.requirement.actions;
 
+import fr.maxlego08.menu.api.text.TextService;
 import fr.maxlego08.menu.zcore.logger.Logger;
 
 import fr.maxlego08.menu.api.button.Button;
@@ -26,7 +27,7 @@ public class DiscordComponentAction extends ActionHelper {
     protected void execute(@NonNull Player player, Button button, @NonNull InventoryEngine inventory, @NonNull Placeholders placeholders) {
         var scheduler = inventory.getPlugin().getScheduler();
         DiscordWebhookComponent discordWebhook = new DiscordWebhookComponent(this.configuration.webhookUrl());
-        this.configuration.apply(text -> text == null ? null : player == null ? text : this.papi(placeholders.parse(text), player), discordWebhook);
+        this.configuration.apply(text -> text == null ? null : player == null ? text : TextService.get().flow().formatText(text, placeholders.values(), player), discordWebhook);
 
         scheduler.runAsync(w -> {
             try {

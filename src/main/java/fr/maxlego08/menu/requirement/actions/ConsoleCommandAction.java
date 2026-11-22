@@ -3,6 +3,7 @@ package fr.maxlego08.menu.requirement.actions;
 import com.tcoded.folialib.wrapper.task.WrappedTask;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
+import fr.maxlego08.menu.api.text.TextService;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.common.utils.ActionHelper;
 import fr.maxlego08.menu.zcore.logger.Logger;
@@ -25,7 +26,7 @@ public class ConsoleCommandAction extends ActionHelper {
     }
 
     public ConsoleCommandAction(List<String> commands, boolean stopOnFailure) {
-        this.commands = texts(commands);
+        this.commands = TextService.texts(commands);
         this.stopOnFailure = stopOnFailure;
     }
 
@@ -53,7 +54,7 @@ public class ConsoleCommandAction extends ActionHelper {
     @Override
     protected void serializeProperties(@NonNull Map<String, Object> map) {
         map.put("type", "console-commands");
-        map.put("commands", sources(this.commands));
+        map.put("commands", TextService.sources(this.commands));
         if (this.stopOnFailure) map.put("stop-on-failure", true);
     }
 

@@ -151,6 +151,51 @@ public interface TextService {
     }
 
     /**
+     * Compiles lines read as text (commands, chat lines), once each: their placeholders only, values placed as written.
+     *
+     * @param lines the lines as written, or null
+     * @return the templates, in order; empty for null or no lines
+     */
+    static @NotNull List<TextTemplate> texts(@Nullable List<String> lines) {
+        if (lines == null || lines.isEmpty()) {
+            return List.of();
+        }
+        List<TextTemplate> templates = new ArrayList<>(lines.size());
+        for (String line : lines) {
+            templates.add(get().flow().compileText(line));
+        }
+        return List.copyOf(templates);
+    }
+
+    /**
+     * The lines as written of templates compiled with {@link #texts(List)}, for the configuration.
+     *
+     * @param templates the templates
+     * @return their sources, in order
+     */
+    static @NotNull List<String> sources(@NotNull List<TextTemplate> templates) {
+        List<String> lines = new ArrayList<>(templates.size());
+        for (TextTemplate template : templates) {
+            lines.add(template.source());
+        }
+        return lines;
+    }
+
+    /**
+     * The lines as written of compiled lines (an item's lore), one per template.
+     *
+     * @param templates the templates
+     * @return their sources, in order
+     */
+    static @NotNull List<String> sources(@NotNull TemplateList templates) {
+        List<String> lines = new ArrayList<>(templates.size());
+        for (Template template : templates.templates()) {
+            lines.add(template.source());
+        }
+        return lines;
+    }
+
+    /**
      * The text as written of a template compiled with {@link #text(String)}.
      *
      * @param template the template, or null

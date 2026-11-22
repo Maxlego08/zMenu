@@ -58,31 +58,6 @@ public abstract class ActionHelper extends Action {
     }
 
     /**
-     * Compiles lines read as text (commands, chat lines), once: their placeholders only, values placed as written.
-     */
-    protected static @NotNull List<TextTemplate> texts(@Nullable List<String> lines) {
-        if (lines == null || lines.isEmpty()) {
-            return List.of();
-        }
-        List<TextTemplate> templates = new ArrayList<>(lines.size());
-        for (String line : lines) {
-            templates.add(TextService.get().flow().compileText(line));
-        }
-        return List.copyOf(templates);
-    }
-
-    /**
-     * The lines as written, for the configuration.
-     */
-    protected static @NotNull List<String> sources(@NotNull List<TextTemplate> templates) {
-        List<String> lines = new ArrayList<>(templates.size());
-        for (TextTemplate template : templates) {
-            lines.add(template.source());
-        }
-        return lines;
-    }
-
-    /**
      * The lines rendered for a player with the menu's values and PlaceholderAPI, a line holding a line break giving
      * several. A value a player typed is placed as written: its placeholders are never read.
      */

@@ -478,7 +478,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
 
         if (!this.lore.isEmpty()) {
             TemplateList lines = locale == null ? this.lore : this.translatedLore.getOrDefault(locale, this.lore);
-            List<String> lore = this.papi(placeholders.parse(sources(lines)), offlinePlayer == null ? player : offlinePlayer, useCache);
+            List<String> lore = this.papi(placeholders.parse(TextService.sources(lines)), offlinePlayer == null ? player : offlinePlayer, useCache);
             List<String> flattened = new ArrayList<>();
             for (String str : lore) {
                 String[] parts = str.split("\n");
@@ -518,17 +518,6 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
             }
         }
         return this.lore;
-    }
-
-    /**
-     * The lines as written, one per template: the text engine applies the font images when it compiles.
-     */
-    private static @NotNull List<String> sources(@NotNull TemplateList templates) {
-        List<String> sources = new ArrayList<>(templates.size());
-        for (Template template : templates.templates()) {
-            sources.add(template.source());
-        }
-        return sources;
     }
 
     /**
@@ -786,7 +775,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     @Override
     @Deprecated(since = "1.1.2.2")
     public List<String> getLore() {
-        return sources(this.lore);
+        return TextService.sources(this.lore);
     }
 
     /**
@@ -1095,7 +1084,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     @Deprecated(since = "1.1.2.2")
     public Map<String, List<String>> getTranslatedLore() {
         Map<String, List<String>> lores = new HashMap<>(this.translatedLore.size());
-        this.translatedLore.forEach((locale, lore) -> lores.put(locale, sources(lore)));
+        this.translatedLore.forEach((locale, lore) -> lores.put(locale, TextService.sources(lore)));
         return lores;
     }
 
@@ -1344,7 +1333,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
         section.set("material", source(this.material));
 
         if (this.displayName != null) section.set("name", this.displayName.source());
-        if (!this.lore.isEmpty()) section.set("lore", sources(this.lore));
+        if (!this.lore.isEmpty()) section.set("lore", TextService.sources(this.lore));
         if (this.loreType != LoreType.REPLACE) section.set("lore-type", this.loreType.name());
         if (this.centerName) section.set("center-name", true);
         if (this.centerLore) section.set("center-lore", true);
@@ -1487,7 +1476,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
         }
         if (!this.translatedLore.isEmpty()) {
             List<Map<String, Object>> lores = new ArrayList<>(this.translatedLore.size());
-            this.translatedLore.forEach((locale, lore) -> lores.add(new LinkedHashMap<>(Map.of("locale", locale, "lore", sources(lore)))));
+            this.translatedLore.forEach((locale, lore) -> lores.add(new LinkedHashMap<>(Map.of("locale", locale, "lore", TextService.sources(lore)))));
             section.set("translated-lore", lores);
         }
     }
