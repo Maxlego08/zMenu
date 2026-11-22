@@ -7,19 +7,20 @@ import fr.maxlego08.menu.api.utils.record.dialogs.DialogListEntry;
 import fr.maxlego08.menu.hooks.dialogs.inventory.ZDialogListDialogInventory;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import org.bukkit.NamespacedKey;
-import org.bukkit.configuration.file.YamlConfiguration;
+import dev.dejvokep.boostedyaml.YamlDocument;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 public class DialogListDialogInventoryTypeLoader implements DialogInventoryTypeLoader<ZDialogListDialogInventory> {
 
     @Override
-    public ZDialogListDialogInventory load(@NotNull MenuPlugin menuPlugin, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String name, @NotNull String externalTitle) {
-        List<DialogListEntry> entries = this.loadEntries(configuration.getList("dialogs", List.of()), file);
+    public ZDialogListDialogInventory load(@NotNull MenuPlugin menuPlugin, @NotNull File file, @NotNull YamlDocument configuration, @NotNull String name, @NotNull String externalTitle) {
+        List<DialogListEntry> entries = this.loadEntries(YamlSections.getList(configuration, "dialogs", List.of()), file);
         if (entries.isEmpty()) {
             Logger.info("The dialog list " + file.getName() + " has no dialogs, add them under 'dialogs'.", Logger.LogType.WARNING);
         }
@@ -28,7 +29,7 @@ public class DialogListDialogInventoryTypeLoader implements DialogInventoryTypeL
         int buttonWidth = Math.clamp(configuration.getInt("button-width", 150), 1, 1024);
 
         ActionButtonRecord exitButton = null;
-        if (configuration.isConfigurationSection("exit-button")) {
+        if (configuration.isSection("exit-button")) {
             exitButton = this.loadActionButtonRecord(menuPlugin, configuration, "exit-button", file);
         }
 

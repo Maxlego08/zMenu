@@ -19,8 +19,8 @@ import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.datacomponent.item.PotionContents;
 import io.papermc.paper.registry.RegistryKey;
 import org.bukkit.Color;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.YamlConfiguration;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
+import dev.dejvokep.boostedyaml.YamlDocument;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.potion.PotionEffect;
@@ -31,6 +31,9 @@ import org.jetbrains.annotations.Nullable;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.configuration.ConfigurationSection;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 @AutoComponentLoader
 public class PotionContentsItemComponentLoader extends AbstractEffectItemComponentLoader {
@@ -40,7 +43,7 @@ public class PotionContentsItemComponentLoader extends AbstractEffectItemCompone
     }
 
     @Override
-    public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
+    public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlDocument configuration, @NotNull String path, @Nullable Section componentSection) {
         if (componentSection == null) return null;
 
         ResolvableRegistryEntry<PotionType> resolvableBasePotionType = ResolvableRegistry.autoOrNull(componentSection.getString("potion"), RegistryKey.POTION);
@@ -58,6 +61,13 @@ public class PotionContentsItemComponentLoader extends AbstractEffectItemCompone
         return MinecraftVersion.isServerAtLeast("1.21.3")
                 ? new PotionContentsComponent(resolvableBasePotionType, customName, color, customEffects)
                 : new LegacyPotionContentsComponent(resolvableBasePotionType, customName, color, customEffects);
+    }
+
+    @Override
+    @Deprecated
+    public ItemComponent load(MenuItemStackContext context, File file, YamlConfiguration configuration, String path, ConfigurationSection componentSection) {
+        YamlDocument configurationDocument = configuration == null ? null : YamlSections.toDocument(configuration);
+        return this.load(context, file, configurationDocument, path, YamlSections.toSection(configurationDocument, componentSection));
     }
 
     @Override

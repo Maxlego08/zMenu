@@ -18,7 +18,7 @@ import fr.maxlego08.menu.loader.MenuItemStackLoader;
 import fr.maxlego08.menu.zcore.utils.PerformanceDebug;
 import net.kyori.adventure.key.Key;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.configuration.file.YamlConfiguration;
+import dev.dejvokep.boostedyaml.YamlDocument;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
@@ -27,6 +27,8 @@ import org.jetbrains.annotations.NotNull;
 import java.io.File;
 import java.util.Map;
 import java.util.Optional;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
+import org.bukkit.configuration.file.YamlConfiguration;
 
 public class ZItemStackService extends ZUtils implements ItemStackService {
 
@@ -37,14 +39,21 @@ public class ZItemStackService extends ZUtils implements ItemStackService {
     }
 
     @Override
-    public MenuItemStack load(YamlConfiguration configuration, String path, File file) {
+    public MenuItemStack load(YamlDocument configuration, String path, File file) {
         return new MenuItemStackLoader(this.plugin.getInventoryManager()).load(configuration, path, file);
     }
 
     @Override
+    @Deprecated
+    public MenuItemStack load(YamlConfiguration configuration, String path, File file) {
+        YamlDocument configurationDocument = configuration == null ? null : YamlSections.toDocument(configuration);
+        return this.load(configurationDocument, path, file);
+    }
+
+    @Override
     public MenuItemStack load(File file, Map<String, Object> map) {
-        YamlConfiguration configuration = new YamlConfiguration();
-        configuration.createSection("item", map);
+        YamlDocument configuration = YamlSections.empty();
+        YamlSections.createSection(configuration, "item", map);
         return this.load(configuration, "item.", file);
     }
 

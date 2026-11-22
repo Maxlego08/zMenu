@@ -17,8 +17,8 @@ import fr.maxlego08.menu.api.utils.Loader;
 import fr.maxlego08.menu.hooks.dialogs.ZDialogManager;
 import fr.maxlego08.menu.hooks.dialogs.inventory.AbstractDialogInventory;
 import fr.maxlego08.menu.zcore.logger.Logger;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.YamlConfiguration;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
+import dev.dejvokep.boostedyaml.YamlDocument;
 import org.bukkit.plugin.Plugin;
 import org.jspecify.annotations.NonNull;
 
@@ -26,6 +26,8 @@ import java.io.File;
 import java.lang.reflect.Constructor;
 import java.util.*;
 import java.util.function.BiConsumer;
+import org.bukkit.configuration.file.YamlConfiguration;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 public class DialogLoader implements Loader<AbstractDialogInventory> {
     private final MenuPlugin menuPlugin;
@@ -37,7 +39,7 @@ public class DialogLoader implements Loader<AbstractDialogInventory> {
     }
 
     @Override
-    public AbstractDialogInventory load(@NonNull YamlConfiguration configuration, @NonNull String path, Object... objects) throws InventoryException {
+    public AbstractDialogInventory load(@NonNull YamlDocument configuration, @NonNull String path, Object... objects) throws InventoryException {
         File file = (File) objects[0];
 
         String name = configuration.getString("name", "");
@@ -74,7 +76,7 @@ public class DialogLoader implements Loader<AbstractDialogInventory> {
         } catch (IllegalArgumentException e) {
             throw new InventoryException("Invalid after action: " + afterActionString);
         }
-        if (configuration.isConfigurationSection("open-requirement")){
+        if (configuration.isSection("open-requirement")){
             try {
                 Requirement openRequirement = this.loadRequirement(configuration, "open-requirement.", file);
                 dialogInventory.setOpenRequirement(openRequirement);
@@ -82,8 +84,8 @@ public class DialogLoader implements Loader<AbstractDialogInventory> {
                 Logger.info("Failed to load open requirement: " + e.getMessage(), Logger.LogType.WARNING);
             }
         }
-        if (configuration.isConfigurationSection("inventory-replacement")) {
-            ConfigurationSection inventorySection = configuration.getConfigurationSection("inventory-replacement");
+        if (configuration.isSection("inventory-replacement")) {
+            Section inventorySection = configuration.getSection("inventory-replacement");
             if (inventorySection != null) {
                 InventoryReplacement inventoryReplacement = InventoryReplacement.deserialize(inventorySection);
                 if (inventoryReplacement != null) {
@@ -93,7 +95,7 @@ public class DialogLoader implements Loader<AbstractDialogInventory> {
                 }
             }
         }
-        if (configuration.isConfigurationSection("fallback-inventory")) {
+        if (configuration.isSection("fallback-inventory")) {
             String fallbackName = configuration.getString("fallback-inventory.name", "");
             String fallbackPlugin = configuration.getString("fallback-inventory.plugin", InventoryReplacement.DEFAULT_PLUGIN);
             int fallbackPage = configuration.getInt("fallback-inventory.page", 1);
@@ -125,6 +127,13 @@ public class DialogLoader implements Loader<AbstractDialogInventory> {
         return dialogInventory;
     }
 
+    @Override
+    @Deprecated
+    public AbstractDialogInventory load(YamlConfiguration configuration, String path, Object... objects) throws InventoryException  {
+        YamlDocument configurationDocument = configuration == null ? null : YamlSections.toDocument(configuration);
+        return this.load(configurationDocument, path, objects);
+    }
+
     /**
      * Loads InventoryOption
      */
@@ -147,7 +156,7 @@ public class DialogLoader implements Loader<AbstractDialogInventory> {
      * Loads buttons from the configuration
      */
     private <T extends Button> List<T> loadButtons(
-            YamlConfiguration configuration,
+            YamlDocument configuration,
             File file,
             String sectionKey,
             Class<T> buttonClass,
@@ -155,7 +164,7 @@ public class DialogLoader implements Loader<AbstractDialogInventory> {
     ) {
         List<T> buttons = new ArrayList<>();
 
-        ConfigurationSection section = configuration.getConfigurationSection(sectionKey);
+        Section section = configuration.getSection(sectionKey);
 
         if (section == null) {
             return buttons;
@@ -164,7 +173,7 @@ public class DialogLoader implements Loader<AbstractDialogInventory> {
         Loader<Button> loader = this.menuPlugin.getButtonManager()
                 .getLoaderButton(this.menuPlugin, file, 54, new HashMap<>());
 
-        for (String key : section.getKeys(false)) {
+        for (String key : section.getRoutesAsStrings(false)) {
             String path = sectionKey + "." + key + ".";
             try {
                 Button button = loader.load(configuration, path, key);
@@ -188,7 +197,7 @@ public class DialogLoader implements Loader<AbstractDialogInventory> {
         return buttons;
     }
 
-    protected Requirement loadRequirement(YamlConfiguration configuration, String path, File file) throws InventoryException {
+    protected Requirement loadRequirement(YamlDocument configuration, String path, File file) throws InventoryException {
         return this.menuPlugin.getButtonManager().loadRequirement(configuration, path, file);
     }
 

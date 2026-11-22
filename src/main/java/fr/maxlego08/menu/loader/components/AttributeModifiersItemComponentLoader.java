@@ -21,8 +21,8 @@ import io.papermc.paper.datacomponent.item.attribute.AttributeModifierDisplay;
 import org.bukkit.Keyed;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.YamlConfiguration;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
+import dev.dejvokep.boostedyaml.YamlDocument;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
@@ -32,6 +32,9 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.configuration.ConfigurationSection;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 @AutoComponentLoader
 public class AttributeModifiersItemComponentLoader extends ItemComponentLoader {
@@ -43,7 +46,7 @@ public class AttributeModifiersItemComponentLoader extends ItemComponentLoader {
     }
 
     @Override
-    public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
+    public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlDocument configuration, @NotNull String path, @Nullable Section componentSection) {
         if (componentSection == null) return null;
         String mergeStrategyStr = componentSection.getString("attribute-merge-strategy");
         ResolvableEnum<AttributeMergeStrategy> attributeMergeStrategyResolvable = ResolvableEnum.autoOrNull(AttributeMergeStrategy.class, mergeStrategyStr);
@@ -61,6 +64,13 @@ public class AttributeModifiersItemComponentLoader extends ItemComponentLoader {
         return MinecraftVersion.isServerAtLeast("1.21.3")
                 ? new AttributeModifiersComponent(this.plugin, resolvableWrappers, attributeMergeStrategyResolvable)
                 : new LegacyAttributeModifiersComponent(this.plugin, resolvableWrappers, attributeMergeStrategyResolvable);
+    }
+
+    @Override
+    @Deprecated
+    public ItemComponent load(MenuItemStackContext context, File file, YamlConfiguration configuration, String path, ConfigurationSection componentSection) {
+        YamlDocument configurationDocument = configuration == null ? null : YamlSections.toDocument(configuration);
+        return this.load(context, file, configurationDocument, path, YamlSections.toSection(configurationDocument, componentSection));
     }
 
     @Override

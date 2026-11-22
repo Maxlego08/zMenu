@@ -14,13 +14,16 @@ import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.datacomponent.item.KineticWeapon;
 import net.kyori.adventure.key.Key;
 import org.bukkit.NamespacedKey;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.YamlConfiguration;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
+import dev.dejvokep.boostedyaml.YamlDocument;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.configuration.ConfigurationSection;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 @AutoComponentLoader
 @SinceVersion("1.21.11")
@@ -31,14 +34,14 @@ public final class KineticWeaponItemComponentLoader extends ItemComponentLoader 
     }
 
     @Override
-    public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
+    public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlDocument configuration, @NotNull String path, @Nullable Section componentSection) {
         if (componentSection == null) return null;
 
         ResolvableInt delayTick = ResolvableInt.autoOrNull(componentSection.getString("delay-ticks"));
         ResolvableInt contactCooldownTicks = ResolvableInt.autoOrNull(componentSection.getString("contact-cooldown-ticks"));
-        ResolvableKineticCondition dismountConditions = this.loadKineticCondition(componentSection.getConfigurationSection("dismount-conditions"));
-        ResolvableKineticCondition knockbackConditions = this.loadKineticCondition(componentSection.getConfigurationSection("knockback-conditions"));
-        ResolvableKineticCondition damageConditions = this.loadKineticCondition(componentSection.getConfigurationSection("damage-conditions"));
+        ResolvableKineticCondition dismountConditions = this.loadKineticCondition(componentSection.getSection("dismount-conditions"));
+        ResolvableKineticCondition knockbackConditions = this.loadKineticCondition(componentSection.getSection("knockback-conditions"));
+        ResolvableKineticCondition damageConditions = this.loadKineticCondition(componentSection.getSection("damage-conditions"));
         ResolvableFloat forwardMovement = ResolvableFloat.autoOrNull(componentSection.getString("forward-movement"));
         ResolvableFloat damageMultiplier = ResolvableFloat.autoOrNull(componentSection.getString("damage-multiplier"));
         ResolvableNamespacedKey sound = ResolvableNamespacedKey.autoOrNull(componentSection.getString("sound"));
@@ -55,6 +58,13 @@ public final class KineticWeaponItemComponentLoader extends ItemComponentLoader 
                 sound,
                 hitSound
         );
+    }
+
+    @Override
+    @Deprecated
+    public ItemComponent load(MenuItemStackContext context, File file, YamlConfiguration configuration, String path, ConfigurationSection componentSection) {
+        YamlDocument configurationDocument = configuration == null ? null : YamlSections.toDocument(configuration);
+        return this.load(context, file, configurationDocument, path, YamlSections.toSection(configurationDocument, componentSection));
     }
 
     @Override
@@ -85,7 +95,7 @@ public final class KineticWeaponItemComponentLoader extends ItemComponentLoader 
         return namespacedKey == null ? null : ResolvableNamespacedKey.of(namespacedKey);
     }
 
-    private ResolvableKineticCondition loadKineticCondition(@Nullable ConfigurationSection section) {
+    private ResolvableKineticCondition loadKineticCondition(@Nullable Section section) {
         if (section == null) return null;
         ResolvableInt maxDurationTicks = ResolvableInt.autoOrNull(section.getString("max-duration-ticks"));
         ResolvableFloat minSpeed = ResolvableFloat.autoOrNull(section.getString("min-speed"));

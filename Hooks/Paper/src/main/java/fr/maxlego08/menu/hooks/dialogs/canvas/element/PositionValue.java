@@ -2,7 +2,7 @@ package fr.maxlego08.menu.hooks.dialogs.canvas.element;
 
 import fr.maxlego08.menu.api.dialog.canvas.CanvasRenderContext;
 import fr.maxlego08.menu.zcore.logger.Logger;
-import org.bukkit.configuration.ConfigurationSection;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 /**
  * A coordinate of a canvas element: a number, or a placeholder resolved when the canvas is drawn.
@@ -55,7 +56,7 @@ public record PositionValue(@NotNull String raw, @Nullable Integer fixed, @NotNu
     /**
      * Reads an x, which may be a placeholder without listing its values.
      */
-    static @NotNull PositionValue readX(@NotNull ConfigurationSection section, @NotNull String key, @NotNull String name, @NotNull String source) {
+    static @NotNull PositionValue readX(@NotNull Section section, @NotNull String key, @NotNull String name, @NotNull String source) {
         if (section.isInt(key)) return of(section.getInt(key));
         String raw = section.getString(key);
         if (raw == null || raw.isBlank()) throw ElementSections.error(name, source, "needs " + key);
@@ -66,7 +67,7 @@ public record PositionValue(@NotNull String raw, @Nullable Integer fixed, @NotNu
     /**
      * Reads a y: a number from 0, or a placeholder with the values it can take under {@code <key>-values}.
      */
-    static @NotNull PositionValue readY(@NotNull ConfigurationSection section, @NotNull String key, @NotNull String name, @NotNull String source) {
+    static @NotNull PositionValue readY(@NotNull Section section, @NotNull String key, @NotNull String name, @NotNull String source) {
         if (section.isInt(key)) {
             int value = section.getInt(key);
             if (value < 0) throw ElementSections.error(name, source, "cannot have a negative " + key);
@@ -79,7 +80,7 @@ public record PositionValue(@NotNull String raw, @Nullable Integer fixed, @NotNu
         String valuesKey = key + "-values";
         TreeSet<Integer> values = new TreeSet<>();
         if (section.isList(valuesKey)) {
-            for (Object value : section.getList(valuesKey, List.of())) {
+            for (Object value : YamlSections.getList(section, valuesKey, List.of())) {
                 try {
                     values.add(Integer.parseInt(String.valueOf(value).trim()));
                 } catch (NumberFormatException exception) {
@@ -157,7 +158,7 @@ public record PositionValue(@NotNull String raw, @Nullable Integer fixed, @NotNu
      * @param section The section of the element.
      * @param key     The key of the coordinate.
      */
-    void serialize(@NotNull ConfigurationSection section, @NotNull String key) {
+    void serialize(@NotNull Section section, @NotNull String key) {
         if (this.fixed != null) {
             section.set(key, this.fixed);
             return;

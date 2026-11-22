@@ -6,7 +6,7 @@ import fr.maxlego08.menu.api.itemstack.MenuItemStackConversion;
 import fr.maxlego08.menu.api.loader.ItemComponentLoader;
 import fr.maxlego08.menu.common.utils.itemstack.MenuItemStackFromItemStack;
 import fr.maxlego08.menu.loader.MenuItemStackLoader;
-import org.bukkit.configuration.file.YamlConfiguration;
+import dev.dejvokep.boostedyaml.YamlDocument;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -15,6 +15,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 public abstract class AbstractMenuItemStackListComponentLoaderBase extends ItemComponentLoader {
     private final MenuPlugin plugin;
@@ -31,8 +32,8 @@ public abstract class AbstractMenuItemStackListComponentLoaderBase extends ItemC
         for (var rawMap : rawList) {
             @SuppressWarnings("unchecked")
             Map<String, Object> itemMap = (Map<String, Object>) rawMap;
-            YamlConfiguration yamlConfiguration = new YamlConfiguration();
-            yamlConfiguration.createSection("item", itemMap);
+            YamlDocument yamlConfiguration = YamlSections.empty();
+            YamlSections.createSection(yamlConfiguration, "item", itemMap);
             MenuItemStack menuItemStack = menuItemStackLoader.load(yamlConfiguration, "item.", file);
             if (menuItemStack != null) {
                 itemStacks.add(menuItemStack);
@@ -44,8 +45,8 @@ public abstract class AbstractMenuItemStackListComponentLoaderBase extends ItemC
     @Nullable
     protected MenuItemStack loadItemStack(@NotNull Map<String, Object> itemMap, @NotNull File file) {
         MenuItemStackLoader menuItemStackLoader = new MenuItemStackLoader(this.plugin.getInventoryManager());
-        YamlConfiguration yamlConfiguration = new YamlConfiguration();
-        yamlConfiguration.createSection("item", itemMap);
+        YamlDocument yamlConfiguration = YamlSections.empty();
+        YamlSections.createSection(yamlConfiguration, "item", itemMap);
         return menuItemStackLoader.load(yamlConfiguration, "item.", file);
     }
 

@@ -12,8 +12,7 @@ import fr.maxlego08.menu.common.utils.cache.YamlFileCache;
 import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import org.bukkit.Bukkit;
-import org.bukkit.configuration.InvalidConfigurationException;
-import org.bukkit.configuration.file.YamlConfiguration;
+import dev.dejvokep.boostedyaml.YamlDocument;
 import org.bukkit.entity.Player;
 
 import java.io.File;
@@ -29,6 +28,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 /**
  * Watches the {@code inventories} folder and reloads an inventory as soon as its file is modified,
@@ -471,8 +471,8 @@ public class InventoryHotReload {
 
         // Do not unload a working inventory because of a YAML error, the file is probably being edited
         try {
-            new YamlConfiguration().loadFromString(new String(content, StandardCharsets.UTF_8));
-        } catch (InvalidConfigurationException exception) {
+            YamlSections.load(new String(content, StandardCharsets.UTF_8));
+        } catch (Exception exception) {
             Logger.info(PREFIX + fileName + " contains a YAML error and was not " + (optional.isPresent() ? "reloaded, the previous version stays loaded" : "loaded") + ": " + exception.getMessage(), Logger.LogType.ERROR);
             return;
         }

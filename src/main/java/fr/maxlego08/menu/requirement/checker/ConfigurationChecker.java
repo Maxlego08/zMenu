@@ -7,11 +7,12 @@ import fr.maxlego08.menu.api.checker.InventoryLoadRequirement;
 import fr.maxlego08.menu.api.checker.InventoryRequirementType;
 import fr.maxlego08.menu.api.pattern.PatternManager;
 import fr.maxlego08.menu.common.utils.ZUtils;
-import org.bukkit.configuration.file.YamlConfiguration;
+import dev.dejvokep.boostedyaml.YamlDocument;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 public abstract class ConfigurationChecker extends ZUtils {
 
@@ -34,9 +35,9 @@ public abstract class ConfigurationChecker extends ZUtils {
      * @param path                     The path to check
      * @param inventoryLoadRequirement The inventory load requirement to add missing requirements to
      */
-    protected void checkRequirement(YamlConfiguration configuration, String path, InventoryLoadRequirement inventoryLoadRequirement) {
+    protected void checkRequirement(YamlDocument configuration, String path, InventoryLoadRequirement inventoryLoadRequirement) {
 
-        List<Map<String, Object>> requirements = (List<Map<String, Object>>) configuration.getList(path + "requirements", configuration.getList(path + "requirement", new ArrayList<>()));
+        List<Map<String, Object>> requirements = (List<Map<String, Object>>) YamlSections.getList(configuration, path + "requirements", YamlSections.getList(configuration, path + "requirement", new ArrayList<>()));
 
         this.buttonManager.getEmptyPermissible(requirements).forEach(name -> inventoryLoadRequirement.addRequirement(InventoryRequirementType.PERMISSIBLE, name));
         this.checkAction(configuration, path + "success", inventoryLoadRequirement);
@@ -50,8 +51,8 @@ public abstract class ConfigurationChecker extends ZUtils {
      * @param path                     The path to the actions within the configuration
      * @param inventoryLoadRequirement The inventory load requirement to add missing actions to
      */
-    protected void checkAction(YamlConfiguration configuration, String path, InventoryLoadRequirement inventoryLoadRequirement) {
-        List<Map<String, Object>> actions = (List<Map<String, Object>>) configuration.getList(path, new ArrayList<>());
+    protected void checkAction(YamlDocument configuration, String path, InventoryLoadRequirement inventoryLoadRequirement) {
+        List<Map<String, Object>> actions = (List<Map<String, Object>>) YamlSections.getList(configuration, path, new ArrayList<>());
         this.buttonManager.getEmptyActions(actions).forEach(name -> inventoryLoadRequirement.addRequirement(InventoryRequirementType.ACTION, name));
     }
 }

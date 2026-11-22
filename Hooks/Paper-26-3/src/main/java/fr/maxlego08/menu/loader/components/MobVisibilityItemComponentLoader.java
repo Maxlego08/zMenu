@@ -17,8 +17,8 @@ import io.papermc.paper.registry.RegistryKey;
 import io.papermc.paper.registry.TypedKey;
 import io.papermc.paper.registry.set.RegistryKeySet;
 import io.papermc.paper.registry.tag.Tag;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.YamlConfiguration;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
+import dev.dejvokep.boostedyaml.YamlDocument;
 import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
@@ -27,6 +27,9 @@ import org.jetbrains.annotations.Nullable;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.configuration.ConfigurationSection;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 @AutoComponentLoader
 @SinceVersion("26.3")
@@ -37,7 +40,7 @@ public final class MobVisibilityItemComponentLoader extends ItemComponentLoader 
     }
 
     @Override
-    public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
+    public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlDocument configuration, @NotNull String path, @Nullable Section componentSection) {
         if (componentSection == null) return null;
 
         Object rawEntityTypes = componentSection.get("targeting-entity-types");
@@ -61,6 +64,13 @@ public final class MobVisibilityItemComponentLoader extends ItemComponentLoader 
         }
 
         return new MobVisibilityComponent(entityTypes, visibility);
+    }
+
+    @Override
+    @Deprecated
+    public ItemComponent load(MenuItemStackContext context, File file, YamlConfiguration configuration, String path, ConfigurationSection componentSection) {
+        YamlDocument configurationDocument = configuration == null ? null : YamlSections.toDocument(configuration);
+        return this.load(context, file, configurationDocument, path, YamlSections.toSection(configurationDocument, componentSection));
     }
 
     @Override

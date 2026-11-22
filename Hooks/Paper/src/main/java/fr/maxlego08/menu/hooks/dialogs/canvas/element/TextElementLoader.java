@@ -7,13 +7,15 @@ import fr.maxlego08.menu.api.dialog.canvas.CanvasElementLoader;
 import fr.maxlego08.menu.api.dialog.canvas.CanvasValue;
 import fr.maxlego08.menu.api.dialog.canvas.HAlign;
 import net.kyori.adventure.key.Key;
-import org.bukkit.configuration.ConfigurationSection;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.function.UnaryOperator;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
+import org.bukkit.configuration.ConfigurationSection;
 
 /**
  * Reads {@link TextElement}s, written {@code type: text}.
@@ -31,9 +33,9 @@ public final class TextElementLoader implements CanvasElementLoader {
     }
 
     @Override
-    public @NotNull CanvasElement load(@NotNull MenuPlugin plugin, @NotNull String name, @NotNull ConfigurationSection section, @NotNull String source) {
+    public @NotNull CanvasElement load(@NotNull MenuPlugin plugin, @NotNull String name, @NotNull Section section, @NotNull String source) {
         ElementSections.rejectUnknownKeys(section, KEYS, name, source);
-        List<String> lines = section.isList("text") ? section.getStringList("text") : List.of(ElementSections.requireString(section, "text", name, source));
+        List<String> lines = section.isList("text") ? YamlSections.getStringList(section, "text") : List.of(ElementSections.requireString(section, "text", name, source));
         if (lines.isEmpty()) throw ElementSections.error(name, source, "needs text");
 
         PositionValue x = PositionValue.readX(section, "x", name, source);
@@ -50,7 +52,13 @@ public final class TextElementLoader implements CanvasElementLoader {
                 this.box(section, name, source, width, lineHeight == null ? 9 : lineHeight), section.getBoolean("escape-placeholders", true));
     }
 
-    private TextElement.TextBox box(@NotNull ConfigurationSection section, @NotNull String name, @NotNull String source, CanvasValue<Integer> width, int lineHeight) {
+    @Override
+    @Deprecated
+    public CanvasElement load(MenuPlugin plugin, String name, ConfigurationSection section, String source) {
+        return this.load(plugin, name, (section == null ? null : YamlSections.toDocument(section)), source);
+    }
+
+    private TextElement.TextBox box(@NotNull Section section, @NotNull String name, @NotNull String source, CanvasValue<Integer> width, int lineHeight) {
         boolean hasBox = section.contains("max-lines") || section.contains("height");
         if (!hasBox) {
             for (String key : BOX_KEYS) {

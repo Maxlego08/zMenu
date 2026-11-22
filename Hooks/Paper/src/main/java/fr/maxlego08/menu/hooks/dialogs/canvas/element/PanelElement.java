@@ -7,11 +7,13 @@ import fr.maxlego08.menu.api.dialog.canvas.CanvasRenderContext;
 import fr.maxlego08.menu.api.dialog.canvas.CanvasVariants;
 import fr.maxlego08.menu.api.dialog.canvas.ResolvedGlyph;
 import fr.maxlego08.menu.hooks.dialogs.canvas.glyph.PanelGlyphProvider;
-import org.bukkit.configuration.ConfigurationSection;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 import java.util.function.Function;
+import org.bukkit.configuration.ConfigurationSection;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 /**
  * Draws a texture of {@code resource-pack/textures} stretched to a size by nine-slice: its corners are
@@ -80,7 +82,7 @@ public record PanelElement(@NotNull String name, @NotNull PackValue texture, int
     }
 
     @Override
-    public void serialize(@NotNull ConfigurationSection section) {
+    public void serialize(@NotNull Section section) {
         section.set("type", "panel");
         this.texture.serialize(section, "texture");
         section.set("border", this.border);
@@ -88,5 +90,11 @@ public record PanelElement(@NotNull String name, @NotNull PackValue texture, int
         this.y.serialize(section, "y");
         section.set("width", this.width);
         section.set("height", this.height);
+    }
+
+    @Override
+    @Deprecated
+    public void serialize(ConfigurationSection section) {
+        YamlSections.write(section, copy -> this.serialize(copy));
     }
 }

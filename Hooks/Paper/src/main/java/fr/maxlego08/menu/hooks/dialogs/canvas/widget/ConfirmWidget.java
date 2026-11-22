@@ -10,12 +10,14 @@ import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import net.kyori.adventure.text.event.ClickEvent;
-import org.bukkit.configuration.ConfigurationSection;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import org.bukkit.configuration.ConfigurationSection;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 /**
  * A button that asks for a second click: the first click arms it (its value becomes {@code true} and it
@@ -133,7 +135,7 @@ public final class ConfirmWidget extends WidgetElement {
     }
 
     @Override
-    public void serialize(@NotNull ConfigurationSection section) {
+    public void serialize(@NotNull Section section) {
         this.settings.serialize(section, TYPE, "false");
         section.set("width", this.width);
         section.set("height", this.height);
@@ -143,12 +145,18 @@ public final class ConfirmWidget extends WidgetElement {
         this.textArmed.serialize(section, "text-armed", false);
         if (!this.font.equals("default")) section.set("font", this.font);
         if (!this.clickRequirements.isEmpty()) {
-            ConfigurationSection requirements = section.createSection("click-requirement");
+            Section requirements = section.createSection("click-requirement");
             for (int index = 0; index < this.clickRequirements.size(); index++) {
                 this.clickRequirements.get(index).serialize(requirements.createSection(String.valueOf(index + 1)));
             }
         }
         if (!this.actions.isEmpty()) section.set("actions", this.actions.stream().map(Action::serialize).toList());
         if (!this.refresh) section.set("refresh", false);
+    }
+
+    @Override
+    @Deprecated
+    public void serialize(ConfigurationSection section) {
+        YamlSections.write(section, copy -> this.serialize(copy));
     }
 }

@@ -32,9 +32,9 @@ import fr.maxlego08.menu.zcore.utils.TypeSafeCache;
 import fr.maxlego08.sarah.database.DatabaseType;
 import net.kyori.adventure.key.Key;
 import org.bukkit.Bukkit;
-import org.bukkit.configuration.ConfigurationSection;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
 import org.bukkit.configuration.InvalidConfigurationException;
-import org.bukkit.configuration.file.YamlConfiguration;
+import dev.dejvokep.boostedyaml.YamlDocument;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -49,6 +49,8 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
+import java.io.IOException;
 
 /**
  * zMenu's storage, on top of the {@link StorageProvider} chosen by {@code storage-type}.
@@ -94,7 +96,7 @@ public class ZStorageManager implements StorageManager {
         providers.register(this.plugin, new RedisStorageProvider());
         providers.register(this.plugin, new MongoStorageProvider());
 
-        StorageConfiguration configuration = StorageConfiguration.read(this.plugin.getConfig());
+        StorageConfiguration configuration = StorageConfiguration.read(this.plugin.getConfigDocument());
         Key key;
         if (this.plugin.isMockBukkitServer()) {
             Logger.info("You are using a MockBukkit server, data is kept in memory.");
@@ -130,7 +132,7 @@ public class ZStorageManager implements StorageManager {
         MessageBroker broker = candidate.broker().orElse(null);
         if (configuration.messagingType().equalsIgnoreCase("REDIS") && !key.equals(ZMenuKeys.key("redis"))) {
             try {
-                this.redisMessaging = RedisMessaging.open(this.plugin.getConfig(), serverId, this.plugin.getLogger());
+                this.redisMessaging = RedisMessaging.open(this.plugin.getConfigDocument(), serverId, this.plugin.getLogger());
                 broker = this.redisMessaging.broker();
             } catch (RuntimeException exception) {
                 Logger.error("Unable to connect to Redis for messaging-type REDIS, changes are not sent to the other servers", exception);
@@ -178,7 +180,7 @@ public class ZStorageManager implements StorageManager {
         if (!this.isEnable()) throw new IllegalStateException("The storage is not open");
 
         Key key = providerKey(storageType);
-        YamlConfiguration targetConfiguration = this.migrationConfiguration(storageType);
+        YamlDocument targetConfiguration = this.migrationConfiguration(storageType);
         if (key != null && this.isStorageInUse(key, targetConfiguration)) {
             throw new IllegalArgumentException("storage-type " + storageType + " is the storage in use");
         }
@@ -187,7 +189,7 @@ public class ZStorageManager implements StorageManager {
 
         this.flush();
 
-        target.open(new StorageContext(this.plugin, targetConfiguration, this.plugin.getDataFolder(), this.plugin.getLogger(), this.variableService.serverId())).join();
+        target.open(new StorageContext(this.plugin, YamlSections.toBukkit(targetConfiguration), this.plugin.getDataFolder(), this.plugin.getLogger(), this.variableService.serverId())).join();
         try {
             return new StorageMigration(this.provider, target, progress).run();
         } finally {
@@ -201,23 +203,27 @@ public class ZStorageManager implements StorageManager {
      * {@code migration-database-configuration}. The shared file is not read again when the target
      * opens, so it cannot replace the migration values.
      */
-    private YamlConfiguration migrationConfiguration(String storageType) throws InvalidConfigurationException {
-        YamlConfiguration configuration = new YamlConfiguration();
-        configuration.loadFromString(this.plugin.getConfig().saveToString());
+    private YamlDocument migrationConfiguration(String storageType) throws InvalidConfigurationException {
+        YamlDocument configuration;
+        try {
+            configuration = YamlSections.load(this.plugin.getConfigDocument().dump());
+        } catch (IOException exception) {
+            throw new InvalidConfigurationException(exception.getMessage(), exception);
+        }
         configuration.set("storage-type", storageType.toUpperCase(Locale.ROOT));
         configuration.set("messaging-type", "NONE");
 
-        ConfigurationSection shared = StorageConfiguration.sharedFile();
-        copyValues(shared == null ? null : shared.getConfigurationSection("database-configuration"), configuration);
-        copyValues(this.plugin.getConfig().getConfigurationSection("migration-database-configuration"), configuration);
+        Section shared = StorageConfiguration.sharedFile();
+        copyValues(shared == null ? null : shared.getSection("database-configuration"), configuration);
+        copyValues(this.plugin.getConfigDocument().getSection("migration-database-configuration"), configuration);
         configuration.set(StorageConfiguration.USE_SHARED_FILE, false);
         return configuration;
     }
 
-    private static void copyValues(@Nullable ConfigurationSection source, ConfigurationSection target) {
+    private static void copyValues(@Nullable Section source, Section target) {
         if (source == null) return;
-        for (Map.Entry<String, Object> entry : source.getValues(true).entrySet()) {
-            if (!(entry.getValue() instanceof ConfigurationSection)) {
+        for (Map.Entry<String, Object> entry : source.getStringRouteMappedValues(true).entrySet()) {
+            if (!(entry.getValue() instanceof Section)) {
                 target.set("database-configuration." + entry.getKey(), entry.getValue());
             }
         }
@@ -229,11 +235,11 @@ public class ZStorageManager implements StorageManager {
      * same storage. Two SQL storages are the same when they are the same kind of server (MySQL and
      * MariaDB are one kind) at the same address, with the same database and table prefix.
      */
-    private boolean isStorageInUse(Key key, ConfigurationSection targetConfiguration) {
+    private boolean isStorageInUse(Key key, Section targetConfiguration) {
         if (!key.equals(this.provider.key())) return false;
         if (!key.equals(ZMenuKeys.key("sql"))) return true;
 
-        StorageConfiguration source = StorageConfiguration.read(this.plugin.getConfig());
+        StorageConfiguration source = StorageConfiguration.read(this.plugin.getConfigDocument());
         StorageConfiguration target = StorageConfiguration.read(targetConfiguration);
         DatabaseType sourceType = SqlStorageProvider.databaseType(source.storageType());
         DatabaseType targetType = SqlStorageProvider.databaseType(target.storageType());

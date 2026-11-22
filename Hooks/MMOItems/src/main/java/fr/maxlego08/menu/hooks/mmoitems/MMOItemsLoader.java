@@ -7,11 +7,13 @@ import fr.maxlego08.menu.api.loader.MaterialLoader;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import net.Indyuce.mmoitems.MMOItems;
 import net.Indyuce.mmoitems.api.Type;
-import org.bukkit.configuration.file.YamlConfiguration;
+import dev.dejvokep.boostedyaml.YamlDocument;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.bukkit.configuration.file.YamlConfiguration;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 @AutoMaterialLoader
 @RequiresPlugin("MMOItems")
@@ -22,7 +24,7 @@ public class MMOItemsLoader extends MaterialLoader {
     }
 
     @Override
-    public @Nullable ItemStack load(@NotNull Player player, @Nullable YamlConfiguration configuration, @NotNull String path, @NotNull String materialString) {
+    public @Nullable ItemStack load(@NotNull Player player, @Nullable YamlDocument configuration, @NotNull String path, @NotNull String materialString) {
         String[] split = materialString.split(":",2);
         if (split.length != 2) return null;
         try {
@@ -44,5 +46,12 @@ public class MMOItemsLoader extends MaterialLoader {
                 Logger.info(String.format("Error loading MMOItems material '%s': %s", materialString, e.getMessage()));
             return null;
         }
+    }
+
+    @Override
+    @Deprecated
+    public ItemStack load(Player player, YamlConfiguration configuration, String path, String materialString) {
+        YamlDocument configurationDocument = configuration == null ? null : YamlSections.toDocument(configuration);
+        return this.load(player, configurationDocument, path, materialString);
     }
 }

@@ -24,7 +24,7 @@ import fr.maxlego08.menu.hooks.bedrock.loader.builder.BedrockBuilderManager;
 import fr.maxlego08.menu.common.utils.PluginUtils;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import org.bukkit.Bukkit;
-import org.bukkit.configuration.file.YamlConfiguration;
+import dev.dejvokep.boostedyaml.YamlDocument;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.geysermc.cumulus.form.Form;
@@ -39,6 +39,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Stream;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 public class ZBedrockManager extends BedrockBuilderManager implements BedrockManager {
     private final MenuPlugin menuPlugin;
@@ -168,7 +169,7 @@ public class ZBedrockManager extends BedrockBuilderManager implements BedrockMan
     @Override
     @SuppressWarnings("unchecked")
     public BedrockInventory<?,?,?> loadInventory(Plugin plugin, File file, Class<? extends BedrockInventory<?, ?, ?>> dialogClass) throws DialogException, InventoryException {
-        YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
+        YamlDocument configuration = YamlSections.load(file);
 
         Loader<AbstractBedrockInventory<?,?,?>> loader = new BedrockLoader(this.menuPlugin, this);
         BedrockInventory<?,?,?> dialog = loader.load(configuration, "", file, dialogClass, plugin);

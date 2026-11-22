@@ -5,7 +5,7 @@ import fr.maxlego08.menu.api.dialog.canvas.CanvasRenderContext;
 import fr.maxlego08.menu.api.dialog.canvas.CanvasVariants;
 import fr.maxlego08.menu.api.dialog.canvas.HAlign;
 import fr.maxlego08.menu.api.dialog.canvas.ResolvedGlyph;
-import org.bukkit.configuration.ConfigurationSection;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.function.Function;
+import org.bukkit.configuration.ConfigurationSection;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 /**
  * A switch between {@code true} and {@code false}.
@@ -123,7 +125,7 @@ public final class ToggleWidget extends WidgetElement {
     }
 
     @Override
-    public void serialize(@NotNull ConfigurationSection section) {
+    public void serialize(@NotNull Section section) {
         this.settings.serialize(section, TYPE, "false");
         section.set("glyph-on", this.glyphOn);
         section.set("glyph-off", this.glyphOff);
@@ -132,5 +134,11 @@ public final class ToggleWidget extends WidgetElement {
         this.labelOff.serialize(section, "label-off", false);
         if (!this.font.equals("default")) section.set("font", this.font);
         if (this.width != null) section.set("width", this.width);
+    }
+
+    @Override
+    @Deprecated
+    public void serialize(ConfigurationSection section) {
+        YamlSections.write(section, copy -> this.serialize(copy));
     }
 }

@@ -8,8 +8,10 @@ import fr.maxlego08.menu.api.dialog.canvas.CanvasVariants;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.object.ObjectContents;
-import org.bukkit.configuration.ConfigurationSection;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
 import org.jetbrains.annotations.NotNull;
+import org.bukkit.configuration.ConfigurationSection;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 /**
  * Draws a sprite of one of the client's texture atlases, 8 pixels wide and high, on a text line
@@ -49,11 +51,17 @@ public record SpriteElement(@NotNull String name, @NotNull CanvasValue<Key> atla
     }
 
     @Override
-    public void serialize(@NotNull ConfigurationSection section) {
+    public void serialize(@NotNull Section section) {
         section.set("type", "sprite");
         if (this.atlas.isPlaceholder() || !DEFAULT_ATLAS.equals(this.atlas.fixed())) this.atlas.serialize(section, "atlas");
         this.sprite.serialize(section, "sprite");
         this.x.serialize(section, "x");
         section.set("line", this.line);
+    }
+
+    @Override
+    @Deprecated
+    public void serialize(ConfigurationSection section) {
+        YamlSections.write(section, copy -> this.serialize(copy));
     }
 }

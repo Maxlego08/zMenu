@@ -31,7 +31,7 @@ public class ZWebsiteManager extends ZUtils implements WebsiteManager {
     public ZWebsiteManager(ZMenuPlugin plugin) {
         super();
         this.plugin = plugin;
-        this.API_URL = plugin.getConfig().getString("api-url", "https://minecraft-inventory-builder.com/api/v2/");
+        this.API_URL = plugin.getConfigDocument().getString("api-url", "https://minecraft-inventory-builder.com/api/v2/");
         this.liveSyncManager = new LiveSyncManager(plugin, this.API_URL);
     }
 

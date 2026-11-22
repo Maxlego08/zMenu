@@ -1,7 +1,7 @@
 package fr.maxlego08.menu.hooks.dialogs.canvas.element;
 
 import fr.maxlego08.menu.api.exceptions.DialogException;
-import org.bukkit.configuration.ConfigurationSection;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
@@ -17,20 +17,20 @@ public final class ElementSections {
     private ElementSections() {
     }
 
-    public static void rejectUnknownKeys(@NotNull ConfigurationSection section, @NotNull Set<String> allowed, @NotNull String name, @NotNull String source) {
-        for (String key : section.getKeys(false)) {
+    public static void rejectUnknownKeys(@NotNull Section section, @NotNull Set<String> allowed, @NotNull String name, @NotNull String source) {
+        for (String key : section.getRoutesAsStrings(false)) {
             if (!allowed.contains(key)) {
                 throw new DialogException("The canvas element " + name + " of " + source + " has the unknown key " + key + ", allowed: " + String.join(", ", allowed));
             }
         }
     }
 
-    public static int requireInt(@NotNull ConfigurationSection section, @NotNull String key, @NotNull String name, @NotNull String source) {
+    public static int requireInt(@NotNull Section section, @NotNull String key, @NotNull String name, @NotNull String source) {
         if (!section.isInt(key)) throw new DialogException("The canvas element " + name + " of " + source + " needs a whole number " + key);
         return section.getInt(key);
     }
 
-    public static @NotNull String requireString(@NotNull ConfigurationSection section, @NotNull String key, @NotNull String name, @NotNull String source) {
+    public static @NotNull String requireString(@NotNull Section section, @NotNull String key, @NotNull String name, @NotNull String source) {
         String value = section.getString(key);
         if (value == null || value.isBlank()) throw new DialogException("The canvas element " + name + " of " + source + " needs " + key);
         return value;

@@ -7,7 +7,6 @@ import dev.dejvokep.boostedyaml.block.Comments;
 import dev.dejvokep.boostedyaml.block.implementation.Section;
 import dev.dejvokep.boostedyaml.dvs.versioning.BasicVersioning;
 import dev.dejvokep.boostedyaml.libs.org.snakeyaml.engine.v2.comments.CommentLine;
-import dev.dejvokep.boostedyaml.settings.general.GeneralSettings;
 import dev.dejvokep.boostedyaml.settings.updater.MergeRule;
 import dev.dejvokep.boostedyaml.settings.updater.UpdaterSettings;
 import dev.dejvokep.boostedyaml.utils.conversion.PrimitiveConversions;
@@ -25,6 +24,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.logging.Logger;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 /**
  * Opens a root file of the plugin, such as {@code config.yml}, versioned by {@value #VERSION_ROUTE}.
@@ -43,8 +43,6 @@ import java.util.logging.Logger;
 public final class VersionedYamlFile {
 
     public static final String VERSION_ROUTE = "config-version";
-    // Getters read the file only, like a Bukkit configuration without defaults: every key is there after the update
-    private static final GeneralSettings GENERAL = GeneralSettings.builder().setUseDefaults(false).build();
 
     private VersionedYamlFile() {
     }
@@ -67,7 +65,7 @@ public final class VersionedYamlFile {
 
         YamlDocument document;
         try (InputStream inputStream = defaults.get()) {
-            document = YamlDocument.create(file, inputStream, GENERAL, LegacyBooleanSchema.loaderSettings(), LegacyBooleanSchema.dumperSettings(), UpdaterSettings.DEFAULT);
+            document = YamlDocument.create(file, inputStream, YamlSections.GENERAL_SETTINGS, LegacyBooleanSchema.loaderSettings(), LegacyBooleanSchema.dumperSettings(), UpdaterSettings.DEFAULT);
         }
 
         int target = document.getDefaults().getInt(VERSION_ROUTE);
@@ -96,7 +94,7 @@ public final class VersionedYamlFile {
         }
 
         if (!keepAll) validate(file.getName(), document, document.getDefaults(), ignoredRoutes, logger);
-        return document;
+        return YamlSections.link(document);
     }
 
     /**

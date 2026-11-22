@@ -20,7 +20,7 @@ import fr.maxlego08.menu.zcore.utils.storage.Persist;
 import net.kyori.adventure.key.Key;
 import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
-import org.bukkit.configuration.file.YamlConfiguration;
+import dev.dejvokep.boostedyaml.YamlDocument;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -33,6 +33,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 public class ZCommandManager extends ZUtils implements CommandManager {
 
@@ -152,12 +153,12 @@ public class ZCommandManager extends ZUtils implements CommandManager {
     public void loadCommand(Plugin plugin, File file) {
 
         Loader<Command> loader = new CommandLoader(plugin, this.plugin);
-        YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
-        if (!configuration.contains("commands") || !configuration.isConfigurationSection("commands.")) {
+        YamlDocument configuration = YamlSections.load(file);
+        if (!configuration.contains("commands") || !configuration.isSection("commands.")) {
             return;
         }
 
-        for (String key : configuration.getConfigurationSection("commands.").getKeys(false)) {
+        for (String key : configuration.getSection("commands.").getRoutesAsStrings(false)) {
             try {
                 Command command = loader.load(configuration, "commands." + key + ".", file);
                 this.registerCommand(command);
@@ -228,7 +229,7 @@ public class ZCommandManager extends ZUtils implements CommandManager {
 
         this.unregisterCommands(command);
         String path = command.path();
-        YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
+        YamlDocument configuration = YamlSections.load(file);
 
         Loader<Command> loader = new CommandLoader(this.plugin, this.plugin);
         try {

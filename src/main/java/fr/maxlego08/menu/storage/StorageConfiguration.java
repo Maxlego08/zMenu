@@ -1,7 +1,7 @@
 package fr.maxlego08.menu.storage;
 
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.YamlConfiguration;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
+import dev.dejvokep.boostedyaml.YamlDocument;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -15,6 +15,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 /**
  * The storage settings of {@code config.yml}.
@@ -92,7 +93,7 @@ public record StorageConfiguration(@NotNull String storageType, @NotNull String 
      */
     public static final String USE_SHARED_FILE = SECTION + "use-shared-file";
 
-    public static @NotNull StorageConfiguration read(@NotNull ConfigurationSection configuration) {
+    public static @NotNull StorageConfiguration read(@NotNull Section configuration) {
         return read(configuration, configuration.getBoolean(USE_SHARED_FILE, true) ? sharedFile() : null);
     }
 
@@ -100,12 +101,12 @@ public record StorageConfiguration(@NotNull String storageType, @NotNull String 
      * @return the {@code database-configuration.yml} file of the server folder, or null when there
      * is none
      */
-    public static @Nullable ConfigurationSection sharedFile() {
+    public static @Nullable Section sharedFile() {
         File sharedFile = new File(SHARED_FILE);
-        return sharedFile.exists() ? YamlConfiguration.loadConfiguration(sharedFile) : null;
+        return sharedFile.exists() ? YamlSections.load(sharedFile) : null;
     }
 
-    static @NotNull StorageConfiguration read(@NotNull ConfigurationSection configuration, @Nullable ConfigurationSection shared) {
+    static @NotNull StorageConfiguration read(@NotNull Section configuration, @Nullable Section shared) {
         long maxLifetimeSeconds = number(configuration, shared, "max-lifetime", -1L);
         return new StorageConfiguration(
                 configuration.getString("storage-type", "SQLITE"),
@@ -120,8 +121,8 @@ public record StorageConfiguration(@NotNull String storageType, @NotNull String 
                 configuration.getInt("batch-task", 10),
                 configuration.getString("server-id", ""),
                 configuration.getString("messaging-type", "AUTO"),
-                Math.max(250L, (long) (configuration.getDouble("messaging-poll-interval", 2) * 1000)),
-                Math.max(0L, configuration.getLong("session-handoff-timeout", 3000)),
+                Math.max(250L, (long) (configuration.getDouble("messaging-poll-interval", 2.0) * 1000)),
+                Math.max(0L, configuration.getLong("session-handoff-timeout", 3000L)),
                 properties(configuration, shared)
         );
     }
@@ -130,34 +131,34 @@ public record StorageConfiguration(@NotNull String storageType, @NotNull String 
      * Reads {@code database-configuration.properties}. Unlike the other values, the two files are
      * merged key by key, a property of the shared file replacing the same one of {@code config.yml}.
      */
-    private static Map<String, String> properties(ConfigurationSection configuration, ConfigurationSection shared) {
+    private static Map<String, String> properties(Section configuration, Section shared) {
         Map<String, String> properties = new LinkedHashMap<>();
-        for (ConfigurationSection source : new ConfigurationSection[]{configuration, shared}) {
-            ConfigurationSection section = source == null ? null : source.getConfigurationSection(SECTION + "properties");
+        for (Section source : new Section[]{configuration, shared}) {
+            Section section = source == null ? null : source.getSection(SECTION + "properties");
             if (section == null) continue;
-            for (String key : section.getKeys(false)) {
+            for (String key : section.getRoutesAsStrings(false)) {
                 Object value = section.get(key);
-                if (value != null && !section.isConfigurationSection(key)) properties.put(key, String.valueOf(value));
+                if (value != null && !section.isSection(key)) properties.put(key, String.valueOf(value));
             }
         }
         return Map.copyOf(properties);
     }
 
-    private static String text(ConfigurationSection configuration, ConfigurationSection shared, String key, String fallback) {
+    private static String text(Section configuration, Section shared, String key, String fallback) {
         String path = SECTION + key;
-        if (shared != null && shared.isSet(path)) return shared.getString(path, fallback);
+        if (shared != null && shared.contains(path)) return shared.getString(path, fallback);
         return configuration.getString(path, fallback);
     }
 
-    private static long number(ConfigurationSection configuration, ConfigurationSection shared, String key, long fallback) {
+    private static long number(Section configuration, Section shared, String key, long fallback) {
         String path = SECTION + key;
-        if (shared != null && shared.isSet(path)) return shared.getLong(path, fallback);
+        if (shared != null && shared.contains(path)) return shared.getLong(path, fallback);
         return configuration.getLong(path, fallback);
     }
 
-    private static boolean flag(ConfigurationSection configuration, ConfigurationSection shared, String key) {
+    private static boolean flag(Section configuration, Section shared, String key) {
         String path = SECTION + key;
-        if (shared != null && shared.isSet(path)) return shared.getBoolean(path);
+        if (shared != null && shared.contains(path)) return shared.getBoolean(path);
         return configuration.getBoolean(path);
     }
 }

@@ -15,8 +15,8 @@ import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.command.SimpleCommandMap;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.YamlConfiguration;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
+import dev.dejvokep.boostedyaml.YamlDocument;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -429,10 +429,10 @@ public abstract class ZUtils extends MessageUtils {
         return pattern.matcher(file.getName()).replaceAll("").replace(" ", "_");
     }
 
-    protected void loadLocalPlaceholders(@NotNull YamlConfiguration configuration, @NotNull Map<String, Object> placeholders) {
-        ConfigurationSection placeholdersSection = configuration.getConfigurationSection("local-placeholders");
+    protected void loadLocalPlaceholders(@NotNull YamlDocument configuration, @NotNull Map<String, Object> placeholders) {
+        Section placeholdersSection = configuration.getSection("local-placeholders");
         if (placeholdersSection != null) {
-            for (String key : placeholdersSection.getKeys(false)) {
+            for (String key : placeholdersSection.getRoutesAsStrings(false)) {
                 placeholders.put(key, placeholdersSection.get(key));
             }
         }

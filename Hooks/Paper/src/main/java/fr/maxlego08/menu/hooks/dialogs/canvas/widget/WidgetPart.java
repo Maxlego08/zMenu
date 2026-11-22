@@ -2,13 +2,14 @@ package fr.maxlego08.menu.hooks.dialogs.canvas.widget;
 
 import fr.maxlego08.menu.api.dialog.canvas.HAlign;
 import fr.maxlego08.menu.hooks.dialogs.canvas.element.ElementSections;
-import org.bukkit.configuration.ConfigurationSection;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 /**
  * A text or a glyph a widget draws, such as the label of a toggle or the minus button of a stepper. It is
@@ -83,10 +84,10 @@ public record WidgetPart(@Nullable String text, @Nullable String glyph, @Nullabl
      * @param source    Where it is read from, for error messages.
      * @return The part, {@link #NONE} when the key is missing.
      */
-    public static @NotNull WidgetPart read(@NotNull ConfigurationSection parent, @NotNull String key, boolean glyphPart, @NotNull String name,
+    public static @NotNull WidgetPart read(@NotNull Section parent, @NotNull String key, boolean glyphPart, @NotNull String name,
                                            @NotNull String source) {
         if (!parent.contains(key)) return NONE;
-        ConfigurationSection section = parent.getConfigurationSection(key);
+        Section section = parent.getSection(key);
         if (section == null) {
             String value = String.valueOf(parent.get(key));
             return glyphPart ? ofGlyph(value) : ofText(value);
@@ -105,7 +106,7 @@ public record WidgetPart(@Nullable String text, @Nullable String glyph, @Nullabl
         return new WidgetPart(section.getString("text"), section.getString("glyph"), section.getString("glyph-disabled"),
                 section.contains("x") ? ElementSections.requireInt(section, "x", name, source) : null,
                 section.contains("y") ? ElementSections.requireInt(section, "y", name, source) : null, width, align, section.getString("font"),
-                section.isList("hover") ? section.getStringList("hover") : section.contains("hover") ? List.of(String.valueOf(section.get("hover"))) : List.of());
+                section.isList("hover") ? YamlSections.getStringList(section, "hover") : section.contains("hover") ? List.of(String.valueOf(section.get("hover"))) : List.of());
     }
 
     /**
@@ -186,7 +187,7 @@ public record WidgetPart(@Nullable String text, @Nullable String glyph, @Nullabl
      * @param key       The key of the part.
      * @param glyphPart True if a value is a glyph.
      */
-    public void serialize(@NotNull ConfigurationSection parent, @NotNull String key, boolean glyphPart) {
+    public void serialize(@NotNull Section parent, @NotNull String key, boolean glyphPart) {
         if (!this.isSet()) return;
         boolean onlyValue = this.glyphDisabled == null && this.x == null && this.y == null && this.width == null && this.align == null && this.font == null
                 && this.hover.isEmpty() && (glyphPart ? this.text == null && this.glyph != null : this.glyph == null && this.text != null);
@@ -194,7 +195,7 @@ public record WidgetPart(@Nullable String text, @Nullable String glyph, @Nullabl
             parent.set(key, glyphPart ? this.glyph : this.text);
             return;
         }
-        ConfigurationSection section = parent.createSection(key);
+        Section section = parent.createSection(key);
         if (this.text != null) section.set("text", this.text);
         if (this.glyph != null) section.set("glyph", this.glyph);
         if (this.glyphDisabled != null) section.set("glyph-disabled", this.glyphDisabled);

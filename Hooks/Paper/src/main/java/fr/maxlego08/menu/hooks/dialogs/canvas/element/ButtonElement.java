@@ -15,7 +15,7 @@ import fr.maxlego08.menu.api.utils.Placeholders;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.JoinConfiguration;
 import net.kyori.adventure.text.event.ClickEvent;
-import org.bukkit.configuration.ConfigurationSection;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -24,6 +24,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
+import org.bukkit.configuration.ConfigurationSection;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 /**
  * A clickable area, with an optional image and label.
@@ -175,7 +177,7 @@ public final class ButtonElement implements CanvasElement, CanvasLayoutable {
     }
 
     @Override
-    public void serialize(@NotNull ConfigurationSection section) {
+    public void serialize(@NotNull Section section) {
         section.set("type", "button");
         this.x.serialize(section, "x");
         this.y.serialize(section, "y");
@@ -186,7 +188,7 @@ public final class ButtonElement implements CanvasElement, CanvasLayoutable {
         if (!this.font.raw().equals("default")) this.font.serialize(section, "font");
         if (!this.hover.isEmpty()) section.set("hover", this.hover);
         if (!this.clickRequirements.isEmpty()) {
-            ConfigurationSection requirements = section.createSection("click-requirement");
+            Section requirements = section.createSection("click-requirement");
             for (int index = 0; index < this.clickRequirements.size(); index++) {
                 this.clickRequirements.get(index).serialize(requirements.createSection(String.valueOf(index + 1)));
             }
@@ -195,5 +197,11 @@ public final class ButtonElement implements CanvasElement, CanvasLayoutable {
         if (this.refresh) section.set("refresh", true);
         if (this.click != null) this.click.serialize(section);
         if (!this.escapePlaceholders) section.set("escape-placeholders", false);
+    }
+
+    @Override
+    @Deprecated
+    public void serialize(ConfigurationSection section) {
+        YamlSections.write(section, copy -> this.serialize(copy));
     }
 }

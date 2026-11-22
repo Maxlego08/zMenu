@@ -5,13 +5,14 @@ import fr.maxlego08.menu.common.utils.ClickTypeParser;
 import fr.maxlego08.menu.api.mechanic.Mechanic;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.Requirement;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.YamlConfiguration;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
+import dev.dejvokep.boostedyaml.YamlDocument;
 import org.bukkit.event.inventory.ClickType;
 
 import java.io.File;
 import java.util.List;
 import java.util.Locale;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 public class OnClickMechanic extends Mechanic<OnClickMechanicFactory> {
 
@@ -35,8 +36,8 @@ public class OnClickMechanic extends Mechanic<OnClickMechanicFactory> {
     private final List<Action> actions;
     private final ClickTarget clickTarget;
 
-    public OnClickMechanic(String itemId, OnClickMechanicFactory factory, ConfigurationSection section,
-                           YamlConfiguration configuration, File file, String path) {
+    public OnClickMechanic(String itemId, OnClickMechanicFactory factory, Section section,
+                           YamlDocument configuration, File file, String path) {
         super(itemId, factory, section);
 
         MenuPlugin plugin = factory.getPlugin();
@@ -44,9 +45,9 @@ public class OnClickMechanic extends Mechanic<OnClickMechanicFactory> {
         this.cooldown = section.getInt("cooldown", 0);
         this.cancelEvent = section.getBoolean("cancel-event", false);
         this.clickTarget = ClickTarget.fromString(section.getString("click-target"));
-        this.clickTypes = ClickTypeParser.parse(section.getStringList("click-types"));
+        this.clickTypes = ClickTypeParser.parse(YamlSections.getStringList(section, "click-types"));
 
-        ConfigurationSection reqSection = section.getConfigurationSection("click-requirements");
+        Section reqSection = section.getSection("click-requirements");
         try {
             this.clickRequirements = reqSection != null
                     ? plugin.getButtonManager().loadRequirements(configuration, path + reqSection.getName(), file)

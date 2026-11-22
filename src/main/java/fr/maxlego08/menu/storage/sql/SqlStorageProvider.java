@@ -102,7 +102,7 @@ public final class SqlStorageProvider implements StorageProvider {
 
     @Override
     public @NotNull CompletableFuture<Void> open(@NotNull StorageContext context) {
-        StorageConfiguration configuration = StorageConfiguration.read(context.configuration());
+        StorageConfiguration configuration = StorageConfiguration.read(context.section());
         DatabaseType type = databaseType(configuration.storageType());
         if (type == null) {
             return CompletableFuture.failedFuture(new IllegalArgumentException("storage-type " + configuration.storageType() + " is not a SQL database"));

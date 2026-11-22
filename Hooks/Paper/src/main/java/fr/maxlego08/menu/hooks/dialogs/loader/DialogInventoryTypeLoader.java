@@ -9,7 +9,7 @@ import fr.maxlego08.menu.api.utils.record.dialogs.ActionButtonRecord;
 import fr.maxlego08.menu.hooks.dialogs.inventory.AbstractDialogInventory;
 import net.kyori.adventure.key.InvalidKeyException;
 import net.kyori.adventure.key.Key;
-import org.bukkit.configuration.file.YamlConfiguration;
+import dev.dejvokep.boostedyaml.YamlDocument;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -20,9 +20,9 @@ import java.util.Optional;
 public interface DialogInventoryTypeLoader<T extends AbstractDialogInventory> {
 
     @Nullable
-    T load(@NotNull MenuPlugin menuPlugin, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String name, @NotNull String externalTitle);
+    T load(@NotNull MenuPlugin menuPlugin, @NotNull File file, @NotNull YamlDocument configuration, @NotNull String name, @NotNull String externalTitle);
 
-    static @NotNull List<Requirement> loadRequirements(@NotNull MenuPlugin menuPlugin, @NotNull YamlConfiguration configuration, @NotNull String path, @NotNull File file) {
+    static @NotNull List<Requirement> loadRequirements(@NotNull MenuPlugin menuPlugin, @NotNull YamlDocument configuration, @NotNull String path, @NotNull File file) {
         try {
             return menuPlugin.getButtonManager().loadRequirements(configuration, path, file);
         } catch (Exception e) {
@@ -32,7 +32,7 @@ public interface DialogInventoryTypeLoader<T extends AbstractDialogInventory> {
 
     default @NotNull ActionButtonRecord loadActionButtonRecord(
             @NotNull MenuPlugin plugin,
-            @NotNull YamlConfiguration configuration,
+            @NotNull YamlDocument configuration,
             @NotNull String path,
             @NotNull File file
     ) {

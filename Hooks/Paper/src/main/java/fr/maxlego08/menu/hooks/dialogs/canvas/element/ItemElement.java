@@ -15,7 +15,7 @@ import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
-import org.bukkit.configuration.ConfigurationSection;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
@@ -24,6 +24,8 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
+import org.bukkit.configuration.ConfigurationSection;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 /**
  * An item: its icon, its amount, and its real tooltip on hover (name, lore, enchantments...), built with the
@@ -158,7 +160,7 @@ public final class ItemElement implements CanvasElement, CanvasLayoutable {
     }
 
     @Override
-    public void serialize(@NotNull ConfigurationSection section) {
+    public void serialize(@NotNull Section section) {
         section.set("type", "item");
         this.x.serialize(section, "x");
         this.y.serialize(section, "y");
@@ -167,7 +169,7 @@ public final class ItemElement implements CanvasElement, CanvasLayoutable {
         if (this.height != null) section.set("height", this.height);
         if (!this.showAmount) section.set("show-amount", false);
         if (!this.clickRequirements.isEmpty()) {
-            ConfigurationSection requirements = section.createSection("click-requirement");
+            Section requirements = section.createSection("click-requirement");
             for (int index = 0; index < this.clickRequirements.size(); index++) {
                 this.clickRequirements.get(index).serialize(requirements.createSection(String.valueOf(index + 1)));
             }
@@ -175,5 +177,11 @@ public final class ItemElement implements CanvasElement, CanvasLayoutable {
         if (!this.actions.isEmpty()) section.set("actions", this.actions.stream().map(Action::serialize).toList());
         if (this.refresh) section.set("refresh", true);
         if (this.click != null) this.click.serialize(section);
+    }
+
+    @Override
+    @Deprecated
+    public void serialize(ConfigurationSection section) {
+        YamlSections.write(section, copy -> this.serialize(copy));
     }
 }

@@ -7,13 +7,16 @@ import fr.maxlego08.menu.api.itemstack.ItemComponent;
 import fr.maxlego08.menu.api.itemstack.components.IntangibleProjectileComponent;
 import fr.maxlego08.menu.api.loader.ItemComponentLoader;
 import io.papermc.paper.datacomponent.DataComponentTypes;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.YamlConfiguration;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
+import dev.dejvokep.boostedyaml.YamlDocument;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.configuration.ConfigurationSection;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 @AutoComponentLoader
 @SinceVersion("1.21.3")
@@ -24,8 +27,15 @@ public class IntangibleProjectileItemComponentLoader extends ItemComponentLoader
     }
 
     @Override
-    public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
+    public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlDocument configuration, @NotNull String path, @Nullable Section componentSection) {
         return new IntangibleProjectileComponent(true);
+    }
+
+    @Override
+    @Deprecated
+    public ItemComponent load(MenuItemStackContext context, File file, YamlConfiguration configuration, String path, ConfigurationSection componentSection) {
+        YamlDocument configurationDocument = configuration == null ? null : YamlSections.toDocument(configuration);
+        return this.load(context, file, configurationDocument, path, YamlSections.toSection(configurationDocument, componentSection));
     }
 
     @Override

@@ -6,10 +6,12 @@ import fr.maxlego08.menu.api.annotations.RequiresPlugin;
 import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.loader.MaterialLoader;
 import fr.maxlego08.menu.zcore.logger.Logger;
-import org.bukkit.configuration.file.YamlConfiguration;
+import dev.dejvokep.boostedyaml.YamlDocument;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jspecify.annotations.NonNull;
+import org.bukkit.configuration.file.YamlConfiguration;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 @AutoMaterialLoader
 @RequiresPlugin("ItemsAdder")
@@ -20,7 +22,7 @@ public class ItemsAdderLoader extends MaterialLoader {
     }
 
     @Override
-    public ItemStack load(@NonNull Player player, @NonNull YamlConfiguration configuration, @NonNull String path, @NonNull String materialString) {
+    public ItemStack load(@NonNull Player player, @NonNull YamlDocument configuration, @NonNull String path, @NonNull String materialString) {
         CustomStack customStack = CustomStack.getInstance(materialString);
         if (customStack == null) {
             if (Configuration.enableDebug)
@@ -28,5 +30,12 @@ public class ItemsAdderLoader extends MaterialLoader {
             return null;
         }
         return customStack.getItemStack().clone();
+    }
+
+    @Override
+    @Deprecated
+    public ItemStack load(Player player, YamlConfiguration configuration, String path, String materialString) {
+        YamlDocument configurationDocument = configuration == null ? null : YamlSections.toDocument(configuration);
+        return this.load(player, configurationDocument, path, materialString);
     }
 }

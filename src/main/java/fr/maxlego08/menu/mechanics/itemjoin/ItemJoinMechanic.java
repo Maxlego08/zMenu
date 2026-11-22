@@ -1,11 +1,12 @@
 package fr.maxlego08.menu.mechanics.itemjoin;
 
 import fr.maxlego08.menu.api.mechanic.Mechanic;
-import org.bukkit.configuration.ConfigurationSection;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.OptionalInt;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 public class ItemJoinMechanic extends Mechanic<ItemJoinMechanicFactory> {
     private final boolean grantOnFirstJoin;
@@ -13,11 +14,11 @@ public class ItemJoinMechanic extends Mechanic<ItemJoinMechanicFactory> {
     private final boolean preventInventoryChanges;
     private final OptionalInt fixedSlot;
 
-    public ItemJoinMechanic(String itemId, ItemJoinMechanicFactory itemJoinMechanicFactory, ConfigurationSection mechanicSection) {
+    public ItemJoinMechanic(String itemId, ItemJoinMechanicFactory itemJoinMechanicFactory, Section mechanicSection) {
         super(itemId, itemJoinMechanicFactory, mechanicSection);
         this.grantOnFirstJoin = mechanicSection.getBoolean("give-first-join", false);
         if (mechanicSection.isList("give-first-world-join")) {
-            this.firstWorldJoinWorlds = mechanicSection.getStringList("give-first-world-join");
+            this.firstWorldJoinWorlds = YamlSections.getStringList(mechanicSection, "give-first-world-join");
         } else if (mechanicSection.isString("give-first-world-join")) {
             this.firstWorldJoinWorlds = Collections.singletonList(mechanicSection.getString("give-first-world-join"));
         } else {

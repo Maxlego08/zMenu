@@ -5,10 +5,12 @@ import fr.maxlego08.menu.api.ZMenuKeys;
 import fr.maxlego08.menu.api.dialog.canvas.CanvasElement;
 import fr.maxlego08.menu.api.dialog.canvas.CanvasElementLoader;
 import net.kyori.adventure.key.Key;
-import org.bukkit.configuration.ConfigurationSection;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
+import org.bukkit.configuration.ConfigurationSection;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 /**
  * Reads {@link PanelElement}s, written {@code type: panel}.
@@ -24,7 +26,7 @@ public final class PanelElementLoader implements CanvasElementLoader {
     }
 
     @Override
-    public @NotNull CanvasElement load(@NotNull MenuPlugin plugin, @NotNull String name, @NotNull ConfigurationSection section, @NotNull String source) {
+    public @NotNull CanvasElement load(@NotNull MenuPlugin plugin, @NotNull String name, @NotNull Section section, @NotNull String source) {
         ElementSections.rejectUnknownKeys(section, KEYS, name, source);
         PackValue texture = PackValue.read(section, "texture", null, ElementSections::texture, name, source);
         int border = section.contains("border") ? ElementSections.requireInt(section, "border", name, source) : 0;
@@ -35,5 +37,11 @@ public final class PanelElementLoader implements CanvasElementLoader {
         if (height < 1 || height > MAX_HEIGHT) throw ElementSections.error(name, source, "needs a height from 1 to " + MAX_HEIGHT);
         if (border * 2 > Math.min(width, height)) throw ElementSections.error(name, source, "is smaller than its two borders");
         return new PanelElement(name, texture, border, PositionValue.readX(section, "x", name, source), PositionValue.readY(section, "y", name, source), width, height);
+    }
+
+    @Override
+    @Deprecated
+    public CanvasElement load(MenuPlugin plugin, String name, ConfigurationSection section, String source) {
+        return this.load(plugin, name, (section == null ? null : YamlSections.toDocument(section)), source);
     }
 }

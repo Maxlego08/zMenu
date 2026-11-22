@@ -4,8 +4,8 @@ import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.exceptions.InventoryException;
 import fr.maxlego08.menu.inventory.zinv.ZInventory;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.YamlConfiguration;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
+import dev.dejvokep.boostedyaml.YamlDocument;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Stream;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 public class DeluxeMenusConverter {
 
@@ -73,13 +74,13 @@ public class DeluxeMenusConverter {
             return Result.failure(name, List.of(), "already converted, delete " + this.relative(inventoryFile) + " to convert it again");
         }
 
-        YamlConfiguration configuration = YamlConfiguration.loadConfiguration(source);
+        YamlDocument configuration = YamlSections.load(source);
         if (!configuration.contains("menu_title") && !configuration.contains("items")) {
             return Result.failure(name, List.of(), "this is not a DeluxeMenus menu");
         }
 
         InventoryDeluxeMenuLoader loader = new InventoryDeluxeMenuLoader(this.plugin);
-        YamlConfiguration converted = new YamlConfiguration();
+        YamlDocument converted = YamlSections.empty();
         try {
             Inventory inventory = loader.load(configuration, "", source, ZInventory.class, this.plugin);
             inventory.serialize(converted);
@@ -95,7 +96,7 @@ public class DeluxeMenusConverter {
             header.add("Not converted exactly:");
             loader.getWarnings().forEach(warning -> header.add("- " + warning));
         }
-        converted.options().setHeader(header);
+        YamlSections.setHeader(converted, header);
 
         try {
             this.getInventoryFolder().mkdirs();
@@ -113,8 +114,8 @@ public class DeluxeMenusConverter {
      *
      * @return The command file written, or null when the menu has no command or the file exists.
      */
-    private @Nullable File convertOpenCommand(YamlConfiguration configuration, String name) throws IOException {
-        List<String> openCommands = configuration.isList("open_command") ? configuration.getStringList("open_command") : new ArrayList<>();
+    private @Nullable File convertOpenCommand(YamlDocument configuration, String name) throws IOException {
+        List<String> openCommands = configuration.isList("open_command") ? YamlSections.getStringList(configuration, "open_command") : new ArrayList<>();
         if (openCommands.isEmpty() && configuration.getString("open_command") != null) {
             openCommands.add(configuration.getString("open_command"));
         }
@@ -124,12 +125,12 @@ public class DeluxeMenusConverter {
         File commandFile = new File(this.getCommandFolder(), name + ".yml");
         if (commandFile.exists()) return null;
 
-        YamlConfiguration commands = new YamlConfiguration();
-        ConfigurationSection command = commands.createSection("commands." + name);
+        YamlDocument commands = YamlSections.empty();
+        Section command = commands.createSection("commands." + name);
         command.set("command", openCommands.getFirst());
         if (openCommands.size() > 1) command.set("aliases", openCommands.subList(1, openCommands.size()));
         command.set("inventory", name);
-        commands.options().setHeader(List.of("Converted from the open_command of the DeluxeMenus menu " + name + " by zMenu."));
+        YamlSections.setHeader(commands, List.of("Converted from the open_command of the DeluxeMenus menu " + name + " by zMenu."));
 
         this.getCommandFolder().mkdirs();
         commands.save(commandFile);

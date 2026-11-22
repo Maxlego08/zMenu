@@ -10,8 +10,8 @@ import fr.maxlego08.menu.api.itemstack.components.legacy.LegacyChargedProjectile
 import fr.maxlego08.menu.api.utils.version.MinecraftVersion;
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.datacomponent.item.ChargedProjectiles;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.YamlConfiguration;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
+import dev.dejvokep.boostedyaml.YamlDocument;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.CrossbowMeta;
 import org.jetbrains.annotations.NotNull;
@@ -20,6 +20,9 @@ import org.jetbrains.annotations.Nullable;
 import java.io.File;
 import java.util.List;
 import java.util.Map;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.configuration.ConfigurationSection;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 @AutoComponentLoader
 public class ChargedProjectilesItemComponentLoader extends AbstractMenuItemStackListComponentLoaderBase {
@@ -29,7 +32,7 @@ public class ChargedProjectilesItemComponentLoader extends AbstractMenuItemStack
     }
 
     @Override
-    public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
+    public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlDocument configuration, @NotNull String path, @Nullable Section componentSection) {
         path = this.normalizePath(path);
         List<Map<?, ?>> mapList = configuration.getMapList(path);
         List<MenuItemStack> projectiles = this.loadItemStackList(mapList, file);
@@ -37,6 +40,13 @@ public class ChargedProjectilesItemComponentLoader extends AbstractMenuItemStack
         return MinecraftVersion.isServerAtLeast("1.21.3")
                 ? new ChargedProjectilesComponent(projectiles)
                 : new LegacyChargedProjectilesComponent(projectiles);
+    }
+
+    @Override
+    @Deprecated
+    public ItemComponent load(MenuItemStackContext context, File file, YamlConfiguration configuration, String path, ConfigurationSection componentSection) {
+        YamlDocument configurationDocument = configuration == null ? null : YamlSections.toDocument(configuration);
+        return this.load(context, file, configurationDocument, path, YamlSections.toSection(configurationDocument, componentSection));
     }
 
     @Override

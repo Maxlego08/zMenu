@@ -29,7 +29,8 @@ import fr.maxlego08.menu.zcore.utils.PerformanceDebug;
 import net.kyori.adventure.key.Key;
 import org.bukkit.*;
 import org.bukkit.block.banner.Pattern;
-import org.bukkit.configuration.ConfigurationSection;
+import dev.dejvokep.boostedyaml.YamlDocument;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
@@ -41,6 +42,8 @@ import org.jetbrains.annotations.Nullable;
 import org.jspecify.annotations.NonNull;
 
 import java.util.*;
+import org.bukkit.configuration.ConfigurationSection;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 public class ZMenuItemStack extends ZUtils implements MenuItemStack {
 
@@ -251,7 +254,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
                 Optional<MaterialLoader> optional = this.findMaterialLoader(key);
                 if (optional.isPresent()) {
                     MaterialLoader loader = optional.get();
-                    return loader.load(player, null, this.path, value);
+                    return loader.load(player, (YamlDocument) null, this.path, value);
                 }
             }
         }
@@ -1126,7 +1129,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     }
 
     @Override
-    public void serialize(@NotNull ConfigurationSection section) {
+    public void serialize(@NotNull Section section) {
 
         section.set("material", this.material);
 
@@ -1174,7 +1177,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
         }
 
         if (this.firework != null) {
-            ConfigurationSection fireworkSection = section.createSection("firework");
+            Section fireworkSection = section.createSection("firework");
             FireworkEffect effect = this.firework.getEffect();
             List<String> stringColors = new ArrayList<>();
             effect.getColors().forEach(color -> stringColors.add(color.getAlpha() + "," + color.getRed() + "," + color.getGreen() + "," + color.getBlue()));
@@ -1247,7 +1250,13 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
         }
     }
 
-    private void serializeNewItemStackOptions(ConfigurationSection section) {
+    @Override
+    @Deprecated
+    public void serialize(ConfigurationSection section) {
+        YamlSections.write(section, copy -> this.serialize(copy));
+    }
+
+    private void serializeNewItemStackOptions(Section section) {
         if (this.maxStackSize > 0) section.set("max-stack-size", this.maxStackSize);
         if (this.maxDamage > 0) section.set("max-damage", this.maxDamage);
         if (this.damage != 0) section.set("damage", this.damage);
@@ -1266,7 +1275,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
         if (this.equippedModel != null) section.set("equipped-model", this.equippedModel);
     }
 
-    private void serializeTranslations(ConfigurationSection section) {
+    private void serializeTranslations(Section section) {
         if (!this.translatedDisplayName.isEmpty()) {
             List<Map<String, Object>> names = new ArrayList<>(this.translatedDisplayName.size());
             this.translatedDisplayName.forEach((locale, name) -> names.add(new LinkedHashMap<>(Map.of("locale", locale, "name", name))));

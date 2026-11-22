@@ -8,11 +8,13 @@ import fr.maxlego08.menu.api.button.DefaultButtonValue;
 import fr.maxlego08.menu.api.button.buttons.bedrock.inputs.BedrockDropDownInput;
 import fr.maxlego08.menu.api.loader.ButtonLoader;
 import fr.maxlego08.menu.api.utils.record.bedrock.BedrockSimpleOption;
-import org.bukkit.configuration.file.YamlConfiguration;
+import dev.dejvokep.boostedyaml.YamlDocument;
 import org.jspecify.annotations.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.bukkit.configuration.file.YamlConfiguration;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 @AutoButtonLoader
 @RequireSupport(RequireSupport.SupportType.BEDROCK_INVENTORY)
@@ -23,13 +25,13 @@ public class BedrockDropDownInputLoader extends ButtonLoader {
     }
 
     @Override
-    public Button load(@NonNull YamlConfiguration configuration, @NonNull String path, @NonNull DefaultButtonValue defaultButtonValue) {
+    public Button load(@NonNull YamlDocument configuration, @NonNull String path, @NonNull DefaultButtonValue defaultButtonValue) {
         String label = configuration.getString(path + ".text", "");
         List<BedrockSimpleOption> singleOptionList = new ArrayList<>();
 
-        if (configuration.isConfigurationSection(path + ".options")) {
+        if (configuration.isSection(path + ".options")) {
             boolean initialAlreadySet = false;
-            for (String optionKey : configuration.getConfigurationSection(path + ".options").getKeys(false)) {
+            for (String optionKey : configuration.getSection(path + ".options").getRoutesAsStrings(false)) {
                 String optionPath = path + ".options." + optionKey;
 
                 configuration.getString(optionPath + ".id", optionKey);
@@ -47,5 +49,12 @@ public class BedrockDropDownInputLoader extends ButtonLoader {
         }
 
         return new BedrockDropDownInput(label, singleOptionList);
+    }
+
+    @Override
+    @Deprecated
+    public Button load(YamlConfiguration configuration, String path, DefaultButtonValue defaultButtonValue) {
+        YamlDocument configurationDocument = configuration == null ? null : YamlSections.toDocument(configuration);
+        return this.load(configurationDocument, path, defaultButtonValue);
     }
 }

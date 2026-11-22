@@ -4,7 +4,7 @@ import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.loader.ItemComponentLoader;
 import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableFloat;
 import fr.maxlego08.menu.zcore.logger.Logger;
-import org.bukkit.configuration.ConfigurationSection;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
 import org.jetbrains.annotations.NotNull;
 
 public abstract class AbstractAttackRangeItemComponentLoader extends ItemComponentLoader {
@@ -14,7 +14,7 @@ public abstract class AbstractAttackRangeItemComponentLoader extends ItemCompone
     }
 
     @NotNull
-    protected ResolvableFloat getMinReachResolvable(ConfigurationSection section, String path) {
+    protected ResolvableFloat getMinReachResolvable(Section section, String path) {
         ResolvableFloat resolvable = this.asResolvableFloat(section, "min-reach");
         if (resolvable == null) return ResolvableFloat.of(0f);
 
@@ -29,7 +29,7 @@ public abstract class AbstractAttackRangeItemComponentLoader extends ItemCompone
         return resolvable;
     }
 
-    protected @NotNull ResolvableFloat getMaxReachResolvable(ConfigurationSection section, String path) {
+    protected @NotNull ResolvableFloat getMaxReachResolvable(Section section, String path) {
         ResolvableFloat resolvable = this.asResolvableFloat(section, "max-reach");
         if (resolvable == null) return ResolvableFloat.of(3f);
 
@@ -44,7 +44,7 @@ public abstract class AbstractAttackRangeItemComponentLoader extends ItemCompone
         return resolvable;
     }
 
-    protected @NotNull ResolvableFloat getMinCreativeReachResolvable(ConfigurationSection section, String path) {
+    protected @NotNull ResolvableFloat getMinCreativeReachResolvable(Section section, String path) {
         ResolvableFloat resolvable = this.asResolvableFloat(section, "min-creative-reach");
         if (resolvable == null) return ResolvableFloat.of(0f);
 
@@ -59,7 +59,7 @@ public abstract class AbstractAttackRangeItemComponentLoader extends ItemCompone
         return resolvable;
     }
 
-    protected @NotNull ResolvableFloat getMaxCreativeReachResolvable(ConfigurationSection section, String path) {
+    protected @NotNull ResolvableFloat getMaxCreativeReachResolvable(Section section, String path) {
         ResolvableFloat resolvable = this.asResolvableFloat(section, "max-creative-reach");
         if (resolvable == null) return ResolvableFloat.of(5f);
 
@@ -74,7 +74,7 @@ public abstract class AbstractAttackRangeItemComponentLoader extends ItemCompone
         return resolvable;
     }
 
-    protected @NotNull ResolvableFloat getHitboxMarginResolvable(ConfigurationSection section, String path) {
+    protected @NotNull ResolvableFloat getHitboxMarginResolvable(Section section, String path) {
         ResolvableFloat resolvable = this.asResolvableFloat(section, "hitbox-margin");
         if (resolvable == null) return ResolvableFloat.of(0.3f);
 
@@ -89,7 +89,7 @@ public abstract class AbstractAttackRangeItemComponentLoader extends ItemCompone
         return resolvable;
     }
 
-    protected @NotNull ResolvableFloat getMobFactorResolvable(ConfigurationSection section, String path) {
+    protected @NotNull ResolvableFloat getMobFactorResolvable(Section section, String path) {
         ResolvableFloat resolvable = this.asResolvableFloat(section, "mob-factor");
         if (resolvable == null) return ResolvableFloat.of(1f);
 

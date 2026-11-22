@@ -5,10 +5,12 @@ import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.GenericPaginateButton;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.pagination.PaginationManager;
-import org.bukkit.configuration.ConfigurationSection;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.bukkit.configuration.ConfigurationSection;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 public abstract class PaginationButton extends Button {
 
@@ -27,10 +29,16 @@ public abstract class PaginationButton extends Button {
     protected abstract @NotNull String getType();
 
     @Override
-    protected void serializeProperties(@NotNull ConfigurationSection section) {
+    protected void serializeProperties(@NotNull Section section) {
         section.set("type", this.getType());
         section.set("context-id", this.contextId);
         if (this.onlyRefreshButton) section.set("only-refresh-button", true);
+    }
+
+    @Override
+    @Deprecated
+    protected void serializeProperties(ConfigurationSection section) {
+        YamlSections.write(section, copy -> this.serializeProperties(copy));
     }
 
     @Nullable

@@ -5,9 +5,11 @@ import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.DefaultButtonValue;
 import fr.maxlego08.menu.api.loader.ButtonLoader;
 import fr.maxlego08.menu.zcore.logger.Logger;
-import org.bukkit.configuration.file.YamlConfiguration;
+import dev.dejvokep.boostedyaml.YamlDocument;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.bukkit.configuration.file.YamlConfiguration;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 public abstract class AbstractPaginationButtonLoader extends ButtonLoader {
 
@@ -16,7 +18,7 @@ public abstract class AbstractPaginationButtonLoader extends ButtonLoader {
     }
 
     @Override
-    public @Nullable Button load(@NotNull YamlConfiguration configuration, @NotNull String path, @NotNull DefaultButtonValue defaultButtonValue) {
+    public @Nullable Button load(@NotNull YamlDocument configuration, @NotNull String path, @NotNull DefaultButtonValue defaultButtonValue) {
         String contextId = configuration.getString(path + "context-id");
         if (contextId == null) {
             Logger.info("Context-id is required for " + this.name + " button at path: " + path);
@@ -24,6 +26,13 @@ public abstract class AbstractPaginationButtonLoader extends ButtonLoader {
         }
         boolean onlyRefreshButton = configuration.getBoolean(path + "only-refresh-button", false);
         return this.createButton(contextId, onlyRefreshButton);
+    }
+
+    @Override
+    @Deprecated
+    public Button load(YamlConfiguration configuration, String path, DefaultButtonValue defaultButtonValue) {
+        YamlDocument configurationDocument = configuration == null ? null : YamlSections.toDocument(configuration);
+        return this.load(configurationDocument, path, defaultButtonValue);
     }
 
     protected abstract Button createButton(String contextId, boolean onlyRefreshButton);

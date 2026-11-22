@@ -11,7 +11,7 @@ import fr.maxlego08.menu.api.utils.Loader;
 import fr.maxlego08.menu.loader.ActionPatternLoader;
 import fr.maxlego08.menu.loader.PatternLoader;
 import fr.maxlego08.menu.zcore.logger.Logger;
-import org.bukkit.configuration.file.YamlConfiguration;
+import dev.dejvokep.boostedyaml.YamlDocument;
 import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NonNull;
 
@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 public class ZPatternManager implements PatternManager {
 
@@ -86,7 +87,7 @@ public class ZPatternManager implements PatternManager {
 
         Loader<Pattern> loader = new PatternLoader(this.plugin);
 
-        YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(file);
+        YamlDocument yamlConfiguration = YamlSections.load(file);
         Pattern pattern = loader.load(yamlConfiguration, "", file);
 
         if (pattern != null) {
@@ -106,7 +107,7 @@ public class ZPatternManager implements PatternManager {
     public ActionPattern loadActionPattern(@NonNull File file) throws InventoryException {
         Loader<ActionPattern> loader = new ActionPatternLoader(this.plugin);
 
-        YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(file);
+        YamlDocument yamlConfiguration = YamlSections.load(file);
         ActionPattern actionPattern = loader.load(yamlConfiguration, "", file);
         if (actionPattern != null) {
             this.actionPatterns.put(actionPattern.name(), actionPattern);

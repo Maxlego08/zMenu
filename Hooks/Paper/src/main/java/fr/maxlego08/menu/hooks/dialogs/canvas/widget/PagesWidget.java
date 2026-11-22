@@ -5,12 +5,14 @@ import fr.maxlego08.menu.api.dialog.canvas.CanvasElement;
 import fr.maxlego08.menu.api.dialog.canvas.CanvasRenderContext;
 import fr.maxlego08.menu.api.dialog.canvas.CanvasVariants;
 import fr.maxlego08.menu.hooks.dialogs.canvas.element.VisibleCondition;
-import org.bukkit.configuration.ConfigurationSection;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import org.bukkit.configuration.ConfigurationSection;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 /**
  * Pages of elements shown one at a time, the closest thing to scrolling a canvas can do.
@@ -101,17 +103,23 @@ public final class PagesWidget extends PagedWidget {
     }
 
     @Override
-    public void serialize(@NotNull ConfigurationSection section) {
+    public void serialize(@NotNull Section section) {
         this.settings.serialize(section, TYPE, "1");
-        ConfigurationSection pagesSection = section.createSection("pages");
+        Section pagesSection = section.createSection("pages");
         for (int index = 0; index < this.pages.size(); index++) {
-            ConfigurationSection page = pagesSection.createSection(this.names.get(index));
+            Section page = pagesSection.createSection(this.names.get(index));
             for (CanvasElement element : this.pages.get(index)) element.serialize(page.createSection(element.name()));
         }
         if (!this.nextRequirements.isEmpty()) {
-            ConfigurationSection requirements = section.createSection("next-requirement");
+            Section requirements = section.createSection("next-requirement");
             this.nextRequirements.forEach((page, requirement) -> requirements.set(page, requirement.raw()));
         }
         this.navigation.serialize(section);
+    }
+
+    @Override
+    @Deprecated
+    public void serialize(ConfigurationSection section) {
+        YamlSections.write(section, copy -> this.serialize(copy));
     }
 }

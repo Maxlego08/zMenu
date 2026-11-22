@@ -9,14 +9,16 @@ import fr.maxlego08.menu.api.exceptions.InventoryException;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.Requirement;
 import net.kyori.adventure.key.Key;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.YamlConfiguration;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
+import dev.dejvokep.boostedyaml.YamlDocument;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.List;
 import java.util.Set;
 import java.util.function.UnaryOperator;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
+import org.bukkit.configuration.ConfigurationSection;
 
 /**
  * Reads {@link ButtonElement}s, written {@code type: button}. Actions and requirements use the same format
@@ -33,7 +35,7 @@ public final class ButtonElementLoader implements CanvasElementLoader {
     }
 
     @Override
-    public @NotNull CanvasElement load(@NotNull MenuPlugin plugin, @NotNull String name, @NotNull ConfigurationSection section, @NotNull String source) {
+    public @NotNull CanvasElement load(@NotNull MenuPlugin plugin, @NotNull String name, @NotNull Section section, @NotNull String source) {
         ElementSections.rejectUnknownKeys(section, KEYS, name, source);
         PositionValue x = PositionValue.readX(section, "x", name, source);
         PositionValue y = PositionValue.readY(section, "y", name, source);
@@ -42,10 +44,10 @@ public final class ButtonElementLoader implements CanvasElementLoader {
         if (width < 1) throw ElementSections.error(name, source, "needs a width of at least 1");
         if (height < 1 || height > MAX_HEIGHT) throw ElementSections.error(name, source, "needs a height from 1 to " + MAX_HEIGHT);
 
-        if (!(section.getRoot() instanceof YamlConfiguration configuration) || section.getCurrentPath() == null) {
+        if (!(section.getRoot() instanceof YamlDocument configuration) || YamlSections.getCurrentPath(section) == null) {
             throw ElementSections.error(name, source, "must be read from a YAML file");
         }
-        String path = section.getCurrentPath();
+        String path = YamlSections.getCurrentPath(section);
         File file = new File(source);
         ButtonManager buttonManager = plugin.getButtonManager();
 
@@ -63,7 +65,13 @@ public final class ButtonElementLoader implements CanvasElementLoader {
         PackValue glyph = section.contains("glyph") ? PackValue.read(section, "glyph", null, UnaryOperator.identity(), name, source) : null;
         PackValue font = PackValue.read(section, "font", "default", UnaryOperator.identity(), name, source);
         return new ButtonElement(name, x, y, width, height, glyph, section.getString("text"), font,
-                section.getStringList("hover"), actions, clickRequirements, section.getBoolean("refresh", false), click,
+                YamlSections.getStringList(section, "hover"), actions, clickRequirements, section.getBoolean("refresh", false), click,
                 section.getBoolean("escape-placeholders", true));
+    }
+
+    @Override
+    @Deprecated
+    public CanvasElement load(MenuPlugin plugin, String name, ConfigurationSection section, String source) {
+        return this.load(plugin, name, (section == null ? null : YamlSections.toDocument(section)), source);
     }
 }

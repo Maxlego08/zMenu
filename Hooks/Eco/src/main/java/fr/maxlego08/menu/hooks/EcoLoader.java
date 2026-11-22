@@ -6,10 +6,12 @@ import fr.maxlego08.menu.api.annotations.RequiresPlugin;
 import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.loader.MaterialLoader;
 import fr.maxlego08.menu.zcore.logger.Logger;
-import org.bukkit.configuration.file.YamlConfiguration;
+import dev.dejvokep.boostedyaml.YamlDocument;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jspecify.annotations.NonNull;
+import org.bukkit.configuration.file.YamlConfiguration;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 @AutoMaterialLoader
 @RequiresPlugin("eco")
@@ -20,7 +22,7 @@ public class EcoLoader extends MaterialLoader {
     }
 
     @Override
-    public ItemStack load(@NonNull Player player, @NonNull YamlConfiguration yamlConfiguration, @NonNull String path, @NonNull String materialString) {
+    public ItemStack load(@NonNull Player player, @NonNull YamlDocument yamlConfiguration, @NonNull String path, @NonNull String materialString) {
         try {
             //eco item lookup system:
             // https://plugins.auxilor.io/all-plugins/the-item-lookup-system
@@ -31,5 +33,12 @@ public class EcoLoader extends MaterialLoader {
             }
             return null;
         }
+    }
+
+    @Override
+    @Deprecated
+    public ItemStack load(Player player, YamlConfiguration yamlConfiguration, String path, String materialString) {
+        YamlDocument yamlConfigurationDocument = yamlConfiguration == null ? null : YamlSections.toDocument(yamlConfiguration);
+        return this.load(player, yamlConfigurationDocument, path, materialString);
     }
 }

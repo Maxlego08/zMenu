@@ -9,14 +9,15 @@ import fr.maxlego08.menu.hooks.dialogs.loader.dialogaction.ZCustomClickDialogAct
 import io.papermc.paper.registry.data.dialog.action.DialogAction;
 import net.kyori.adventure.nbt.api.BinaryTagHolder;
 import net.kyori.adventure.text.event.ClickEvent;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.YamlConfiguration;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
+import dev.dejvokep.boostedyaml.YamlDocument;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.util.List;
 import java.util.Set;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 /**
  * The {@code click} of a button or an item: a dialog action, loaded like the actions of dialog buttons, used as
@@ -34,15 +35,15 @@ import java.util.Set;
  * @param action The dialog action.
  * @param config The section it was read from, written back by {@link #serialize}.
  */
-public record ClickValue(@NotNull ZDialogAction action, @NotNull ConfigurationSection config) {
+public record ClickValue(@NotNull ZDialogAction action, @NotNull Section config) {
 
     private static final Set<String> ACTION_KEYS = Set.of("actions", "click-requirement", "refresh");
 
     /**
      * @return The {@code click} of an element, or null when it has none.
      */
-    public static @Nullable ClickValue read(@NotNull MenuPlugin plugin, @NotNull ConfigurationSection section, @NotNull String name, @NotNull String source) {
-        ConfigurationSection click = section.getConfigurationSection("click");
+    public static @Nullable ClickValue read(@NotNull MenuPlugin plugin, @NotNull Section section, @NotNull String name, @NotNull String source) {
+        Section click = section.getSection("click");
         if (click == null) {
             if (section.contains("click")) throw ElementSections.error(name, source, "needs a section in click, with a type such as static");
             return null;
@@ -56,11 +57,11 @@ public record ClickValue(@NotNull ZDialogAction action, @NotNull ConfigurationSe
             throw ElementSections.error(name, source, "cannot use a custom-click in click: write the zMenu actions in actions instead");
         }
 
-        if (!(section.getRoot() instanceof YamlConfiguration configuration) || click.getCurrentPath() == null) {
+        if (!(section.getRoot() instanceof YamlDocument configuration) || YamlSections.getCurrentPath(click) == null) {
             throw ElementSections.error(name, source, "must be read from a YAML file");
         }
         try {
-            return new ClickValue(dialogActionLoader.load(plugin, configuration, click.getCurrentPath(), new File(source)), click);
+            return new ClickValue(dialogActionLoader.load(plugin, configuration, YamlSections.getCurrentPath(click), new File(source)), click);
         } catch (IllegalArgumentException exception) {
             throw ElementSections.error(name, source, "has an invalid click: " + exception.getMessage());
         }
@@ -78,10 +79,10 @@ public record ClickValue(@NotNull ZDialogAction action, @NotNull ConfigurationSe
         };
     }
 
-    public void serialize(@NotNull ConfigurationSection section) {
-        ConfigurationSection target = section.createSection("click");
-        for (String key : this.config.getKeys(true)) {
-            if (!this.config.isConfigurationSection(key)) target.set(key, this.config.get(key));
+    public void serialize(@NotNull Section section) {
+        Section target = section.createSection("click");
+        for (String key : this.config.getRoutesAsStrings(true)) {
+            if (!this.config.isSection(key)) target.set(key, this.config.get(key));
         }
     }
 }

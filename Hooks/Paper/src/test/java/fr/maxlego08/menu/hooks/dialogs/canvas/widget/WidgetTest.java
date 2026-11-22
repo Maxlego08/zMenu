@@ -5,7 +5,7 @@ import fr.maxlego08.menu.hooks.dialogs.canvas.element.PackValue;
 import fr.maxlego08.menu.hooks.dialogs.canvas.element.PositionValue;
 import fr.maxlego08.menu.hooks.dialogs.canvas.element.TextElement;
 import net.kyori.adventure.key.Key;
-import org.bukkit.configuration.file.YamlConfiguration;
+import dev.dejvokep.boostedyaml.YamlDocument;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Test;
@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 public class WidgetTest {
 
@@ -266,7 +267,7 @@ public class WidgetTest {
 
     @Test
     public void aPartIsAValueOrASectionAndIsWrittenBackTheSameWay() {
-        YamlConfiguration yaml = new YamlConfiguration();
+        YamlDocument yaml = YamlSections.empty();
         yaml.set("label", "<white>Music");
         yaml.set("minus.glyph", "my/minus");
         yaml.set("minus.y", 12);
@@ -284,7 +285,7 @@ public class WidgetTest {
         assertEquals("Off", WidgetPart.ofText("Off").orElse(minus).text());
         assertEquals(12, WidgetPart.ofText("Off").orElse(minus).y(0));
 
-        YamlConfiguration written = new YamlConfiguration();
+        YamlDocument written = YamlSections.empty();
         label.serialize(written, "label", false);
         minus.serialize(written, "minus", true);
         WidgetPart.NONE.serialize(written, "none", false);

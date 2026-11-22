@@ -9,8 +9,8 @@ import fr.maxlego08.menu.hooks.dialogs.action.ZCustomClickDialogAction;
 import fr.maxlego08.menu.hooks.dialogs.loader.DialogInventoryTypeLoader;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.event.ClickCallback;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.YamlConfiguration;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
+import dev.dejvokep.boostedyaml.YamlDocument;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import org.bukkit.configuration.file.YamlConfiguration;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 public class ZCustomClickDialogActionLoader implements DialogActionLoader {
 
@@ -30,7 +32,7 @@ public class ZCustomClickDialogActionLoader implements DialogActionLoader {
     }
 
     @Override
-    public @NotNull ZDialogAction load(@NotNull MenuPlugin plugin, @NotNull YamlConfiguration configuration, @NotNull String path, @NotNull File file) {
+    public @NotNull ZDialogAction load(@NotNull MenuPlugin plugin, @NotNull YamlDocument configuration, @NotNull String path, @NotNull File file) {
         List<Requirement> actions = DialogInventoryTypeLoader.loadRequirements(plugin, configuration, path + ".actions", file);
         if (actions.isEmpty()) {
             String legacyPath = path.contains(".") ? path.substring(path.lastIndexOf(".") + 1) : path;
@@ -42,10 +44,10 @@ public class ZCustomClickDialogActionLoader implements DialogActionLoader {
         int usageLimit = configuration.getInt(path + ".usage-limit", ClickCallback.UNLIMITED_USES);
         TemporalAmount actionDurationLimit = null;
         if (configuration.contains(path + ".duration-limit")) {
-            if (configuration.isConfigurationSection(path + ".duration-limit")) {
-                ConfigurationSection section = configuration.getConfigurationSection(path + ".duration-limit");
+            if (configuration.isSection(path + ".duration-limit")) {
+                Section section = configuration.getSection(path + ".duration-limit");
                 if (section != null) {
-                    long value = section.getLong("value", 0);
+                    long value = section.getLong("value", 0L);
                     String typeStr = section.getString("type", "SECONDS").toUpperCase(Locale.ROOT);
 
                     TimeUnit timeUnit = TimeUnit.SECONDS;
@@ -67,13 +69,20 @@ public class ZCustomClickDialogActionLoader implements DialogActionLoader {
             if (configuration.isBoolean(configKey)) {
                 boolean global = configuration.getBoolean(configKey);
                 enablePlaceholders.put("", global);
-            } else if (configuration.isConfigurationSection(configKey)) {
-                ConfigurationSection section = configuration.getConfigurationSection(configKey);
-                for (String key : section.getKeys(false)) {
+            } else if (configuration.isSection(configKey)) {
+                Section section = configuration.getSection(configKey);
+                for (String key : section.getRoutesAsStrings(false)) {
                     enablePlaceholders.put(key, section.getBoolean(key));
                 }
             }
         }
         return new ZCustomClickDialogAction(actions, usageLimit, actionDurationLimit, enablePlaceholders);
+    }
+
+    @Override
+    @Deprecated
+    public ZDialogAction load(MenuPlugin plugin, YamlConfiguration configuration, String path, File file) {
+        YamlDocument configurationDocument = configuration == null ? null : YamlSections.toDocument(configuration);
+        return this.load(plugin, configurationDocument, path, file);
     }
 }

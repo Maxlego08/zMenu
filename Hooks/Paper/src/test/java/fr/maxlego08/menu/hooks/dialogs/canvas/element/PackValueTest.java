@@ -5,7 +5,7 @@ import fr.maxlego08.menu.api.dialog.canvas.GlyphCell;
 import fr.maxlego08.menu.api.dialog.canvas.ResolvedGlyph;
 import fr.maxlego08.menu.api.exceptions.DialogException;
 import net.kyori.adventure.key.Key;
-import org.bukkit.configuration.file.YamlConfiguration;
+import dev.dejvokep.boostedyaml.YamlDocument;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Test;
@@ -15,12 +15,12 @@ import java.util.List;
 import java.util.function.UnaryOperator;
 
 import static org.junit.jupiter.api.Assertions.*;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 public class PackValueTest {
 
     private static PackValue read(String yaml, String key, UnaryOperator<String> normalize) throws Exception {
-        YamlConfiguration configuration = new YamlConfiguration();
-        configuration.loadFromString(yaml);
+        YamlDocument configuration = YamlSections.load(yaml);
         return PackValue.read(configuration, key, null, normalize, "rank", "test.yml");
     }
 
@@ -42,10 +42,10 @@ public class PackValueTest {
         assertEquals(List.of("ranks/default", "ranks/vip", "ranks/mvp"), glyph.values());
         assertEquals("ranks/mvp", glyph.fallback());
 
-        YamlConfiguration written = new YamlConfiguration();
+        YamlDocument written = YamlSections.empty();
         glyph.serialize(written, "glyph");
         assertEquals("ranks/%rank%", written.getString("glyph"));
-        assertEquals(List.of("default", "ranks/vip", "mvp", "vip"), written.getStringList("glyph-values"));
+        assertEquals(List.of("default", "ranks/vip", "mvp", "vip"), YamlSections.getStringList(written, "glyph-values"));
         assertEquals("mvp", written.getString("glyph-default"));
     }
 

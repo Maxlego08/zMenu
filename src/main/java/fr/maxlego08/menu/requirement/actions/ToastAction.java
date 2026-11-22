@@ -17,6 +17,7 @@ import org.jspecify.annotations.NonNull;
 
 import java.util.Map;
 import java.util.Optional;
+import dev.dejvokep.boostedyaml.YamlDocument;
 
 public class ToastAction extends Action {
 
@@ -67,7 +68,7 @@ public class ToastAction extends Action {
                 Optional<MaterialLoader> optional = loaderKey == null ? Optional.empty() : this.plugin.getInventoryManager().getRegistries().registry(Registries.MATERIAL_LOADER).get(loaderKey);
                 if (optional.isPresent()) {
                     MaterialLoader loader = optional.get();
-                    var itemStack = loader.load(player, null, "", value);
+                    var itemStack = loader.load(player, (YamlDocument) null, "", value);
                     finalMaterial = itemStack.getType().toString();
                     if (itemStack.hasItemMeta() && itemStack.getItemMeta().hasCustomModelData()) {
                         finalModel = itemStack.getItemMeta().getCustomModelData();

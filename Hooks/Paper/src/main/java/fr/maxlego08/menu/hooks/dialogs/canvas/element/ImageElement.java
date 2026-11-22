@@ -6,12 +6,14 @@ import fr.maxlego08.menu.api.dialog.canvas.CanvasLayoutable;
 import fr.maxlego08.menu.api.dialog.canvas.CanvasRenderContext;
 import fr.maxlego08.menu.api.dialog.canvas.CanvasVariants;
 import fr.maxlego08.menu.api.dialog.canvas.ResolvedGlyph;
-import org.bukkit.configuration.ConfigurationSection;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 import java.util.function.Function;
+import org.bukkit.configuration.ConfigurationSection;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 /**
  * Draws a glyph: a zMenu texture, a vanilla texture, or a glyph of Nexo, ItemsAdder or CraftEngine.
@@ -90,11 +92,17 @@ public record ImageElement(@NotNull String name, @NotNull PackValue glyph, @NotN
     }
 
     @Override
-    public void serialize(@NotNull ConfigurationSection section) {
+    public void serialize(@NotNull Section section) {
         section.set("type", "image");
         this.glyph.serialize(section, "glyph");
         this.x.serialize(section, "x");
         if (this.y != null) this.y.serialize(section, "y");
         if (this.height != null) section.set("height", this.height);
+    }
+
+    @Override
+    @Deprecated
+    public void serialize(ConfigurationSection section) {
+        YamlSections.write(section, copy -> this.serialize(copy));
     }
 }

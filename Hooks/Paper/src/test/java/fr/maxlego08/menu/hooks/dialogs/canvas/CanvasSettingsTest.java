@@ -1,15 +1,15 @@
 package fr.maxlego08.menu.hooks.dialogs.canvas;
 
-import org.bukkit.configuration.file.YamlConfiguration;
+import dev.dejvokep.boostedyaml.YamlDocument;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 public class CanvasSettingsTest {
 
     private static CanvasSettings.RequirePack requirePack(String yaml) throws Exception {
-        YamlConfiguration configuration = new YamlConfiguration();
-        configuration.loadFromString(yaml);
+        YamlDocument configuration = YamlSections.load(yaml);
         return CanvasSettings.read(configuration).requirePack();
     }
 

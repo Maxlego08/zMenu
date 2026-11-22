@@ -16,8 +16,8 @@ import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.datacomponent.item.LodestoneTracker;
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.YamlConfiguration;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
+import dev.dejvokep.boostedyaml.YamlDocument;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.CompassMeta;
 import org.jetbrains.annotations.NotNull;
@@ -25,6 +25,9 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.util.List;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.configuration.ConfigurationSection;
 
 @AutoComponentLoader
 public class LodestoneTrackerItemComponentLoader extends ItemComponentLoader {
@@ -34,15 +37,22 @@ public class LodestoneTrackerItemComponentLoader extends ItemComponentLoader {
     }
 
     @Override
-    public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
+    public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlDocument configuration, @NotNull String path, @Nullable Section componentSection) {
         if (componentSection == null) return null;
 
         ResolvableBoolean lodestoneTracked = this.asResolvableBoolean(componentSection, "tracked", true);
-        ResolvableLodestoneLocation lodestoneLocation = this.parseTarget(componentSection.getConfigurationSection("target"));
+        ResolvableLodestoneLocation lodestoneLocation = this.parseTarget(componentSection.getSection("target"));
 
         return MinecraftVersion.isServerAtLeast("1.21.3")
                 ? new LodestoneTrackerComponent(lodestoneTracked, lodestoneLocation)
                 : new LegacyLodestoneTrackerComponent(lodestoneTracked, lodestoneLocation);
+    }
+
+    @Override
+    @Deprecated
+    public ItemComponent load(MenuItemStackContext context, File file, YamlConfiguration configuration, String path, ConfigurationSection componentSection) {
+        YamlDocument configurationDocument = configuration == null ? null : YamlSections.toDocument(configuration);
+        return this.load(context, file, configurationDocument, path, YamlSections.toSection(configurationDocument, componentSection));
     }
 
     @Override
@@ -86,10 +96,10 @@ public class LodestoneTrackerItemComponentLoader extends ItemComponentLoader {
         return new LegacyLodestoneTrackerComponent(ResolvableBoolean.of(compassMeta.isLodestoneTracked()), lodestoneLocation);
     }
 
-    private @Nullable ResolvableLodestoneLocation parseTarget(@Nullable ConfigurationSection targetSection) {
+    private @Nullable ResolvableLodestoneLocation parseTarget(@Nullable Section targetSection) {
         if (targetSection == null) return null;
 
-        List<?> postList = targetSection.getList("pos");
+        List<?> postList = YamlSections.getList(targetSection, "pos");
         if (postList == null || postList.size() < 3) return null;
 
         ResolvableInt x = toResolvableInt(postList.get(0), 0);
@@ -107,7 +117,7 @@ public class LodestoneTrackerItemComponentLoader extends ItemComponentLoader {
         return ResolvableInt.of(defaultValue);
     }
 
-    private static @NotNull Resolvable<String> toResolvableString(@NotNull ConfigurationSection section, @NotNull String key, @NotNull String defaultValue) {
+    private static @NotNull Resolvable<String> toResolvableString(@NotNull Section section, @NotNull String key, @NotNull String defaultValue) {
         String value = section.getString(key);
         if (value == null || value.isEmpty()) return ResolvableString.of(defaultValue);
         return value.contains("%") ? ResolvableString.ofExpression(value) : ResolvableString.of(value);

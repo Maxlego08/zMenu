@@ -5,7 +5,7 @@ import fr.maxlego08.menu.api.dialog.canvas.CanvasElement;
 import fr.maxlego08.menu.api.dialog.canvas.CanvasLayoutable;
 import fr.maxlego08.menu.api.dialog.canvas.CanvasRenderContext;
 import fr.maxlego08.menu.api.dialog.canvas.CanvasVariants;
-import org.bukkit.configuration.ConfigurationSection;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Pattern;
+import org.bukkit.configuration.ConfigurationSection;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 /**
  * Entries shown a page at a time, each drawn with a template.
@@ -221,7 +223,7 @@ public final class ListWidget extends PagedWidget {
     }
 
     @Override
-    public void serialize(@NotNull ConfigurationSection section) {
+    public void serialize(@NotNull Section section) {
         this.settings.serialize(section, TYPE, "1");
         if (this.source == null) {
             section.set("entries", this.entries);
@@ -240,5 +242,11 @@ public final class ListWidget extends PagedWidget {
         if (this.emptyText != null) section.set("empty-text", this.emptyText);
         if (!this.font.equals("default")) section.set("font", this.font);
         this.navigation.serialize(section);
+    }
+
+    @Override
+    @Deprecated
+    public void serialize(ConfigurationSection section) {
+        YamlSections.write(section, copy -> this.serialize(copy));
     }
 }

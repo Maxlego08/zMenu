@@ -3,13 +3,14 @@ package fr.maxlego08.menu.common.utils.cache;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import org.bukkit.configuration.InvalidConfigurationException;
-import org.bukkit.configuration.file.YamlConfiguration;
+import dev.dejvokep.boostedyaml.YamlDocument;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 public class YamlFileCache {
     private static final Cache<Path, YamlFileCacheEntry> cache = CacheBuilder.newBuilder()
@@ -32,7 +33,7 @@ public class YamlFileCache {
             return Optional.of(entry);
         }
 
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
+        YamlDocument config = YamlSections.load(file);
         entry = new YamlFileCacheEntry(file, config);
         cache.put(path, entry);
         return Optional.of(entry);
@@ -59,14 +60,13 @@ public class YamlFileCache {
             return Optional.of(entry);
         }
 
-        YamlConfiguration config = new YamlConfiguration();
-        config.load(file);
+        YamlDocument config = YamlSections.loadStrict(file);
         entry = new YamlFileCacheEntry(file, config);
         cache.put(path, entry);
         return Optional.of(entry);
     }
 
-    public static Optional<YamlConfiguration> getYamlConfiguration(Path path) {
+    public static Optional<YamlDocument> getYamlConfiguration(Path path) {
         return getYamlFileEntry(path).map(YamlFileCacheEntry::getYamlConfiguration);
     }
 

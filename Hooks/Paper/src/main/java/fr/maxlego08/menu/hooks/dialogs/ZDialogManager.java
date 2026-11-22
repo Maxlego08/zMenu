@@ -46,7 +46,7 @@ import net.kyori.adventure.nbt.api.BinaryTagHolder;
 import net.kyori.adventure.text.event.ClickCallback;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
-import org.bukkit.configuration.file.YamlConfiguration;
+import dev.dejvokep.boostedyaml.YamlDocument;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -66,6 +66,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
 import java.util.stream.Stream;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 public class ZDialogManager implements DialogManager, Listener {
     private final MenuPlugin menuPlugin;
@@ -232,7 +233,7 @@ public class ZDialogManager implements DialogManager, Listener {
     @Override
     public DialogInventory loadInventory(Plugin plugin, File file, Class<? extends DialogInventory> dialogClass)
             throws DialogException, InventoryException {
-        YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
+        YamlDocument configuration = YamlSections.load(file);
 
         Loader<AbstractDialogInventory> loader = new DialogLoader(this.menuPlugin, this);
         AbstractDialogInventory dialog = loader.load(configuration, "", file, dialogClass, plugin);

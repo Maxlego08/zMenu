@@ -15,8 +15,8 @@ import io.papermc.paper.datacomponent.item.WrittenBookContent;
 import io.papermc.paper.text.Filtered;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.YamlConfiguration;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
+import dev.dejvokep.boostedyaml.YamlDocument;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
 import org.jetbrains.annotations.NotNull;
@@ -26,6 +26,9 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.configuration.ConfigurationSection;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 @AutoComponentLoader
 public class WrittenBookContentItemComponentLoader extends ItemComponentLoader {
@@ -35,7 +38,7 @@ public class WrittenBookContentItemComponentLoader extends ItemComponentLoader {
     }
 
     @Override
-    public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
+    public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlDocument configuration, @NotNull String path, @Nullable Section componentSection) {
         if (componentSection == null) return null;
         ResolvableString title = ResolvableString.autoOrNull(componentSection.getString("title"));
         ResolvableString author = ResolvableString.autoOrNull(componentSection.getString("author"));
@@ -53,6 +56,13 @@ public class WrittenBookContentItemComponentLoader extends ItemComponentLoader {
         return MinecraftVersion.isServerAtLeast("1.21.3")
                 ? new WrittenBookContentComponent(title, author, generation, pages)
                 : new LegacyWrittenBookContentComponent(title, author, generation, pages);
+    }
+
+    @Override
+    @Deprecated
+    public ItemComponent load(MenuItemStackContext context, File file, YamlConfiguration configuration, String path, ConfigurationSection componentSection) {
+        YamlDocument configurationDocument = configuration == null ? null : YamlSections.toDocument(configuration);
+        return this.load(context, file, configurationDocument, path, YamlSections.toSection(configurationDocument, componentSection));
     }
 
     @Override

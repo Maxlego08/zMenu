@@ -11,14 +11,16 @@ import fr.maxlego08.menu.api.utils.Loader;
 import fr.maxlego08.menu.pattern.ZPattern;
 import fr.maxlego08.menu.common.utils.ZUtils;
 import fr.maxlego08.menu.zcore.logger.Logger;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.YamlConfiguration;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
+import dev.dejvokep.boostedyaml.YamlDocument;
 import org.jspecify.annotations.NonNull;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
+import org.bukkit.configuration.file.YamlConfiguration;
 
 public class PatternLoader extends ZUtils implements Loader<Pattern> {
 
@@ -29,7 +31,7 @@ public class PatternLoader extends ZUtils implements Loader<Pattern> {
     }
 
     @Override
-    public Pattern load(@NonNull YamlConfiguration configuration, @NonNull String path, Object... objects) throws InventoryException {
+    public Pattern load(@NonNull YamlDocument configuration, @NonNull String path, Object... objects) throws InventoryException {
 
         File file = (File) objects[0];
         String name = configuration.getString("name");
@@ -49,20 +51,20 @@ public class PatternLoader extends ZUtils implements Loader<Pattern> {
             throw new InventorySizeException("Size " + size + " is not valid for inventory " + file.getAbsolutePath());
         }
 
-        if (!configuration.contains("items") || !configuration.isConfigurationSection("items.")) {
+        if (!configuration.contains("items") || !configuration.isSection("items.")) {
             throw new InventoryButtonException(
                     "Impossible to find the list of buttons for the " + file.getAbsolutePath() + " pattern !");
         }
 
-        Map<Character, List<Integer>> matrix = this.generateMatrix(configuration.getStringList("matrix"));
-        if (!matrix.isEmpty()) size = this.getInventorySizeByMatrix(configuration.getStringList("matrix"));
+        Map<Character, List<Integer>> matrix = this.generateMatrix(YamlSections.getStringList(configuration, "matrix"));
+        if (!matrix.isEmpty()) size = this.getInventorySizeByMatrix(YamlSections.getStringList(configuration, "matrix"));
 
         Loader<Button> loader = new ZButtonLoader(this.plugin, file, size, matrix);
         List<Button> buttons = new ArrayList<>();
-        ConfigurationSection section = configuration.getConfigurationSection("items.");
+        Section section = configuration.getSection("items.");
 
         if (section != null) {
-            for (String buttonPath : section.getKeys(false)) {
+            for (String buttonPath : section.getRoutesAsStrings(false)) {
                 buttons.add(loader.load(configuration, "items." + buttonPath + ".", buttonPath));
             }
         } else {
@@ -72,5 +74,12 @@ public class PatternLoader extends ZUtils implements Loader<Pattern> {
         }
 
         return new ZPattern(name, buttons, size, enableMultiPage);
+    }
+
+    @Override
+    @Deprecated
+    public Pattern load(YamlConfiguration configuration, String path, Object... objects) throws InventoryException  {
+        YamlDocument configurationDocument = configuration == null ? null : YamlSections.toDocument(configuration);
+        return this.load(configurationDocument, path, objects);
     }
 }

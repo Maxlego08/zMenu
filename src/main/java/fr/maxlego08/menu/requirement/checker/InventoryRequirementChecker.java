@@ -10,13 +10,14 @@ import fr.maxlego08.menu.common.utils.cache.YamlFileCache;
 import fr.maxlego08.menu.common.utils.yaml.YamlParser;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import org.bukkit.Bukkit;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.YamlConfiguration;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
+import dev.dejvokep.boostedyaml.YamlDocument;
 import org.bukkit.plugin.Plugin;
 
 import java.io.File;
 import java.nio.file.Path;
 import java.util.*;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 public class InventoryRequirementChecker extends ConfigurationChecker {
 
@@ -38,7 +39,7 @@ public class InventoryRequirementChecker extends ConfigurationChecker {
      * @param classz        the class of the inventory to load
      * @return an empty optional if the configuration can be loaded, or an optional containing an inventory load requirement otherwise
      */
-    public Optional<InventoryLoadRequirement> canLoadInventory(YamlConfiguration configuration, Plugin plugin, File file, Class<? extends Inventory> classz) {
+    public Optional<InventoryLoadRequirement> canLoadInventory(YamlDocument configuration, Plugin plugin, File file, Class<? extends Inventory> classz) {
 
         InventoryLoadRequirement inventoryLoadRequirement = new InventoryLoadRequirement(plugin, configuration, classz, file);
 
@@ -59,11 +60,11 @@ public class InventoryRequirementChecker extends ConfigurationChecker {
      * and adds a requirement to the inventory load requirement for the
      * missing pattern.
      *
-     * @param configuration            the YamlConfiguration containing the list of patterns
+     * @param configuration            the YamlDocument containing the list of patterns
      * @param inventoryLoadRequirement the object to store missing pattern requirements
      */
-    private void checkPatterns(YamlConfiguration configuration, InventoryLoadRequirement inventoryLoadRequirement) {
-        for (String patternName : configuration.getStringList("patterns")) {
+    private void checkPatterns(YamlDocument configuration, InventoryLoadRequirement inventoryLoadRequirement) {
+        for (String patternName : YamlSections.getStringList(configuration, "patterns")) {
             Optional<Pattern> optional = this.patternManager.getPattern(patternName);
             if (optional.isEmpty()) {
                 inventoryLoadRequirement.addRequirement(InventoryRequirementType.PATTERN, patternName);
@@ -79,17 +80,17 @@ public class InventoryRequirementChecker extends ConfigurationChecker {
      * found, it proceeds to check the associated requirements using the
      * `checkRequirement` method.
      *
-     * @param configuration            the YamlConfiguration containing inventory details
+     * @param configuration            the YamlDocument containing inventory details
      * @param inventoryLoadRequirement the object to store loaded requirements
      */
-    private void checkOpenRequirement(YamlConfiguration configuration, InventoryLoadRequirement inventoryLoadRequirement) {
+    private void checkOpenRequirement(YamlDocument configuration, InventoryLoadRequirement inventoryLoadRequirement) {
         String openRequirementKey = configuration.contains("open_requirement") ? "open_requirement" : configuration.contains("open-requirement") ? "open-requirement" : null;
         if (openRequirementKey != null) {
-            if (configuration.contains(openRequirementKey) && configuration.isConfigurationSection(openRequirementKey + ".")) {
+            if (configuration.contains(openRequirementKey) && configuration.isSection(openRequirementKey + ".")) {
 
-                ConfigurationSection openReqSection = configuration.getConfigurationSection(openRequirementKey + ".");
+                Section openReqSection = configuration.getSection(openRequirementKey + ".");
                 if (openReqSection != null) {
-                    Set<String> keys = openReqSection.getKeys(false);
+                    Set<String> keys = openReqSection.getRoutesAsStrings(false);
                     boolean hasRequirementsList = configuration.isList(openRequirementKey + ".requirements")
                             || configuration.isList(openRequirementKey + ".requirement");
                     boolean hasDirectPermissibleKeys = keys.contains("type") || keys.contains("permission")
@@ -121,13 +122,13 @@ public class InventoryRequirementChecker extends ConfigurationChecker {
      * button recursively. Otherwise, it checks for a button loader and
      * verifies the associated actions and requirements.
      *
-     * @param configuration            the YamlConfiguration containing button details
+     * @param configuration            the YamlDocument containing button details
      * @param inventoryLoadRequirement the object to store loaded requirements
      */
-    private void checkButtons(YamlConfiguration configuration, InventoryLoadRequirement inventoryLoadRequirement) {
-        ConfigurationSection section = configuration.getConfigurationSection("items.");
+    private void checkButtons(YamlDocument configuration, InventoryLoadRequirement inventoryLoadRequirement) {
+        Section section = configuration.getSection("items.");
         if (section != null) {
-            section.getKeys(false).forEach(buttonPath -> this.checkButton(configuration, inventoryLoadRequirement, "items." + buttonPath + "."));
+            section.getRoutesAsStrings(false).forEach(buttonPath -> this.checkButton(configuration, inventoryLoadRequirement, "items." + buttonPath + "."));
         }
     }
 
@@ -140,31 +141,31 @@ public class InventoryRequirementChecker extends ConfigurationChecker {
      * configuration and checks the button recursively. Otherwise, it checks
      * for a button loader and verifies the associated actions and requirements.
      *
-     * @param configuration            the YamlConfiguration containing button details
+     * @param configuration            the YamlDocument containing button details
      * @param inventoryLoadRequirement the object to store loaded requirements
      * @param path                     the configuration path to the button
      */
-    private void checkButton(YamlConfiguration configuration, InventoryLoadRequirement inventoryLoadRequirement, String path) {
+    private void checkButton(YamlDocument configuration, InventoryLoadRequirement inventoryLoadRequirement, String path) {
 
         String buttonType = configuration.getString(path + "type", "NONE");
-        ConfigurationSection patternSection = configuration.getConfigurationSection(path + "pattern");
+        Section patternSection = configuration.getSection(path + "pattern");
 
         // Check if there is a pattern
         // If there is a pattern, it will try to load it
         if (patternSection != null) {
 
             Map<String, Object> mapPlaceholders = new HashMap<>();
-            patternSection.getKeys(false).forEach(key -> mapPlaceholders.put(key, patternSection.get(key)));
+            patternSection.getRoutesAsStrings(false).forEach(key -> mapPlaceholders.put(key, patternSection.get(key)));
 
             String fileName = configuration.getString(path + "pattern.fileName", configuration.getString(path + "pattern.file-name"));
             String pluginName = configuration.getString(path + "pattern.pluginName", configuration.getString(path + "pattern.plugin-name", null));
             Plugin patternPlugin = pluginName != null ? Bukkit.getPluginManager().getPlugin(pluginName) : this.plugin;
             if (patternPlugin != null) {
                 Path patternPath = patternPlugin.getDataFolder().toPath().resolve("patterns").resolve(fileName + ".yml");
-                Optional<YamlConfiguration> yamlConfiguration = YamlFileCache.getYamlConfiguration(patternPath);
+                Optional<YamlDocument> yamlConfiguration = YamlFileCache.getYamlConfiguration(patternPath);
                 if (yamlConfiguration.isPresent()) {
 
-                    YamlConfiguration patternFile = yamlConfiguration.get();
+                    YamlDocument patternFile = yamlConfiguration.get();
 
                     mapPlaceholders.putAll(this.plugin.getGlobalPlaceholders());
 
@@ -199,24 +200,24 @@ public class InventoryRequirementChecker extends ConfigurationChecker {
      * click requirements configuration. If found, each requirement within
      * the section is checked and processed.
      *
-     * @param configuration            the YamlConfiguration containing the requirements
+     * @param configuration            the YamlDocument containing the requirements
      * @param inventoryLoadRequirement the object to store loaded requirements
      * @param path                     the base path to search for click requirements
      */
-    private void checkClickRequirements(YamlConfiguration configuration, InventoryLoadRequirement inventoryLoadRequirement, String path) {
+    private void checkClickRequirements(YamlDocument configuration, InventoryLoadRequirement inventoryLoadRequirement, String path) {
 
         String[] sectionStrings = this.plugin.getClickRequirementKeys();
-        ConfigurationSection section = null;
+        Section section = null;
         String sectionString = "";
         for (String string : sectionStrings) {
             sectionString = string;
-            section = configuration.getConfigurationSection(path + sectionString);
+            section = configuration.getSection(path + sectionString);
             if (section != null) break;
         }
         if (section == null) return;
 
         boolean hasMalformedStructure = false;
-        for (String key : section.getKeys(false)) {
+        for (String key : section.getRoutesAsStrings(false)) {
             if (REQUIREMENT_LEVEL_KEYS.contains(key.toLowerCase(Locale.ROOT))) {
                 hasMalformedStructure = true;
                 break;
@@ -237,7 +238,7 @@ public class InventoryRequirementChecker extends ConfigurationChecker {
             return;
         }
 
-        for (String key : section.getKeys(false)) {
+        for (String key : section.getRoutesAsStrings(false)) {
             this.checkRequirement(configuration, path + sectionString + key + ".", inventoryLoadRequirement);
         }
     }
@@ -249,14 +250,14 @@ public class InventoryRequirementChecker extends ConfigurationChecker {
      * @param inventoryLoadRequirement the inventory load requirement
      * @param path                     the path of the button
      */
-    private void checkViewRequirement(YamlConfiguration configuration, InventoryLoadRequirement inventoryLoadRequirement, String path) {
+    private void checkViewRequirement(YamlDocument configuration, InventoryLoadRequirement inventoryLoadRequirement, String path) {
 
-        String requirementPath = configuration.isConfigurationSection(path + "view_requirement.") ? "view_requirement." : configuration.isConfigurationSection(path + "view-requirement.") ? "view-requirement." : null;
+        String requirementPath = configuration.isSection(path + "view_requirement.") ? "view_requirement." : configuration.isSection(path + "view-requirement.") ? "view-requirement." : null;
         if (requirementPath == null) return;
 
-        ConfigurationSection viewReqSection = configuration.getConfigurationSection(path + requirementPath);
+        Section viewReqSection = configuration.getSection(path + requirementPath);
         if (viewReqSection != null) {
-            Set<String> keys = viewReqSection.getKeys(false);
+            Set<String> keys = viewReqSection.getRoutesAsStrings(false);
             boolean hasRequirementsList = configuration.isList(path + requirementPath + "requirements")
                     || configuration.isList(path + requirementPath + "requirement");
             boolean hasDirectPermissibleKeys = keys.contains("type") || keys.contains("permission")

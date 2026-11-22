@@ -11,7 +11,7 @@ import fr.maxlego08.menu.hooks.bedrock.AbstractBedrockInventory;
 import fr.maxlego08.menu.hooks.bedrock.BedrockInventoryTypeRegistry;
 import fr.maxlego08.menu.hooks.bedrock.ZBedrockManager;
 import fr.maxlego08.menu.zcore.logger.Logger;
-import org.bukkit.configuration.file.YamlConfiguration;
+import dev.dejvokep.boostedyaml.YamlDocument;
 import org.bukkit.plugin.Plugin;
 
 import java.io.File;
@@ -20,6 +20,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
+import org.bukkit.configuration.file.YamlConfiguration;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 public class BedrockLoader implements Loader<AbstractBedrockInventory<?,?,?>> {
     private final MenuPlugin menuPlugin;
@@ -31,7 +33,7 @@ public class BedrockLoader implements Loader<AbstractBedrockInventory<?,?,?>> {
     }
 
     @Override
-    public AbstractBedrockInventory<?,?,?> load(YamlConfiguration configuration, String path, Object... objects) throws InventoryException {
+    public AbstractBedrockInventory<?,?,?> load(YamlDocument configuration, String path, Object... objects) throws InventoryException {
         File file = (File) objects[0];
 
         String title = configuration.getString("name", "");
@@ -54,7 +56,7 @@ public class BedrockLoader implements Loader<AbstractBedrockInventory<?,?,?>> {
             throw new InventoryException("Failed to load bedrock inventory of type: " + bedrockType);
         }
 
-        if (configuration.isConfigurationSection("open-requirement")){
+        if (configuration.isSection("open-requirement")){
             try {
                 Requirement openRequirement = this.loadRequirement(configuration, "open-requirement.", file);
                 bedrockInventory.setOpenRequirement(openRequirement);
@@ -76,6 +78,13 @@ public class BedrockLoader implements Loader<AbstractBedrockInventory<?,?,?>> {
         return bedrockInventory;
     }
 
+    @Override
+    @Deprecated
+    public AbstractBedrockInventory<?,?,?> load(YamlConfiguration configuration, String path, Object... objects) throws InventoryException  {
+        YamlDocument configurationDocument = configuration == null ? null : YamlSections.toDocument(configuration);
+        return this.load(configurationDocument, path, objects);
+    }
+
     /**
      * Loads InventoryOption
      */
@@ -94,7 +103,7 @@ public class BedrockLoader implements Loader<AbstractBedrockInventory<?,?,?>> {
         }
     }
 
-    protected Requirement loadRequirement(YamlConfiguration configuration, String path, File file) throws InventoryException {
+    protected Requirement loadRequirement(YamlDocument configuration, String path, File file) throws InventoryException {
         return this.menuPlugin.getButtonManager().loadRequirement(configuration, path, file);
     }
 

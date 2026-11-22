@@ -18,8 +18,8 @@ import fr.maxlego08.menu.registry.RegistryOwners;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import net.kyori.adventure.key.Key;
 import org.bukkit.NamespacedKey;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.YamlConfiguration;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
+import dev.dejvokep.boostedyaml.YamlDocument;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
@@ -36,6 +36,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Stream;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 public class ZItemManager implements ItemManager {
     private final NamespacedKey itemIdKey;
@@ -92,20 +93,20 @@ public class ZItemManager implements ItemManager {
 
     @Override
     public void loadCustomItem(File file) {
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
-        for (String itemId : config.getKeys(false)) {
+        YamlDocument config = YamlSections.load(file);
+        for (String itemId : config.getRoutesAsStrings(false)) {
             String path = itemId + ".";
             MenuItemStack menuItemStack = this.menuPlugin.getItemStackService().load(config, path, file);
             if (menuItemStack != null) {
                 Set<String> mechanicIds = new HashSet<>();
 
-                ConfigurationSection mechanicSection = config.getConfigurationSection(itemId + ".mechanics");
+                Section mechanicSection = config.getSection(itemId + ".mechanics");
                 if (mechanicSection != null) {
                     path += "mechanics.";
-                    for (String mechanicId : mechanicSection.getKeys(false)) {
+                    for (String mechanicId : mechanicSection.getRoutesAsStrings(false)) {
                         MechanicFactory<?> factory = this.getMechanicFactory(mechanicId).orElse(null);
                         if (factory != null) {
-                            factory.parse(this.menuPlugin, itemId, mechanicSection.getConfigurationSection(mechanicId), config, file, path + mechanicId + ".");
+                            factory.parse(this.menuPlugin, itemId, mechanicSection.getSection(mechanicId), config, file, path + mechanicId + ".");
                             mechanicIds.add(factory.getMechanicId());
                         } else {
                             List<String> available = this.mechanics().stream().map(MechanicFactory::getMechanicId).toList();
@@ -113,7 +114,7 @@ public class ZItemManager implements ItemManager {
                         }
                     }
                 }
-                ConfigurationSection itemSection = config.getConfigurationSection(itemId);
+                Section itemSection = config.getSection(itemId);
                 boolean saveOwnerInPDC = true;
                 boolean skipItemUpdate = false;
                 if (itemSection != null) {

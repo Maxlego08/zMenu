@@ -10,8 +10,8 @@ import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.api.utils.Loader;
 import fr.maxlego08.menu.zcore.logger.Logger;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.YamlConfiguration;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
+import dev.dejvokep.boostedyaml.YamlDocument;
 import org.bukkit.plugin.Plugin;
 import org.jspecify.annotations.NonNull;
 
@@ -19,6 +19,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
+import org.bukkit.configuration.file.YamlConfiguration;
 
 public class CommandLoader implements Loader<Command> {
 
@@ -35,20 +37,20 @@ public class CommandLoader implements Loader<Command> {
     }
 
     @Override
-    public Command load(@NonNull YamlConfiguration configuration, @NonNull String path, Object... args) throws InventoryException {
+    public Command load(@NonNull YamlDocument configuration, @NonNull String path, Object... args) throws InventoryException {
 
         File file = (File) args[0];
         String command = configuration.getString(path + "command");
         String permission = configuration.getString(path + "permission");
         String inventory = configuration.getString(path + "inventory");
         String denyMessage = configuration.getString(path + "deny-message", null);
-        List<String> aliases = configuration.getStringList(path + "aliases");
+        List<String> aliases = YamlSections.getStringList(configuration, path + "aliases");
         boolean consoleCanUse = configuration.getBoolean(path + "console-can-use", false);
 
-        List<Action> commandActions = this.menuPlugin.getButtonManager().loadActions((List<Map<String, Object>>) configuration.getList(path + "actions", new ArrayList<>()), path, file);
+        List<Action> commandActions = this.menuPlugin.getButtonManager().loadActions((List<Map<String, Object>>) YamlSections.getList(configuration, path + "actions", new ArrayList<>()), path, file);
         List<Requirement> requirements = this.menuPlugin.getButtonManager().loadRequirements(configuration, path + "actions-requirements", file);
         List<CommandArgument> arguments = new ArrayList<>();
-        List<?> listValues = configuration.getList(path + "arguments", new ArrayList<>());
+        List<?> listValues = YamlSections.getList(configuration, path + "arguments", new ArrayList<>());
         if (this.isListOfMap(listValues)) {
             List<Map<?, ?>> mapList = configuration.getMapList(path + "arguments");
             List<CommandArgument> mappedArguments = new ArrayList<>(mapList.size());
@@ -68,7 +70,7 @@ public class CommandLoader implements Loader<Command> {
             }
             arguments = mappedArguments;
         } else {
-            List<String> strings = configuration.getStringList(path + "arguments");
+            List<String> strings = YamlSections.getStringList(configuration, path + "arguments");
             if (!strings.isEmpty()) {
                 Logger.info("/" + command + " (in file " + file.getPath() + ") command uses the old argument system. Please update your configuration ! (https://docs.groupez.dev/zmenu/configurations/custom-commands) Your command will still work properly but it is advisable to update it.", Logger.LogType.WARNING);
                 List<CommandArgument> mappedArguments = new ArrayList<>(strings.size());
@@ -90,9 +92,9 @@ public class CommandLoader implements Loader<Command> {
         }
 
         List<Command> subCommands = new ArrayList<>();
-        ConfigurationSection configurationSection = configuration.getConfigurationSection(path + "sub-commands");
+        Section configurationSection = configuration.getSection(path + "sub-commands");
         if (configurationSection != null) {
-            for (String key : configurationSection.getKeys(false)) {
+            for (String key : configurationSection.getRoutesAsStrings(false)) {
                 Command subCommand = this.load(configuration, path + "sub-commands." + key + ".", args);
                 if (subCommand != null && subCommand.command() != null) {
                     subCommands.add(subCommand);
@@ -101,6 +103,13 @@ public class CommandLoader implements Loader<Command> {
         }
 
         return new ZCommand(this.plugin, command, aliases, consoleCanUse, permission, inventory, arguments, commandActions, subCommands, requirements, denyMessage, path, file);
+    }
+
+    @Override
+    @Deprecated
+    public Command load(YamlConfiguration configuration, String path, Object... args) throws InventoryException  {
+        YamlDocument configurationDocument = configuration == null ? null : YamlSections.toDocument(configuration);
+        return this.load(configurationDocument, path, args);
     }
 
     private boolean isListOfMap(List<?> list) {

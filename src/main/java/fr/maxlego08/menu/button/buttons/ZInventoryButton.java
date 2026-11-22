@@ -9,13 +9,15 @@ import fr.maxlego08.menu.api.utils.Message;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.common.utils.MessageUtils;
 import fr.maxlego08.menu.zcore.utils.InventoryArgument;
-import org.bukkit.configuration.ConfigurationSection;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.jspecify.annotations.NonNull;
 
 import java.util.List;
 import java.util.Optional;
+import org.bukkit.configuration.ConfigurationSection;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 public class ZInventoryButton extends InventoryButton {
 
@@ -35,13 +37,19 @@ public class ZInventoryButton extends InventoryButton {
     }
 
     @Override
-    protected void serializeProperties(@NonNull ConfigurationSection section) {
+    protected void serializeProperties(@NonNull Section section) {
         section.set("type", "inventory");
         section.set("inventory", this.inventoryName);
         if (this.pluginName != null) section.set("plugin", this.pluginName);
         if (this.toPage != 1) section.set("to-page", this.toPage);
         List<String> arguments = this.getArguments();
         if (arguments != null && !arguments.isEmpty()) section.set("arguments", arguments);
+    }
+
+    @Override
+    @Deprecated
+    protected void serializeProperties(ConfigurationSection section) {
+        YamlSections.write(section, copy -> this.serializeProperties(copy));
     }
 
     @Override

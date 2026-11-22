@@ -8,10 +8,12 @@ import fr.maxlego08.menu.api.button.buttons.bedrock.components.BasicBedrockCompo
 import fr.maxlego08.menu.api.button.buttons.bedrock.components.BedrockComponentButton;
 import fr.maxlego08.menu.api.enums.bedrock.BedrockImageType;
 import fr.maxlego08.menu.api.loader.ButtonLoader;
-import org.bukkit.configuration.file.YamlConfiguration;
+import dev.dejvokep.boostedyaml.YamlDocument;
 import org.jspecify.annotations.NonNull;
 
 import java.util.Locale;
+import org.bukkit.configuration.file.YamlConfiguration;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 @AutoButtonLoader
 @RequireSupport(RequireSupport.SupportType.BEDROCK_INVENTORY)
@@ -22,7 +24,7 @@ public class BedrockButtonLoader extends ButtonLoader {
     }
 
     @Override
-    public BedrockComponentButton load(@NonNull YamlConfiguration configuration, @NonNull String path, @NonNull DefaultButtonValue defaultButtonValue) {
+    public BedrockComponentButton load(@NonNull YamlDocument configuration, @NonNull String path, @NonNull DefaultButtonValue defaultButtonValue) {
         String text = configuration.getString(path + ".text", "");
 
         // Type d'image
@@ -38,5 +40,12 @@ public class BedrockButtonLoader extends ButtonLoader {
         String imageData = configuration.getString(path + ".image-value", "");
 
         return new BasicBedrockComponentButton(text, imageType, imageData);
+    }
+
+    @Override
+    @Deprecated
+    public BedrockComponentButton load(YamlConfiguration configuration, String path, DefaultButtonValue defaultButtonValue) {
+        YamlDocument configurationDocument = configuration == null ? null : YamlSections.toDocument(configuration);
+        return this.load(configurationDocument, path, defaultButtonValue);
     }
 }

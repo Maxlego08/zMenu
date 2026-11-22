@@ -5,14 +5,17 @@ import fr.maxlego08.menu.api.itemstack.ItemComponent;
 import fr.maxlego08.menu.api.utils.resolvable.bukkit.ResolvableDyeColor;
 import fr.maxlego08.menu.loader.components.AbstractColorItemComponentLoader;
 import org.bukkit.DyeColor;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.YamlConfiguration;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
+import dev.dejvokep.boostedyaml.YamlDocument;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.util.function.Function;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.configuration.ConfigurationSection;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 public abstract class DyeColorLoader extends AbstractColorItemComponentLoader {
     private final Function<ResolvableDyeColor, ItemComponent> componentFactory;
@@ -23,11 +26,18 @@ public abstract class DyeColorLoader extends AbstractColorItemComponentLoader {
     }
 
     @Override
-    public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
+    public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlDocument configuration, @NotNull String path, @Nullable Section componentSection) {
         path = this.normalizePath(path);
         ResolvableDyeColor resolvableDyeColor = ResolvableDyeColor.autoOrNull(configuration.get(path));
         if (resolvableDyeColor == null) return null;
         return this.componentFactory.apply(resolvableDyeColor);
+    }
+
+    @Override
+    @Deprecated
+    public ItemComponent load(MenuItemStackContext context, File file, YamlConfiguration configuration, String path, ConfigurationSection componentSection) {
+        YamlDocument configurationDocument = configuration == null ? null : YamlSections.toDocument(configuration);
+        return this.load(context, file, configurationDocument, path, YamlSections.toSection(configurationDocument, componentSection));
     }
 
     @Override

@@ -53,7 +53,7 @@ public final class RedisStorageProvider implements StorageProvider {
 
     @Override
     public @NotNull CompletableFuture<Void> open(@NotNull StorageContext context) {
-        RedisSettings settings = RedisSettings.read(context.configuration());
+        RedisSettings settings = RedisSettings.read(context.section());
         try {
             this.connection = RedisConnection.open(settings, context.logger());
         } catch (NoClassDefFoundError error) {
@@ -69,7 +69,7 @@ public final class RedisStorageProvider implements StorageProvider {
         this.inventoryLogs = this.connection.inventoryLogs();
         this.sessions = this.connection.sessions();
 
-        if (!context.configuration().getString("messaging-type", "AUTO").equalsIgnoreCase("NONE")) {
+        if (!context.section().getString("messaging-type", "AUTO").equalsIgnoreCase("NONE")) {
             this.broker = this.connection.broker(settings.channel(), context.serverId(), context.logger());
             this.broker.start();
         }
