@@ -1,9 +1,12 @@
 package fr.maxlego08.menu.api;
 
+import fr.maxlego08.menu.api.configuration.Configuration;
 import net.kyori.adventure.key.Key;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.File;
+import java.nio.file.Path;
 import java.util.Locale;
 
 /**
@@ -65,6 +68,41 @@ public final class ZMenuKeys {
      */
     public static @NotNull Key inventoryPathKey(@NotNull String path) {
         return Key.key(NAMESPACE, sanitize(path, true));
+    }
+
+    /**
+     * Gets the path of a file inside a folder, as {@code enable-inventory-paths} names the files of
+     * the inventories, dialogs and bedrock folders: {@code folder/admin/shop.yml} is
+     * {@code admin/shop}, with "/" between the names and without the ".yml" extension.
+     *
+     * @param folder the folder, such as the inventories folder of zMenu
+     * @param file   the file
+     * @return the path, or null when the file is not in a sub folder of the folder
+     */
+    public static @Nullable String inventoryPath(@NotNull File folder, @NotNull File file) {
+        Path root = folder.toPath().toAbsolutePath().normalize();
+        Path path = file.toPath().toAbsolutePath().normalize();
+        if (!path.startsWith(root) || root.relativize(path).getNameCount() < 2) return null;
+
+        String relative = root.relativize(path).toString().replace(File.separatorChar, '/');
+        return relative.endsWith(".yml") ? relative.substring(0, relative.length() - 4) : relative;
+    }
+
+    /**
+     * Gets the name a dialog or a bedrock inventory is referenced by, without its plugin: its
+     * {@link #inventoryPath(File, File) path} inside a folder of zMenu, such as {@code admin/info}
+     * for {@code dialogs/admin/info.yml}, when {@code enable-inventory-paths} is on, otherwise its
+     * file name, as it always was.
+     *
+     * @param inventory  the dialog or bedrock inventory
+     * @param folderName the folder of zMenu it is loaded from, {@code dialogs} or {@code bedrock}
+     * @return the reference
+     */
+    public static @NotNull String inventoryReference(@NotNull Inventory inventory, @NotNull String folderName) {
+        File file = inventory.getFile();
+        String path = Configuration.enableInventoryPaths && file != null && PLUGIN_NAME.equals(inventory.getPlugin().getName())
+                ? inventoryPath(new File(inventory.getPlugin().getDataFolder(), folderName), file) : null;
+        return path == null ? inventory.getFileName() : path;
     }
 
     /**

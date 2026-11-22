@@ -68,6 +68,16 @@ class SimpleRegistryTest {
     }
 
     @Test
+    void inventoryPathsAreOnlyGivenToTheFilesOfASubFolder() {
+        java.io.File folder = new java.io.File("inventories");
+        assertEquals("admin/shop", ZMenuKeys.inventoryPath(folder, new java.io.File(folder, "admin/shop.yml")));
+        assertEquals("a/b/My Shop", ZMenuKeys.inventoryPath(folder, new java.io.File(folder, "a/b/My Shop.yml")), "the names are kept as they are");
+        assertEquals(null, ZMenuKeys.inventoryPath(folder, new java.io.File(folder, "shop.yml")), "a file of the folder itself has no path");
+        assertEquals(null, ZMenuKeys.inventoryPath(folder, new java.io.File("other/admin/shop.yml")), "nor a file outside of it");
+        assertEquals(null, ZMenuKeys.inventoryPath(folder, new java.io.File(folder, "admin/../shop.yml")), "the path of the file is resolved first");
+    }
+
+    @Test
     void parseReadsSpacesAndDashesAsUnderscores() {
         assertEquals(Key.key("zmenu", "play_animation"), ZMenuKeys.parse("Play Animation"));
         assertEquals(Key.key("zmenu", "play_animation"), ZMenuKeys.parse("play-animation"));

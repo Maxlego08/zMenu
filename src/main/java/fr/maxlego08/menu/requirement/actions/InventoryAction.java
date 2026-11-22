@@ -1,6 +1,5 @@
 package fr.maxlego08.menu.requirement.actions;
 
-import fr.maxlego08.menu.api.ZMenuKeys;
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.button.Button;
@@ -59,7 +58,7 @@ public class InventoryAction extends ActionHelper {
             List<Inventory> oldInventories = inventory.getOldInventories();
 
             String inventoryName = this.papi(placeholders.parse(this.inventory), player);
-            Optional<Inventory> optional = this.plugin == null ? this.inventoryManager.findInventory(inventoryName) : this.inventoryManager.getInventory(ZMenuKeys.fileKey(this.plugin, inventoryName));
+            Optional<Inventory> optional = this.plugin == null ? this.inventoryManager.findInventory(inventoryName) : this.inventoryManager.findInventory(this.plugin + ":" + inventoryName);
             if (optional.isPresent()) {
 
                 int page = this.stringPage == null ? this.intPage : this.getInt(this.papi(placeholders.parse(this.stringPage), player));

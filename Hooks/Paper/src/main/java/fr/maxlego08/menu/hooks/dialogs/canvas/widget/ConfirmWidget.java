@@ -1,5 +1,6 @@
 package fr.maxlego08.menu.hooks.dialogs.canvas.widget;
 
+import fr.maxlego08.menu.hooks.dialogs.ZDialogManager;
 import fr.maxlego08.menu.api.dialog.canvas.CanvasBuilder;
 import fr.maxlego08.menu.api.dialog.canvas.CanvasRenderContext;
 import fr.maxlego08.menu.api.dialog.canvas.CanvasVariants;
@@ -121,9 +122,9 @@ public final class ConfirmWidget extends WidgetElement {
             if (!requirement.execute(player, null, context.engine(), placeholders)) return;
         }
         DialogInventory dialog = context.dialog();
-        if (dialog != null) context.canvasManager().getStateService().remove(player.getUniqueId(), dialog.getFileName(), this.settings.key());
+        if (dialog != null) context.canvasManager().getStateService().remove(player.getUniqueId(), ZDialogManager.reference(dialog), this.settings.key());
         for (Action action : this.actions) action.preExecute(player, null, context.engine(), placeholders);
-        if (this.refresh && dialog != null) context.canvasManager().reopen(player, dialog.getPlugin().getName() + ":" + dialog.getFileName());
+        if (this.refresh && dialog != null) context.canvasManager().reopen(player, dialog.getPlugin().getName() + ":" + ZDialogManager.reference(dialog));
     }
 
     @Override

@@ -353,6 +353,43 @@ public class InventoryPathTest {
     }
 
     @Test
+    @SuppressWarnings("removal")
+    public void onThePluginOfZMenuCanBeWrittenBeforeAPath() throws IOException {
+        this.write("paths_shop", menu("Root"));
+        this.write("paths_admin/paths_shop", menu("Admin"));
+        this.reload(true);
+
+        assertEquals("Admin", this.title("zMenu:paths_admin/paths_shop"));
+        assertEquals("Admin", this.title("ZMENU:Paths_Admin/paths_shop"));
+        assertEquals("Root", this.title("zmenu:paths_shop"), "the file name is the inventory of the folder itself, never a fallback");
+        assertEquals("Admin", this.inventoryManager.getInventory("zMenu", "paths_admin/paths_shop").map(Inventory::getName).orElse(null));
+        assertEquals("Admin", this.inventoryManager.getInventory(plugin, "paths_admin/paths_shop").map(Inventory::getName).orElse(null));
+        assertEquals("paths_admin/paths_shop", ZMenuKeys.inventoryReference(this.find("paths_admin/paths_shop").orElseThrow(), "inventories"));
+        assertEquals("paths_shop", ZMenuKeys.inventoryReference(this.find("paths_shop").orElseThrow(), "inventories"));
+
+        // An action or a button with plugin: zMenu reads its inventory the same way
+        this.write("paths_menu", "size: 9\nname: \"Menu\"\nitems:\n  open:\n    type: INVENTORY\n    plugin: zMenu\n    inventory: \"paths_admin/paths_shop\"\n    slot: 0\n    item:\n      material: STONE\n");
+        this.reload(true);
+        PlayerMock viewer = server.addPlayer();
+        InventoryAction action = new InventoryAction(this.inventoryManager, plugin.getCommandManager(), "paths_admin/paths_shop", "zMenu", "1", List.of());
+        action.setChance(100);
+        action.preExecute(viewer, null, this.inventoryManager.getFakeInventory(), new Placeholders());
+        server.getScheduler().performTicks(2L);
+        assertEquals("Admin", opened.getInventory().getName());
+
+        opened = null;
+        Button button = this.find("paths_menu").orElseThrow().getButtons(InventoryButton.class).getFirst();
+        InventoryClickEvent event = new InventoryClickEvent(viewer.openInventory(server.createInventory(null, 9)), InventoryType.SlotType.CONTAINER, 0, ClickType.LEFT, org.bukkit.event.inventory.InventoryAction.PICKUP_ALL);
+        button.onClick(viewer, event, this.inventoryManager.getFakeInventory(), 0, new Placeholders());
+        server.getScheduler().performTicks(2L);
+        assertEquals("Admin", opened.getInventory().getName());
+
+        this.reload(false);
+        assertFalse(this.find("zMenu:paths_admin/paths_shop").isPresent(), "no path while the option is off");
+        assertEquals("paths_shop", ZMenuKeys.inventoryReference(this.find("paths_shop").orElseThrow(), "inventories"));
+    }
+
+    @Test
     public void onTheInventoryActionAndButtonOpenAPath() throws IOException {
         this.write("paths_admin/paths_shop", menu("Admin"));
         this.write("paths_player/paths_shop", menu("Player"));

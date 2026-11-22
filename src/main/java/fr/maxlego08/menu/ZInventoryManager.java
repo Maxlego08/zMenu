@@ -306,16 +306,10 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
      * {@code specify-path-menus} keeps the key of its file name.
      */
     private void applyInventoryPath(Inventory inventory, File file) {
-        Path folder = new File(this.plugin.getDataFolder(), "inventories").toPath().toAbsolutePath().normalize();
-        Path path = file.toPath().toAbsolutePath().normalize();
-        Path parent = path.startsWith(folder) ? folder.relativize(path).getParent() : null;
-        if (parent == null || !(inventory instanceof ContainerInventorySetter setter)) return;
+        String path = ZMenuKeys.inventoryPath(new File(this.plugin.getDataFolder(), "inventories"), file);
+        if (path == null || !(inventory instanceof ContainerInventorySetter setter)) return;
 
-        StringBuilder builder = new StringBuilder();
-        for (Path name : parent) {
-            builder.append(name).append('/');
-        }
-        setter.setKey(ZMenuKeys.inventoryPathKey(builder + inventory.getFileName()));
+        setter.setKey(ZMenuKeys.inventoryPathKey(path));
     }
 
     /**
@@ -481,14 +475,14 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     @Deprecated(forRemoval = true)
     @SuppressWarnings("removal")
     public Optional<Inventory> getInventory(Plugin plugin, String name) {
-        return plugin == null || name == null ? Optional.empty() : this.getInventory(ZMenuKeys.fileKey(plugin.getName(), name));
+        return plugin == null || name == null ? Optional.empty() : this.findInventory(plugin.getName() + ":" + name);
     }
 
     @Override
     @Deprecated(forRemoval = true)
     @SuppressWarnings("removal")
     public Optional<Inventory> getInventory(String pluginName, String name) {
-        return pluginName == null || name == null ? Optional.empty() : this.getInventory(ZMenuKeys.fileKey(pluginName, name));
+        return pluginName == null || name == null ? Optional.empty() : this.findInventory(pluginName + ":" + name);
     }
 
     @Override
@@ -509,8 +503,9 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
     @Override
     public Optional<Inventory> findInventory(@NotNull String inventoryName) {
-        if (this.inventoryPaths && inventoryName.indexOf(':') < 0) {
-            return this.inventoryRegistry().get(ZMenuKeys.inventoryPathKey(inventoryName));
+        int separator = inventoryName.indexOf(':');
+        if (this.inventoryPaths && (separator < 0 || ZMenuKeys.inventoryKey(inventoryName).namespace().equals(ZMenuKeys.NAMESPACE))) {
+            return this.inventoryRegistry().get(ZMenuKeys.inventoryPathKey(inventoryName.substring(separator + 1)));
         }
 
         Optional<Inventory> optional = this.getInventory(ZMenuKeys.inventoryKey(inventoryName));
@@ -805,7 +800,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     @Deprecated(forRemoval = true)
     @SuppressWarnings("removal")
     public void openInventory(Player player, Plugin plugin, String inventoryName) {
-        this.openOrTell(player, this.getInventory(ZMenuKeys.fileKey(plugin.getName(), inventoryName)), inventoryName, plugin.getName(), 1);
+        this.openOrTell(player, this.findInventory(plugin.getName() + ":" + inventoryName), inventoryName, plugin.getName(), 1);
     }
 
     @Override
@@ -819,7 +814,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
     @Deprecated(forRemoval = true)
     @SuppressWarnings("removal")
     public void openInventory(Player player, String pluginName, String inventoryName, int page) {
-        this.openOrTell(player, this.getInventory(ZMenuKeys.fileKey(pluginName, inventoryName)), inventoryName, pluginName, page);
+        this.openOrTell(player, this.findInventory(pluginName + ":" + inventoryName), inventoryName, pluginName, page);
     }
 
     @Override
@@ -924,7 +919,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         byPlugin.forEach((plugin, inventories) -> {
             List<String> fileNames = new ArrayList<>(inventories.size());
             for (Inventory inventory : inventories) {
-                fileNames.add(inventory.getFileName());
+                fileNames.add(ZMenuKeys.inventoryReference(inventory, "inventories"));
             }
             String inventoriesAsString = ZUtils.toList(fileNames, "§8", "§7");
             messageWO(this.plugin, sender, Message.LIST_INFO, "%plugin%", plugin, "%amount%", inventories.size(), "%inventories%", inventoriesAsString);

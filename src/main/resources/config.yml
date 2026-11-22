@@ -317,6 +317,7 @@ specify-path-menus: [ ]
 # Allow inventories to be referenced by their relative path inside the inventories folder.
 # When enabled, folder inventories require their full relative path.
 # Inventories from other plugins require their plugin namespace.
+# Dialogs and bedrock inventories follow the same rule inside the dialogs and bedrock folders.
 enable-inventory-paths: false
 
 

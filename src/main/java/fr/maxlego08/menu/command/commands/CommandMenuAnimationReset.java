@@ -1,7 +1,7 @@
 package fr.maxlego08.menu.command.commands;
 
 import fr.maxlego08.menu.ZMenuPlugin;
-import fr.maxlego08.menu.api.Inventory;
+import fr.maxlego08.menu.api.ZMenuKeys;
 import fr.maxlego08.menu.api.utils.Message;
 import fr.maxlego08.menu.common.enums.Permission;
 import fr.maxlego08.menu.common.utils.MessageUtils;
@@ -30,7 +30,7 @@ public class CommandMenuAnimationReset extends SubCommand<ZMenuPlugin> {
         this.addRequiredArgument("player", new OfflinePlayerArgument());
         this.addOptionalArgument(Commands.argument("menu", new NonSpaceStringArgumentType()).suggests((context, builder) -> {
             this.plugin.getInventoryManager().getInventories().stream()
-                    .map(Inventory::getFileName)
+                    .map(inventory -> ZMenuKeys.inventoryReference(inventory, "inventories"))
                     .filter(name -> name.toLowerCase().startsWith(builder.getRemainingLowerCase()))
                     .forEach(builder::suggest);
             return builder.buildFuture();
@@ -51,7 +51,10 @@ public class CommandMenuAnimationReset extends SubCommand<ZMenuPlugin> {
             return CommandResultType.SUCCESS;
         }
 
-        plugin.getInventoryManager().getAnimationManager().getHistory().forget(playerUniqueId, plugin.getName() + ":" + menu);
+        // With enable-inventory-paths, the history names a menu by its path, written as its reference or not
+        String name = !plugin.getInventoryManager().usesInventoryPaths() ? menu : plugin.getInventoryManager().findInventory(menu)
+                .filter(inventory -> inventory.getPlugin() == plugin).map(inventory -> ZMenuKeys.inventoryReference(inventory, "inventories")).orElse(menu);
+        plugin.getInventoryManager().getAnimationManager().getHistory().forget(playerUniqueId, plugin.getName() + ":" + name);
         MessageUtils.message(plugin, commandDispatch.getSender(), Message.ANIMATION_RESET_ONE, "%player%", playerName, "%menu%", menu);
         return CommandResultType.SUCCESS;
     }
