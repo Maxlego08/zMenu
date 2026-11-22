@@ -7,6 +7,7 @@ import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerWi
 import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.animation.PlayerTitleAnimation;
 import fr.maxlego08.menu.api.animation.TitleAnimationSettings;
+import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.ItemStack;
@@ -40,6 +41,15 @@ public class PacketPlayerTitleAnimation extends PlayerTitleAnimation {
         if (playerManager == null) return;
 
         this.wrapperPlayServerOpenWindow.setTitle(this.metaUpdater.getComponent(title));
+        playerManager.sendPacket(player, this.wrapperPlayServerOpenWindow);
+    }
+
+    @Override
+    public void sendTitle(@NonNull Player player, @NonNull Component title) {
+        PlayerManager playerManager = this.playerManager();
+        if (playerManager == null) return;
+
+        this.wrapperPlayServerOpenWindow.setTitle(title);
         playerManager.sendPacket(player, this.wrapperPlayServerOpenWindow);
     }
 

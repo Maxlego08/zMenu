@@ -38,7 +38,7 @@ public class TitleAnimationFeature {
     public void onMenuPreOpen(@NotNull PacketSession session, @Nullable TitleAnimation menuTitleAnimation) {
         boolean holdItems = menuTitleAnimation instanceof PacketTitleAnimation titleAnimation
                 && titleAnimation.getSettings().showItemsAfterAnimation()
-                && !titleAnimation.getSettings().titles().isEmpty();
+                && !titleAnimation.getSettings().frames().isEmpty();
         session.armWindowHold(holdItems);
     }
 
