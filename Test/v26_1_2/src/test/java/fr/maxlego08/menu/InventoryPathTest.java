@@ -10,7 +10,9 @@ import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.event.events.PlayerOpenInventoryEvent;
 import fr.maxlego08.menu.api.exceptions.InventoryException;
 import fr.maxlego08.menu.api.utils.Placeholders;
+import fr.maxlego08.menu.api.animation.slot.AnimationHistory;
 import fr.maxlego08.menu.command.NameSuggestions;
+import fr.maxlego08.menu.command.commands.CommandMenuAnimationReset;
 import fr.maxlego08.menu.common.utils.cache.YamlFileCache;
 import fr.maxlego08.menu.requirement.actions.InventoryAction;
 import fr.maxlego08.menu.zcore.logger.Logger;
@@ -387,6 +389,30 @@ public class InventoryPathTest {
         this.reload(false);
         assertFalse(this.find("zMenu:paths_admin/paths_shop").isPresent(), "no path while the option is off");
         assertEquals("paths_shop", ZMenuKeys.inventoryReference(this.find("paths_shop").orElseThrow(), "inventories"));
+    }
+
+    @Test
+    public void resetAnimationReadsTheMenuAsOpenDoes() throws IOException, InventoryException {
+        this.write("paths_shop", menu("Root"));
+        this.write("paths_admin/paths_shop", menu("Admin"));
+        this.reload(false);
+        this.loadAddon("paths_baltop", "zEssentials baltop");
+
+        assertEquals("zMenu:paths_shop", CommandMenuAnimationReset.historyKey(plugin, "paths_shop"));
+        assertEquals("zEssentials:paths_baltop", CommandMenuAnimationReset.historyKey(plugin, "zEssentials:paths_baltop"));
+        assertEquals("zEssentials:paths_baltop", CommandMenuAnimationReset.historyKey(plugin, "paths_baltop"), "off, a plain name reaches another plugin, as /zm open");
+        assertEquals("zMenu:paths_gone", CommandMenuAnimationReset.historyKey(plugin, "paths_gone"), "a menu not loaded keeps its historical key");
+
+        this.reload(true);
+        this.loadAddon("paths_baltop", "zEssentials baltop");
+        assertEquals("zMenu:paths_shop", CommandMenuAnimationReset.historyKey(plugin, "paths_shop"));
+        assertEquals("zMenu:paths_admin/paths_shop", CommandMenuAnimationReset.historyKey(plugin, "paths_admin/paths_shop"));
+        assertEquals("zMenu:paths_admin/paths_shop", CommandMenuAnimationReset.historyKey(plugin, "zMenu:paths_admin/paths_shop"));
+        assertEquals("zEssentials:paths_baltop", CommandMenuAnimationReset.historyKey(plugin, "zEssentials:paths_baltop"));
+        for (String reference : List.of("paths_shop", "paths_admin/paths_shop", "zEssentials:paths_baltop")) {
+            assertEquals(AnimationHistory.key(this.find(reference).orElseThrow()), CommandMenuAnimationReset.historyKey(plugin, reference), "the key the menu plays its animation under");
+        }
+        assertTrue(this.suggest("").contains("zessentials:paths_baltop"), "suggested with its plugin, as for /zm open");
     }
 
     @Test

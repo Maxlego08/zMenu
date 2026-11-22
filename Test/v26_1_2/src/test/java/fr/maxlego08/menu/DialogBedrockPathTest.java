@@ -7,6 +7,7 @@ import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.command.NameSuggestions;
 import fr.maxlego08.menu.hooks.bedrock.ZBedrockManager;
 import fr.maxlego08.menu.hooks.dialogs.ZDialogManager;
+import org.bukkit.plugin.Plugin;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -37,6 +38,7 @@ public class DialogBedrockPathTest {
     private static ZMenuPlugin plugin;
     private static ZDialogManager dialogs;
     private static ZBedrockManager bedrock;
+    private static Plugin addon;
 
     private final List<File> created = new ArrayList<>();
 
@@ -47,6 +49,7 @@ public class DialogBedrockPathTest {
         dialogs = (ZDialogManager) plugin.getDialogManager();
         assertNotNull(dialogs, "dialogs are supported by this server");
         bedrock = new ZBedrockManager(plugin);
+        addon = MockBukkit.createMockPlugin("zEssentials");
     }
 
     @AfterAll
@@ -63,14 +66,19 @@ public class DialogBedrockPathTest {
         this.reload(false);
     }
 
-    private void write(String folder, String name, String content) throws IOException {
-        File file = new File(plugin.getDataFolder(), folder + "/" + name + ".yml");
+    private File write(String folder, String name, String content) throws IOException {
+        return this.write(plugin, folder, name, content);
+    }
+
+    private File write(Plugin owner, String folder, String name, String content) throws IOException {
+        File file = new File(owner.getDataFolder(), folder + "/" + name + ".yml");
         for (File parent = file.getParentFile(); !parent.exists(); parent = parent.getParentFile()) {
             this.created.add(0, parent);
         }
         file.getParentFile().mkdirs();
         Files.writeString(file.toPath(), content);
         this.created.add(file);
+        return file;
     }
 
     private void dialog(String name, String title) throws IOException {
@@ -87,13 +95,19 @@ public class DialogBedrockPathTest {
         bedrock.reloadBedrockInventory();
     }
 
+    /** Loads a dialog and a bedrock inventory of zEssentials, as it does through the API. */
+    private void loadAddon(String name) throws Exception {
+        dialogs.loadInventory(addon, this.write(addon, "dialogs", name, "type: notice\nname: \"Addon dialog\"\n"));
+        bedrock.loadInventory(addon, this.write(addon, "bedrock", name, "type: simple\nname: \"Addon form\"\n"));
+    }
+
     private static String fileOf(Optional<? extends Inventory> inventory) {
         return inventory.map(found -> found.getFile().getParentFile().getName() + "/" + found.getFileName()).orElse(null);
     }
 
     private static List<String> suggest(Collection<String> names, String input) {
         SuggestionsBuilder builder = new SuggestionsBuilder(input, 0);
-        NameSuggestions.suggest(builder, names);
+        NameSuggestions.suggestReferences(builder, names, Configuration.enableInventoryPaths);
         return builder.build().getList().stream().map(Suggestion::getText).toList();
     }
 
@@ -133,7 +147,8 @@ public class DialogBedrockPathTest {
         for (String suggestion : suggest(names, "")) {
             assertTrue(dialogs.getDialog(suggestion).isPresent(), suggestion + " is suggested, so it must open");
         }
-        assertEquals(List.of("zMenu:paths_admin/paths_rules/paths_info"), suggest(names, "zmenu:paths_admin/paths_r"));
+        assertEquals(List.of("paths_admin/paths_rules/paths_info"), suggest(names, "PATHS_ADMIN/paths_r"), "a dialog of zMenu is suggested without its plugin, as for /zm open");
+        assertEquals(List.of(), suggest(names, "zmenu:"));
 
         dialogs.deleteDialog("paths_admin/paths_info");
         assertFalse(dialogs.getDialog("paths_admin/paths_info").isPresent());
@@ -167,5 +182,47 @@ public class DialogBedrockPathTest {
         this.reload(false);
         assertFalse(bedrock.getBedrockInventory("paths_admin/paths_form").isPresent(), "no path while the option is off");
         assertTrue(bedrock.getBedrockInventoryNames().stream().noneMatch(name -> name.contains("/")));
+    }
+
+    @Test
+    public void aDialogOrABedrockInventoryOfAnotherPluginIsReadAsAnInventoryIs() throws Exception {
+        this.dialog("paths_admin/paths_menu", "zMenu dialog");
+        this.form("paths_admin/paths_menu", "zMenu form");
+
+        this.reload(false);
+        this.loadAddon("paths_addon");
+        assertTrue(dialogs.getDialog("paths_addon").isPresent(), "off, a plain name reaches another plugin, as it always did");
+        assertTrue(bedrock.getBedrockInventory("paths_addon").isPresent());
+        assertTrue(dialogs.getDialog("zEssentials:paths_addon").isPresent());
+
+        this.reload(true);
+        this.loadAddon("paths_addon");
+        assertFalse(dialogs.getDialog("paths_addon").isPresent(), "on, a plain name only names a dialog of zMenu, as for /zm open");
+        assertFalse(bedrock.getBedrockInventory("paths_addon").isPresent());
+        assertFalse(dialogs.getDialog("Addon dialog").isPresent(), "nor by its declared name");
+        assertEquals("dialogs/paths_addon", fileOf(dialogs.getDialog("zEssentials:paths_addon")));
+        assertEquals("dialogs/paths_addon", fileOf(dialogs.getDialog("ZESSENTIALS:Paths_Addon")));
+        assertEquals("bedrock/paths_addon", fileOf(bedrock.getBedrockInventory("zEssentials:paths_addon")));
+        assertEquals("paths_admin/paths_menu", fileOf(dialogs.getDialog("paths_admin/paths_menu")));
+        assertEquals("paths_admin/paths_menu", fileOf(bedrock.getBedrockInventory("paths_admin/paths_menu")));
+        assertEquals("paths_addon", ZDialogManager.reference(dialogs.getDialog("zEssentials:paths_addon").orElseThrow()), "a file of another plugin keeps its file name");
+
+        List<String> dialogSuggestions = suggest(dialogs.getDialogNames(), "");
+        List<String> formSuggestions = suggest(bedrock.getBedrockInventoryNames(), "");
+        assertTrue(dialogSuggestions.containsAll(List.of("paths_admin/paths_menu", "zEssentials:paths_addon")), dialogSuggestions.toString());
+        assertTrue(formSuggestions.containsAll(List.of("paths_admin/paths_menu", "zessentials:paths_addon")), formSuggestions.toString());
+        assertFalse(dialogSuggestions.contains("paths_addon"), "another plugin is only suggested with its plugin");
+        assertFalse(formSuggestions.contains("paths_addon"));
+        for (String suggestion : dialogSuggestions) assertTrue(dialogs.getDialog(suggestion).isPresent(), suggestion);
+        for (String suggestion : formSuggestions) assertTrue(bedrock.getBedrockInventory(suggestion).isPresent(), suggestion);
+        assertEquals(List.of("zEssentials:paths_addon"), suggest(dialogs.getDialogNames(), "zess"));
+
+        dialogs.deleteDialog("paths_addon");
+        assertTrue(dialogs.getDialog("zEssentials:paths_addon").isPresent(), "a plain name deletes nothing of another plugin");
+        dialogs.deleteDialog(addon);
+        bedrock.deleteBedrockInventory(addon);
+        assertFalse(dialogs.getDialog("zEssentials:paths_addon").isPresent());
+        assertTrue(dialogs.getDialogNames().stream().noneMatch(name -> name.startsWith("zEssentials:")));
+        assertTrue(bedrock.getBedrockInventoryNames().stream().noneMatch(name -> name.startsWith("zessentials:")));
     }
 }

@@ -75,6 +75,8 @@ public class ZBedrockManager extends BedrockBuilderManager implements BedrockMan
         return dialogs;
     }
     public Optional<BedrockInventory<?,?,?>> getBedrockInventoryOptional(String name) {
+        // With enable-inventory-paths, a name without a plugin only names a bedrock inventory of zMenu, as for the inventories
+        if (Configuration.enableInventoryPaths) return this.getBedrockInventory(this.menuPlugin, name);
         for (List<BedrockInventory<?,?,?>> dialogList : this.bedrockInventory.values()) {
             for (BedrockInventory<?,?,?> dialog : dialogList) {
                 if (names(dialog, name)) {
@@ -102,7 +104,10 @@ public class ZBedrockManager extends BedrockBuilderManager implements BedrockMan
 
     @Override
     public void deleteBedrockInventory(String name) {
-        for (List<BedrockInventory<?,?,?>> dialogList : this.bedrockInventory.values()) {
+        // Read as getBedrockInventory(String) reads it: with enable-inventory-paths, only one of zMenu
+        Collection<List<BedrockInventory<?,?,?>>> lists = Configuration.enableInventoryPaths
+                ? List.of(this.bedrockInventory.getOrDefault(this.menuPlugin.getName(), new ArrayList<>())) : this.bedrockInventory.values();
+        for (List<BedrockInventory<?,?,?>> dialogList : lists) {
             dialogList.removeIf(dialog ->
                     names(dialog, name)
             );
@@ -292,10 +297,9 @@ public class ZBedrockManager extends BedrockBuilderManager implements BedrockMan
     
     @Override
     public Set<String> getBedrockInventoryNames() {
+        // The plugin an inventory is loaded for is the key of the map: getPlugin() is always zMenu
         Set<String> names = new HashSet<>();
-        for (BedrockInventory<?, ?, ?> inventory : this.getBedrockInventory()) {
-            names.add((inventory.getPlugin().getName() + ":" + reference(inventory)).toLowerCase(Locale.ROOT));
-        }
+        this.bedrockInventory.forEach((pluginName, inventories) -> inventories.forEach(inventory -> names.add((pluginName + ":" + reference(inventory)).toLowerCase(Locale.ROOT))));
         return Collections.unmodifiableSet(names);
     }
 

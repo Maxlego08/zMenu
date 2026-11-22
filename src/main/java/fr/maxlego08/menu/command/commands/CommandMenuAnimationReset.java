@@ -1,7 +1,8 @@
 package fr.maxlego08.menu.command.commands;
 
 import fr.maxlego08.menu.ZMenuPlugin;
-import fr.maxlego08.menu.api.ZMenuKeys;
+import fr.maxlego08.menu.api.animation.slot.AnimationHistory;
+import fr.maxlego08.menu.command.NameSuggestions;
 import fr.maxlego08.menu.api.utils.Message;
 import fr.maxlego08.menu.common.enums.Permission;
 import fr.maxlego08.menu.common.utils.MessageUtils;
@@ -29,10 +30,7 @@ public class CommandMenuAnimationReset extends SubCommand<ZMenuPlugin> {
         this.setPermission(Permission.ZMENU_ANIMATION_RESET.getPermission());
         this.addRequiredArgument("player", new OfflinePlayerArgument());
         this.addOptionalArgument(Commands.argument("menu", new NonSpaceStringArgumentType()).suggests((context, builder) -> {
-            this.plugin.getInventoryManager().getInventories().stream()
-                    .map(inventory -> ZMenuKeys.inventoryReference(inventory, "inventories"))
-                    .filter(name -> name.toLowerCase().startsWith(builder.getRemainingLowerCase()))
-                    .forEach(builder::suggest);
+            NameSuggestions.suggestInventories(builder, this.plugin.getInventoryManager());
             return builder.buildFuture();
         }));
     }
@@ -51,11 +49,16 @@ public class CommandMenuAnimationReset extends SubCommand<ZMenuPlugin> {
             return CommandResultType.SUCCESS;
         }
 
-        // With enable-inventory-paths, the history names a menu by its path, written as its reference or not
-        String name = !plugin.getInventoryManager().usesInventoryPaths() ? menu : plugin.getInventoryManager().findInventory(menu)
-                .filter(inventory -> inventory.getPlugin() == plugin).map(inventory -> ZMenuKeys.inventoryReference(inventory, "inventories")).orElse(menu);
-        plugin.getInventoryManager().getAnimationManager().getHistory().forget(playerUniqueId, plugin.getName() + ":" + name);
+        plugin.getInventoryManager().getAnimationManager().getHistory().forget(playerUniqueId, historyKey(plugin, menu));
         MessageUtils.message(plugin, commandDispatch.getSender(), Message.ANIMATION_RESET_ONE, "%player%", playerName, "%menu%", menu);
         return CommandResultType.SUCCESS;
+    }
+
+    /**
+     * Reads the menu as {@code /zm open} reads it, {@code zEssentials:baltop} included. A menu that is
+     * not loaded anymore keeps the key of zMenu it always had.
+     */
+    public static String historyKey(ZMenuPlugin plugin, String menu) {
+        return plugin.getInventoryManager().findInventory(menu).map(AnimationHistory::key).orElse(plugin.getName() + ":" + menu);
     }
 }

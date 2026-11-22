@@ -31,15 +31,25 @@ public final class NameSuggestions {
      * of another plugin by {@code plugin:name}.
      */
     public static void suggestInventories(SuggestionsBuilder builder, ZInventoryManager inventoryManager) {
-        if (!inventoryManager.usesInventoryPaths()) {
-            suggestKeys(builder, inventoryManager.getInventoryKeys());
+        suggestReferences(builder, inventoryManager.getInventoryKeys().stream().map(Key::asString).toList(), inventoryManager.usesInventoryPaths());
+    }
+
+    /**
+     * Suggests names written {@code plugin:name}, such as the dialogs or the bedrock inventories.
+     * With {@code enable-inventory-paths}, one of zMenu is only suggested without its plugin and one
+     * of another plugin only with it, as the references are read then; otherwise as {@link #suggest} does.
+     */
+    public static void suggestReferences(SuggestionsBuilder builder, Collection<String> qualifiedNames, boolean inventoryPaths) {
+        if (!inventoryPaths) {
+            suggest(builder, qualifiedNames);
             return;
         }
 
         String input = builder.getRemainingLowerCase();
-        for (Key key : inventoryManager.getInventoryKeys()) {
-            String reference = ZMenuKeys.NAMESPACE.equals(key.namespace()) ? key.value() : key.asString();
-            if (reference.startsWith(input)) {
+        for (String qualified : qualifiedNames) {
+            boolean ownName = qualified.toLowerCase(Locale.ROOT).startsWith(ZMenuKeys.NAMESPACE + ":");
+            String reference = ownName ? shortNameOf(qualified) : qualified;
+            if (reference.toLowerCase(Locale.ROOT).startsWith(input)) {
                 builder.suggest(reference);
             }
         }

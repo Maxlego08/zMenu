@@ -8,7 +8,6 @@ import fr.maxlego08.menu.animation.compile.AnimationStep;
 import fr.maxlego08.menu.animation.compile.CompiledAnimation;
 import fr.maxlego08.menu.animation.compile.StepAction;
 import fr.maxlego08.menu.api.MenuPlugin;
-import fr.maxlego08.menu.api.ZMenuKeys;
 import fr.maxlego08.menu.api.animation.slot.Animation;
 import fr.maxlego08.menu.api.animation.slot.AnimationContext;
 import fr.maxlego08.menu.api.animation.slot.AnimationHistory;
@@ -1224,7 +1223,7 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
      * is part of it, so two plugins may ship a file with the same name.
      */
     private String getAnimationHistoryKey() {
-        return this.inventory.getPlugin().getName() + ":" + ZMenuKeys.inventoryReference(this.inventory, "inventories");
+        return AnimationHistory.key(this.inventory);
     }
 
     /**

@@ -111,6 +111,8 @@ public class ZDialogManager implements DialogManager, Listener {
         return dialogs;
     }
     public Optional<DialogInventory> getDialogOptional(String name) {
+        // With enable-inventory-paths, a name without a plugin only names a dialog of zMenu, as for the inventories
+        if (Configuration.enableInventoryPaths) return this.getDialog(this.menuPlugin, name);
         for (List<AbstractDialogInventory> dialogList : this.dialogs.values()) {
             for (AbstractDialogInventory dialog : dialogList) {
                 if (names(dialog, name)) {
@@ -139,7 +141,10 @@ public class ZDialogManager implements DialogManager, Listener {
 
     @Override
     public void deleteDialog(String name) {
-        for (List<AbstractDialogInventory> dialogList : this.dialogs.values()) {
+        // Read as getDialog(String) reads it: with enable-inventory-paths, only a dialog of zMenu
+        Collection<List<AbstractDialogInventory>> lists = Configuration.enableInventoryPaths
+                ? List.of(this.dialogs.getOrDefault(this.menuPlugin.getName(), new ArrayList<>())) : this.dialogs.values();
+        for (List<AbstractDialogInventory> dialogList : lists) {
             dialogList.removeIf(dialog ->
                     names(dialog, name)
             );
@@ -415,10 +420,9 @@ public class ZDialogManager implements DialogManager, Listener {
 
     @Override
     public Set<String> getDialogNames() {
+        // The plugin a dialog is loaded for is the key of the map: getPlugin() is always zMenu
         Set<String> names = new HashSet<>();
-        for (DialogInventory dialog : this.getDialogs()) {
-            names.add(dialog.getPlugin().getName() + ":" + reference(dialog));
-        }
+        this.dialogs.forEach((pluginName, dialogList) -> dialogList.forEach(dialog -> names.add(pluginName + ":" + reference(dialog))));
         return Collections.unmodifiableSet(names);
     }
 
