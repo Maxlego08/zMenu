@@ -2,10 +2,15 @@ package fr.maxlego08.menu.api.utils.yaml;
 
 import dev.dejvokep.boostedyaml.YamlDocument;
 import dev.dejvokep.boostedyaml.block.Block;
+import dev.dejvokep.boostedyaml.block.Comments;
+import dev.dejvokep.boostedyaml.libs.org.snakeyaml.engine.v2.comments.CommentLine;
+import dev.dejvokep.boostedyaml.utils.format.NodeRole;
 import dev.dejvokep.boostedyaml.block.implementation.Section;
 import dev.dejvokep.boostedyaml.settings.general.GeneralSettings;
+import dev.dejvokep.boostedyaml.utils.supplier.MapSupplier;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -16,6 +21,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -37,7 +44,47 @@ public final class YamlSections {
     /**
      * Getters read the document only, like a Bukkit configuration without defaults.
      */
-    public static final GeneralSettings GENERAL_SETTINGS = GeneralSettings.builder().setUseDefaults(false).build();
+    public static final GeneralSettings GENERAL_SETTINGS = GeneralSettings.builder().setUseDefaults(false).setDefaultMap(new MapSupplier() {
+        @Override
+        public <K, V> @NotNull Map<K, V> supply(int size) {
+            return new SectionMap<>();
+        }
+    }).build();
+
+    /**
+     * The keys of a section. Bukkit skips the empty parts of a route, {@code "items."} is {@code items} and
+     * {@code "a..b"} is {@code a.b}: once {@link #link(Section)} has run, the empty key is the section itself, which is
+     * how BoostedYAML then reads those routes.
+     */
+    private static final class SectionMap<K, V> extends LinkedHashMap<K, V> {
+
+        private Object owner;
+
+        @Override
+        @SuppressWarnings("unchecked")
+        public V get(Object key) {
+            V value = super.get(key);
+            return value == null && this.owner != null && "".equals(key) ? (V) this.owner : value;
+        }
+
+        @Override
+        public V getOrDefault(Object key, V defaultValue) {
+            V value = this.get(key);
+            return value == null ? defaultValue : value;
+        }
+    }
+
+    /**
+     * Lets the routes of the section and its children read like Bukkit's, see {@link SectionMap}. The documents of
+     * this class are linked; call it on a document built key by key before reading it with Bukkit's routes.
+     */
+    public static <T extends Section> @NotNull T link(@NotNull T section) {
+        if (section.getStoredValue() instanceof SectionMap<?, ?> map) map.owner = section;
+        for (Block<?> block : section.getStoredValue().values()) {
+            if (block instanceof Section child) link(child);
+        }
+        return section;
+    }
 
     private YamlSections() {
     }
@@ -52,6 +99,17 @@ public final class YamlSections {
         } catch (Exception exception) {
             Bukkit.getLogger().log(Level.SEVERE, "Cannot load " + file, exception);
             return empty();
+        }
+    }
+
+    /**
+     * Reads a file, an invalid one throws like {@code YamlConfiguration#load(File)}.
+     */
+    public static @NotNull YamlDocument loadStrict(@NotNull File file) throws IOException, InvalidConfigurationException {
+        try {
+            return normalize(YamlDocument.create(file, GENERAL_SETTINGS, LegacyBooleanSchema.loaderSettings(), LegacyBooleanSchema.dumperSettings()));
+        } catch (RuntimeException exception) {
+            throw new InvalidConfigurationException(exception.getMessage(), exception);
         }
     }
 
@@ -77,7 +135,7 @@ public final class YamlSections {
      */
     private static YamlDocument normalize(YamlDocument document) {
         normalize((Section) document);
-        return document;
+        return link(document);
     }
 
     private static void normalize(Section section) {
@@ -123,7 +181,7 @@ public final class YamlSections {
     public static @NotNull YamlDocument toDocument(@NotNull ConfigurationSection section) {
         YamlDocument document = empty();
         copy(section, document);
-        return document;
+        return link(document);
     }
 
     /**
@@ -158,6 +216,34 @@ public final class YamlSections {
                 to.set(key, value);
             }
         }
+    }
+
+    /**
+     * {@code ConfigurationSection#createSection(String, Map)}: a new section holding the map, its maps as sections.
+     */
+    public static @NotNull Section createSection(@NotNull Section section, @NotNull String path, @NotNull Map<?, ?> map) {
+        section.remove(path);
+        Section created = section.createSection(path);
+        for (Map.Entry<?, ?> entry : map.entrySet()) {
+            if (entry.getValue() instanceof Map<?, ?> child) createSection(created, String.valueOf(entry.getKey()), child);
+            else created.set(String.valueOf(entry.getKey()), entry.getValue());
+        }
+        return created;
+    }
+
+    /**
+     * Writes a header above the first key, like Bukkit's {@code options().setHeader}.
+     */
+    public static void setHeader(@NotNull YamlDocument document, @NotNull List<String> header) {
+        Iterator<Object> keys = document.getKeys().iterator();
+        if (!keys.hasNext()) return;
+        Block<?> first = document.getStoredValue().get(keys.next());
+        List<CommentLine> comments = new ArrayList<>();
+        header.forEach(line -> comments.add(Comments.create(line.isEmpty() ? "" : " " + line, Comments.Position.BEFORE)));
+        comments.add(Comments.BLANK_LINE);
+        List<CommentLine> existing = Comments.get(first, NodeRole.KEY, Comments.Position.BEFORE);
+        if (existing != null) comments.addAll(existing);
+        Comments.set(first, NodeRole.KEY, Comments.Position.BEFORE, comments);
     }
 
     /**

@@ -96,7 +96,7 @@ class YamlSectionsTest {
         assertEquals(bukkit.getValues(true).keySet(), document.getStringRouteMappedValues(true).keySet());
 
         Set<String> paths = new LinkedHashSet<>(bukkit.getKeys(true));
-        paths.addAll(List.of("missing", "section.missing", "name.inner", "section.nested.list.x"));
+        paths.addAll(List.of("missing", "section.missing", "name.inner", "section.nested.list.x", "", "section.", "section..nested.deep", "section.nested.", ".name", "lore."));
         List<String> differences = new ArrayList<>();
         for (String path : paths) {
             // On a section both give a text that only says it is one
