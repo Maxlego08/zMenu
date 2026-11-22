@@ -5,13 +5,21 @@ import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.enums.MessageType;
 import fr.maxlego08.menu.api.utils.Message;
+import fr.maxlego08.menu.zcore.utils.VersionedYamlFile;
 import org.bukkit.configuration.file.YamlConfiguration;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 
 /**
@@ -39,9 +47,21 @@ public class MessageLoader {
         }
 
         YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
+        this.addMissingMessages(configuration);
+
+        try {
+            configuration.save(file);
+        } catch (IOException exception) {
+            Logger.error(exception);
+        }
+
+        this.loadMessages(configuration);
+    }
+
+    private void addMissingMessages(YamlConfiguration configuration) {
         for (Message message : Message.values()) {
 
-            String path = message.name().toLowerCase(Locale.ROOT).replace("_", "-");
+            String path = this.getPath(message);
 
             if (configuration.contains(path)) continue;
 
@@ -66,25 +86,38 @@ public class MessageLoader {
                 }
             }
         }
-
-        try {
-            configuration.save(file);
-        } catch (IOException exception) {
-            Logger.error(exception);
-        }
-
-        this.loadMessages(configuration);
     }
 
     public void load() {
 
         File file = new File(this.plugin.getDataFolder(), "messages.yml");
+        try {
+            // Each message keeps the form the user gave it, only the messages zMenu no longer has are removed
+            Set<String> messages = Arrays.stream(Message.values()).map(this::getPath).collect(Collectors.toSet());
+            VersionedYamlFile.open(file, this::getDefaults, this.plugin.getLogger(), messages, Map.of());
+        } catch (Exception exception) {
+            Logger.error(exception);
+        }
         if (!file.exists()) {
             this.save();
             return;
         }
 
         this.loadMessages(YamlConfiguration.loadConfiguration(file));
+    }
+
+    /**
+     * There is no messages.yml in the jar, the defaults are the messages of the enum.
+     */
+    private InputStream getDefaults() {
+        YamlConfiguration configuration = new YamlConfiguration();
+        configuration.set(VersionedYamlFile.VERSION_ROUTE, 1);
+        this.addMissingMessages(configuration);
+        return new ByteArrayInputStream(configuration.saveToString().getBytes(StandardCharsets.UTF_8));
+    }
+
+    private String getPath(Message message) {
+        return message.name().toLowerCase(Locale.ROOT).replace("_", "-");
     }
 
     private void loadMessages(YamlConfiguration configuration) {

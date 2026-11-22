@@ -83,6 +83,7 @@ import fr.maxlego08.menu.zcore.utils.plugins.Metrics;
 import fr.maxlego08.menu.zcore.utils.plugins.Plugins;
 import fr.maxlego08.menu.zcore.utils.plugins.VersionChecker;
 import fr.maxlego08.menu.zcore.utils.toast.ToastManager;
+import fr.maxlego08.menu.zcore.utils.VersionedYamlFile;
 import fr.robie.paperdispatch.cache.OfflinePlayerCache;
 import fr.robie.paperdispatch.manager.ICommandManager;
 import org.bukkit.Bukkit;
@@ -100,6 +101,7 @@ import java.io.File;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
 
 /**
  * System to create your plugins very simply Projet with <a href="https://github.com/Maxlego08/TemplatePlugin">https://github.com/Maxlego08/TemplatePlugin</a>
@@ -196,6 +198,12 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
 
     @Override
     public void onLoad() {
+        // Before anything reads config.yml, the defaults are copied or merged by BoostedYAML
+        try {
+            VersionedYamlFile.open(this.configFile, () -> this.getResource("config.yml"), this.getLogger(), Set.of("migration-database-configuration", "database-configuration.properties"), Map.of());
+        } catch (Exception exception) {
+            this.getLogger().log(Level.SEVERE, "Unable to update config.yml", exception);
+        }
         if (this.isActive(Plugins.PACKETEVENTS)) {
             this.safeHook("packetevents", () -> {
                 PacketManager manager = new PacketUtils(this);
@@ -218,7 +226,6 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
         if (!this.loadMeta()) {
             return;
         }
-        this.saveDefaultConfig();
         Configuration.getInstance().load(this.getConfig());
         this.loadFeatures();
         this.websiteManager = new ZWebsiteManager(this); // Create a website manager after loading config.yml, for API URL. Never change the URL, only for dev purposes

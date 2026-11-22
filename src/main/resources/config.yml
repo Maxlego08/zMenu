@@ -21,6 +21,9 @@
 #   10. Website (inventory builder)
 #
 
+# Version of this file, zMenu uses it to add its new options. Do not change it.
+config-version: 1
+
 
 # ==================================================================================================
 #  1. GENERAL
@@ -323,6 +326,10 @@ enable-inventory-paths: false
 
 # Show a message to the player when the command "/zm open <inventory> <player> <display>" is used.
 enable-open-message: true
+
+
+# Allow the toast action to show toasts to players.
+enable-toast: true
 
 
 # Action types that are NOT run as close actions when a player switches to another zMenu inventory.
@@ -648,6 +655,11 @@ dialog-canvas:
 
 # Allow the use of the download command of the plugin.
 enable-download-command: false
+
+
+# Websites the download command is allowed to download files from.
+allowed-downloadable-website:
+  - "minecraft-inventory-builder.com"
 
 
 # Reopen the website live-sync link automatically at startup (a few seconds after the plugin
