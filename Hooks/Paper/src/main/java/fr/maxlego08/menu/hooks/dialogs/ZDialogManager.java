@@ -73,7 +73,6 @@ public class ZDialogManager implements DialogManager, Listener {
     private final MenuPlugin menuPlugin;
     private final ConfigManagerInt configManager;
 
-    private final Set<String> dialogNames = ConcurrentHashMap.newKeySet();
     private final Map<String, List<AbstractDialogInventory>> dialogs = new ConcurrentHashMap<>();
     private final Map<UUID, DialogInventory> activeDialogs = new ConcurrentHashMap<>();
     private final DialogClicks clicks = new DialogClicks(System::currentTimeMillis);
@@ -114,9 +113,11 @@ public class ZDialogManager implements DialogManager, Listener {
         return dialogs;
     }
     public Optional<DialogInventory> getDialogOptional(String name) {
+        // With enable-inventory-paths, a name without a plugin only names a dialog of zMenu, as for the inventories
+        if (Configuration.enableInventoryPaths) return this.getDialog(this.menuPlugin, name);
         for (List<AbstractDialogInventory> dialogList : this.dialogs.values()) {
             for (AbstractDialogInventory dialog : dialogList) {
-                if (dialog.getFileName().equalsIgnoreCase(name) || dialog.getName().equalsIgnoreCase(name)) {
+                if (names(dialog, name)) {
                     return Optional.of(dialog);
                 }
             }
@@ -135,26 +136,26 @@ public class ZDialogManager implements DialogManager, Listener {
         if (pluginDialogs == null) return Optional.empty();
 
         return pluginDialogs.stream()
-                .filter(dialog -> dialog.getFileName().equalsIgnoreCase(fileName) || dialog.getName().equalsIgnoreCase(fileName))
+                .filter(dialog -> names(dialog, fileName))
                 .map(dialog -> (DialogInventory) dialog)
                 .findFirst();
     }
 
     @Override
     public void deleteDialog(String name) {
-        for (List<AbstractDialogInventory> dialogList : this.dialogs.values()) {
+        // Read as getDialog(String) reads it: with enable-inventory-paths, only a dialog of zMenu
+        Collection<List<AbstractDialogInventory>> lists = Configuration.enableInventoryPaths
+                ? List.of(this.dialogs.getOrDefault(this.menuPlugin.getName(), new ArrayList<>())) : this.dialogs.values();
+        for (List<AbstractDialogInventory> dialogList : lists) {
             dialogList.removeIf(dialog ->
-                    dialog.getFileName().equalsIgnoreCase(name) || dialog.getName().equalsIgnoreCase(name)
+                    names(dialog, name)
             );
         }
-        String suffix = ":" + name.toLowerCase(Locale.ROOT);
-        this.dialogNames.removeIf(dialogName -> dialogName.endsWith(suffix));
     }
 
     @Override
     public void deleteDialog(Plugin plugin) {
         this.dialogs.remove(plugin.getName());
-        this.dialogNames.removeIf(name -> name.startsWith(plugin.getName().toLowerCase(Locale.ROOT) + ":"));
     }
 
     @Override
@@ -240,7 +241,6 @@ public class ZDialogManager implements DialogManager, Listener {
 
         List<AbstractDialogInventory> dialogsList = this.dialogs.computeIfAbsent(plugin.getName(), k -> new ArrayList<>());
         dialogsList.add(dialog);
-        this.dialogNames.add(dialog.getPlugin().getName() + ":" + dialog.getFileName());
 
         if (Configuration.enableInformationMessage) {
             Logger.info(file.getPath() + " loaded successfully!");
@@ -253,7 +253,6 @@ public class ZDialogManager implements DialogManager, Listener {
     public void reloadDialogs() {
         this.dialogs.clear();
         this.activeDialogs.clear();
-        this.dialogNames.clear();
 
         this.loadDialogs();
 
@@ -300,7 +299,7 @@ public class ZDialogManager implements DialogManager, Listener {
             placeholders.register("player", player.getName());
             CanvasManager canvasManager = this.menuPlugin.getCanvasManager();
             if (canvasManager != null) {
-                String fileName = dialogInventory.getFileName();
+                String fileName = reference(dialogInventory);
                 canvasManager.getStateService().onOpen(player.getUniqueId(), fileName);
                 placeholders.register(CanvasStateActions.DIALOG_PLACEHOLDER, fileName);
                 CanvasStateService state = canvasManager.getStateService();
@@ -335,7 +334,7 @@ public class ZDialogManager implements DialogManager, Listener {
             return;
         }
 
-        Optional<Inventory> optional = this.menuPlugin.getInventoryManager().getInventory(ZMenuKeys.fileKey(fallback.plugin(), fallback.inventoryName()));
+        Optional<Inventory> optional = this.menuPlugin.getInventoryManager().findInventory(fallback.plugin() + ":" + fallback.inventoryName());
         if (optional.isEmpty()) {
             MessageUtils.message(this.menuPlugin, player, Message.INVENTORY_NOT_FOUND, "%name%", dialogInventory.getFileName(), "%toName%", fallback.inventoryName(), "%plugin%", fallback.plugin());
             return;
@@ -424,7 +423,24 @@ public class ZDialogManager implements DialogManager, Listener {
 
     @Override
     public Set<String> getDialogNames() {
-        return Collections.unmodifiableSet(this.dialogNames);
+        // The plugin a dialog is loaded for is the key of the map: getPlugin() is always zMenu
+        Set<String> names = new HashSet<>();
+        this.dialogs.forEach((pluginName, dialogList) -> dialogList.forEach(dialog -> names.add(pluginName + ":" + reference(dialog))));
+        return Collections.unmodifiableSet(names);
+    }
+
+    /**
+     * @return the name a dialog is referenced by, without its plugin, see {@link ZMenuKeys#inventoryReference(Inventory, String)}
+     */
+    public static @NotNull String reference(@NotNull DialogInventory dialog) {
+        return ZMenuKeys.inventoryReference(dialog, "dialogs");
+    }
+
+    /**
+     * Tells whether a name without a plugin names this dialog: its reference or its declared name.
+     */
+    private static boolean names(DialogInventory dialog, String name) {
+        return reference(dialog).equalsIgnoreCase(name) || dialog.getName().equalsIgnoreCase(name);
     }
 
     protected boolean checkRequirement(Requirement requirement, Player player) {

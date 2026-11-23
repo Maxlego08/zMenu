@@ -4,6 +4,7 @@ import fr.maxlego08.menu.api.BedrockManager;
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.MenuPlugin;
+import fr.maxlego08.menu.api.ZMenuKeys;
 import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.requirement.Action;
@@ -46,7 +47,6 @@ public class ZBedrockManager extends BedrockBuilderManager implements BedrockMan
     private final InventoryManager inventoryManager;
     private final Map<String, List<BedrockInventory<?,?,?>>> bedrockInventory = new HashMap<>();
     private final Map<UUID, BedrockInventory<?,?,?>> activeBedrockInventory = new HashMap<>();
-    private final Set<String> bedrockInventoryNames = new HashSet<>();
     private final MetaUpdater metaUpdater;
 
     public ZBedrockManager(final MenuPlugin menuPlugin) {
@@ -77,9 +77,11 @@ public class ZBedrockManager extends BedrockBuilderManager implements BedrockMan
         return dialogs;
     }
     public Optional<BedrockInventory<?,?,?>> getBedrockInventoryOptional(String name) {
+        // With enable-inventory-paths, a name without a plugin only names a bedrock inventory of zMenu, as for the inventories
+        if (Configuration.enableInventoryPaths) return this.getBedrockInventory(this.menuPlugin, name);
         for (List<BedrockInventory<?,?,?>> dialogList : this.bedrockInventory.values()) {
             for (BedrockInventory<?,?,?> dialog : dialogList) {
-                if (dialog.getFileName().equalsIgnoreCase(name) || dialog.getName().equalsIgnoreCase(name)) {
+                if (names(dialog, name)) {
                     return Optional.of(dialog);
                 }
             }
@@ -98,34 +100,25 @@ public class ZBedrockManager extends BedrockBuilderManager implements BedrockMan
         if (pluginDialogs == null) return Optional.empty();
 
         return pluginDialogs.stream()
-                .filter(dialog -> dialog.getFileName().equalsIgnoreCase(fileName) || dialog.getName().equalsIgnoreCase(fileName))
+                .filter(dialog -> names(dialog, fileName))
                 .findFirst();
     }
 
     @Override
     public void deleteBedrockInventory(String name) {
-        for (List<BedrockInventory<?,?,?>> dialogList : this.bedrockInventory.values()) {
+        // Read as getBedrockInventory(String) reads it: with enable-inventory-paths, only one of zMenu
+        Collection<List<BedrockInventory<?,?,?>>> lists = Configuration.enableInventoryPaths
+                ? List.of(this.bedrockInventory.getOrDefault(this.menuPlugin.getName(), new ArrayList<>())) : this.bedrockInventory.values();
+        for (List<BedrockInventory<?,?,?>> dialogList : lists) {
             dialogList.removeIf(dialog ->
-                    dialog.getFileName().equalsIgnoreCase(name) || dialog.getName().equalsIgnoreCase(name)
+                    names(dialog, name)
             );
-        }
-        this.rebuildInventoryNames();
-    }
-
-    private void rebuildInventoryNames() {
-        this.bedrockInventoryNames.clear();
-        for (Map.Entry<String, List<BedrockInventory<?, ?, ?>>> entry : this.bedrockInventory.entrySet()) {
-            String pluginName = entry.getKey();
-            for (BedrockInventory<?, ?, ?> inventory : entry.getValue()) {
-                this.bedrockInventoryNames.add((pluginName + ":" + inventory.getFileName()).toLowerCase(Locale.ROOT));
-            }
         }
     }
 
     @Override
     public void deleteBedrockInventory(Plugin plugin) {
         this.bedrockInventory.remove(plugin.getName());
-        this.bedrockInventoryNames.removeIf(name -> name.startsWith(plugin.getName() + ":"));
     }
 
     @Override
@@ -185,8 +178,6 @@ public class ZBedrockManager extends BedrockBuilderManager implements BedrockMan
         List<BedrockInventory<?,?,?>> dialogsList = this.bedrockInventory.computeIfAbsent(plugin.getName(), k -> new ArrayList<>());
         dialogsList.add(dialog);
 
-        this.bedrockInventoryNames.add((plugin.getName() + ":" + dialog.getFileName()).toLowerCase(Locale.ROOT));
-
         if (Configuration.enableInformationMessage) {
             Logger.info(file.getPath() + " loaded successfully!");
         }
@@ -198,7 +189,6 @@ public class ZBedrockManager extends BedrockBuilderManager implements BedrockMan
     public void reloadBedrockInventory() {
         this.bedrockInventory.clear();
         this.activeBedrockInventory.clear();
-        this.bedrockInventoryNames.clear();
 
         this.loadBedrockInventory();
 
@@ -310,7 +300,24 @@ public class ZBedrockManager extends BedrockBuilderManager implements BedrockMan
     
     @Override
     public Set<String> getBedrockInventoryNames() {
-        return Collections.unmodifiableSet(this.bedrockInventoryNames);
+        // The plugin an inventory is loaded for is the key of the map: getPlugin() is always zMenu
+        Set<String> names = new HashSet<>();
+        this.bedrockInventory.forEach((pluginName, inventories) -> inventories.forEach(inventory -> names.add((pluginName + ":" + reference(inventory)).toLowerCase(Locale.ROOT))));
+        return Collections.unmodifiableSet(names);
+    }
+
+    /**
+     * @return the name a bedrock inventory is referenced by, without its plugin, see {@link ZMenuKeys#inventoryReference(Inventory, String)}
+     */
+    private static String reference(BedrockInventory<?, ?, ?> inventory) {
+        return ZMenuKeys.inventoryReference(inventory, "bedrock");
+    }
+
+    /**
+     * Tells whether a name without a plugin names this bedrock inventory: its reference or its declared name.
+     */
+    private static boolean names(BedrockInventory<?, ?, ?> inventory, String name) {
+        return reference(inventory).equalsIgnoreCase(name) || inventory.getName().equalsIgnoreCase(name);
     }
 
     @Override

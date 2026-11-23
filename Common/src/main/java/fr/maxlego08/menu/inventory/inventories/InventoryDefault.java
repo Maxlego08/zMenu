@@ -1233,7 +1233,7 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
      * is part of it, so two plugins may ship a file with the same name.
      */
     private String getAnimationHistoryKey() {
-        return this.inventory.getPlugin().getName() + ":" + this.inventory.getFileName();
+        return AnimationHistory.key(this.inventory);
     }
 
     /**

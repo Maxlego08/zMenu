@@ -7,6 +7,7 @@ import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.api.utils.ClearInvType;
 import fr.maxlego08.menu.api.utils.OpenWithItem;
+import net.kyori.adventure.key.Key;
 import org.bukkit.event.inventory.InventoryType;
 
 import java.io.File;
@@ -14,6 +15,8 @@ import java.util.List;
 import java.util.Map;
 
 public interface ContainerInventorySetter extends ContainerInventory {
+    void setKey(Key key);
+
     void setType(InventoryType type);
 
     void setCancelItemPickup(boolean ItemPickupDisabled);

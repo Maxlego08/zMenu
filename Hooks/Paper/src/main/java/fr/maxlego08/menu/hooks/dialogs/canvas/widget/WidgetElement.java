@@ -1,5 +1,6 @@
 package fr.maxlego08.menu.hooks.dialogs.canvas.widget;
 
+import fr.maxlego08.menu.hooks.dialogs.ZDialogManager;
 import fr.maxlego08.menu.api.dialog.canvas.CanvasBuilder;
 import fr.maxlego08.menu.api.dialog.canvas.CanvasElement;
 import fr.maxlego08.menu.api.dialog.canvas.CanvasRenderContext;
@@ -108,7 +109,7 @@ public abstract class WidgetElement implements CanvasElement {
     protected @NotNull String value(@NotNull CanvasRenderContext context) {
         DialogInventory dialog = context.dialog();
         if (dialog != null) {
-            String stored = context.canvasManager().getStateService().get(context.player().getUniqueId(), dialog.getFileName(), this.settings.key());
+            String stored = context.canvasManager().getStateService().get(context.player().getUniqueId(), ZDialogManager.reference(dialog), this.settings.key());
             if (stored != null) return stored;
         }
         return context.resolve(this.settings.defaultValue()).trim();
@@ -273,7 +274,7 @@ public abstract class WidgetElement implements CanvasElement {
      */
     protected @Nullable String stored(@NotNull CanvasRenderContext context, @NotNull String key) {
         DialogInventory dialog = context.dialog();
-        return dialog == null ? null : context.canvasManager().getStateService().get(context.player().getUniqueId(), dialog.getFileName(), key);
+        return dialog == null ? null : context.canvasManager().getStateService().get(context.player().getUniqueId(), ZDialogManager.reference(dialog), key);
     }
 
     private void apply(@NotNull CanvasRenderContext context, @NotNull Player player, @NotNull Map<String, String> values, @NotNull String previous,
@@ -283,9 +284,9 @@ public abstract class WidgetElement implements CanvasElement {
         CanvasStateService state = context.canvasManager().getStateService();
         values.forEach((key, value) -> {
             if (value == null) {
-                state.remove(player.getUniqueId(), dialog.getFileName(), key);
+                state.remove(player.getUniqueId(), ZDialogManager.reference(dialog), key);
             } else {
-                state.set(player.getUniqueId(), dialog.getFileName(), key, value, this.settings.keep());
+                state.set(player.getUniqueId(), ZDialogManager.reference(dialog), key, value, this.settings.keep());
             }
         });
 
@@ -296,7 +297,7 @@ public abstract class WidgetElement implements CanvasElement {
             for (Action action : this.settings.onChange()) action.preExecute(player, null, context.engine(), placeholders);
         }
 
-        context.canvasManager().reopen(player, dialog.getPlugin().getName() + ":" + dialog.getFileName());
+        context.canvasManager().reopen(player, dialog.getPlugin().getName() + ":" + ZDialogManager.reference(dialog));
     }
 
     /**

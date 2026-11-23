@@ -20,6 +20,7 @@ import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.inventory.setter.ContainerInventorySetter;
 import fr.robie.minimessageflow.Template;
 import fr.robie.minimessageflow.TextTemplate;
+import net.kyori.adventure.key.Key;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -41,6 +42,7 @@ public class ZInventory extends ZUtils implements ContainerInventorySetter {
     private final int size;
     private final List<Button> buttons;
     private final List<ConditionalName> conditionalNames = new ArrayList<>();
+    private Key key;
     private InventoryReplacement inventoryReplacement;
     private Map<String, String> translatedNames = new HashMap<>();
     private final transient Map<String, Template> nameTemplates = new java.util.concurrent.ConcurrentHashMap<>();
@@ -77,6 +79,16 @@ public class ZInventory extends ZUtils implements ContainerInventorySetter {
         this.fileName = fileName;
         this.size = size;
         this.buttons = buttons;
+    }
+
+    @Override
+    public @NotNull Key key() {
+        return this.key == null ? ContainerInventorySetter.super.key() : this.key;
+    }
+
+    @Override
+    public void setKey(Key key) {
+        this.key = key;
     }
 
     @Override

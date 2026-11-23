@@ -3,7 +3,6 @@ package fr.maxlego08.menu.hooks.bedrock.listener;
 import fr.maxlego08.menu.api.BedrockManager;
 import fr.maxlego08.menu.api.Inventory;
 import fr.maxlego08.menu.api.InventoryManager;
-import fr.maxlego08.menu.api.ZMenuKeys;
 import fr.maxlego08.menu.api.event.events.PlayerOpenInventoryEvent;
 import fr.maxlego08.menu.api.inventory.bedrock.BedrockInventory;
 import fr.maxlego08.menu.api.utils.InventoryReplacement;
@@ -38,18 +37,18 @@ public class BedrockReplacementListener implements Listener {
                             return;
                         }
                         BedrockInventory<?, ?, ?> bedrockInventory = optionalBedrockInventory.get();
-                        if (inventoryReplacement.shouldTrigger(bedrockInventory, event.getPage())) {
+                        if (triggers(inventoryReplacement, event.getPage())) {
                             event.setCancelled(true);
                             this.bedrockManager.openBedrockInventory(event.getPlayer(), bedrockInventory, event.getOldInventories());
                         }
                     }
                     case CHEST -> {
-                        Optional<Inventory> optionalInventory = this.inventoryManager.getInventory(ZMenuKeys.fileKey(inventoryReplacement.plugin(), inventoryReplacement.inventoryName()));
+                        Optional<Inventory> optionalInventory = this.inventoryManager.findInventory(inventoryReplacement.plugin() + ":" + inventoryReplacement.inventoryName());
                         if (optionalInventory.isEmpty()) {
                             return;
                         }
                         Inventory chestInventory = optionalInventory.get();
-                        if (inventoryReplacement.shouldTrigger(chestInventory, event.getPage())) {
+                        if (triggers(inventoryReplacement, event.getPage())) {
                             event.setCancelled(true);
                             this.inventoryManager.openInventory(event.getPlayer(), chestInventory, event.getPage(), event.getOldInventories());
                         }
@@ -58,5 +57,14 @@ public class BedrockReplacementListener implements Listener {
                 }
             }
         }
+    }
+
+    /**
+     * The target was found from this replacement itself, so only its pages are checked:
+     * {@link InventoryReplacement#shouldTrigger} compares a file key, which a path such as
+     * {@code admin/shop} of {@code enable-inventory-paths} never matches.
+     */
+    private static boolean triggers(InventoryReplacement inventoryReplacement, int page) {
+        return inventoryReplacement.pages().isEmpty() || inventoryReplacement.pages().contains(page);
     }
 }

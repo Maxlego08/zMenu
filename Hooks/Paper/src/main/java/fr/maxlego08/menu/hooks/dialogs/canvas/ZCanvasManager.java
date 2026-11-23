@@ -1,5 +1,6 @@
 package fr.maxlego08.menu.hooks.dialogs.canvas;
 
+import fr.maxlego08.menu.hooks.dialogs.ZDialogManager;
 import fr.maxlego08.menu.api.BedrockManager;
 import fr.maxlego08.menu.api.DialogManager;
 import fr.maxlego08.menu.api.MenuPlugin;
@@ -482,11 +483,11 @@ public final class ZCanvasManager implements CanvasManager, Listener {
         DialogManager dialogManager = this.plugin.getDialogManager();
         if (dialogManager == null) return;
         dialogManager.getDialog(dialog).ifPresent(inventory -> this.plugin.getScheduler().runAtEntity(player, task -> {
-            this.stateService.markReopen(player.getUniqueId(), inventory.getFileName());
+            this.stateService.markReopen(player.getUniqueId(), ZDialogManager.reference(inventory));
             try {
                 dialogManager.openDialog(player, inventory);
             } finally {
-                this.stateService.cancelReopen(player.getUniqueId(), inventory.getFileName());
+                this.stateService.cancelReopen(player.getUniqueId(), ZDialogManager.reference(inventory));
             }
         }));
     }

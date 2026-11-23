@@ -177,6 +177,15 @@ public class Configuration {
     )
     public static List<String> specifyPathMenus = new ArrayList<>();
 
+    // Allow inventories to be referenced by their relative path inside the inventories folder.
+    @ConfigOption(
+            type = DialogInputType.BOOLEAN,
+            trueText = "<green>Enabled",
+            falseText = "<red>Disabled",
+            label = "Enable inventory paths"
+    )
+    public static boolean enableInventoryPaths = false;
+
     // Hot reload, automatically reload an inventory when its file is modified, added or deleted in the inventories folder.
     @ConfigOption(
             type = DialogInputType.BOOLEAN,
@@ -575,6 +584,7 @@ public class Configuration {
         useSwapItemOffHandKeyToOpenMainMenuNeedsShift = fileConfiguration.getBoolean(ConfigPath.USE_SWAP_ITEM_OFF_HAND_KEY_TO_OPEN_MAIN_MENU_NEEDS_SHIFT.getPath());
 
         specifyPathMenus = fileConfiguration.getStringList(ConfigPath.SPECIFY_PATH_MENUS.getPath());
+        enableInventoryPaths = fileConfiguration.getBoolean(ConfigPath.ENABLE_INVENTORY_PATHS.getPath(), false);
         generateDefaultFile = fileConfiguration.getBoolean(ConfigPath.GENERATE_DEFAULT_FILE.getPath());
         enableHotReload = fileConfiguration.getBoolean(ConfigPath.ENABLE_HOT_RELOAD.getPath(), false);
         hotReloadDelayMilliseconds = fileConfiguration.getLong(ConfigPath.HOT_RELOAD_DELAY_MILLISECONDS.getPath(), 500L);
@@ -677,6 +687,7 @@ public class Configuration {
         fileConfiguration.set(ConfigPath.USE_SWAP_ITEM_OFF_HAND_KEY_TO_OPEN_MAIN_MENU_NEEDS_SHIFT.getPath(), useSwapItemOffHandKeyToOpenMainMenuNeedsShift);
 
         fileConfiguration.set(ConfigPath.SPECIFY_PATH_MENUS.getPath(), specifyPathMenus);
+        fileConfiguration.set(ConfigPath.ENABLE_INVENTORY_PATHS.getPath(), enableInventoryPaths);
         fileConfiguration.set(ConfigPath.GENERATE_DEFAULT_FILE.getPath(), generateDefaultFile);
         fileConfiguration.set(ConfigPath.ENABLE_HOT_RELOAD.getPath(), enableHotReload);
         fileConfiguration.set(ConfigPath.HOT_RELOAD_DELAY_MILLISECONDS.getPath(), hotReloadDelayMilliseconds);
@@ -752,6 +763,7 @@ public class Configuration {
         USE_SWAP_ITEM_OFF_HAND_KEY_TO_OPEN_MAIN_MENU_NEEDS_SHIFT("use-swap-item-off-hand-key-to-open-main-menu-needs-shift"),
 
         SPECIFY_PATH_MENUS("specify-path-menus"),
+        ENABLE_INVENTORY_PATHS("enable-inventory-paths"),
         GENERATE_DEFAULT_FILE("generate-default-file"),
         ENABLE_HOT_RELOAD("hot-reload.enable"),
         HOT_RELOAD_DELAY_MILLISECONDS("hot-reload.delay-milliseconds"),
