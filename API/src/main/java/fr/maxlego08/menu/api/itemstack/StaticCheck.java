@@ -11,6 +11,7 @@ import org.jetbrains.annotations.Nullable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -91,7 +92,7 @@ public final class StaticCheck {
             case TextTemplate text -> text.isStatic();
             case Collection<?> collection -> allStatic(collection, depth);
             case Map<?, ?> map -> allStatic(map.keySet(), depth) && allStatic(map.values(), depth);
-            case Object[] array -> allStatic(List.of(array), depth);
+            case Object[] array -> allStatic(Arrays.asList(array), depth);
             default -> !lookedInto(value.getClass()) || fieldsStatic(value, depth);
         };
     }

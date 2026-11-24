@@ -35,9 +35,10 @@ public abstract class PerformButton extends SlotButton {
     private List<String> consolePermissionCommands = new ArrayList<>();
     private String consolePermission;
     /**
-     * Each command list compiled once, by list (a setter gives a new list): read as text, values placed as written.
+     * Each command list compiled once, by list, compiled again when its lines change: read as text, values placed as
+     * written.
      */
-    private final transient Map<List<String>, List<TextTemplate>> compiledCommands = Collections.synchronizedMap(new IdentityHashMap<>());
+    private final transient Map<List<String>, CompiledCommands> compiledCommands = Collections.synchronizedMap(new IdentityHashMap<>());
 
     @Contract(pure = true)
     @NotNull
@@ -186,8 +187,12 @@ public abstract class PerformButton extends SlotButton {
         if (strings.isEmpty()) {
             return;
         }
-        List<TextTemplate> templates = this.compiledCommands.computeIfAbsent(strings, TextService::texts);
-        templates.forEach(template -> {
+        CompiledCommands compiled = this.compiledCommands.get(strings);
+        if (compiled == null || !compiled.sources().equals(strings)) {
+            compiled = new CompiledCommands(new ArrayList<>(strings), TextService.texts(strings));
+            this.compiledCommands.put(strings, compiled);
+        }
+        compiled.templates().forEach(template -> {
             String command = template.render(placeholders.values(), player);
             try {
                 if (executor instanceof Player && Configuration.enablePlayerCommandInChat) {
@@ -209,4 +214,9 @@ public abstract class PerformButton extends SlotButton {
         });
     }
 
+    /**
+     * A command list compiled, with the lines it was compiled from: a list changed in place is compiled again.
+     */
+    private record CompiledCommands(@NotNull List<String> sources, @NotNull List<TextTemplate> templates) {
+    }
 }

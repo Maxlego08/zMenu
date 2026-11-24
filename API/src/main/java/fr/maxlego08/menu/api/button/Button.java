@@ -310,7 +310,7 @@ public abstract class Button extends PlaceholderButton {
                 this.openLink.send(player, this.messages, placeholders);
             } else {
                 TemplateList templates = this.messageTemplates;
-                if (templates == null) {
+                if (templates == null || !TextService.sources(templates).equals(this.messages)) {
                     templates = this.messageTemplates = TextService.get().flow().compileList(this.messages);
                 }
                 for (Component message : templates.render(placeholders.values(), player)) {

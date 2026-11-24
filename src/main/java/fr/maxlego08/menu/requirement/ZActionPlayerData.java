@@ -94,7 +94,7 @@ public class ZActionPlayerData extends ZUtils implements ActionPlayerData {
         if (player == null || player instanceof Pointered) {
             return template.render(placeholders.values(), (Pointered) player);
         }
-        return placeholders.parse(this.papi(template.source(), player, false));
+        return placeholders.parse(this.papi(template.source(), player, false)).replace('', '%');
     }
 
     private long seconds(OfflinePlayer player, Placeholders placeholders) {

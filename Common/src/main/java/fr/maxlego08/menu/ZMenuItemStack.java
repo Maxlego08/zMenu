@@ -1307,6 +1307,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
 
     @Override
     public void addItemComponent(@NotNull ItemComponent itemMetadata) {
+        this.invalidateCache();
         this.itemComponents.add(itemMetadata);
     }
 
