@@ -9,8 +9,10 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
 /**
- * Font images are replaced when a text is compiled, and ItemsAdder loads them after zMenu has loaded its menus: once
- * ItemsAdder has its data, the texts are compiled again so their {@code :name:} become the glyphs.
+ * Font images are replaced when a text is compiled, and ItemsAdder loads them after zMenu has compiled its texts: once
+ * ItemsAdder has its data, every compiled text is compiled again on its next use so its {@code :name:} become the
+ * glyphs. Nothing is loaded again: the templates are told by the text engine, and the items built from them are built
+ * again since the engine's revision changed.
  */
 @AutoListener
 @RequiresPlugin("ItemsAdder")
@@ -25,11 +27,8 @@ public class ItemsAdderFontListener implements Listener {
     @EventHandler
     public void onLoadData(ItemsAdderLoadDataEvent event) {
         this.plugin.getScheduler().runNextTick(task -> {
-            TextService.get().flow().clearCache();
+            TextService.get().flow().recompile();
             this.plugin.getMetaUpdater().clearCache();
-            this.plugin.getPatternManager().loadActionsPatterns();
-            this.plugin.getPatternManager().loadPatterns();
-            this.plugin.getInventoryManager().loadInventories();
         });
     }
 }

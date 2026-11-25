@@ -33,7 +33,7 @@ jedis-mock = "1.1.4"
 mongodb-driver = "5.2.0"
 mongo-java-server = "1.45.0"
 paper-dispatch = "1.1.0"
-minimessageflow = "1.5.0"
+minimessageflow = "1.5.1"
 faststats = "0.30.1"
 
 # Integration Hooks
