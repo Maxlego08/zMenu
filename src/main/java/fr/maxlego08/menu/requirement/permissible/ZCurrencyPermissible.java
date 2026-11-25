@@ -4,7 +4,9 @@ import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.permissible.CurrencyPermissible;
+import fr.maxlego08.menu.api.text.TextService;
 import fr.maxlego08.menu.api.utils.Placeholders;
+import fr.robie.minimessageflow.TextTemplate;
 import fr.traqueur.currencies.Currencies;
 import org.bukkit.entity.Player;
 import org.jspecify.annotations.NonNull;
@@ -16,19 +18,19 @@ import java.util.Map;
 public class ZCurrencyPermissible extends CurrencyPermissible {
 
     private final Currencies currencies;
-    private final String amount;
     private final String economyName;
+    private final TextTemplate amount;
 
     public ZCurrencyPermissible(List<Action> denyActions, List<Action> successActions, Currencies currencies, String amount, String economyName) {
         super(denyActions, successActions);
         this.currencies = currencies;
-        this.amount = amount;
         this.economyName = economyName;
+        this.amount = TextService.text(amount);
     }
 
     @Override
     public String getAmount() {
-        return this.amount;
+        return TextService.source(this.amount);
     }
 
     @Override
@@ -38,7 +40,7 @@ public class ZCurrencyPermissible extends CurrencyPermissible {
 
     @Override
     public boolean hasPermission(@NonNull Player player, Button button, @NonNull InventoryEngine inventory, @NonNull Placeholders placeholders) {
-        String result = inventory.getPlugin().parse(player, placeholders.parse(this.amount));
+        String result = TextService.render(this.amount, placeholders, player);
         BigDecimal bigDecimal = new BigDecimal(result);
         BigDecimal amount = this.currencies.getBalance(player.getUniqueId(), this.economyName == null ? "default" : this.economyName);
         return amount.compareTo(bigDecimal) >= 0;
@@ -52,7 +54,7 @@ public class ZCurrencyPermissible extends CurrencyPermissible {
     @Override
     protected void serializeProperties(@NonNull Map<String, Object> map) {
         map.put("type", "money");
-        map.put("amount", this.amount);
+        map.put("amount", TextService.source(this.amount));
         if (this.currencies != Currencies.VAULT) map.put("currency", this.currencies.name());
         if (this.economyName != null) map.put("economy", this.economyName);
     }

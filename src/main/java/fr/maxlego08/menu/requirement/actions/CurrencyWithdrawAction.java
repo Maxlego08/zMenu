@@ -3,11 +3,13 @@ package fr.maxlego08.menu.requirement.actions;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.requirement.ActionResult;
+import fr.maxlego08.menu.api.text.TextService;
 import fr.maxlego08.menu.api.utils.Message;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.common.utils.ActionHelper;
 import fr.maxlego08.menu.loader.actions.CurrencyWithdrawLoader;
 import fr.maxlego08.menu.zcore.logger.Logger;
+import fr.robie.minimessageflow.TextTemplate;
 import fr.traqueur.currencies.Currencies;
 import fr.traqueur.currencies.TransactionResult;
 import org.bukkit.entity.Player;
@@ -18,16 +20,16 @@ import java.util.Map;
 
 public class CurrencyWithdrawAction extends ActionHelper {
 
-    private final String amount;
+    private final TextTemplate amount;
     private final Currencies currencies;
     private final String economyName;
-    private final String reason;
+    private final TextTemplate reason;
 
     public CurrencyWithdrawAction(String amount, Currencies currencies, String economyName, String reason) {
-        this.amount = amount;
+        this.amount = TextService.text(amount);
         this.currencies = currencies;
         this.economyName = economyName;
-        this.reason = reason;
+        this.reason = TextService.text(reason);
     }
 
     @Override
@@ -76,10 +78,10 @@ public class CurrencyWithdrawAction extends ActionHelper {
     @Override
     protected void serializeProperties(@NonNull Map<String, Object> map) {
         map.put("type", "withdraw");
-        map.put("amount", this.amount);
+        map.put("amount", TextService.source(this.amount));
         if (this.currencies != Currencies.VAULT) map.put("currency", this.currencies.name());
         if (this.economyName != null) map.put("economy", this.economyName);
-        if (!CurrencyWithdrawLoader.DEFAULT_REASON.equals(this.reason)) map.put("reason", this.reason);
+        if (!CurrencyWithdrawLoader.DEFAULT_REASON.equals(TextService.source(this.reason))) map.put("reason", TextService.source(this.reason));
     }
 
     private void send(InventoryEngine inventory, Player player, Message message) {
@@ -93,14 +95,14 @@ public class CurrencyWithdrawAction extends ActionHelper {
 
         BigDecimal parsedAmount;
         try {
-            parsedAmount = new BigDecimal(this.papi(placeholders.parse(this.amount), player));
+            parsedAmount = new BigDecimal(TextService.render(this.amount, placeholders, player));
         } catch (NumberFormatException exception) {
-            Logger.info("The amount \"" + this.amount + "\" of a currency withdraw action is not a valid number.", Logger.LogType.ERROR);
+            Logger.info("The amount \"" + TextService.source(this.amount) + "\" of a currency withdraw action is not a valid number.", Logger.LogType.ERROR);
             return null;
         }
 
         return this.currencies.withdrawIfSufficient(player.getUniqueId(), parsedAmount,
                 this.economyName == null ? "default" : this.economyName,
-                this.papi(placeholders.parse(this.reason), player));
+                TextService.render(this.reason, placeholders, player));
     }
 }

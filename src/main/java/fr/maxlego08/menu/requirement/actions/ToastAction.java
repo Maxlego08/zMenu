@@ -3,6 +3,7 @@ package fr.maxlego08.menu.requirement.actions;
 import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.ZMenuKeys;
 import fr.maxlego08.menu.api.registry.Registries;
+import fr.robie.minimessageflow.TextTemplate;
 import net.kyori.adventure.key.Key;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.configuration.Configuration;
@@ -10,7 +11,9 @@ import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.loader.MaterialLoader;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.utils.Placeholders;
+import fr.maxlego08.menu.api.text.TextService;
 import fr.maxlego08.menu.api.utils.toast.ToastType;
+import fr.robie.minimessageflow.Template;
 import fr.maxlego08.menu.loader.actions.ToastLoader;
 import org.bukkit.entity.Player;
 import org.jspecify.annotations.NonNull;
@@ -21,26 +24,28 @@ import java.util.Optional;
 public class ToastAction extends Action {
 
     private final MenuPlugin plugin;
-    private final String material;
+    private final TextTemplate material;
     private final String message;
     private final ToastType toastType;
-    private final String modelId;
+    private final TextTemplate modelId;
     private final boolean glowing;
+    private final transient Template messageTemplate;
 
     public ToastAction(MenuPlugin plugin, String material, String message, ToastType toastType, String modelId, boolean glowing) {
         this.plugin = plugin;
-        this.material = material;
+        this.material = TextService.text(material);
         this.message = message;
         this.toastType = toastType;
-        this.modelId = modelId;
+        this.modelId = TextService.text(modelId);
         this.glowing = glowing;
+        this.messageTemplate = TextService.get().flow().compile(message);
     }
 
     @Override
     protected void execute(@NonNull Player player, Button button, @NonNull InventoryEngine inventoryEngine, @NonNull Placeholders placeholders) {
 
-        String finalMaterial = this.plugin.parse(player, placeholders.parse(this.material));
-        String finalModelParsed = this.plugin.parse(player, placeholders.parse(this.modelId));
+        String finalMaterial = TextService.render(this.material, placeholders, player);
+        String finalModelParsed = TextService.render(this.modelId, placeholders, player);
         Object finalModel;
         try {
             finalModel = Integer.parseInt(finalModelParsed);
@@ -77,7 +82,7 @@ public class ToastAction extends Action {
         }
 
         if (Configuration.enableToast) {
-            this.plugin.getToastHelper().showToast(finalMaterial, this.plugin.getMetaUpdater().getLegacyMessage(this.plugin.parse(player, placeholders.parse(this.message))), this.toastType, finalModel, this.glowing, player);
+            this.plugin.getToastHelper().showToast(finalMaterial, TextService.legacy(this.messageTemplate, placeholders, player), this.toastType, finalModel, this.glowing, player);
         }
     }
 
@@ -85,8 +90,8 @@ public class ToastAction extends Action {
     protected void serializeProperties(@NonNull Map<String, Object> map) {
         map.put("type", "toast");
         if (!ToastLoader.DEFAULT_MESSAGE.equals(this.message)) map.put("message", this.message);
-        if (!ToastLoader.DEFAULT_MATERIAL.equals(this.material)) map.put("material", this.material);
-        if (!ToastLoader.DEFAULT_MODEL_ID.equals(this.modelId)) map.put("model-id", this.modelId);
+        if (!ToastLoader.DEFAULT_MATERIAL.equals(TextService.source(this.material))) map.put("material", TextService.source(this.material));
+        if (!ToastLoader.DEFAULT_MODEL_ID.equals(TextService.source(this.modelId))) map.put("model-id", TextService.source(this.modelId));
         if (this.toastType != ToastType.CHALLENGE) map.put("toast-type", this.toastType.name());
         if (this.glowing) map.put("glowing", true);
     }

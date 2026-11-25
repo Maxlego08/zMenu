@@ -1,5 +1,8 @@
 package fr.maxlego08.menu.test.serialization;
 
+import fr.robie.minimessageflow.Template;
+import fr.robie.minimessageflow.TemplateList;
+import fr.robie.minimessageflow.TextTemplate;
 import org.bukkit.plugin.Plugin;
 
 import java.io.File;
@@ -75,11 +78,31 @@ public final class ObjectGraphComparator {
             return;
         }
 
-        if (expected instanceof Pattern expectedPattern && actual instanceof Pattern actualPattern) {
-            if (!expectedPattern.pattern().equals(actualPattern.pattern()) || expectedPattern.flags() != actualPattern.flags()) {
-                differences.add(path + ": expected " + describe(expected) + " but was " + describe(actual));
+        switch (expected) {
+            case Template expectedTemplate when actual instanceof Template actualTemplate -> {
+                if (!expectedTemplate.source().equals(actualTemplate.source())) {
+                    differences.add(path + ": expected text " + describe(expectedTemplate.source()) + " but was " + describe(actualTemplate.source()));
+                }
+                return;
             }
-            return;
+            case TextTemplate expectedText when actual instanceof TextTemplate actualText -> {
+                if (!expectedText.source().equals(actualText.source())) {
+                    differences.add(path + ": expected text " + describe(expectedText.source()) + " but was " + describe(actualText.source()));
+                }
+                return;
+            }
+            case TemplateList expectedList when actual instanceof TemplateList actualList -> {
+                this.compareSequences(path, expectedList.templates(), actualList.templates(), differences, visited);
+                return;
+            }
+            case Pattern expectedPattern when actual instanceof Pattern actualPattern -> {
+                if (!expectedPattern.pattern().equals(actualPattern.pattern()) || expectedPattern.flags() != actualPattern.flags()) {
+                    differences.add(path + ": expected " + describe(expected) + " but was " + describe(actual));
+                }
+                return;
+            }
+            default -> {
+            }
         }
 
         if (!isModel(expected.getClass()) || !isModel(actual.getClass())) {

@@ -10,8 +10,10 @@ import fr.maxlego08.menu.api.engine.InventoryResult;
 import fr.maxlego08.menu.api.engine.ItemButton;
 import fr.maxlego08.menu.api.exceptions.InventoryOpenException;
 import fr.maxlego08.menu.api.utils.ClearInvType;
+import fr.maxlego08.menu.api.utils.PaperMetaUpdater;
 import fr.maxlego08.menu.common.utils.ZUtils;
 import fr.maxlego08.menu.zcore.logger.Logger;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -27,6 +29,7 @@ import org.jspecify.annotations.NonNull;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Supplier;
 
 public abstract class VInventory extends ZUtils implements Cloneable, BaseInventory {
 
@@ -40,6 +43,7 @@ public abstract class VInventory extends ZUtils implements Cloneable, BaseInvent
     protected Object[] args;
     protected Inventory inventory;
     protected String guiName;
+    private Supplier<String> guiNameSupplier;
     protected boolean disableClick = true;
     protected boolean disablePlayerInventoryClick = true;
     protected boolean isClickLimiterEnabled = true;
@@ -85,22 +89,49 @@ public abstract class VInventory extends ZUtils implements Cloneable, BaseInvent
 
     protected void createInventory(String name, int size) {
         this.guiName = name;
+        this.guiNameSupplier = null;
         this.inventory = Bukkit.createInventory(this, size, name);
     }
 
     protected void createInventory(String name, InventoryType inventoryType) {
         this.guiName = name;
+        this.guiNameSupplier = null;
         this.inventory = Bukkit.createInventory(this, inventoryType, name);
     }
 
     protected void createMetaInventory(String name, int size) {
         this.guiName = name;
+        this.guiNameSupplier = null;
         this.inventory = this.plugin.getMetaUpdater().createInventory(name, size, this);
     }
 
     protected void createMetaInventory(String name, InventoryType inventoryType) {
         this.guiName = name;
+        this.guiNameSupplier = null;
         this.inventory = this.plugin.getMetaUpdater().createInventory(name, inventoryType, this);
+    }
+
+    /**
+     * Creates the inventory with a title already formatted. {@link #getGuiName()} gives the title as text, built from
+     * {@code name} the first time it is asked for.
+     */
+    protected void createMetaInventory(@NotNull Component title, @NotNull Supplier<String> name, int size) {
+        this.guiName = null;
+        this.guiNameSupplier = name;
+        this.inventory = this.paperMetaUpdater().createInventory(title, size, this);
+    }
+
+    /**
+     * Creates the inventory with a title already formatted, as {@link #createMetaInventory(Component, Supplier, int)}.
+     */
+    protected void createMetaInventory(@NotNull Component title, @NotNull Supplier<String> name, @NotNull InventoryType inventoryType) {
+        this.guiName = null;
+        this.guiNameSupplier = name;
+        this.inventory = this.paperMetaUpdater().createInventory(title, inventoryType, this);
+    }
+
+    private @NotNull PaperMetaUpdater paperMetaUpdater() {
+        return (PaperMetaUpdater) this.plugin.getMetaUpdater();
     }
 
     private void createDefaultInventory() {
@@ -267,6 +298,10 @@ public abstract class VInventory extends ZUtils implements Cloneable, BaseInvent
     }
 
     public String getGuiName() {
+        if (this.guiName == null && this.guiNameSupplier != null) {
+            this.guiName = this.guiNameSupplier.get();
+            this.guiNameSupplier = null;
+        }
         return this.guiName;
     }
 

@@ -3,6 +3,7 @@ package fr.maxlego08.menu.requirement.actions;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
+import fr.maxlego08.menu.api.text.TextService;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.common.utils.ActionHelper;
 import fr.maxlego08.menu.zcore.logger.Logger;
@@ -29,7 +30,7 @@ public class DiscordAction extends ActionHelper {
 
         var scheduler = inventory.getPlugin().getScheduler();
         DiscordWebhook discordWebhook = new DiscordWebhook(this.configuration.webhookUrl());
-        this.configuration.apply(text -> text == null ? null : player == null ? text : this.papi(placeholders.parse(text), player), discordWebhook);
+        this.configuration.apply(text -> text == null ? null : player == null ? text : TextService.get().flow().formatText(text, placeholders.values(), player), discordWebhook);
 
         scheduler.runAsync(w -> {
             try {

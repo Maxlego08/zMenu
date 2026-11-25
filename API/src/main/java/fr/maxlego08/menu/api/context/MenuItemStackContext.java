@@ -6,12 +6,16 @@ import fr.maxlego08.menu.api.attribute.AttributeWrapper;
 import fr.maxlego08.menu.api.enums.AmountType;
 import fr.maxlego08.menu.api.enums.MenuItemRarity;
 import fr.maxlego08.menu.api.itemstack.*;
+import fr.maxlego08.menu.api.text.TextService;
 import fr.maxlego08.menu.api.utils.LoreType;
+import fr.robie.minimessageflow.Template;
+import fr.robie.minimessageflow.TemplateList;
 import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.List;
@@ -102,7 +106,9 @@ public interface MenuItemStackContext {
      * Returns the lore lines attached to this item stack.
      *
      * @return the lore lines.
+     * @deprecated the lore as written; render {@link #getLoreTemplate(String)}. Changing the list returned no longer changes the item: use {@code setLore}.
      */
+    @Deprecated(since = "1.1.2.2")
     List<String> getLore();
 
     /**
@@ -116,7 +122,9 @@ public interface MenuItemStackContext {
      * Returns the display name configured for the item stack.
      *
      * @return the display name.
+     * @deprecated the name as written; render {@link #getDisplayNameTemplate(String)}.
      */
+    @Deprecated(since = "1.1.2.2")
     String getDisplayName();
 
     /**
@@ -187,22 +195,62 @@ public interface MenuItemStackContext {
      * Retrieves the translated display names available for this item stack.
      *
      * @return the map of locale to display name.
+     * @deprecated the names as written; render {@link #getDisplayNameTemplate(String)}. Changing the map returned no longer changes the item: use {@code setTranslatedDisplayName}.
      */
+    @Deprecated(since = "1.1.2.2")
     Map<String, String> getTranslatedDisplayName();
 
     /**
      * Retrieves the translated lore entries available for this item stack.
      *
      * @return the map of locale to lore lines.
+     * @deprecated the lore as written; render {@link #getLoreTemplate(String)}. Changing the map returned no longer changes the item: use {@code setTranslatedLore}.
      */
+    @Deprecated(since = "1.1.2.2")
     Map<String, List<String>> getTranslatedLore();
+
+    /**
+     * The display name of a locale, compiled: the translated one, or the default one when the locale has none.
+     *
+     * @param locale the player's locale ({@code Player#getLocale()}), or null for the default name
+     * @return the template, not italic unless the text asks for it, or null when the item has no name
+     */
+    @SuppressWarnings("deprecation")
+    default @Nullable Template getDisplayNameTemplate(@Nullable String locale) {
+        String name = locale == null ? this.getDisplayName() : this.getTranslatedDisplayName().getOrDefault(locale, this.getDisplayName());
+        return name == null ? null : TextService.compileItemLine(name);
+    }
+
+    /**
+     * The lore of a locale, compiled: the translated one, or the default one when the locale has none.
+     *
+     * @param locale the player's locale ({@code Player#getLocale()}), or null for the default lore
+     * @return the templates, one per line, empty without lore
+     */
+    @SuppressWarnings("deprecation")
+    default @NotNull TemplateList getLoreTemplate(@Nullable String locale) {
+        List<String> lore = locale == null ? this.getLore() : this.getTranslatedLore().getOrDefault(locale, this.getLore());
+        return TextService.compileItemLines(lore == null ? List.of() : lore);
+    }
 
     /**
      * Indicates whether PlaceholderAPI is required for this item stack.
      *
      * @return {@code true} if PlaceholderAPI is needed.
+     * @deprecated use {@link #isStatic()}: true when the item is not static.
      */
+    @Deprecated(since = "1.1.2.2")
     boolean isNeedPlaceholderAPI();
+
+    /**
+     * Whether the built item is the same for every player and every build, so it can be kept and given again: all its
+     * texts, values and components are static, it has no translations and no target player.
+     *
+     * @return true when the item never changes
+     */
+    default boolean isStatic() {
+        return !this.isNeedPlaceholderAPI();
+    }
 
     /**
      * Retrieves the cached item stack when caching is enabled.

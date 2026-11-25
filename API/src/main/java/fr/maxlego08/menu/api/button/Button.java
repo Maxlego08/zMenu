@@ -15,10 +15,14 @@ import fr.maxlego08.menu.api.requirement.data.ActionPlayerData;
 import fr.maxlego08.menu.api.requirement.permissible.PermissionPermissible;
 import fr.maxlego08.menu.api.requirement.permissible.PlaceholderPermissible;
 import fr.maxlego08.menu.api.sound.SoundOption;
+import fr.maxlego08.menu.api.text.TextService;
 import fr.maxlego08.menu.api.utils.OpenLink;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.api.utils.TextChange;
 import fr.maxlego08.menu.zcore.utils.PerformanceDebug;
+import fr.robie.minimessageflow.TemplateList;
+import fr.robie.minimessageflow.TextTemplate;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.ConfigurationSection;
@@ -46,8 +50,16 @@ public abstract class Button extends PlaceholderButton {
     private boolean closeInventory = false;
     private boolean useCache = true;
     private List<String> messages = new ArrayList<>();
+    /**
+     * {@link #messages} compiled once, or null while there are none.
+     */
+    private transient @Nullable TemplateList messageTemplates;
     private SoundOption soundOption;
     private String playerHead;
+    /**
+     * {@link #playerHead} compiled once, or null without one.
+     */
+    private transient @Nullable TextTemplate playerHeadTemplate;
     private OpenLink openLink;
     private boolean isUpdated = false;
     private boolean isMasterButtonUpdated = false;
@@ -136,6 +148,7 @@ public abstract class Button extends PlaceholderButton {
     @NotNull
     public Button setMessages(@NotNull List<String> messages) {
         this.messages = messages;
+        this.messageTemplates = messages.isEmpty() ? null : TextService.get().flow().compileList(messages);
         return this;
     }
 
@@ -168,7 +181,20 @@ public abstract class Button extends PlaceholderButton {
     @Contract("_ -> this")
     public Button setPlayerHead(@Nullable String playerHead) {
         this.playerHead = playerHead;
+        this.playerHeadTemplate = playerHead == null ? null : TextService.get().flow().compileText(playerHead);
         return this;
+    }
+
+    /**
+     * @return the head's owner compiled once, its placeholders read for the viewer, or null without one
+     */
+    @Contract(pure = true)
+    public @Nullable TextTemplate getPlayerHeadTemplate() {
+        TextTemplate template = this.playerHeadTemplate;
+        if (template == null && this.playerHead != null) {
+            template = this.playerHeadTemplate = TextService.get().flow().compileText(this.playerHead);
+        }
+        return template;
     }
 
     @Contract(pure = true)
@@ -281,9 +307,15 @@ public abstract class Button extends PlaceholderButton {
 
         if (!this.messages.isEmpty()) {
             if (this.openLink != null) {
-                this.openLink.send(player, this.messages);
+                this.openLink.send(player, this.messages, placeholders);
             } else {
-                this.messages.forEach(message -> this.plugin.getMetaUpdater().sendMessage(player, this.plugin.parse(player, placeholders.parse(message))));
+                TemplateList templates = this.messageTemplates;
+                if (templates == null || !TextService.sources(templates).equals(this.messages)) {
+                    templates = this.messageTemplates = TextService.get().flow().compileList(this.messages);
+                }
+                for (Component message : templates.render(placeholders.values(), player)) {
+                    player.sendMessage(message);
+                }
             }
         }
 
@@ -414,11 +446,13 @@ public abstract class Button extends PlaceholderButton {
     }
 
     @Contract(pure = true)
+    @SuppressWarnings("deprecation")
     public List<String> buildLore(Player player) {
         return this.itemStack.getLore();
     }
 
     @Contract(pure = true)
+    @SuppressWarnings("deprecation")
     public String buildDisplayName(Player player) {
         return this.itemStack.getDisplayName();
     }

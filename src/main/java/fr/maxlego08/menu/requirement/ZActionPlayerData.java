@@ -5,6 +5,7 @@ import fr.maxlego08.menu.api.players.Data;
 import fr.maxlego08.menu.api.players.DataManager;
 import fr.maxlego08.menu.api.requirement.data.ActionPlayerData;
 import fr.maxlego08.menu.api.requirement.data.ActionPlayerDataType;
+import fr.maxlego08.menu.api.text.TextService;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.api.variable.Variable;
 import fr.maxlego08.menu.api.variable.VariableRef;
@@ -13,9 +14,13 @@ import fr.maxlego08.menu.api.variable.VariableService;
 import fr.maxlego08.menu.common.utils.ZUtils;
 import fr.maxlego08.menu.players.ZData;
 import fr.maxlego08.menu.zcore.logger.Logger;
+import fr.robie.minimessageflow.TextTemplate;
+import net.kyori.adventure.pointer.Pointered;
 import net.objecthunter.exp4j.ExpressionBuilder;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.jspecify.annotations.NonNull;
 
 import java.math.BigDecimal;
@@ -28,27 +33,32 @@ import java.time.Duration;
 public class ZActionPlayerData extends ZUtils implements ActionPlayerData {
 
     private final MenuPlugin plugin;
-    private final String key;
+    private final TextTemplate key;
     private final ActionPlayerDataType type;
     private final Object value;
-    private final String seconds;
+    private final TextTemplate seconds;
+    /**
+     * The value's text compiled once.
+     */
+    private final TextTemplate valueText;
     private final boolean enableMathExpression;
     private final VariableScope scope;
 
     public ZActionPlayerData(MenuPlugin plugin, String key, ActionPlayerDataType type, Object value, String seconds, boolean enableMathExpression, VariableScope scope) {
         super();
         this.plugin = plugin;
-        this.key = key;
+        this.key = TextService.get().flow().compileText(key);
         this.type = type;
         this.value = value;
-        this.seconds = seconds;
+        this.valueText = TextService.get().flow().compileText(String.valueOf(value));
+        this.seconds = TextService.text(seconds);
         this.enableMathExpression = enableMathExpression;
         this.scope = scope;
     }
 
     @Override
     public @NonNull String getKey() {
-        return this.key;
+        return this.key.source();
     }
 
     @Override
@@ -63,7 +73,7 @@ public class ZActionPlayerData extends ZUtils implements ActionPlayerData {
 
     @Override
     public @NonNull String getSeconds() {
-        return this.seconds;
+        return this.seconds == null ? "0" : this.seconds.source();
     }
 
     @Override
@@ -76,9 +86,20 @@ public class ZActionPlayerData extends ZUtils implements ActionPlayerData {
         return this.scope;
     }
 
-    private long seconds(OfflinePlayer player) {
+    /**
+     * A text compiled once, read for the player: from the values and PlaceholderAPI, or through PlaceholderAPI's offline
+     * call for a player who is not online.
+     */
+    private @NotNull String text(@NotNull TextTemplate template, @NonNull Placeholders placeholders, @Nullable OfflinePlayer player) {
+        if (player == null || player instanceof Pointered) {
+            return template.render(placeholders.values(), (Pointered) player);
+        }
+        return placeholders.parse(this.papi(template.source(), player, false)).replace('', '%');
+    }
+
+    private long seconds(OfflinePlayer player, Placeholders placeholders) {
         try {
-            return Long.parseLong(this.papi(this.seconds, player, false));
+            return this.seconds == null ? 0 : Long.parseLong(this.text(this.seconds, placeholders, player));
         } catch (Exception e) {
             return 0;
         }
@@ -91,15 +112,15 @@ public class ZActionPlayerData extends ZUtils implements ActionPlayerData {
 
     @Override
     public @NonNull Data toData(OfflinePlayer player, @NonNull Placeholders placeholders) {
-        long seconds = this.seconds(player);
+        long seconds = this.seconds(player, placeholders);
         long expiredAt = seconds == 0 ? 0 : System.currentTimeMillis() + (1000 * seconds);
-        String result = placeholders.parse(this.papi(this.value.toString(), player, false));
+        String result = this.text(this.valueText, placeholders, player);
         String dataValue = result;
         if (this.enableMathExpression) {
             BigDecimal evaluated = this.evaluate(result);
             if (evaluated != null) dataValue = Variable.format(evaluated);
         }
-        return new ZData(this.papi(this.key, player, false), dataValue, expiredAt);
+        return new ZData(this.text(this.key, placeholders, player), dataValue, expiredAt);
     }
 
     /**
@@ -122,7 +143,7 @@ public class ZActionPlayerData extends ZUtils implements ActionPlayerData {
             if (number == null) throw new NumberFormatException("not a number");
             return number;
         } catch (Exception exception) {
-            Logger.info("Unable to use " + result + " as a number for the player data " + this.key + ": "
+            Logger.info("Unable to use " + result + " as a number for the player data " + this.key.source() + ": "
                     + exception.getMessage(), Logger.LogType.ERROR);
             return null;
         }
@@ -130,7 +151,7 @@ public class ZActionPlayerData extends ZUtils implements ActionPlayerData {
 
     @Override
     public String toString() {
-        return "ZActionPlayerData [key=" + this.key + ", type=" + this.type + ", value=" + this.value + ", seconds=" + this.seconds + ", scope=" + this.scope + "]";
+        return "ZActionPlayerData [key=" + this.key.source() + ", type=" + this.type + ", value=" + this.value + ", seconds=" + this.getSeconds() + ", scope=" + this.scope + "]";
     }
 
     @Override
@@ -145,7 +166,7 @@ public class ZActionPlayerData extends ZUtils implements ActionPlayerData {
     @Override
     public void execute(@NonNull Player player, @NonNull DataManager dataManager, @NonNull Placeholders placeholders) {
         VariableService variables = this.plugin.getVariableService();
-        VariableRef ref = variables.ref(this.scope, player.getUniqueId(), this.papi(this.key, player, false));
+        VariableRef ref = variables.ref(this.scope, player.getUniqueId(), this.text(this.key, placeholders, player));
 
         switch (this.type) {
             case REMOVE -> variables.delete(ref);
@@ -154,9 +175,9 @@ public class ZActionPlayerData extends ZUtils implements ActionPlayerData {
                 variables.set(ref, data.getValue() == null ? "" : data.getValue().toString(), data.getExpiredAt());
             }
             case ADD, SUBTRACT -> {
-                BigDecimal amount = this.evaluate(placeholders.parse(this.papi(this.value.toString(), player, false)));
+                BigDecimal amount = this.evaluate(this.text(this.valueText, placeholders, player));
                 if (amount == null) return;
-                long seconds = this.seconds(player);
+                long seconds = this.seconds(player, placeholders);
                 variables.increment(ref, this.type == ActionPlayerDataType.ADD ? amount : amount.negate(), seconds == 0 ? null : Duration.ofSeconds(seconds));
             }
         }

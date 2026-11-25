@@ -1,8 +1,10 @@
 package fr.maxlego08.menu.zcore.utils;
 
 import fr.maxlego08.menu.api.command.CommandManager;
+import fr.maxlego08.menu.api.text.TextService;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.common.utils.ZUtils;
+import fr.robie.minimessageflow.TextTemplate;
 import org.bukkit.entity.Player;
 
 import java.util.List;
@@ -10,11 +12,11 @@ import java.util.List;
 public class InventoryArgument extends ZUtils {
 
     private final CommandManager commandManager;
-    private final List<String> arguments;
+    private final List<TextTemplate> arguments;
 
     public InventoryArgument(CommandManager commandManager, List<String> arguments) {
         this.commandManager = commandManager;
-        this.arguments = arguments;
+        this.arguments = TextService.texts(arguments);
     }
 
     @Deprecated
@@ -26,14 +28,12 @@ public class InventoryArgument extends ZUtils {
         if (!this.arguments.isEmpty()) {
             for (int i = 0; i < this.arguments.size(); i++) {
                 String name = String.valueOf(i - 4);
-                String argument = this.papi(placeholders.parse(this.arguments.get(i)), player, true);
+                String argument = this.arguments.get(i).render(placeholders.values(), player);
 
                 if (argument.contains(":")) {
                     String[] values = argument.split(":", 2);
-                    //name = values[0];
-                    name = this.papi(values[0], player, true);
-                    //argument = values[1];
-                    argument = this.papi(values[1], player, true);
+                    name = values[0];
+                    argument = values[1];
                 }
 
                 this.commandManager.setPlayerArgument(player, name, argument);
@@ -42,6 +42,6 @@ public class InventoryArgument extends ZUtils {
     }
 
     public List<String> getArguments() {
-        return this.arguments;
+        return TextService.sources(this.arguments);
     }
 }

@@ -6,6 +6,8 @@ import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.common.utils.ActionHelper;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import fr.robie.minimessageflow.Template;
+import net.kyori.adventure.title.Title;
 import org.jspecify.annotations.NonNull;
 
 import java.util.Map;
@@ -17,6 +19,8 @@ public class BroadcastTitleAction extends ActionHelper {
     private final long start;
     private final long duration;
     private final long end;
+    private final transient Template titleTemplate;
+    private final transient Template subtitleTemplate;
 
     public BroadcastTitleAction(String title, String subtitle, long start, long duration, long end) {
         this.title = title;
@@ -24,13 +28,14 @@ public class BroadcastTitleAction extends ActionHelper {
         this.start = start;
         this.duration = duration;
         this.end = end;
+        this.titleTemplate = compile(title);
+        this.subtitleTemplate = compile(subtitle);
     }
 
     @Override
     protected void execute(@NonNull Player player, Button button, @NonNull InventoryEngine inventory, @NonNull Placeholders placeholders) {
-        String finalTitle = this.papi(placeholders.parse(this.title), player);
-        String finalSubtitle = this.papi(placeholders.parse(this.subtitle), player);
-        Bukkit.getOnlinePlayers().forEach(target -> inventory.getPlugin().getMetaUpdater().sendTitle(target, finalTitle, finalSubtitle, this.start, this.duration, this.end));
+        Title title = title(this.titleTemplate, this.subtitleTemplate, placeholders.values(), player, this.start, this.duration, this.end);
+        Bukkit.getOnlinePlayers().forEach(target -> target.showTitle(title));
     }
 
     @Override

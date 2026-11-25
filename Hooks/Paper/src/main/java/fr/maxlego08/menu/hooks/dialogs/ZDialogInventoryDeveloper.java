@@ -2,6 +2,7 @@ package fr.maxlego08.menu.hooks.dialogs;
 
 import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.utils.PaperMetaUpdater;
+import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.api.utils.record.dialogs.ActionButtonRecord;
 import fr.maxlego08.menu.config.ConfigFieldContext;
 import fr.maxlego08.menu.hooks.dialogs.inventory.ZConfirmationDialogInventory;
@@ -28,7 +29,7 @@ public class ZDialogInventoryDeveloper extends ZConfirmationDialogInventory {
     }
 
     @Override
-    protected @NotNull List<DialogInput> getDialogInputsForPlayer(@NotNull Player player, @NotNull PaperMetaUpdater componentMeta) {
+    protected @NotNull List<DialogInput> getDialogInputsForPlayer(@NotNull Player player, @NotNull PaperMetaUpdater componentMeta, @NotNull Placeholders placeholders) {
         List<DialogInput> inputs = new ArrayList<>(this.context.size());
         for (ConfigFieldContext.ConfigFieldEntry entry : this.context.getEntries().values()) {
             Field field = entry.field();

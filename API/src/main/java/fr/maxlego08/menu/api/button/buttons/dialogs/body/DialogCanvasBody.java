@@ -133,7 +133,7 @@ public class DialogCanvasBody extends VanillaDialogBody {
         Placeholders placeholders = context.getPlaceholders();
         List<Component> lines = new ArrayList<>(this.fallback.size());
         for (String line : this.fallback) {
-            lines.add(context.getMetaUpdater().getComponent(context.getPlugin().parse(context.getPlayer(), placeholders.parse(line))));
+            lines.add(context.getMetaUpdater().render(line, placeholders, context.getPlayer()));
         }
         return DialogBody.plainMessage(Component.join(JoinConfiguration.newlines(), lines), Math.min(1024, this.canvasWidth.fixedOrFallback() + 10));
     }

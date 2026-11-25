@@ -28,6 +28,17 @@ public abstract class ItemComponent {
     public abstract void apply(@NotNull BuildContext context, @NotNull ItemStack itemStack, @Nullable Player player);
 
     /**
+     * Whether this component gives the same result for every player and every build. zMenu's components answer from
+     * their fields ({@link StaticCheck}: their resolvables, the items they hold); a component of another plugin is
+     * dynamic unless it overrides this, and so is one that reads the player in another way.
+     *
+     * @return true when applying it never changes
+     */
+    public boolean isStatic() {
+        return StaticCheck.fieldsStatic(this);
+    }
+
+    /**
      * Gets the parent loader that created this component.
      *
      * @return The parent ItemComponentLoader.

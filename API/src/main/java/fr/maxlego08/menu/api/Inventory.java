@@ -8,11 +8,14 @@ import fr.maxlego08.menu.api.pattern.Pattern;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.ConditionalName;
 import fr.maxlego08.menu.api.requirement.Requirement;
+import fr.maxlego08.menu.api.text.TextService;
 import fr.maxlego08.menu.api.utils.ClearInvType;
 import fr.maxlego08.menu.api.utils.InventoryReplacement;
 import fr.maxlego08.menu.api.utils.OpenWithItem;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.api.utils.SectionSerializable;
+import fr.robie.minimessageflow.Template;
+import fr.robie.minimessageflow.TextTemplate;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.key.Keyed;
 import org.bukkit.configuration.ConfigurationSection;
@@ -77,6 +80,20 @@ public interface Inventory extends Keyed, SectionSerializable {
      * @return The name of the inventory, translated to the player's language.
      */
     String getName(@NotNull Player player, InventoryEngine InventoryEngine, Placeholders placeholders);
+
+    /**
+     * The name shown to a player ({@link #getName(Player, InventoryEngine, Placeholders)}), compiled: rendered with the
+     * menu's values for the player, font images already applied by the text engine. By default the name is compiled at
+     * each call; zMenu's inventories compile each of their names once.
+     *
+     * @param player          the player
+     * @param inventoryEngine the inventory being opened
+     * @param placeholders    the menu's values, for a conditional name's requirements
+     * @return the name, compiled
+     */
+    default @NotNull Template getNameTemplate(@NotNull Player player, InventoryEngine inventoryEngine, Placeholders placeholders) {
+        return TextService.get().flow().compile(this.getName(player, inventoryEngine, placeholders));
+    }
 
     /**
      * Returns the type of the inventory.
@@ -279,6 +296,16 @@ public interface Inventory extends Keyed, SectionSerializable {
      * @return The player name placeholder.
      */
     String getTargetPlayerNamePlaceholder();
+
+    /**
+     * The player name placeholder ({@link #getTargetPlayerNamePlaceholder()}) compiled, read as text for the player
+     * opening the menu. By default compiled at each call; zMenu's inventories compile it once.
+     *
+     * @return the placeholder compiled, or null when there is none
+     */
+    default @Nullable TextTemplate getTargetPlayerNameTemplate() {
+        return TextService.text(this.getTargetPlayerNamePlaceholder());
+    }
 
 
     /**

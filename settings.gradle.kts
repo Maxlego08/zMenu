@@ -19,6 +19,7 @@ plugins {
 
 include("API")
 include("Common")
+include("Benchmarks")
 
 file("NMS").listFiles()?.forEach { file ->
     if (file.isDirectory && !file.name.equals("build") && !file.name.startsWith(".")) {

@@ -18,7 +18,12 @@ import fr.maxlego08.menu.api.itemstack.*;
 import fr.maxlego08.menu.api.loader.MaterialLoader;
 import fr.maxlego08.menu.api.registry.Registries;
 import fr.maxlego08.menu.api.utils.LoreType;
+import fr.maxlego08.menu.api.text.TextService;
 import fr.maxlego08.menu.api.utils.OfflinePlayerCache;
+import fr.maxlego08.menu.api.utils.PaperMetaUpdater;
+import fr.robie.minimessageflow.Template;
+import fr.robie.minimessageflow.TemplateList;
+import fr.robie.minimessageflow.TextTemplate;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.api.utils.resolvable.lang.ResolvableInt;
 import fr.maxlego08.menu.api.utils.version.MinecraftVersion;
@@ -27,6 +32,7 @@ import fr.maxlego08.menu.common.utils.itemstack.MenuItemStackFromItemStack;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.utils.PerformanceDebug;
 import net.kyori.adventure.key.Key;
+import net.kyori.adventure.pointer.Pointered;
 import org.bukkit.*;
 import org.bukkit.block.banner.Pattern;
 import org.bukkit.configuration.ConfigurationSection;
@@ -48,23 +54,23 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     private final String filePath;
     private final String path;
     private final List<ItemComponent> itemComponents = new ArrayList<>();
-    private String material;
-    private String targetPlayer;
-    private String amount;
+    private @Nullable TextTemplate material;
+    private @Nullable TextTemplate targetPlayer;
+    private @Nullable TextTemplate amount;
     private AmountType amountType = AmountType.SET;
-    private String url;
-    private String data;
+    private @Nullable TextTemplate url;
+    private @Nullable TextTemplate data;
     private String tooltipStyle;
-    private String durability;
+    private @Nullable TextTemplate durability;
     private fr.maxlego08.menu.api.itemstack.Potion potion;
-    private List<String> lore = new ArrayList<>();
+    private TemplateList lore = TemplateList.of(List.of());
     private List<ItemFlag> flags = new ArrayList<>();
-    private String displayName;
-    private Map<String, String> translatedDisplayName = new HashMap<>();
-    private Map<String, List<String>> translatedLore = new HashMap<>();
+    private @Nullable Template displayName;
+    private Map<String, Template> translatedDisplayName = Map.of();
+    private Map<String, TemplateList> translatedLore = Map.of();
     private boolean isGlowing;
     private ResolvableInt modelID;
-    private String itemModel;
+    private @Nullable TextTemplate itemModel;
     private String equippedModel;
     private Map<Enchantment, Integer> enchantments = new HashMap<>();
     private boolean clearDefaultAttributes = false;
@@ -93,6 +99,15 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     private TrimConfiguration trimConfiguration;
 
     private transient ItemStack cacheItemStack;
+    /**
+     * The text engine's revision the cached item was built at: an older one is built again.
+     */
+    private transient int cacheRevision;
+    /**
+     * {@link #isStatic()} and the text engine's revision it was found at.
+     */
+    private transient volatile int staticRevision = Integer.MIN_VALUE;
+    private transient volatile boolean staticValue;
 
     public ZMenuItemStack(InventoryManager inventoryManager, String filePath, String path) {
         this.inventoryManager = inventoryManager;
@@ -118,6 +133,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
 
     @Override
     public ItemStack build(BuildContext context) {
+        int revision = TextService.get().flow().revision();
         Player player = context.getPlayer();
         boolean useCache = context.isUseCache();
         Placeholders placeholders = context.getPlaceholders();
@@ -134,7 +150,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
 
         performanceDebug.start("build.createDefaultMaterial");
         if (this.material == null) {
-            this.material = "STONE";
+            this.material = TextService.text("STONE");
         }
         performanceDebug.end();
 
@@ -187,8 +203,9 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
         performanceDebug.end();
 
 
-        if (!this.needPlaceholderAPI && Configuration.enableCacheItemStack) {
+        if (Configuration.enableCacheItemStack && this.isStatic()) {
             this.cacheItemStack = itemStack;
+            this.cacheRevision = revision;
         }
 
         performanceDebug.printSummary();
@@ -207,12 +224,52 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     }
 
     private boolean shouldUseCache(boolean useCache) {
-        var isItem = this.material != null && (this.material.equals("PLAYER_HEAD") || this.material.equals("SKULL_ITEM")) && this.url == null;
-        return !this.needPlaceholderAPI && this.cacheItemStack != null && Configuration.enableCacheItemStack && useCache && !isItem;
+        return useCache && Configuration.enableCacheItemStack && this.cacheItemStack != null
+                && this.cacheRevision == TextService.get().flow().revision() && this.isStatic();
+    }
+
+    /**
+     * Drops the built item kept, and what was found about it: called when the item changes.
+     */
+    private void invalidateCache() {
+        this.cacheItemStack = null;
+        this.staticRevision = Integer.MIN_VALUE;
+    }
+
+    /**
+     * The item is the same for every player and every build: every text, value and component is static (no
+     * placeholder, no value tag, no nested item that depends on the player), it has no translations, no target
+     * player, no material read per player and is not a player head without a texture. Found once per revision of the
+     * text engine (a tag added later can make a text dynamic).
+     */
+    @Override
+    public boolean isStatic() {
+        int revision = TextService.get().flow().revision();
+        if (this.staticRevision == revision) {
+            return this.staticValue;
+        }
+        boolean value = this.computeStatic();
+        this.staticValue = value;
+        this.staticRevision = revision;
+        return value;
+    }
+
+    private boolean computeStatic() {
+        if (this.needPlaceholderAPI || this.targetPlayer != null || this.isDynamicMaterial()) {
+            return false;
+        }
+        if (!this.translatedDisplayName.isEmpty() || !this.translatedLore.isEmpty()) {
+            return false;
+        }
+        String material = source(this.material);
+        if (this.url == null && ("PLAYER_HEAD".equals(material) || "SKULL_ITEM".equals(material))) {
+            return false;
+        }
+        return StaticCheck.isStatic(this.displayName) && StaticCheck.isStatic(this.lore) && StaticCheck.fieldsStatic(this);
     }
 
     private OfflinePlayer resolveOfflinePlayer(Player player, Placeholders placeholders) {
-        return this.targetPlayer != null ? OfflinePlayerCache.get(this.papi(placeholders.parse(this.targetPlayer), player, false)) : null;
+        return this.targetPlayer != null ? OfflinePlayerCache.get(this.dataText(this.targetPlayer, placeholders, player)) : null;
     }
 
     private ItemStack createItemStack(Player player, Placeholders placeholders, OfflinePlayer offlinePlayer, int amount) {
@@ -220,14 +277,14 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
         ItemStack itemStack = this.resolveCustomItem(player, placeholders, material);
 
         if (itemStack == null) {
-            itemStack = this.createDefaultItemStack(player, material, amount);
+            itemStack = this.createDefaultItemStack(player, material, amount, placeholders);
         }
 
         return itemStack;
     }
 
     private Material resolveMaterial(Player player, Placeholders placeholders, OfflinePlayer offlinePlayer) {
-        String papiMaterial = this.papi(placeholders.parse(this.material), offlinePlayer == null ? player : offlinePlayer, true);
+        String papiMaterial = this.dataText(this.material, placeholders, offlinePlayer == null ? player : offlinePlayer);
 
         try {
             return papiMaterial != null ? Material.getMaterial(papiMaterial.toUpperCase(Locale.ROOT)) : null;
@@ -237,10 +294,10 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     }
 
     private ItemStack resolveCustomItem(Player player, Placeholders placeholders, Material material) {
-        String papiMaterial = this.papi(placeholders.parse(this.material), player, true);
         if (material != null && !material.equals(Material.AIR)) {
             return null;
         }
+        String papiMaterial = this.dataText(this.material, placeholders, player);
 
         if (papiMaterial != null && papiMaterial.contains(":")) {
             String[] values = papiMaterial.split(":", 2);
@@ -258,16 +315,16 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
         return null;
     }
 
-    private ItemStack createDefaultItemStack(Player player, Material material, int amount) {
+    private ItemStack createDefaultItemStack(Player player, Material material, int amount, Placeholders placeholders) {
         if (material == null) {
             material = Material.STONE;
         }
-        return this.data != null && !this.data.isEmpty() ? new ItemStack(material, amount, Byte.parseByte(this.papi(this.data, player, false))) : new ItemStack(material);
+        return this.data != null && !source(this.data).isEmpty() ? new ItemStack(material, amount, Byte.parseByte(this.dataText(this.data, placeholders, player))) : new ItemStack(material);
     }
 
     private ItemStack applySpecialItemStack(Player player, OfflinePlayer offlinePlayer, Placeholders placeholders, int amount, ItemStack itemStack) {
-        if (this.url != null && !this.url.equalsIgnoreCase("null")) {
-            String urlResult = this.papi(this.url, player, false);
+        if (this.url != null && !source(this.url).equalsIgnoreCase("null")) {
+            String urlResult = this.dataText(this.url, placeholders, player);
             if (urlResult != null) {
                 itemStack = this.createSkull(urlResult);
             }
@@ -387,23 +444,42 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
      * @param useCache      whether to use the cache for the placeholders.
      */
     private void applyDisplayNameLore(Player player, Placeholders placeholders, ItemMeta itemMeta, OfflinePlayer offlinePlayer, String locale, FontImage fontImage, boolean useCache) {
+        if (offlinePlayer == null) {
+            PaperMetaUpdater metaUpdater = (PaperMetaUpdater) this.inventoryManager.getPlugin().getMetaUpdater();
+            Template name = this.getDisplayNameTemplate(locale);
+            if (name != null) {
+                try {
+                    metaUpdater.updateDisplayName(itemMeta, name.render(placeholders.values(), player));
+                } catch (Exception exception) {
+                    Logger.info("Error with update display name for item " + this.path + " in file " + this.filePath + " (" + player + ", " + this.getDisplayNameSource() + ")", Logger.LogType.ERROR);
+                    Logger.error(exception);
+                }
+            }
+            TemplateList lore = this.getLoreTemplate(locale);
+            if (!lore.isEmpty()) {
+                metaUpdater.updateLoreComponents(itemMeta, lore.render(placeholders.values(), player), this.loreType);
+            }
+            return;
+        }
 
         String itemName = null;
         List<String> itemLore = new ArrayList<>();
 
         if (this.displayName != null) {
             try {
-                String displayName = locale == null ? this.displayName : this.translatedDisplayName.getOrDefault(locale, this.displayName);
+                Template line = locale == null ? this.displayName : this.translatedDisplayName.getOrDefault(locale, this.displayName);
+                String displayName = line.source();
                 if (displayName != null)
                     itemName = fontImage.replace(this.papi(placeholders.parse(displayName), offlinePlayer == null ? player : offlinePlayer, useCache));
             } catch (Exception exception) {
-                Logger.info("Error with update display name for item " + this.path + " in file " + this.filePath + " (" + player + ", " + this.displayName + ")", Logger.LogType.ERROR);
+                Logger.info("Error with update display name for item " + this.path + " in file " + this.filePath + " (" + player + ", " + this.getDisplayNameSource() + ")", Logger.LogType.ERROR);
                 Logger.error(exception);
             }
         }
 
         if (!this.lore.isEmpty()) {
-            List<String> lore = this.papi(placeholders.parse(locale == null ? this.lore : this.translatedLore.getOrDefault(locale, this.lore)), offlinePlayer == null ? player : offlinePlayer, useCache);
+            TemplateList lines = locale == null ? this.lore : this.translatedLore.getOrDefault(locale, this.lore);
+            List<String> lore = this.papi(placeholders.parse(TextService.sources(lines)), offlinePlayer == null ? player : offlinePlayer, useCache);
             List<String> flattened = new ArrayList<>();
             for (String str : lore) {
                 String[] parts = str.split("\n");
@@ -421,6 +497,57 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
         if (!itemLore.isEmpty()) {
             this.inventoryManager.getPlugin().getMetaUpdater().updateLore(itemMeta, itemLore, this.loreType);
         }
+    }
+
+    @Override
+    public @Nullable Template getDisplayNameTemplate(@Nullable String locale) {
+        if (locale != null) {
+            Template translated = this.translatedDisplayName.get(locale);
+            if (translated != null) {
+                return translated;
+            }
+        }
+        return this.displayName;
+    }
+
+    @Override
+    public @NotNull TemplateList getLoreTemplate(@Nullable String locale) {
+        if (locale != null) {
+            TemplateList translated = this.translatedLore.get(locale);
+            if (translated != null) {
+                return translated;
+            }
+        }
+        return this.lore;
+    }
+
+    /**
+     * A data text (material, amount...) with its placeholders read: zMenu's values and PlaceholderAPI for the viewer.
+     * It was compiled when it was set; a text without placeholders is given as it is. A viewer that is an offline player (not an
+     * audience) is read through PlaceholderAPI's offline API as before.
+     */
+    private @Nullable String dataText(@Nullable TextTemplate template, @NotNull Placeholders placeholders, @Nullable OfflinePlayer viewer) {
+        if (template == null) {
+            return null;
+        }
+        if (template.isStatic()) {
+            return template.source();
+        }
+        if (viewer != null && !(viewer instanceof Pointered)) {
+            return this.papi(placeholders.parse(template.source()), viewer, true);
+        }
+        return template.render(placeholders.values(), (Pointered) viewer);
+    }
+
+    /**
+     * The text as written of a data field, or null when it is not set.
+     */
+    private static @Nullable String source(@Nullable TextTemplate template) {
+        return template == null ? null : template.source();
+    }
+
+    private @Nullable String getDisplayNameSource() {
+        return this.displayName == null ? null : this.displayName.source();
     }
 
     private void buildNewItemStackAPI(ItemStack itemStack, ItemMeta itemMeta, Player player, Placeholders placeholders) {
@@ -512,44 +639,45 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
      * @return the target player
      */
     public String getTargetPlayer() {
-        return this.targetPlayer;
+        return source(this.targetPlayer);
     }
 
     /**
      * @param targetPlayer the targetPlayer to set
      */
     public void setTargetPlayer(String targetPlayer) {
-        this.targetPlayer = targetPlayer;
+        this.invalidateCache();
+        this.targetPlayer = TextService.text(targetPlayer);
     }
 
     /**
      * @return the material
      */
     public String getMaterial() {
-        return this.material;
+        return source(this.material);
     }
 
     /**
      * @param material the material to set
      */
     public void setMaterial(String material) {
-        this.material = material;
-        this.updatePlaceholder(material);
+        this.invalidateCache();
+        this.material = TextService.text(material);
     }
 
     /**
      * @return the amount
      */
     public String getAmount() {
-        return this.amount;
+        return source(this.amount);
     }
 
     /**
      * @param amount the amount to set
      */
     public void setAmount(String amount) {
-        this.amount = amount;
-        this.updatePlaceholder(amount);
+        this.invalidateCache();
+        this.amount = TextService.text(amount);
     }
 
     /**
@@ -557,28 +685,30 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
      */
     @Nullable
     public String getUrl() {
-        return this.url;
+        return source(this.url);
     }
 
     /**
      * @param url the url to set
      */
     public void setUrl(String url) {
-        this.url = url;
+        this.invalidateCache();
+        this.url = TextService.text(url);
     }
 
     /**
      * @return the data
      */
     public String getData() {
-        return this.data;
+        return source(this.data);
     }
 
     /**
      * @param data the data to set
      */
     public void setData(String data) {
-        this.data = data;
+        this.invalidateCache();
+        this.data = TextService.text(data);
     }
 
     /**
@@ -587,14 +717,14 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     public int getDurability() {
         int dura = 1;
         try {
-            dura = Integer.parseInt(this.durability);
+            dura = Integer.parseInt(source(this.durability));
         } catch (Exception ignored) {
         }
         return dura;
     }
 
     public String getDura() {
-        return this.durability;
+        return source(this.durability);
     }
 
     @Override
@@ -606,7 +736,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     public int parseDura(OfflinePlayer offlinePlayer, Placeholders placeholders) {
         int amount = 1;
         try {
-            amount = Integer.parseInt(this.papi(placeholders.parse(this.durability), offlinePlayer, true));
+            amount = Integer.parseInt(this.dataText(this.durability, placeholders, offlinePlayer));
         } catch (Exception ignored) {
         }
         return amount;
@@ -616,11 +746,13 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
      * @param durability the durability to set
      */
     public void setDurability(int durability) {
-        this.durability = Integer.toString(durability);
+        this.invalidateCache();
+        this.durability = TextService.text(Integer.toString(durability));
     }
 
     public void setDurability(String durability) {
-        this.durability = durability;
+        this.invalidateCache();
+        this.durability = TextService.text(durability);
     }
 
     /**
@@ -634,22 +766,31 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
      * @param potion the potion to set
      */
     public void setPotion(Potion potion) {
+        this.invalidateCache();
         this.potion = potion;
     }
 
     /**
      * @return the lore
      */
+    @Override
+    @Deprecated(since = "1.1.2.2")
     public List<String> getLore() {
-        return this.lore;
+        return TextService.sources(this.lore);
     }
 
     /**
      * @param lore the lore to set
      */
     public void setLore(List<String> lore) {
-        this.lore = lore;
-        lore.forEach(this::updatePlaceholder);
+        this.invalidateCache();
+        this.lore = TextService.compileItemLines(lore);
+    }
+
+    @Override
+    public void setLoreTemplate(@NotNull TemplateList lore) {
+        this.invalidateCache();
+        this.lore = lore.style(template -> TextService.itemLineStyle(template.source()));
     }
 
     /**
@@ -663,22 +804,31 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
      * @param flags the flags to set
      */
     public void setFlags(List<ItemFlag> flags) {
+        this.invalidateCache();
         this.flags = flags;
     }
 
     /**
      * @return the displayName
      */
+    @Override
+    @Deprecated(since = "1.1.2.2")
     public String getDisplayName() {
-        return this.displayName;
+        return this.getDisplayNameSource();
     }
 
     /**
      * @param displayName the displayName to set
      */
     public void setDisplayName(String displayName) {
-        this.displayName = displayName;
-        this.updatePlaceholder(displayName);
+        this.invalidateCache();
+        this.displayName = displayName == null ? null : TextService.compileItemLine(displayName);
+    }
+
+    @Override
+    public void setDisplayNameTemplate(@Nullable Template displayName) {
+        this.invalidateCache();
+        this.displayName = displayName == null ? null : displayName.style(TextService.itemLineStyle(displayName.source()));
     }
 
     /**
@@ -692,6 +842,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
      * @param isGlowing the isGlowing to set
      */
     public void setGlowing(boolean isGlowing) {
+        this.invalidateCache();
         this.isGlowing = isGlowing;
     }
 
@@ -709,6 +860,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
      * @param modelID the modelID to set
      */
     public void setModelID(String modelID) {
+        this.invalidateCache();
         if (modelID == null) {
             this.modelID = null;
             return;
@@ -718,13 +870,13 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
         } catch (NumberFormatException e) {
             this.modelID = ResolvableInt.of(modelID);
         }
-        this.updatePlaceholder(modelID);
     }
 
     /**
      * @param modelID the modelID to set
      */
     public void setModelID(int modelID) {
+        this.invalidateCache();
         this.modelID = ResolvableInt.of(modelID);
     }
 
@@ -739,6 +891,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
      * @param enchantments the enchantments to set
      */
     public void setEnchantments(Map<Enchantment, Integer> enchantments) {
+        this.invalidateCache();
         this.enchantments = enchantments;
     }
 
@@ -753,6 +906,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
      * @param attributes the attributes to set.
      */
     public void setAttributes(List<AttributeWrapper> attributes) {
+        this.invalidateCache();
         this.attributes = attributes;
     }
 
@@ -763,6 +917,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
 
     @Override
     public void setAttributeMergeStrategy(AttributeMergeStrategy attributeMergeStrategy) {
+        this.invalidateCache();
         this.attributeMergeStrategy = attributeMergeStrategy;
     }
 
@@ -777,6 +932,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
      * @param banner the banner to set
      */
     public void setBanner(Banner banner) {
+        this.invalidateCache();
         this.banner = banner;
     }
 
@@ -791,6 +947,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
      * @param firework the firework to set
      */
     public void setFirework(Firework firework) {
+        this.invalidateCache();
         this.firework = firework;
     }
 
@@ -805,6 +962,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
      * @param leatherArmor the leather armor to set
      */
     public void setLeatherArmor(LeatherArmor leatherArmor) {
+        this.invalidateCache();
         this.leatherArmor = leatherArmor;
     }
 
@@ -815,6 +973,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
 
     @Override
     public void setToolTipStyle(String toolTipStyle) {
+        this.invalidateCache();
         this.tooltipStyle = toolTipStyle;
     }
 
@@ -825,11 +984,11 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
 
     @Override
     public String getItemModelString() {
-        return this.itemModel;
+        return source(this.itemModel);
     }
 
     private NamespacedKey parseItemModel(@Nullable Player player, @NotNull Placeholders placeholders) {
-        String itemModel = this.papi(placeholders.parse(this.itemModel), player, true);
+        String itemModel = this.dataText(this.itemModel, placeholders, player);
         if (itemModel == null) {
             return null;
         }
@@ -847,12 +1006,14 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
 
     @Override
     public void setItemModel(NamespacedKey itemModel) {
-        this.itemModel = itemModel != null ? itemModel.toString() : null;
+        this.invalidateCache();
+        this.itemModel = TextService.text(itemModel != null ? itemModel.toString() : null);
     }
 
     @Override
     public void setItemModel(String itemModel) {
-        this.itemModel = itemModel;
+        this.invalidateCache();
+        this.itemModel = TextService.text(itemModel);
     }
 
     @Override
@@ -874,7 +1035,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     public int parseAmount(Player player, Placeholders placeholders) {
         int amount = 1;
         try {
-            amount = Integer.parseInt(this.papi(placeholders.parse(this.amount), player, true));
+            amount = Integer.parseInt(this.dataText(this.amount, placeholders, player));
         } catch (Exception ignored) {
         }
         return amount;
@@ -884,7 +1045,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     public int parseAmount(OfflinePlayer offlinePlayer, Placeholders placeholders) {
         int amount = 1;
         try {
-            amount = Integer.parseInt(this.papi(placeholders.parse(this.amount), offlinePlayer, true));
+            amount = Integer.parseInt(this.dataText(this.amount, placeholders, offlinePlayer));
         } catch (Exception ignored) {
         }
         return Math.clamp(amount, 1, 99);
@@ -897,40 +1058,62 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
 
     @Override
     public void setAmountType(AmountType amountType) {
+        this.invalidateCache();
         this.amountType = amountType;
     }
 
-    /**
-     * Let's know if the ItemStack needs a placeholder, if not then the ItemStack will be cached
-     *
-     * @param string - Current string
-     */
-    private void updatePlaceholder(String string) {
-        if (string == null || this.needPlaceholderAPI) return;
-        this.needPlaceholderAPI = string.contains("%");
-    }
-
+    @Override
+    @Deprecated(since = "1.1.2.2")
     public Map<String, String> getTranslatedDisplayName() {
-        return this.translatedDisplayName;
+        Map<String, String> names = new HashMap<>(this.translatedDisplayName.size());
+        this.translatedDisplayName.forEach((locale, name) -> names.put(locale, name.source()));
+        return names;
     }
 
     public void setTranslatedDisplayName(Map<String, String> translatedDisplayName) {
-        this.translatedDisplayName = translatedDisplayName;
+        this.invalidateCache();
+        Map<String, Template> names = new HashMap<>(translatedDisplayName.size());
+        translatedDisplayName.forEach((locale, name) -> {
+            if (name != null) {
+                names.put(locale, TextService.compileItemLine(name));
+            }
+        });
+        this.translatedDisplayName = names;
     }
 
+    @Override
+    @Deprecated(since = "1.1.2.2")
     public Map<String, List<String>> getTranslatedLore() {
-        return this.translatedLore;
+        Map<String, List<String>> lores = new HashMap<>(this.translatedLore.size());
+        this.translatedLore.forEach((locale, lore) -> lores.put(locale, TextService.sources(lore)));
+        return lores;
     }
 
     public void setTranslatedLore(Map<String, List<String>> translatedLore) {
-        this.translatedLore = translatedLore;
+        this.invalidateCache();
+        Map<String, TemplateList> lores = new HashMap<>(translatedLore.size());
+        translatedLore.forEach((locale, lore) -> lores.put(locale, TextService.compileItemLines(lore)));
+        this.translatedLore = lores;
     }
 
+    /**
+     * @deprecated use {@link #isStatic()}; true when the item is not static.
+     */
+    @Override
+    @Deprecated(since = "1.1.2.2")
     public boolean isNeedPlaceholderAPI() {
-        return this.needPlaceholderAPI;
+        return !this.isStatic();
     }
 
+    /**
+     * @param needPlaceholderAPI true to never keep the built item, whatever {@link #isStatic()} finds
+     * @deprecated the item finds whether it can be kept ({@link #isStatic()}); kept to force an item to be built each
+     * time.
+     */
+    @Override
+    @Deprecated(since = "1.1.2.2")
     public void setNeedPlaceholderAPI(boolean needPlaceholderAPI) {
+        this.invalidateCache();
         this.needPlaceholderAPI = needPlaceholderAPI;
     }
 
@@ -947,6 +1130,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     }
 
     public void setMaxStackSize(int maxStackSize) {
+        this.invalidateCache();
         this.maxStackSize = maxStackSize;
     }
 
@@ -955,6 +1139,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     }
 
     public void setMaxDamage(int maxDamage) {
+        this.invalidateCache();
         this.maxDamage = maxDamage;
     }
 
@@ -963,6 +1148,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     }
 
     public void setDamage(int damage) {
+        this.invalidateCache();
         this.damage = damage;
     }
 
@@ -971,6 +1157,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     }
 
     public void setRepairCost(int repairCost) {
+        this.invalidateCache();
         this.repairCost = repairCost;
     }
 
@@ -979,6 +1166,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     }
 
     public void setUnbreakableEnabled(Boolean unbreakableEnabled) {
+        this.invalidateCache();
         this.unbreakableEnabled = unbreakableEnabled;
     }
 
@@ -987,6 +1175,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     }
 
     public void setUnbreakableShowInTooltip(Boolean unbreakableShowInTooltip) {
+        this.invalidateCache();
         this.unbreakableShowInTooltip = unbreakableShowInTooltip;
     }
 
@@ -995,6 +1184,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     }
 
     public void setFireResistant(Boolean fireResistant) {
+        this.invalidateCache();
         this.fireResistant = fireResistant;
     }
 
@@ -1003,6 +1193,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     }
 
     public void setHideTooltip(Boolean hideTooltip) {
+        this.invalidateCache();
         this.hideTooltip = hideTooltip;
     }
 
@@ -1011,6 +1202,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     }
 
     public void setHideAdditionalTooltip(Boolean hideAdditionalTooltip) {
+        this.invalidateCache();
         this.hideAdditionalTooltip = hideAdditionalTooltip;
     }
 
@@ -1019,6 +1211,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     }
 
     public void setEnchantmentGlint(Boolean enchantmentGlint) {
+        this.invalidateCache();
         this.enchantmentGlint = enchantmentGlint;
     }
 
@@ -1027,6 +1220,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     }
 
     public void setEnchantmentShowInTooltip(Boolean enchantmentShowInTooltip) {
+        this.invalidateCache();
         this.enchantmentShowInTooltip = enchantmentShowInTooltip;
     }
 
@@ -1035,6 +1229,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     }
 
     public void setAttributeShowInTooltip(Boolean attributeShowInTooltip) {
+        this.invalidateCache();
         this.attributeShowInTooltip = attributeShowInTooltip;
     }
 
@@ -1043,6 +1238,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     }
 
     public void setItemRarity(MenuItemRarity itemRarity) {
+        this.invalidateCache();
         this.itemRarity = itemRarity;
     }
 
@@ -1051,6 +1247,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     }
 
     public void setTrimConfiguration(TrimConfiguration trimConfiguration) {
+        this.invalidateCache();
         this.trimConfiguration = trimConfiguration;
     }
 
@@ -1059,6 +1256,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     }
 
     public void setCenterLore(boolean centerLore) {
+        this.invalidateCache();
         this.centerLore = centerLore;
     }
 
@@ -1067,6 +1265,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     }
 
     public void setCenterName(boolean centerName) {
+        this.invalidateCache();
         this.centerName = centerName;
     }
 
@@ -1075,6 +1274,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     }
 
     public void setLoreType(LoreType loreType) {
+        this.invalidateCache();
         this.loreType = loreType;
     }
 
@@ -1085,6 +1285,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
 
     @Override
     public void setEquippedModel(String equippedModel) {
+        this.invalidateCache();
         this.equippedModel = equippedModel;
     }
 
@@ -1095,6 +1296,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
 
     @Override
     public void setClearDefaultAttributes(boolean clearDefaultAttributes) {
+        this.invalidateCache();
         this.clearDefaultAttributes = clearDefaultAttributes;
     }
 
@@ -1105,14 +1307,16 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
 
     @Override
     public void addItemComponent(@NotNull ItemComponent itemMetadata) {
+        this.invalidateCache();
         this.itemComponents.add(itemMetadata);
     }
 
     public boolean isDynamicMaterial() {
         if (this.material == null) return false;
-        if (this.material.contains("%")) return true;
-        if (this.material.contains(":")) {
-            String[] values = this.material.split(":", 2);
+        if (!this.material.isStatic()) return true;
+        String material = this.material.source();
+        if (material.contains(":")) {
+            String[] values = material.split(":", 2);
             if (values.length == 2) {
                 return this.findMaterialLoader(values[0]).isPresent();
             }
@@ -1128,10 +1332,10 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
     @Override
     public void serialize(@NotNull ConfigurationSection section) {
 
-        section.set("material", this.material);
+        section.set("material", source(this.material));
 
-        if (this.displayName != null) section.set("name", this.displayName);
-        if (!this.lore.isEmpty()) section.set("lore", this.lore);
+        if (this.displayName != null) section.set("name", this.displayName.source());
+        if (!this.lore.isEmpty()) section.set("lore", TextService.sources(this.lore));
         if (this.loreType != LoreType.REPLACE) section.set("lore-type", this.loreType.name());
         if (this.centerName) section.set("center-name", true);
         if (this.centerLore) section.set("center-lore", true);
@@ -1143,21 +1347,21 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
             section.set("model-id", modelId);
         }
         try {
-            if (Integer.parseInt(this.data) > 0) section.set("data", this.data);
+            if (Integer.parseInt(source(this.data)) > 0) section.set("data", source(this.data));
         } catch (Exception ignored) {
-            section.set("data", this.data);
+            section.set("data", source(this.data));
         }
-        if (this.durability != null) section.set("durability", this.durability);
-        if (this.amount != null && !this.amount.equals("1")) {
+        if (this.durability != null) section.set("durability", source(this.durability));
+        if (this.amount != null && !source(this.amount).equals("1")) {
             try {
-                section.set("amount", Integer.parseInt(this.amount));
+                section.set("amount", Integer.parseInt(source(this.amount)));
             } catch (NumberFormatException exception) {
-                section.set("amount", this.amount);
+                section.set("amount", source(this.amount));
             }
         }
         if (this.amountType != AmountType.SET) section.set("amount-type", this.amountType.name());
-        if (this.targetPlayer != null) section.set("target", this.targetPlayer);
-        if (this.url != null) section.set("url", this.url);
+        if (this.targetPlayer != null) section.set("target", source(this.targetPlayer));
+        if (this.url != null) section.set("url", source(this.url));
 
         if (this.potion != null) {
             Color potionColor = this.potion.getColor();
@@ -1262,19 +1466,19 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
         if (this.attributeShowInTooltip != null) section.set("attribute-show-in-tooltip", this.attributeShowInTooltip);
         if (this.itemRarity != null) section.set("item-rarity", this.itemRarity.name());
         if (this.tooltipStyle != null) section.set("tooltip-style", this.tooltipStyle);
-        if (this.itemModel != null) section.set("item-model", this.itemModel);
+        if (this.itemModel != null) section.set("item-model", source(this.itemModel));
         if (this.equippedModel != null) section.set("equipped-model", this.equippedModel);
     }
 
     private void serializeTranslations(ConfigurationSection section) {
         if (!this.translatedDisplayName.isEmpty()) {
             List<Map<String, Object>> names = new ArrayList<>(this.translatedDisplayName.size());
-            this.translatedDisplayName.forEach((locale, name) -> names.add(new LinkedHashMap<>(Map.of("locale", locale, "name", name))));
+            this.translatedDisplayName.forEach((locale, name) -> names.add(new LinkedHashMap<>(Map.of("locale", locale, "name", name.source()))));
             section.set("translated-name", names);
         }
         if (!this.translatedLore.isEmpty()) {
             List<Map<String, Object>> lores = new ArrayList<>(this.translatedLore.size());
-            this.translatedLore.forEach((locale, lore) -> lores.add(new LinkedHashMap<>(Map.of("locale", locale, "lore", lore))));
+            this.translatedLore.forEach((locale, lore) -> lores.add(new LinkedHashMap<>(Map.of("locale", locale, "lore", TextService.sources(lore)))));
             section.set("translated-lore", lores);
         }
     }

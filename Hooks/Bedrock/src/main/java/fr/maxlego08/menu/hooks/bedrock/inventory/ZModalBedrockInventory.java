@@ -4,6 +4,7 @@ import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.button.buttons.bedrock.components.BasicBedrockComponentButton;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.enums.bedrock.BedrockType;
+import fr.maxlego08.menu.api.text.TextService;
 import fr.maxlego08.menu.api.utils.MetaUpdater;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import org.bukkit.entity.Player;
@@ -25,9 +26,9 @@ public class ZModalBedrockInventory extends AbstractBedrockComponentInventory<Mo
         List<BasicBedrockComponentButton> buttons = this.filterByViewRequirement(this.bodyButtons, player, inventoryEngine, placeholders);
 
         return ModalForm.builder()
-                .content(this.getLegacyMessage(player, placeholders, this.content))
-                .button1(this.getLegacyMessage(player, placeholders, buttons.get(0).getText()))
-                .button2(this.getLegacyMessage(player, placeholders, buttons.get(1).getText()))
+                .content(TextService.legacy(this.contentTemplate, placeholders, player))
+                .button1(TextService.legacy(buttons.get(0).getTextTemplate(), placeholders, player))
+                .button2(TextService.legacy(buttons.get(1).getTextTemplate(), placeholders, player))
                 .validResultHandler((form, responseData) -> {
                     placeholders.register("content", form.content());
                     int id = responseData.clickedButtonId();

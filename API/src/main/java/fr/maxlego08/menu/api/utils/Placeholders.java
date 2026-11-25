@@ -1,6 +1,9 @@
 package fr.maxlego08.menu.api.utils;
 
 import com.google.common.base.Preconditions;
+import fr.maxlego08.menu.api.text.TextService;
+import fr.robie.minimessageflow.PlaceholderModifiers;
+import fr.robie.minimessageflow.Values;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -89,31 +92,97 @@ public final class Placeholders {
         LEGACY_PREFIXES.put("capitalize_", (v, a) -> v.isEmpty() ? v : v.substring(0, 1).toUpperCase(Locale.ROOT) + v.substring(1));
         LEGACY_PREFIXES.put("add_one_", MODIFIERS.get("add_one"));
         LEGACY_PREFIXES.put("remove_one_", MODIFIERS.get("remove_one"));
+        builtInsRegistered = true;
     }
+
+    /**
+     * False while the built-in modifiers are registered: MiniMessageFlow has its own versions of them, which follow
+     * the configured {@code number-style}.
+     */
+    private static boolean builtInsRegistered;
 
     private final Placeholders parent;
-    private final Map<String, String> placeholders;
-    private final Map<String, Function<String, String>> lookups = new ConcurrentHashMap<>();
+    /**
+     * This scope's values, a MiniMessageFlow layer over the parent's: what a template renders from.
+     */
+    private final Values values;
+    /**
+     * Values under names no template placeholder can have ({@code my key}, {@code a#b}): kept for
+     * {@link #parse(String)}, which reads any name between two {@code %}.
+     */
+    private final Map<String, String> extra = new ConcurrentHashMap<>();
+    private final Set<String> rawExtra = ConcurrentHashMap.newKeySet();
+    private volatile boolean any;
 
     public Placeholders() {
-        this(new ConcurrentHashMap<>(), null);
+        this((Placeholders) null);
     }
 
+    /**
+     * @param placeholders values copied into the new scope; later changes to the map are not seen
+     */
     public Placeholders(@NotNull Map<String, String> placeholders) {
-        this(placeholders, null);
-    }
-
-    private Placeholders(@NotNull Map<String, String> placeholders, @Nullable Placeholders parent) {
+        this((Placeholders) null);
         Preconditions.checkNotNull(placeholders, "placeholders cannot be null");
-        this.placeholders = placeholders;
-        this.parent = parent;
+        placeholders.forEach((key, value) -> this.register(key, value));
     }
 
+    private Placeholders(@Nullable Placeholders parent) {
+        this.parent = parent;
+        this.values = parent == null ? TextService.get().flow().newValues() : parent.values.child();
+    }
+
+    private Placeholders(@NotNull Values base) {
+        this.parent = null;
+        this.values = base.child();
+        this.any = true;
+    }
+
+    /**
+     * A scope over values an addon already holds: it reads them (and their parents) after its own, and what is
+     * registered in it stays in it, the given values are not changed. They must be made on {@link TextService#KEYS}
+     * ({@code TextService.get().flow().newValues()}, or {@link #values()} of another scope).
+     *
+     * @param values the values to read
+     * @return the scope
+     * @throws IllegalArgumentException when the values were made on other keys
+     */
+    @NotNull
+    public static Placeholders of(@NotNull Values values) {
+        Preconditions.checkNotNull(values, "values cannot be null");
+        Preconditions.checkArgument(values.keys() == TextService.KEYS, "the values must be made on TextService.KEYS");
+        return new Placeholders(values);
+    }
+
+    /**
+     * This scope's values as MiniMessageFlow {@link Values}, its parents' read after its own: a template renders
+     * from it directly ({@code template.render(placeholders.values(), player)}). A value registered with
+     * {@link #register} is formatted text, one registered with {@link #registerRaw} plain text; lookups are there too.
+     * Read it on the thread that owns this scope.
+     *
+     * @return the values
+     */
+    @NotNull
+    public Values values() {
+        return this.values;
+    }
+
+    /**
+     * Registers a modifier for {@link #parse(String)}, and in MiniMessageFlow for compiled templates. A template
+     * reads the modifiers known when it is compiled: register at load, before menus are loaded.
+     */
     public static void registerModifier(@NotNull String name, @NotNull Modifier modifier) {
         Preconditions.checkNotNull(name, "name cannot be null");
         Preconditions.checkArgument(!name.isBlank(), "name cannot be blank");
         Preconditions.checkNotNull(modifier, "modifier cannot be null");
         MODIFIERS.put(name.toLowerCase(Locale.ROOT), modifier);
+        if (builtInsRegistered) {
+            try {
+                PlaceholderModifiers.register(name, modifier::apply);
+            } catch (IllegalArgumentException reservedByMiniMessageFlow) {
+                return;
+            }
+        }
     }
 
     /**
@@ -122,7 +191,7 @@ public final class Placeholders {
      */
     @NotNull
     public Placeholders child() {
-        return new Placeholders(new ConcurrentHashMap<>(), this);
+        return new Placeholders(this);
     }
 
     /**
@@ -153,16 +222,37 @@ public final class Placeholders {
     @Nullable
     public String get(@NotNull String key) {
         Preconditions.checkNotNull(key, "key cannot be null");
+        String value = this.values.get(key);
+        if (value != null) return value;
         for (Placeholders scope = this; scope != null; scope = scope.parent) {
-            String value = scope.placeholders.get(key);
+            value = scope.extra.get(key);
             if (value != null) return value;
-            for (Map.Entry<String, Function<String, String>> lookup : scope.lookups.entrySet()) {
-                if (!key.startsWith(lookup.getKey())) continue;
-                String found = lookup.getValue().apply(key.substring(lookup.getKey().length()));
-                if (found != null) return found;
-            }
         }
         return null;
+    }
+
+    /**
+     * @return whether the value of a key, as {@link #get(String)} finds it, was registered with
+     * {@link #registerRaw} (or set as plain text in {@link #values()})
+     */
+    public boolean isRaw(@NotNull String key) {
+        Preconditions.checkNotNull(key, "key cannot be null");
+        int index = TextService.KEYS.indexOf(key);
+        if (index >= 0) {
+            Values layer = this.values.holder(index);
+            if (layer != null) {
+                return layer.raw(index) instanceof String && !layer.isFormatted(index);
+            }
+        }
+        for (Placeholders scope = this; scope != null; scope = scope.parent) {
+            if (scope.extra.containsKey(key)) return scope.rawExtra.contains(key);
+        }
+        for (Values layer = this.values; layer != null; layer = layer.parent()) {
+            for (int i = 0; i < layer.lookupCount(); i++) {
+                if (key.startsWith(layer.lookupPrefix(i))) return !layer.isLookupFormatted(i);
+            }
+        }
+        return false;
     }
 
     /**
@@ -175,7 +265,26 @@ public final class Placeholders {
     public void registerLookup(@NotNull String prefix, @NotNull Function<String, String> lookup) {
         Preconditions.checkNotNull(prefix, "prefix cannot be null");
         Preconditions.checkNotNull(lookup, "lookup cannot be null");
-        this.lookups.put(prefix, lookup);
+        synchronized (this) {
+            this.values.lookupFormatted(prefix, lookup);
+            this.any = true;
+        }
+    }
+
+    /**
+     * As {@link #registerLookup}, for values that may hold text a player typed: they are placed as written, as with
+     * {@link #registerRaw}.
+     *
+     * @param prefix The prefix, such as {@code canvas_}.
+     * @param lookup Gives the value of the rest of the key, or null to leave the placeholder as written.
+     */
+    public void registerRawLookup(@NotNull String prefix, @NotNull Function<String, String> lookup) {
+        Preconditions.checkNotNull(prefix, "prefix cannot be null");
+        Preconditions.checkNotNull(lookup, "lookup cannot be null");
+        synchronized (this) {
+            this.values.lookup(prefix, lookup);
+            this.any = true;
+        }
     }
 
     /**
@@ -199,8 +308,9 @@ public final class Placeholders {
 
         Map<String, String> result = new LinkedHashMap<>();
         for (int i = chain.size() - 1; i >= 0; i--) {
-            result.putAll(chain.get(i).placeholders);
+            result.putAll(chain.get(i).extra);
         }
+        result.putAll(this.values.flatten());
         return result;
     }
 
@@ -225,19 +335,56 @@ public final class Placeholders {
             case PARENT -> this.parent != null ? this.parent : this;
             case ROOT -> this.getRoot();
         };
-        target.placeholders.put(key, value == null ? "" : value);
+        target.put(key, value == null ? "" : value, true);
     }
 
     /**
-     * @return the live map of this scope when it has no parent (same as before), otherwise a snapshot of
-     * everything visible from this scope, see {@link #flatten()}.
-     * @deprecated exposes the internal map. Use {@link #register(String, String)}, {@link #get(String)},
-     * {@link #flatten()} and {@link #merge(Placeholders)} instead.
+     * Registers text a player typed (an anvil, a dialog input, a command argument) in the current scope: shown
+     * exactly as written in a compiled template, never read as colour codes, MiniMessage tags or placeholders, so a
+     * player cannot colour a menu or add a click to it. Modifiers still apply ({@code %new_text.max:16%}).
+     * {@link #parse(String)} writes it with its {@code %} hidden from PlaceholderAPI (as {@code U+F000}, which
+     * zMenu's PlaceholderAPI pass and {@code MenuPlugin#parse} turn back into {@code %}), so a command or a message
+     * built as text cannot run a placeholder the player typed. A null key is ignored and a null value is stored as an
+     * empty string.
+     */
+    public void registerRaw(@Nullable String key, @Nullable String value) {
+        if (key == null) return;
+        this.put(key, value == null ? "" : value, false);
+    }
+
+    /**
+     * Sets a value in this scope: in {@link #values} when a template can name the key (formatted text, or plain text
+     * for player input), else in the side map {@link #parse(String)} also reads.
+     */
+    private synchronized void put(@NotNull String key, @NotNull String value, boolean formatted) {
+        try {
+            if (formatted) {
+                this.values.setFormatted(key, value);
+            } else {
+                this.values.set(key, value);
+            }
+        } catch (IllegalArgumentException notAPlaceholderName) {
+            this.extra.put(key, value);
+            if (formatted) {
+                this.rawExtra.remove(key);
+            } else {
+                this.rawExtra.add(key);
+            }
+        }
+        this.any = true;
+    }
+
+    /**
+     * @return a snapshot of everything visible from this scope, see {@link #flatten()}. Changing it changes no
+     * scope.
+     * @deprecated exposed the internal map, which no longer exists (the values are kept in {@link #values()}).
+     * Use {@link #register(String, String)}, {@link #get(String)}, {@link #flatten()} and
+     * {@link #merge(Placeholders)} instead.
      */
     @Deprecated
     @NotNull
     public Map<String, String> placeholders() {
-        return this.parent == null ? this.placeholders : this.flatten();
+        return this.flatten();
     }
 
     @NotNull
@@ -254,7 +401,15 @@ public final class Placeholders {
     public String parse(@NotNull String string) {
         Preconditions.checkNotNull(string, "string cannot be null");
         if (string.indexOf('%') < 0 || !this.hasAny()) return string;
-        return parseInternal(string, this::get);
+        return parseInternal(string, this::textValue);
+    }
+
+    /**
+     * A value as {@link #parse(String)} writes it: a raw value's {@code %} hidden from PlaceholderAPI.
+     */
+    private @Nullable String textValue(@NotNull String key) {
+        String value = this.get(key);
+        return value != null && value.indexOf('%') >= 0 && this.isRaw(key) ? value.replace('%', '\uF000') : value;
     }
 
     /**
@@ -273,14 +428,15 @@ public final class Placeholders {
     }
 
     /** Copies the placeholders registered in {@code placeholders} (that scope only, not its parents) into this scope. */
-    public void merge(@NotNull Placeholders placeholders) {
-        this.placeholders.putAll(placeholders.placeholders);
-        this.lookups.putAll(placeholders.lookups);
+    public synchronized void merge(@NotNull Placeholders placeholders) {
+        this.values.merge(placeholders.values);
+        placeholders.extra.forEach((key, value) -> this.put(key, value, !placeholders.rawExtra.contains(key)));
+        this.any |= placeholders.any;
     }
 
     private boolean hasAny() {
         for (Placeholders scope = this; scope != null; scope = scope.parent) {
-            if (!scope.placeholders.isEmpty() || !scope.lookups.isEmpty()) return true;
+            if (scope.any) return true;
         }
         return false;
     }

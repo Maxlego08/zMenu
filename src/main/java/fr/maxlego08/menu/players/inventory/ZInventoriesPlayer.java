@@ -173,7 +173,7 @@ public class ZInventoriesPlayer implements InventoriesPlayer {
             if (exception instanceof InterruptedException) Thread.currentThread().interrupt();
             Logger.error("Unable to load the saved inventory of " + event.getName() + " (" + uniqueId + ")", exception);
             String message = Message.PLAYERS_DATA_LOAD_ERROR.getMessage();
-            Component reason = this.plugin.getMetaUpdater() instanceof PaperMetaUpdater paperMetaUpdater ? paperMetaUpdater.getComponent(message) : Component.text(message);
+            Component reason = ((PaperMetaUpdater) this.plugin.getMetaUpdater()).getComponent(message);
             event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, reason);
         }
     }

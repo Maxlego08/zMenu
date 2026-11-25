@@ -27,7 +27,7 @@ public class BedrockDynamicInputButtonLoader extends BedrockDynamicAbstractLoade
     protected @Nullable Button wrap(Button button, String buttonName, String start, String end) {
         if (button instanceof BedrockInputButton inputButton && !button.hasSpecialRender()) {
             inputButton.setKey(buttonName);
-            return new BedrockDynamicInputButton(this.plugin, buttonName, start, end, inputButton);
+            return new BedrockDynamicInputButton(buttonName, start, end, inputButton);
         }
         return null;
     }

@@ -29,6 +29,7 @@ tasks {
         relocate("fr.maxlego08.sarah", "fr.maxlego08.menu.hooks.sarah")
         relocate("net.objecthunter.exp4j", "fr.maxlego08.menu.hooks.exp4j")
         relocate("fr.robie.paperdispatch", "fr.maxlego08.menu.hooks.paperdispatch")
+        relocate("fr.robie.minimessageflow", "fr.maxlego08.menu.hooks.minimessageflow")
 
         destinationDirectory.set(rootProject.extra["apiFolder"] as File)
     }

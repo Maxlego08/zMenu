@@ -5,6 +5,8 @@ import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.common.utils.ActionHelper;
 import org.bukkit.entity.Player;
+import fr.robie.minimessageflow.TemplateList;
+import net.kyori.adventure.text.Component;
 import org.jspecify.annotations.NonNull;
 
 import java.util.List;
@@ -14,21 +16,23 @@ public class MessageAction extends ActionHelper {
 
     private final List<String> messages;
     private final boolean miniMessage;
+    private final transient TemplateList templates;
 
     public MessageAction(List<String> messages, boolean miniMessage) {
         this.messages = messages;
         this.miniMessage = miniMessage;
+        this.templates = miniMessage ? compile(messages) : null;
     }
 
     @Override
     protected void execute(@NonNull Player player, Button button, @NonNull InventoryEngine inventory, @NonNull Placeholders placeholders) {
-        this.parseAndFlattenCommands(this.papi(placeholders.parse(this.messages), player), player).forEach(message -> {
-            if (this.miniMessage) {
-                inventory.getPlugin().getMetaUpdater().sendMessage(player, message);
-            } else {
+        if (this.miniMessage) {
+            for (Component message : this.templates.render(placeholders.values(), player)) {
                 player.sendMessage(message);
             }
-        });
+            return;
+        }
+        this.parseAndFlattenCommands(this.papi(placeholders.parse(this.messages), player), player).forEach(player::sendMessage);
 
     }
 

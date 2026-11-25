@@ -1,19 +1,14 @@
 package fr.maxlego08.menu.inventory.inventories;
 
 import com.tcoded.folialib.wrapper.task.WrappedTask;
-import fr.maxlego08.menu.api.Inventory;
-import fr.maxlego08.menu.api.MenuItemStack;
 import fr.maxlego08.menu.animation.compile.AnimationCompiler;
 import fr.maxlego08.menu.animation.compile.AnimationStep;
 import fr.maxlego08.menu.animation.compile.CompiledAnimation;
 import fr.maxlego08.menu.animation.compile.StepAction;
+import fr.maxlego08.menu.api.Inventory;
+import fr.maxlego08.menu.api.MenuItemStack;
 import fr.maxlego08.menu.api.MenuPlugin;
-import fr.maxlego08.menu.api.animation.slot.Animation;
-import fr.maxlego08.menu.api.animation.slot.AnimationContext;
-import fr.maxlego08.menu.api.animation.slot.AnimationHistory;
-import fr.maxlego08.menu.api.animation.slot.AnimationPlayMode;
-import fr.maxlego08.menu.api.animation.slot.AnimationPlayback;
-import fr.maxlego08.menu.api.animation.slot.AnimationSlots;
+import fr.maxlego08.menu.api.animation.slot.*;
 import fr.maxlego08.menu.api.animation.slot.settings.AnimationVariant;
 import fr.maxlego08.menu.api.animation.slot.settings.ButtonAnimationSettings;
 import fr.maxlego08.menu.api.animation.slot.settings.SlotAnimationGroup;
@@ -35,10 +30,17 @@ import fr.maxlego08.menu.api.pattern.Pattern;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.RefreshRequirement;
 import fr.maxlego08.menu.api.requirement.Requirement;
+import fr.maxlego08.menu.api.text.TextService;
+import fr.maxlego08.menu.api.utils.PaperMetaUpdater;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.inventory.VInventory;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.utils.PerformanceDebug;
+import fr.robie.minimessageflow.Template;
+import fr.robie.minimessageflow.TemplateList;
+import fr.robie.minimessageflow.TextTemplate;
+import fr.robie.minimessageflow.Values;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.*;
@@ -56,6 +58,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
  * @author Maxlego08
@@ -63,6 +66,13 @@ import java.util.function.Consumer;
 public class InventoryDefault extends VInventory implements InventoryEngine {
 
     private final Map<Integer, WrappedTask> timers = new ConcurrentHashMap<>();
+    private final Map<Integer, RenderedMeta> renderedMetas = new ConcurrentHashMap<>();
+    private static final ClassValue<Boolean> BUILDS_CONFIGURED_TEXT = new ClassValue<>() {
+        @Override
+        protected Boolean computeValue(@NotNull Class<?> type) {
+            return buildsConfiguredText(type);
+        }
+    };
     private final Map<Integer, Button> buttonsByAnimationSlot = new ConcurrentHashMap<>();
     private final Set<Integer> slotsOwnedByAnimation = ConcurrentHashMap.newKeySet();
     private final Map<Integer, WrappedTask> idleTasksBySlot = new ConcurrentHashMap<>();
@@ -157,20 +167,20 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
             this.perfDebug.end();
 
             this.perfDebug.start("openInventory.resolveInventoryName");
-            String inventoryName = this.plugin.getFontImage().replace(this.inventory.getName(player, this, placeholders));
+            Template inventoryName = this.inventory.getNameTemplate(player, this, placeholders);
             Player targetPlayer = this.getTargetPlayer();
-            this.perfDebug.end();
-
-            this.perfDebug.start("openInventory.papiInventoryName");
-            String parsedName = super.papi(placeholders.parse(inventoryName), targetPlayer, false);
             this.perfDebug.end();
 
             if (this.inventory instanceof ContainerInventory containerInventory) {
                 this.perfDebug.start("openInventory.createMetaInventory");
-                if (containerInventory.getType() == InventoryType.CHEST && containerInventory instanceof ChestInventory chestInventory) {
-                    super.createMetaInventory(parsedName, chestInventory.size());
+                boolean chest = containerInventory.getType() == InventoryType.CHEST && containerInventory instanceof ChestInventory;
+                int size = chest ? ((ChestInventory) containerInventory).size() : 0;
+                Component title = inventoryName.render(placeholders.values(), targetPlayer);
+                Supplier<String> name = () -> TextService.get().flow().formatText(inventoryName.source(), placeholders.values(), targetPlayer);
+                if (chest) {
+                    super.createMetaInventory(title, name, size);
                 } else {
-                    super.createMetaInventory(parsedName, containerInventory.getType());
+                    super.createMetaInventory(title, name, containerInventory.getType());
                 }
                 this.perfDebug.end();
 
@@ -1251,6 +1261,7 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
 
     @Override
     public void cancel(int slot) {
+        this.renderedMetas.remove(slot);
         WrappedTask task = this.timers.remove(slot);
         if (task != null) {
             task.cancel();
@@ -1297,7 +1308,7 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
     }
 
     private void updateItemMeta(ItemStack itemStack, Button button, RefreshRequirement refreshRequirement, int slot, @NotNull Placeholders placeholders) {
-        boolean updated = this.applyMetaUpdates(button, itemStack, refreshRequirement.isRefreshLore(), refreshRequirement.isRefreshName());
+        boolean updated = this.applyMetaUpdates(button, itemStack, refreshRequirement.isRefreshLore(), refreshRequirement.isRefreshName(), slot, placeholders);
         if (!updated) {
             return;
         }
@@ -1318,14 +1329,14 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
             return;
         }
 
-        if (!this.applyMetaUpdates(button, itemStack, true, true)) {
+        if (!this.applyMetaUpdates(button, itemStack, true, true, slot, placeholders)) {
             return;
         }
 
         this.getInventory().setItem(slot, itemStack);
     }
 
-    private boolean applyMetaUpdates(Button button, ItemStack itemStack, boolean refreshLore, boolean refreshName) {
+    private boolean applyMetaUpdates(Button button, ItemStack itemStack, boolean refreshLore, boolean refreshName, int slot, @NotNull Placeholders placeholders) {
         ItemMeta itemMeta = itemStack.getItemMeta();
         if (itemMeta == null) {
             return false;
@@ -1334,6 +1345,11 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
         final Player targetPlayer = this.getTargetPlayer();
         if (targetPlayer == null) {
             return false;
+        }
+
+        if (targetPlayer == this.player && button.getItemStack() instanceof MenuItemStack menuItemStack && BUILDS_CONFIGURED_TEXT.get(button.getClass())) {
+            return this.renderMetaUpdates(menuItemStack, (PaperMetaUpdater) this.plugin.getMetaUpdater(), itemStack, itemMeta, refreshLore, refreshName, slot,
+                    placeholders);
         }
 
         if (refreshLore) {
@@ -1354,6 +1370,79 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
         return true;
     }
 
+    /**
+     * Refreshes an item's name and lore from its compiled templates. The values remember their renders, so a render
+     * with the same values gives the same components: when both are the slot's last ones, nothing is sent.
+     *
+     * @return whether the item changed and must be set again
+     */
+    private boolean renderMetaUpdates(MenuItemStack menuItemStack, PaperMetaUpdater metaUpdater, ItemStack itemStack, ItemMeta itemMeta,
+                                      boolean refreshLore, boolean refreshName, int slot, Placeholders placeholders) {
+        Values values = placeholders.values();
+        if (!values.remembersRenders()) {
+            values.rememberRenders(true);
+        }
+
+        String locale = this.findPlayerLocale(this.player);
+        Template nameTemplate = refreshName ? menuItemStack.getDisplayNameTemplate(locale) : null;
+        TemplateList loreTemplate = refreshLore ? menuItemStack.getLoreTemplate(locale) : TemplateList.of(List.of());
+        Component name = nameTemplate != null ? nameTemplate.render(values, this.player) : null;
+        List<Component> lore = !loreTemplate.isEmpty() ? loreTemplate.render(values, this.player) : null;
+
+        RenderedMeta last = this.renderedMetas.get(slot);
+        if (last != null && last.same(name, lore)) {
+            return false;
+        }
+        this.renderedMetas.put(slot, new RenderedMeta(name, lore));
+
+        if (name != null) {
+            metaUpdater.updateDisplayName(itemMeta, name);
+        }
+        if (lore != null) {
+            metaUpdater.updateLoreComponents(itemMeta, lore, menuItemStack.getLoreType());
+        }
+        itemStack.setItemMeta(itemMeta);
+        return true;
+    }
+
+    /**
+     * Whether a button class keeps {@link Button#buildLore} and {@link Button#buildDisplayName}: its item's own text is
+     * then what a refresh shows, and its compiled templates can render it.
+     */
+    private static boolean buildsConfiguredText(Class<?> type) {
+        try {
+            return type.getMethod("buildLore", Player.class).getDeclaringClass() == Button.class
+                    && type.getMethod("buildDisplayName", Player.class).getDeclaringClass() == Button.class;
+        } catch (NoSuchMethodException exception) {
+            return false;
+        }
+    }
+
+    /**
+     * The name and lore a refresh last gave a slot, compared by identity.
+     */
+    private record RenderedMeta(@Nullable Component name, @Nullable List<Component> lore) {
+
+        boolean same(@Nullable Component name, @Nullable List<Component> lore) {
+            return this.name == name && sameElements(this.lore, lore);
+        }
+
+        private static boolean sameElements(@Nullable List<Component> first, @Nullable List<Component> second) {
+            if (first == second) {
+                return true;
+            }
+            if (first == null || second == null || first.size() != second.size()) {
+                return false;
+            }
+            for (int index = 0; index < first.size(); index++) {
+                if (first.get(index) != second.get(index)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+    }
+
     private List<Inventory> extractOldInventories(Object[] args) {
         if (args.length < 2 || !(args[1] instanceof List<?> inventories)) {
             return new ArrayList<>();
@@ -1367,11 +1456,11 @@ public class InventoryDefault extends VInventory implements InventoryEngine {
         if (this.inventory == null || this.player == null) {
             return this.player;
         }
-        String targetPlaceholder = this.inventory.getTargetPlayerNamePlaceholder();
-        if (targetPlaceholder == null || targetPlaceholder.isEmpty()) {
+        TextTemplate targetPlaceholder = this.inventory.getTargetPlayerNameTemplate();
+        if (targetPlaceholder == null || targetPlaceholder.source().isEmpty()) {
             return this.player;
         }
-        String targetName = this.papi(targetPlaceholder, this.player, false);
+        String targetName = targetPlaceholder.render(this.openPlaceholders.values(), this.player);
         if (targetName == null || targetName.isEmpty()) {
             return this.player;
         }

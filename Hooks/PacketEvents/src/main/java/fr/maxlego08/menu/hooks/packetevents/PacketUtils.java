@@ -126,9 +126,6 @@ public class PacketUtils implements PacketManager {
 
     @Override
     public void editInventoryTitleName(@NotNull Player player, @NotNull String title) {
-        if (this.plugin.getMetaUpdater() instanceof PaperMetaUpdater paperMetaUpdater) {
-            Component component = paperMetaUpdater.getComponent(title);
-            this.editInventoryTitleName(player, component);
-        }
+        this.editInventoryTitleName(player, ((PaperMetaUpdater) this.plugin.getMetaUpdater()).getComponent(title));
     }
 }

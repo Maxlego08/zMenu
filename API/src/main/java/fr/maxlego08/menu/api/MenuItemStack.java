@@ -10,6 +10,8 @@ import fr.maxlego08.menu.api.itemstack.*;
 import fr.maxlego08.menu.api.utils.LoreType;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.api.utils.SectionSerializable;
+import fr.robie.minimessageflow.Template;
+import fr.robie.minimessageflow.TemplateList;
 import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.OfflinePlayer;
@@ -18,7 +20,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -244,6 +248,30 @@ public interface MenuItemStack extends MenuItemStackContext, SectionSerializable
      * @param translatedLore the map of locale to lore lines.
      */
     void setTranslatedLore(Map<String, List<String>> translatedLore);
+
+    /**
+     * Sets the display name from a template compiled elsewhere. The item keeps its source as the name written (saved,
+     * and given by {@link #getDisplayName()}); font images are not applied to it. zMenu gives it its item style (not
+     * italic unless the text asks for it).
+     *
+     * @param displayName the name, or null to remove it
+     */
+    default void setDisplayNameTemplate(@Nullable Template displayName) {
+        this.setDisplayName(displayName == null ? null : displayName.source());
+    }
+
+    /**
+     * Sets the lore from templates compiled elsewhere, as {@link #setDisplayNameTemplate} does for the name.
+     *
+     * @param lore the lore lines
+     */
+    default void setLoreTemplate(@NotNull TemplateList lore) {
+        List<String> lines = new ArrayList<>(lore.size());
+        for (Template template : lore.templates()) {
+            lines.add(template.source());
+        }
+        this.setLore(lines);
+    }
 
     /**
      * Marks whether PlaceholderAPI is required for this item stack.

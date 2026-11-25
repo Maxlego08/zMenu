@@ -13,9 +13,13 @@ import fr.maxlego08.menu.api.inventory.dialog.DialogInventory;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.ConditionalName;
 import fr.maxlego08.menu.api.requirement.Requirement;
+import fr.maxlego08.menu.api.text.TextService;
 import fr.maxlego08.menu.api.utils.*;
 import fr.maxlego08.menu.api.utils.record.dialogs.ActionButtonRecord;
 import fr.maxlego08.menu.api.utils.record.dialogs.ZDialogInventoryBuild;
+import fr.robie.minimessageflow.Placeholder;
+import fr.robie.minimessageflow.Template;
+import fr.robie.minimessageflow.TextTemplate;
 import io.papermc.paper.registry.data.dialog.DialogBase;
 import io.papermc.paper.registry.data.dialog.body.DialogBody;
 import io.papermc.paper.registry.data.dialog.input.DialogInput;
@@ -35,8 +39,10 @@ public abstract class AbstractDialogInventory implements DialogInventory {
     private InventoryReplacement inventoryReplacement;
     private DialogFallback fallbackInventory;
 
-    private final String name;
-    private final String externalTitle;
+    private final Template name;
+    private final TextTemplate nameText;
+    private final Template externalTitle;
+    private final TextTemplate externalTitleText;
     private boolean canCloseWithEscape = true;
     private boolean pause = false;
     private String afterAction = "CLOSE";
@@ -45,20 +51,22 @@ public abstract class AbstractDialogInventory implements DialogInventory {
     private List<InputButton> inputButtons = new ArrayList<>();
 
     private final List<ConditionalName> conditionalNames = new ArrayList<>();
-    private String targetPlayerNamePlaceholder;
+    private @Nullable TextTemplate targetPlayerName;
     private Requirement openRequirement;
 
     public AbstractDialogInventory(@NotNull MenuPlugin plugin, @NotNull String name, @NotNull String fileName, @NotNull String externalTitle, DialogType dialogType) {
         this.menuPlugin = plugin;
-        this.name = name;
+        this.name = TextService.get().flow().compile(name);
+        this.nameText = TextService.get().flow().compileText(name);
         this.fileName = fileName.endsWith(".yml") ? fileName.replace(".yml", "") : fileName;
-        this.externalTitle = externalTitle;
+        this.externalTitle = TextService.get().flow().compile(externalTitle);
+        this.externalTitleText = TextService.get().flow().compileText(externalTitle);
         this.dialogType = dialogType;
     }
 
     @Override
     public String getName() {
-        return this.name;
+        return this.name.source();
     }
 
     @Override
@@ -71,7 +79,7 @@ public abstract class AbstractDialogInventory implements DialogInventory {
                 return conditionalName.name();
             }
         }
-        return this.menuPlugin.parse(player, this.name);
+        return this.nameText.render(placeholders.values(), player);
     }
 
     @Override
@@ -114,7 +122,7 @@ public abstract class AbstractDialogInventory implements DialogInventory {
     }
     @Override
     public @NonNull String getExternalTitle() {
-        return this.externalTitle;
+        return this.externalTitle.source();
     }
 
     @Override
@@ -154,10 +162,11 @@ public abstract class AbstractDialogInventory implements DialogInventory {
     }
 
     @Override
+    @Deprecated(since = "1.1.2.2", forRemoval = true)
     public ZDialogInventoryBuild getBuild(Player player) {
         return new ZDialogInventoryBuild(
-                this.menuPlugin.parse(player, this.name),
-                this.menuPlugin.parse(player, this.externalTitle), this.canCloseWithEscape
+                this.nameText.render(Placeholder.empty(), player),
+                this.externalTitleText.render(Placeholder.empty(), player), this.canCloseWithEscape
         );
     }
 
@@ -193,8 +202,13 @@ public abstract class AbstractDialogInventory implements DialogInventory {
     }
 
     @Override
+    public @Nullable TextTemplate getTargetPlayerNameTemplate() {
+        return this.targetPlayerName;
+    }
+
+    @Override
     public String getTargetPlayerNamePlaceholder() {
-        return this.targetPlayerNamePlaceholder;
+        return TextService.source(this.targetPlayerName);
     }
 
     @Override
@@ -251,7 +265,7 @@ public abstract class AbstractDialogInventory implements DialogInventory {
     }
 
     public void setTargetPlayerNamePlaceholder(String targetPlaceholder) {
-        this.targetPlayerNamePlaceholder = targetPlaceholder;
+        this.targetPlayerName = TextService.text(targetPlaceholder);
     }
 
     @Override
@@ -306,10 +320,11 @@ public abstract class AbstractDialogInventory implements DialogInventory {
         }
     }
 
-    protected DialogBase createDialogBase(@NotNull PaperMetaUpdater paperComponent, @NotNull Player player, @NotNull List<DialogBody> dialogBodies, @NotNull List<DialogInput> dialogInputs) {
-        DialogBase.Builder builder = DialogBase.builder(paperComponent.getComponent(this.menuPlugin.parse(player, this.name)));
-        if (!this.externalTitle.isEmpty()) {
-            builder.externalTitle(paperComponent.getComponent(this.menuPlugin.parse(player, this.externalTitle)));
+    protected DialogBase createDialogBase(@NotNull Player player, @NotNull List<DialogBody> dialogBodies,
+                                          @NotNull List<DialogInput> dialogInputs, @NotNull Placeholders placeholders) {
+        DialogBase.Builder builder = DialogBase.builder(this.name.render(placeholders.values(), player));
+        if (!this.externalTitle.source().isEmpty()) {
+            builder.externalTitle(this.externalTitle.render(placeholders.values(), player));
         }
         builder.canCloseWithEscape(this.canCloseWithEscape);
         builder.pause(this.pause);
@@ -321,10 +336,6 @@ public abstract class AbstractDialogInventory implements DialogInventory {
         builder.body(dialogBodies);
         builder.inputs(dialogInputs);
         return builder.build();
-    }
-
-    protected @NotNull List<DialogBody> getDialogBodiesForPlayer(@NotNull Player player, @NotNull PaperMetaUpdater componentMeta) {
-        return this.getDialogBodiesForPlayer(player, componentMeta, new Placeholders());
     }
 
     /**
@@ -339,10 +350,6 @@ public abstract class AbstractDialogInventory implements DialogInventory {
         );
     }
 
-    protected @NotNull List<DialogInput> getDialogInputsForPlayer(@NotNull Player player, @NotNull PaperMetaUpdater componentMeta) {
-        return this.getDialogInputsForPlayer(player, componentMeta, new Placeholders());
-    }
-
     /**
      * @param placeholders The placeholders of this opening, shared with the footer buttons.
      */
@@ -353,14 +360,6 @@ public abstract class AbstractDialogInventory implements DialogInventory {
                 componentMeta,
                 placeholders
         );
-    }
-
-    protected <B extends DialogButton<T>, T> List<T> buildDialogs(
-            Player player,
-            List<B> buttons,
-            @NotNull PaperMetaUpdater paperMetaUpdater
-            ) {
-        return this.buildDialogs(player, buttons, paperMetaUpdater, new Placeholders());
     }
 
     protected <B extends DialogButton<T>, T> List<T> buildDialogs(

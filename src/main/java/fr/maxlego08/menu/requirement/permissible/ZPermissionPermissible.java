@@ -4,8 +4,10 @@ import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.permissible.PermissionPermissible;
+import fr.maxlego08.menu.api.text.TextService;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.zcore.logger.Logger;
+import fr.robie.minimessageflow.TextTemplate;
 import org.bukkit.entity.Player;
 import org.jspecify.annotations.NonNull;
 
@@ -19,13 +21,13 @@ import java.util.Map;
  */
 public class ZPermissionPermissible extends PermissionPermissible {
 
-    private final String permission;
     private final boolean isReverse;
+    private final TextTemplate permission;
 
     public ZPermissionPermissible(String permission, List<Action> denyActions, List<Action> successActions) {
         super(denyActions, successActions);
         String[] processedPermission = this.processPermission(permission);
-        this.permission = processedPermission[0];
+        this.permission = TextService.text(processedPermission[0]);
         this.isReverse = Boolean.parseBoolean(processedPermission[1]);
     }
 
@@ -37,7 +39,7 @@ public class ZPermissionPermissible extends PermissionPermissible {
     public ZPermissionPermissible(String permission) {
         super(new ArrayList<>(), new ArrayList<>());
         String[] processedPermission = this.processPermission(permission);
-        this.permission = processedPermission[0];
+        this.permission = TextService.text(processedPermission[0]);
         this.isReverse = Boolean.parseBoolean(processedPermission[1]);
     }
 
@@ -49,7 +51,7 @@ public class ZPermissionPermissible extends PermissionPermissible {
 
     @Override
     public boolean hasPermission(@NonNull Player player, Button button, @NonNull InventoryEngine inventory, @NonNull Placeholders placeholders) {
-        return this.isReverse != player.hasPermission(inventory.getPlugin().parse(player, placeholders.parse(this.permission)));
+        return this.isReverse != player.hasPermission(TextService.render(this.permission, placeholders, player));
     }
 
     /**
@@ -70,7 +72,7 @@ public class ZPermissionPermissible extends PermissionPermissible {
      */
     @Override
     public @NonNull String getPermission() {
-        return this.permission;
+        return TextService.source(this.permission);
     }
 
     /**
@@ -86,7 +88,7 @@ public class ZPermissionPermissible extends PermissionPermissible {
     @Override
     protected void serializeProperties(@NonNull Map<String, Object> map) {
         map.put("type", "permission");
-        map.put("permission", this.isReverse ? "!" + this.permission : this.permission);
+        map.put("permission", this.isReverse ? "!" + TextService.source(this.permission) : TextService.source(this.permission));
     }
 
 }

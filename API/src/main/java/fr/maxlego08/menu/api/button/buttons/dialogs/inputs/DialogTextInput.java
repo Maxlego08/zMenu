@@ -5,9 +5,12 @@ import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.context.DialogRenderContext;
 import fr.maxlego08.menu.api.enums.dialog.DialogInputType;
 import fr.maxlego08.menu.api.inventory.dialog.DialogInventory;
+import fr.maxlego08.menu.api.text.TextService;
 import fr.maxlego08.menu.api.utils.PaperMetaUpdater;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.zcore.logger.Logger;
+import fr.robie.minimessageflow.TextTemplate;
+import fr.robie.minimessageflow.Values;
 import io.papermc.paper.registry.data.dialog.input.DialogInput;
 import io.papermc.paper.registry.data.dialog.input.TextDialogInput;
 import org.bukkit.entity.Player;
@@ -21,6 +24,10 @@ public class DialogTextInput extends VanillaDialogInput {
     private final boolean labelVisible;
     private final Supplier<String> defaultTextSupplier;
     private final String defaultText;
+    /**
+     * {@link #defaultText} compiled once, read as text: the input shows it as written.
+     */
+    private final TextTemplate defaultTextTemplate;
     private final Integer maxLength;
     private final Integer multilineMaxLines;
     private final Integer multilineHeight; // Value between 1 and 512 — Height of input.
@@ -39,6 +46,7 @@ public class DialogTextInput extends VanillaDialogInput {
         this.labelVisible = textVisible;
         this.defaultTextSupplier = null;
         this.defaultText = defaultValue;
+        this.defaultTextTemplate = TextService.get().flow().compileText(defaultValue == null ? "" : defaultValue);
         this.maxLength = maxLength;
         this.multilineMaxLines = multilineMaxLines != null ? Math.max(multilineMaxLines, 1) : null;
         this.multilineHeight = multilineHeight != null ? Math.clamp(multilineHeight, 1, 512) : null;
@@ -52,11 +60,12 @@ public class DialogTextInput extends VanillaDialogInput {
     public DialogInput build(@NotNull DialogRenderContext<DialogInput, DialogInventory, PaperMetaUpdater, MenuPlugin> context) {
         Player player = context.getPlayer();
         Placeholders placeholders = context.getPlaceholders();
-        MenuPlugin plugin = context.getPlugin();
+        Values values = placeholders.values();
 
-        String label = plugin.parse(player, placeholders.parse(this.label));
         Optional<Supplier<String>> defaultTextSupplierX = this.getDefaultTextSupplierX();
-        String defaultText = plugin.parse(player, placeholders.parse(defaultTextSupplierX.map(Supplier::get).orElse(this.defaultText)));
+        String defaultText = defaultTextSupplierX.isPresent()
+                ? TextService.get().flow().formatText(defaultTextSupplierX.get().get(), values, player)
+                : this.defaultTextTemplate.render(values, player);
 
         int maxLength = this.maxLength != null ? this.maxLength : defaultText.length();
         int multilineMaxLines = this.multilineMaxLines;
@@ -73,6 +82,6 @@ public class DialogTextInput extends VanillaDialogInput {
             }
             defaultText = defaultText.substring(0, maxLength);
         }
-        return DialogInput.text(this.key, this.width, context.getMetaUpdater().getComponent(label), this.labelVisible, defaultText, maxLength, multilineOptions);
+        return DialogInput.text(this.key, this.width, this.getLabelTemplate().render(values, player), this.labelVisible, defaultText, maxLength, multilineOptions);
     }
 }

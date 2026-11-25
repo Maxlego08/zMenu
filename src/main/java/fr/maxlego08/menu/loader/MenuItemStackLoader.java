@@ -156,7 +156,7 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
         }
 
 
-        if (!menuItemStack.isNeedPlaceholderAPI() && Configuration.enableCacheItemStack && !menuItemStack.isDynamicMaterial() && !skipFirstCache) {
+        if (Configuration.enableCacheItemStack && menuItemStack.isStatic() && !skipFirstCache) {
             try {
                 menuItemStack.build(new ZBuildContext.Builder().build());
             } catch (Exception ignored) { // Fail when a item requires a player to be built.

@@ -4,9 +4,11 @@ import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.enums.dialog.DialogType;
 import fr.maxlego08.menu.api.inventory.dialog.ConfirmationDialogInventory;
+import fr.maxlego08.menu.api.text.TextService;
 import fr.maxlego08.menu.api.utils.PaperMetaUpdater;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.api.utils.record.dialogs.ActionButtonRecord;
+import fr.robie.minimessageflow.Placeholder;
 import io.papermc.paper.dialog.Dialog;
 import io.papermc.paper.registry.data.dialog.ActionButton;
 import io.papermc.paper.registry.data.dialog.body.DialogBody;
@@ -40,62 +42,66 @@ public class ZConfirmationDialogInventory extends AbstractDialogInventory implem
 
     @Override
     public void setYesText(String yesText) {
-        this.yesActionButtonRecord = new ActionButtonRecord(yesText, this.yesActionButtonRecord.tooltip(), this.yesActionButtonRecord.width(), this.yesActionButtonRecord.action());
+        this.yesActionButtonRecord = this.yesActionButtonRecord.withLabel(yesText);
     }
 
     @Override
     public void setNoText(String noText) {
-        this.noActionButtonRecord = new ActionButtonRecord(noText, this.noActionButtonRecord.tooltip(), this.noActionButtonRecord.width(), this.noActionButtonRecord.action());
+        this.noActionButtonRecord = this.noActionButtonRecord.withLabel(noText);
     }
 
     @Override
     public void setYesTooltip(String yesTooltip) {
-        this.yesActionButtonRecord = new ActionButtonRecord(this.yesActionButtonRecord.label(), yesTooltip, this.yesActionButtonRecord.width(), this.yesActionButtonRecord.action());
+        this.yesActionButtonRecord = this.yesActionButtonRecord.withTooltip(yesTooltip);
     }
 
     @Override
     public void setNoTooltip(String noTooltip) {
-        this.noActionButtonRecord = new ActionButtonRecord(this.noActionButtonRecord.label(), noTooltip, this.noActionButtonRecord.width(), this.noActionButtonRecord.action());
+        this.noActionButtonRecord = this.noActionButtonRecord.withTooltip(noTooltip);
     }
 
     @Override
     public String getYesText() {
-        return this.yesActionButtonRecord.label();
+        return this.yesActionButtonRecord.labelTemplate().source();
     }
 
     @Override
+    @Deprecated(since = "1.1.2.2", forRemoval = true)
     public String getYesText(Player player) {
-        return this.menuPlugin.parse(player, this.yesActionButtonRecord.label());
+        return TextService.get().flow().formatText(this.yesActionButtonRecord.labelTemplate().source(), Placeholder.empty(), player);
     }
 
     @Override
     public String getNoText() {
-        return this.noActionButtonRecord.label();
+        return this.noActionButtonRecord.labelTemplate().source();
     }
 
     @Override
+    @Deprecated(since = "1.1.2.2", forRemoval = true)
     public String getNoText(Player player) {
-        return this.menuPlugin.parse(player, this.noActionButtonRecord.label());
+        return TextService.get().flow().formatText(this.noActionButtonRecord.labelTemplate().source(), Placeholder.empty(), player);
     }
 
     @Override
     public String getYesTooltip() {
-        return this.yesActionButtonRecord.tooltip();
+        return this.yesActionButtonRecord.tooltipTemplate().source();
     }
 
     @Override
+    @Deprecated(since = "1.1.2.2", forRemoval = true)
     public String getYesTooltip(Player player) {
-        return this.menuPlugin.parse(player, this.yesActionButtonRecord.tooltip());
+        return TextService.get().flow().formatText(this.yesActionButtonRecord.tooltipTemplate().source(), Placeholder.empty(), player);
     }
 
     @Override
     public String getNoTooltip() {
-        return this.noActionButtonRecord.tooltip();
+        return this.noActionButtonRecord.tooltipTemplate().source();
     }
 
     @Override
+    @Deprecated(since = "1.1.2.2", forRemoval = true)
     public String getNoTooltip(Player player) {
-        return this.menuPlugin.parse(player, this.noActionButtonRecord.tooltip());
+        return TextService.get().flow().formatText(this.noActionButtonRecord.tooltipTemplate().source(), Placeholder.empty(), player);
     }
 
     @Override
@@ -110,12 +116,12 @@ public class ZConfirmationDialogInventory extends AbstractDialogInventory implem
 
     @Override
     public void setYesWidth(int yesWidth) {
-        this.yesActionButtonRecord = new ActionButtonRecord(this.yesActionButtonRecord.label(), this.yesActionButtonRecord.tooltip(), yesWidth, this.yesActionButtonRecord.action());
+        this.yesActionButtonRecord = this.yesActionButtonRecord.withWidth(yesWidth);
     }
 
     @Override
     public void setNoWidth(int noWidth) {
-        this.noActionButtonRecord = new ActionButtonRecord(this.noActionButtonRecord.label(), this.noActionButtonRecord.tooltip(), noWidth, this.noActionButtonRecord.action());
+        this.noActionButtonRecord = this.noActionButtonRecord.withWidth(noWidth);
     }
 
     @Override
@@ -128,20 +134,20 @@ public class ZConfirmationDialogInventory extends AbstractDialogInventory implem
                 builder.empty()
                         .type(io.papermc.paper.registry.data.dialog.type.DialogType.confirmation(
                                 ActionButton.create(
-                                        paperComponent.getComponent(this.menuPlugin.parse(player, this.yesActionButtonRecord.label())),
-                                        paperComponent.getComponent(this.menuPlugin.parse(player, this.yesActionButtonRecord.tooltip())),
+                                        this.yesActionButtonRecord.labelTemplate().render(placeholders.values(), player),
+                                        this.yesActionButtonRecord.tooltipTemplate().render(placeholders.values(), player),
                                         this.yesActionButtonRecord.width(),
                                         this.yesActionButtonRecord.action().build(dialogInputsForPlayer, player, this.menuPlugin, inventoryEngine, null, placeholders)
                                 ),
                                 ActionButton.create(
-                                        paperComponent.getComponent(this.menuPlugin.parse(player, this.noActionButtonRecord.label())),
-                                        paperComponent.getComponent(this.menuPlugin.parse(player, this.noActionButtonRecord.tooltip())),
+                                        this.noActionButtonRecord.labelTemplate().render(placeholders.values(), player),
+                                        this.noActionButtonRecord.tooltipTemplate().render(placeholders.values(), player),
                                         this.noActionButtonRecord.width(),
                                         this.noActionButtonRecord.action().build(dialogInputsForPlayer, player, this.menuPlugin, inventoryEngine, null, placeholders)
                                 )
                         ))
                         .base(
-                                this.createDialogBase(paperComponent, player, dialogBodiesForPlayer, dialogInputsForPlayer)
+                                this.createDialogBase(player, dialogBodiesForPlayer, dialogInputsForPlayer, placeholders)
                         )
                 );
     }

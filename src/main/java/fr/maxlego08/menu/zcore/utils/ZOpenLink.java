@@ -2,9 +2,18 @@ package fr.maxlego08.menu.zcore.utils;
 
 import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.utils.OpenLink;
+import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.common.utils.ZUtils;
+import fr.maxlego08.menu.api.text.TextService;
+import fr.robie.minimessageflow.MiniMessageFlow;
+import fr.robie.minimessageflow.Template;
+import fr.robie.minimessageflow.TemplateList;
+import fr.robie.minimessageflow.Values;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.JoinConfiguration;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.event.HoverEvent;
 import net.md_5.bungee.api.chat.ClickEvent.Action;
-import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.entity.Player;
 import org.jspecify.annotations.NonNull;
 
@@ -18,6 +27,11 @@ public class ZOpenLink extends ZUtils implements OpenLink {
     private final String link;
     private final String replace;
     private final List<String> hover;
+    /**
+     * The clickable text and its hover, compiled once; null when the link is not valid.
+     */
+    private final transient Template messageTemplate;
+    private final transient TemplateList hoverTemplates;
 
     /**
      * @param action  - The action
@@ -33,6 +47,9 @@ public class ZOpenLink extends ZUtils implements OpenLink {
         this.link = link;
         this.replace = replace;
         this.hover = hover;
+        boolean valid = this.isValid();
+        this.messageTemplate = valid ? TextService.get().flow().compile(message) : null;
+        this.hoverTemplates = valid ? TextService.get().flow().compileList(hover) : null;
     }
 
     public String getMessage() {
@@ -56,39 +73,34 @@ public class ZOpenLink extends ZUtils implements OpenLink {
         return this.action;
     }
 
+    /**
+     * Sends the messages, each rendered for the player (PlaceholderAPI included). In a message holding the
+     * {@code replace} text, it is replaced by the clickable {@code message}, which opens {@code link} and shows
+     * {@code hover}; the parts before and after it are formatted on their own.
+     */
     @Override
     public void send(@NonNull Player player, @NonNull List<String> messages) {
-        if (this.isValid()) {
+        this.send(player, messages, new Placeholders());
+    }
 
-            messages.forEach(message -> {
-
-                String finalMessage = this.papi(message, player, true);
-
-                if (finalMessage.contains(this.replace)) {
-
-                    String[] splitMessages = finalMessage.split(this.replace);
-
-                    TextComponent component = this.buildTextComponent(splitMessages[0]);
-
-                    TextComponent clickComponent = this.buildTextComponent(this.color(this.message));
-                    this.setClickAction(clickComponent, Action.OPEN_URL, this.link);
-                    this.setHoverMessage(clickComponent, this.color(this.hover));
-
-                    component.addExtra(clickComponent);
-                    if (splitMessages.length == 2) {
-                        component.addExtra(this.buildTextComponent(splitMessages[1]));
-                    }
-
-                    player.spigot().sendMessage(component);
-
-                } else {
-
-                    this.plugin.getMetaUpdater().sendMessage(player, finalMessage);
-                }
-            });
-        } else {
-
-            messages.forEach(message -> this.plugin.getMetaUpdater().sendMessage(player, this.papi(message, player, true)));
+    @Override
+    public void send(@NonNull Player player, @NonNull List<String> messages, @NonNull Placeholders placeholders) {
+        Values values = placeholders.values();
+        MiniMessageFlow flow = TextService.get().flow();
+        for (String message : messages) {
+            int at = this.messageTemplate == null ? -1 : message.indexOf(this.replace);
+            if (at < 0) {
+                player.sendMessage(flow.format(message, values, player));
+                continue;
+            }
+            Component click = this.messageTemplate.render(values, player)
+                    .clickEvent(ClickEvent.openUrl(this.link))
+                    .hoverEvent(HoverEvent.showText(Component.join(JoinConfiguration.newlines(), this.hoverTemplates.render(values, player))));
+            player.sendMessage(Component.text()
+                    .append(flow.format(message.substring(0, at), values, player))
+                    .append(click)
+                    .append(flow.format(message.substring(at + this.replace.length()), values, player))
+                    .build());
         }
     }
 

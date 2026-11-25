@@ -1,9 +1,8 @@
 package fr.maxlego08.menu.api.button.buttons.bedrock.inputs;
 
-import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.context.BedrockRenderContext;
 import fr.maxlego08.menu.api.enums.bedrock.BedrockComponentType;
-import fr.maxlego08.menu.api.utils.MetaUpdater;
+import fr.maxlego08.menu.api.text.TextService;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.api.utils.record.bedrock.BedrockSimpleOption;
 import org.bukkit.entity.Player;
@@ -26,19 +25,16 @@ public class BedrockDropDownInput extends VanillaBedrockInput {
     public Component build(@NotNull BedrockRenderContext<Component> context) {
         Player player = context.getPlayer();
         Placeholders placeholders = context.getPlaceholders();
-        MetaUpdater metaUpdater = context.getMetaUpdater();
-        MenuPlugin menuPlugin = context.getPlugin();
 
-        String text = menuPlugin.parse(player, placeholders.parse(this.text));
-        List<String> options = new ArrayList<>();
+        List<String> options = new ArrayList<>(this.options.size());
         int defaultOption = 0;
         for (int i = 0; i < this.options.size(); i++) {
             BedrockSimpleOption option = this.options.get(i);
-            options.add(metaUpdater.getLegacyMessage(menuPlugin.parse(player, placeholders.parse(option.optionName()))));
+            options.add(TextService.legacy(option.optionNameTemplate(), placeholders, player));
             if (option.initialValue()) {
                 defaultOption = i;
             }
         }
-        return DropdownComponent.of(metaUpdater.getLegacyMessage(text), options, defaultOption);
+        return DropdownComponent.of(this.legacyText(context), options, defaultOption);
     }
 }

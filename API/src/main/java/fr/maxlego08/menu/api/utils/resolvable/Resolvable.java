@@ -2,6 +2,7 @@ package fr.maxlego08.menu.api.utils.resolvable;
 
 import com.google.common.base.Preconditions;
 import fr.maxlego08.menu.api.context.BuildContext;
+import fr.maxlego08.menu.api.itemstack.StaticCheck;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -12,6 +13,17 @@ import java.util.function.Supplier;
 public interface Resolvable<T> {
 
     @Nullable T resolve(@NotNull BuildContext context);
+
+    /**
+     * Whether this value is the same for every player and every build: no placeholder in it, nor in its parts. A built
+     * item made only of static values can be kept and given again. zMenu's resolvables answer from their fields
+     * ({@link StaticCheck}); a resolvable of another plugin is dynamic unless it overrides this.
+     *
+     * @return true when the value never changes
+     */
+    default boolean isStatic() {
+        return StaticCheck.fieldsStatic(this);
+    }
 
     /**
      * Returns this value in the form the configuration holds it, so a component loader reading it

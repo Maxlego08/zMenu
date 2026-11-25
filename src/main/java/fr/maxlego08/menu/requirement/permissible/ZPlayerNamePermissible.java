@@ -4,7 +4,9 @@ import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.permissible.PlayerNamePermissible;
+import fr.maxlego08.menu.api.text.TextService;
 import fr.maxlego08.menu.api.utils.Placeholders;
+import fr.robie.minimessageflow.TextTemplate;
 import org.bukkit.entity.Player;
 import org.jspecify.annotations.NonNull;
 
@@ -15,23 +17,23 @@ import java.util.regex.Pattern;
 
 public class ZPlayerNamePermissible extends PlayerNamePermissible {
 
-    private final String playerName;
+    private final TextTemplate playerName;
 
     public ZPlayerNamePermissible(String playerName, List<Action> denyActions, List<Action> successActions) {
         super(denyActions, successActions);
-        this.playerName = playerName;
+        this.playerName = TextService.text(playerName);
     }
 
     @Override
     public boolean hasPermission(@NonNull Player player, Button button, @NonNull InventoryEngine inventory, @NonNull Placeholders placeholders) {
-        String name = inventory.getPlugin().parse(player, this.playerName.replace("%player%", player.getName()));
+        String name = TextService.render(this.playerName, placeholders, player);
         return this.isMinecraftName(name);
     }
 
     @Override
     protected void serializeProperties(@NonNull Map<String, Object> map) {
         map.put("type", "playername");
-        if (this.playerName != null) map.put("player-name", this.playerName);
+        if (this.playerName != null) map.put("player-name", TextService.source(this.playerName));
     }
 
     @Override
@@ -41,7 +43,7 @@ public class ZPlayerNamePermissible extends PlayerNamePermissible {
 
     @Override
     public String getPlayerName() {
-        return this.playerName;
+        return TextService.source(this.playerName);
     }
 
     protected boolean isMinecraftName(String username) {

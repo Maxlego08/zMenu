@@ -35,8 +35,8 @@ public class DialogListDialogInventoryTypeLoader implements DialogInventoryTypeL
         DialogListBackButton defaults = DialogListBackButton.DEFAULT;
         DialogListBackButton backButton = new DialogListBackButton(
                 configuration.getBoolean("back-button.enabled", defaults.enabled()),
-                configuration.getString("back-button.label", defaults.label()),
-                configuration.getString("back-button.tooltip", defaults.tooltip()),
+                configuration.getString("back-button.label", defaults.labelTemplate().source()),
+                configuration.getString("back-button.tooltip", defaults.tooltipTemplate().source()),
                 Math.clamp(configuration.getInt("back-button.width", defaults.width()), 1, 1024)
         );
 

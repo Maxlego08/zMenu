@@ -363,6 +363,12 @@ public class Configuration {
     )
     public static long componentCacheExpireMinutes = 10L;
 
+    /**
+     * How the number modifiers ({@code %price.comma%}, {@code %price.2f%}) read and write separators:
+     * {@code auto}, {@code english} or {@code european}.
+     */
+    public static String numberStyle = "auto";
+
     // Namespace the component cache keys so an item name and a message with the same text stop
     // sharing one entry. They cache differently shaped components, so whichever was parsed first
     // used to win and the other rendered wrong, most visibly as an italic item name.
@@ -629,6 +635,7 @@ public class Configuration {
         enforceClickTypes = fileConfiguration.getBoolean(ConfigPath.ENFORCE_CLICK_TYPES.getPath(), true);
         componentCacheMaxSize = fileConfiguration.getInt(ConfigPath.COMPONENT_CACHE_MAX_SIZE.getPath(), 10000);
         componentCacheExpireMinutes = fileConfiguration.getLong(ConfigPath.COMPONENT_CACHE_EXPIRE_MINUTES.getPath(), 10L);
+        numberStyle = fileConfiguration.getString(ConfigPath.NUMBER_STYLE.getPath(), "auto");
         fixComponentCacheKeyCollisions = fileConfiguration.getBoolean(ConfigPath.FIX_COMPONENT_CACHE_KEY_COLLISIONS.getPath(), true);
         flushStorageOnQuit = fileConfiguration.getBoolean(ConfigPath.FLUSH_STORAGE_ON_QUIT.getPath(), true);
         clickErrorLogCooldownSeconds = fileConfiguration.getLong(ConfigPath.CLICK_ERROR_LOG_COOLDOWN_SECONDS.getPath(), 30L);
@@ -715,6 +722,7 @@ public class Configuration {
         fileConfiguration.set(ConfigPath.ENFORCE_CLICK_TYPES.getPath(), enforceClickTypes);
         fileConfiguration.set(ConfigPath.COMPONENT_CACHE_MAX_SIZE.getPath(), componentCacheMaxSize);
         fileConfiguration.set(ConfigPath.COMPONENT_CACHE_EXPIRE_MINUTES.getPath(), componentCacheExpireMinutes);
+        fileConfiguration.set(ConfigPath.NUMBER_STYLE.getPath(), numberStyle);
         fileConfiguration.set(ConfigPath.FIX_COMPONENT_CACHE_KEY_COLLISIONS.getPath(), fixComponentCacheKeyCollisions);
         fileConfiguration.set(ConfigPath.FLUSH_STORAGE_ON_QUIT.getPath(), flushStorageOnQuit);
         fileConfiguration.set(ConfigPath.CLICK_ERROR_LOG_COOLDOWN_SECONDS.getPath(), clickErrorLogCooldownSeconds);
@@ -791,6 +799,7 @@ public class Configuration {
         ENFORCE_CLICK_TYPES("enforce-click-types"),
         COMPONENT_CACHE_MAX_SIZE("component-cache.max-size"),
         COMPONENT_CACHE_EXPIRE_MINUTES("component-cache.expire-minutes"),
+        NUMBER_STYLE("number-style"),
         FIX_COMPONENT_CACHE_KEY_COLLISIONS("component-cache.fix-key-collisions"),
         FLUSH_STORAGE_ON_QUIT("flush-storage-on-quit"),
         CLICK_ERROR_LOG_COOLDOWN_SECONDS("click-error-log-cooldown-seconds"),

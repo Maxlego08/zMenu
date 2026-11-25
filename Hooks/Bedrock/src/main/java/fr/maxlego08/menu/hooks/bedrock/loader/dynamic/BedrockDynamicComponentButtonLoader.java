@@ -27,7 +27,7 @@ public class BedrockDynamicComponentButtonLoader extends BedrockDynamicAbstractL
     protected @Nullable Button wrap(Button button, String buttonName, String start, String end) {
 
         if (button instanceof BasicBedrockComponentButton componentButton && !button.hasSpecialRender()) {
-            return new BedrockDynamicComponentButton(this.plugin, start, end, componentButton);
+            return new BedrockDynamicComponentButton(start, end, componentButton);
         }
         return null;
     }

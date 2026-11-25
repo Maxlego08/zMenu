@@ -3,6 +3,9 @@ package fr.maxlego08.menu.api.animation;
 import com.tcoded.folialib.wrapper.task.WrappedTask;
 import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.utils.PaperMetaUpdater;
+import fr.robie.minimessageflow.Placeholder;
+import fr.robie.minimessageflow.Template;
+import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.ItemStack;
@@ -42,13 +45,13 @@ public abstract class PlayerTitleAnimation {
     }
 
     public void start(@NotNull Player player, @NotNull List<ItemStack> inventoryContents) {
-        if (this.settings.titles().isEmpty()) {
+        if (this.settings.frames().isEmpty()) {
             return;
         }
         this.currentCycle = 0;
         this.currentIndex = 0;
         this.wrappedTask = this.plugin.getScheduler().runAtEntityTimer(player, () -> {
-            if (this.currentIndex >= this.settings.titles().size()) {
+            if (this.currentIndex >= this.settings.frames().size()) {
                 this.currentIndex = 0;
                 this.currentCycle++;
                 if (this.settings.cycles() > 0 && this.currentCycle >= this.settings.cycles()) {
@@ -59,8 +62,8 @@ public abstract class PlayerTitleAnimation {
                     return;
                 }
             }
-            String title = this.settings.titles().get(this.currentIndex++);
-            this.sendTitle(player, this.plugin.parse(player, title));
+            Template frame = this.settings.frames().templates().get(this.currentIndex++);
+            this.sendTitle(player, frame.render(Placeholder.empty(), player));
             if (!this.settings.showItemsAfterAnimation()) {
                 if (this.settings.itemUpdateInterval() > 0 && this.currentIndex % this.settings.itemUpdateInterval() == 0) {
                     this.sendInventoryContent(player, inventoryContents);
@@ -79,6 +82,17 @@ public abstract class PlayerTitleAnimation {
     }
 
     public abstract void sendTitle(@NotNull Player player, @NotNull String title);
+
+    /**
+     * Sends a frame already formatted. By default as MiniMessage text through {@link #sendTitle(Player, String)};
+     * an animation that can send a component overrides it.
+     *
+     * @param player the player
+     * @param title  the frame
+     */
+    public void sendTitle(@NotNull Player player, @NotNull Component title) {
+        this.sendTitle(player, this.metaUpdater.getMiniMessage(title));
+    }
 
     public abstract void sendInventoryContent(@NotNull Player player, @NotNull List<ItemStack> inventoryContents);
 

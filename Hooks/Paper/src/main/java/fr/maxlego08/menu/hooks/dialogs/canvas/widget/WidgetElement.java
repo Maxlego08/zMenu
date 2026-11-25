@@ -292,8 +292,8 @@ public abstract class WidgetElement implements CanvasElement {
 
         if (changed != null) {
             Placeholders placeholders = context.placeholders().child();
-            placeholders.register("value", changed);
-            placeholders.register("previous", previous);
+            placeholders.registerRaw("value", changed);
+            placeholders.registerRaw("previous", previous);
             for (Action action : this.settings.onChange()) action.preExecute(player, null, context.engine(), placeholders);
         }
 

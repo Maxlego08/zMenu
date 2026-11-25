@@ -29,6 +29,7 @@ import fr.maxlego08.menu.api.players.inventory.InventoriesPlayer;
 import fr.maxlego08.menu.api.registry.Registries;
 import fr.maxlego08.menu.api.sound.SoundService;
 import fr.maxlego08.menu.api.storage.StorageManager;
+import fr.maxlego08.menu.api.text.TextService;
 import fr.maxlego08.menu.api.utils.EnumInventory;
 import fr.maxlego08.menu.api.utils.MetaUpdater;
 import fr.maxlego08.menu.api.utils.toast.ToastHelper;
@@ -54,6 +55,7 @@ import fr.maxlego08.menu.hooks.packetevents.PacketUtils;
 import fr.maxlego08.menu.hooks.packetevents.loader.PacketEventTitleAnimationLoader;
 import fr.maxlego08.menu.hooks.paper.PaperProtocolClientVersionProvider;
 import fr.maxlego08.menu.hooks.protocolsupport.ProtocolSupportClientVersionProvider;
+import fr.maxlego08.menu.hooks.text.PaperTextService;
 import fr.maxlego08.menu.hooks.viaversion.ViaVersionClientVersionProvider;
 import fr.maxlego08.menu.inventory.InventoryHotReload;
 import fr.maxlego08.menu.inventory.VInventoryManager;
@@ -167,6 +169,11 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
 
     public ZMenuPlugin(Boolean isMockBukkitServer) {
         this.isMockBukkitServer = isMockBukkitServer != null && isMockBukkitServer;
+        try {
+            TextService.install(new PaperTextService(this));
+        } catch (RuntimeException | LinkageError exception) {
+            this.getLogger().log(java.util.logging.Level.WARNING, "Unable to set up MiniMessageFlow's Paper integration, zMenu formats text without it", exception);
+        }
 
         new BukkitLogger(this.getDescription().getFullName());
 
@@ -268,6 +275,7 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
         this.vinventoryManager = new VInventoryManager(this);
 
         ServicesManager servicesManager = this.getServer().getServicesManager();
+        servicesManager.register(TextService.class, TextService.get(), this, ServicePriority.Highest);
         servicesManager.register(InventoryManager.class, this.inventoryManager, this, ServicePriority.Highest);
         servicesManager.register(ButtonManager.class, this.buttonManager, this, ServicePriority.Highest);
         servicesManager.register(CommandManager.class, this.commandManager, this, ServicePriority.Highest);
@@ -357,6 +365,7 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
 
         this.safeHook("material loaders", this::registerMaterialLoaders);
         this.safeHook("plugin hooks", this::registerHooks);
+        this.applyFontImages();
 
         this.inventoryManager.load();
         this.commandManager.loadCommands();
@@ -462,6 +471,16 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
         } catch (ClassNotFoundException e) {
             return false;
         }
+    }
+
+
+    /**
+     * Gives the font images of the font plugin found by the hooks to the text engine, which applies them when it
+     * compiles text, so every configured text gets them and keeps its source as written. Nothing to do without one.
+     */
+    private void applyFontImages() {
+        FontImage fontImage = this.fontImage;
+        TextService.get().flow().preprocessor(fontImage instanceof EmptyFont ? null : fontImage::replace);
     }
 
     /**

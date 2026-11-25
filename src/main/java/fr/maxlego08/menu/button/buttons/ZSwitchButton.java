@@ -3,7 +3,10 @@ package fr.maxlego08.menu.button.buttons;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.buttons.SwitchButton;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
+import fr.maxlego08.menu.api.text.TextService;
+import fr.robie.minimessageflow.Placeholder;
 import fr.maxlego08.menu.api.utils.SwitchCaseButton;
+import fr.robie.minimessageflow.TextTemplate;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -13,18 +16,18 @@ import java.util.function.IntPredicate;
 
 public class ZSwitchButton extends SwitchButton {
 
-    private final String placeholder;
+    private final TextTemplate placeholder;
     private final List<SwitchCaseButton> buttons;
 
     public ZSwitchButton(String placeholder, List<SwitchCaseButton> buttons) {
-        this.placeholder = placeholder;
+        this.placeholder = TextService.text(placeholder);
         this.buttons = buttons;
     }
 
     @Override
     protected void serializeProperties(@NotNull ConfigurationSection section) {
         section.set("type", "switch");
-        section.set("key", this.placeholder);
+        section.set("key", TextService.source(this.placeholder));
     }
 
     @Override
@@ -39,7 +42,7 @@ public class ZSwitchButton extends SwitchButton {
 
     @Override
     public String getPlaceholder() {
-        return this.placeholder;
+        return TextService.source(this.placeholder);
     }
 
     @Override
@@ -54,7 +57,7 @@ public class ZSwitchButton extends SwitchButton {
 
         if (this.buttons.size() == 1) return this.buttons.getFirst().button();
 
-        String result = inventoryEngine.getPlugin().parse(player, this.placeholder);
+        String result = this.placeholder == null ? null : this.placeholder.render(Placeholder.empty(), player);
 
         for (SwitchCaseButton button : this.buttons) {
 

@@ -7,9 +7,11 @@ import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.requirement.Action;
+import fr.maxlego08.menu.api.text.TextService;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.hooks.loader.ShopkeeperLoader;
 import fr.maxlego08.menu.zcore.logger.Logger;
+import fr.robie.minimessageflow.TextTemplate;
 import org.bukkit.entity.Player;
 import org.jspecify.annotations.NonNull;
 
@@ -19,21 +21,21 @@ import java.util.Optional;
 public class ShopkeeperAction extends Action {
 
     private final MenuPlugin plugin;
-    private final String shopName;
+    private final TextTemplate shopName;
 
     public ShopkeeperAction(MenuPlugin plugin, String shopName) {
         this.plugin = plugin;
-        this.shopName = shopName;
+        this.shopName = TextService.text(shopName);
     }
 
     @Override
     protected void execute(@NonNull Player player, Button button, @NonNull InventoryEngine inventory, @NonNull Placeholders placeholders) {
-        Optional<? extends Shopkeeper> optional = ShopkeepersAPI.getShopkeeperRegistry().getShopkeepersByName(this.plugin.parse(player, placeholders.parse(this.shopName))).findFirst();
+        Optional<? extends Shopkeeper> optional = ShopkeepersAPI.getShopkeeperRegistry().getShopkeepersByName(TextService.render(this.shopName, placeholders, player)).findFirst();
         if (optional.isPresent()) {
             optional.get().openTradingWindow(player);
         } else {
             if (Configuration.enableDebug) {
-                Logger.info("ShopKeeper " + this.shopName + " was not found ! Available ShopKeepers: " + ShopkeepersAPI.getShopkeeperRegistry().getAllShopkeepers().stream().map(Shopkeeper::getName).toList());
+                Logger.info("ShopKeeper " + TextService.source(this.shopName) + " was not found ! Available ShopKeepers: " + ShopkeepersAPI.getShopkeeperRegistry().getAllShopkeepers().stream().map(Shopkeeper::getName).toList());
             }
         }
     }
@@ -41,6 +43,6 @@ public class ShopkeeperAction extends Action {
     @Override
     protected void serializeProperties(@NonNull Map<String, Object> map) {
         map.put("type", "shopkeeper");
-        if (!ShopkeeperLoader.DEFAULT_NAME.equals(this.shopName)) map.put("name", this.shopName);
+        if (!ShopkeeperLoader.DEFAULT_NAME.equals(TextService.source(this.shopName))) map.put("name", TextService.source(this.shopName));
     }
 }

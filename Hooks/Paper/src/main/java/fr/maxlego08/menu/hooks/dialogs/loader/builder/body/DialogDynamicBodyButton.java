@@ -5,29 +5,29 @@ import fr.maxlego08.menu.api.button.buttons.dialogs.body.VanillaDialogBody;
 import fr.maxlego08.menu.api.button.dialogs.BodyButton;
 import fr.maxlego08.menu.api.context.DialogRenderContext;
 import fr.maxlego08.menu.api.inventory.dialog.DialogInventory;
+import fr.maxlego08.menu.api.text.TextService;
 import fr.maxlego08.menu.api.utils.PaperMetaUpdater;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.hooks.dialogs.loader.DialogDynamicAbstractLoader;
+import fr.robie.minimessageflow.TextTemplate;
 import io.papermc.paper.registry.data.dialog.body.DialogBody;
 import org.jspecify.annotations.NonNull;
 
 public class DialogDynamicBodyButton extends BodyButton {
-    private final MenuPlugin plugin;
-    private final String start;
-    private final String end;
+    private final TextTemplate start;
+    private final TextTemplate end;
     private final VanillaDialogBody button;
 
-    public DialogDynamicBodyButton(MenuPlugin plugin, String start, String end, VanillaDialogBody bodyButton) {
-        this.plugin = plugin;
-        this.start = start;
-        this.end = end;
+    public DialogDynamicBodyButton(String start, String end, VanillaDialogBody bodyButton) {
+        this.start = TextService.get().flow().compileText(start);
+        this.end = TextService.get().flow().compileText(end);
         this.button = bodyButton;
     }
 
     @Override
     public void onRender(@NonNull DialogRenderContext<DialogBody, DialogInventory, PaperMetaUpdater, MenuPlugin> context) {
-        int startValue = DialogDynamicAbstractLoader.stringToInt(this.plugin, this.start, context.getPlayer());
-        int endValue = DialogDynamicAbstractLoader.stringToInt(this.plugin, this.end, context.getPlayer());
+        int startValue = DialogDynamicAbstractLoader.stringToInt(this.start, context.getPlaceholders(), context.getPlayer());
+        int endValue = DialogDynamicAbstractLoader.stringToInt(this.end, context.getPlaceholders(), context.getPlayer());
         Placeholders placeholders = context.getPlaceholders();
 
         for (int i = startValue; i <= endValue; i++) {

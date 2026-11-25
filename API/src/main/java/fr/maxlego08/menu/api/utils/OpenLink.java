@@ -61,6 +61,17 @@ public interface OpenLink extends SectionSerializable {
     void send(@NotNull Player player,@NotNull List<String> strings);
 
     /**
+     * Sends messages to a player, with the values of the menu.
+     *
+     * @param player       the player
+     * @param strings      the messages
+     * @param placeholders the values
+     */
+    default void send(@NotNull Player player, @NotNull List<String> strings, @NotNull Placeholders placeholders) {
+        this.send(player, strings);
+    }
+
+    /**
      * Allows to know if the object is valid
      *
      * @return boolean

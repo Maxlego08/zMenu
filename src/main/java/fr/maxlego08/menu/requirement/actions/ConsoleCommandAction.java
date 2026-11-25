@@ -3,9 +3,11 @@ package fr.maxlego08.menu.requirement.actions;
 import com.tcoded.folialib.wrapper.task.WrappedTask;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
+import fr.maxlego08.menu.api.text.TextService;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.common.utils.ActionHelper;
 import fr.maxlego08.menu.zcore.logger.Logger;
+import fr.robie.minimessageflow.TextTemplate;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.jspecify.annotations.NonNull;
@@ -16,7 +18,7 @@ import java.util.function.Consumer;
 
 public class ConsoleCommandAction extends ActionHelper {
 
-    private final List<String> commands;
+    private final List<TextTemplate> commands;
     private final boolean stopOnFailure;
 
     public ConsoleCommandAction(List<String> commands) {
@@ -24,7 +26,7 @@ public class ConsoleCommandAction extends ActionHelper {
     }
 
     public ConsoleCommandAction(List<String> commands, boolean stopOnFailure) {
-        this.commands = commands;
+        this.commands = TextService.texts(commands);
         this.stopOnFailure = stopOnFailure;
     }
 
@@ -38,7 +40,7 @@ public class ConsoleCommandAction extends ActionHelper {
     @Override
     protected void execute(@NonNull Player player, Button button, @NonNull InventoryEngine inventory, @NonNull Placeholders placeholders) {
         var scheduler = inventory.getPlugin().getScheduler();
-        List<String> parsedCommands = this.parseAndFlattenCommands(this.papi(placeholders.parse(this.commands), player), player);
+        List<String> parsedCommands = render(this.commands, placeholders, player);
 
         Consumer<WrappedTask> runnable = w -> this.dispatch(parsedCommands);
 
@@ -52,7 +54,7 @@ public class ConsoleCommandAction extends ActionHelper {
     @Override
     protected void serializeProperties(@NonNull Map<String, Object> map) {
         map.put("type", "console-commands");
-        map.put("commands", this.commands);
+        map.put("commands", TextService.sources(this.commands));
         if (this.stopOnFailure) map.put("stop-on-failure", true);
     }
 

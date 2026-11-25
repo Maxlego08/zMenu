@@ -4,8 +4,12 @@ import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.context.DialogRenderContext;
 import fr.maxlego08.menu.api.enums.dialog.DialogInputType;
 import fr.maxlego08.menu.api.inventory.dialog.DialogInventory;
+import fr.maxlego08.menu.api.text.TextService;
 import fr.maxlego08.menu.api.utils.PaperMetaUpdater;
 import fr.maxlego08.menu.api.utils.Placeholders;
+import fr.robie.minimessageflow.MiniMessageFlow;
+import fr.robie.minimessageflow.TextTemplate;
+import fr.robie.minimessageflow.Values;
 import io.papermc.paper.registry.data.dialog.input.DialogInput;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
@@ -15,10 +19,10 @@ import java.util.Optional;
 import java.util.function.Supplier;
 
 public class DialogBooleanInput extends VanillaDialogInput {
-    private final String initialValue;
+    private final TextTemplate initialValue;
     private final Supplier<Boolean> initialValueSupplier;
-    private final String onTrueText;
-    private final String onFalseText;
+    private final TextTemplate onTrueText;
+    private final TextTemplate onFalseText;
 
     public DialogBooleanInput(
             @NotNull String label,
@@ -27,10 +31,11 @@ public class DialogBooleanInput extends VanillaDialogInput {
             @NotNull String onFalseText
     ) {
         super(DialogInputType.BOOLEAN, label);
-        this.initialValue = initialValue;
+        MiniMessageFlow miniMessageFlow = TextService.get().flow();
+        this.initialValue = miniMessageFlow.compileText(initialValue);
         this.initialValueSupplier = null;
-        this.onTrueText = onTrueText;
-        this.onFalseText = onFalseText;
+        this.onTrueText = miniMessageFlow.compileText(onTrueText);
+        this.onFalseText = miniMessageFlow.compileText(onFalseText);
     }
 
     public Optional<Supplier<Boolean>> getInitialValueSupplierX() {
@@ -41,14 +46,15 @@ public class DialogBooleanInput extends VanillaDialogInput {
     public DialogInput build(@NotNull DialogRenderContext<DialogInput, DialogInventory, PaperMetaUpdater, MenuPlugin> context) {
         Placeholders placeholders = context.getPlaceholders();
         Player player = context.getPlayer();
-        MenuPlugin plugin = context.getPlugin();
 
         String key = this.key;
-        Component label = context.getMetaUpdater().getComponent(plugin.parse(player, placeholders.parse(this.getLabel())));
-        boolean initialValue = this.getInitialValueSupplierX().map(Supplier::get).orElseGet(() -> Boolean.parseBoolean(plugin.parse(player, placeholders.parse(this.initialValue))));
+        Values values = placeholders.values();
 
-        String onTrueText = plugin.parse(player, placeholders.parse(this.onTrueText));
-        String onFalseText = plugin.parse(player, placeholders.parse(this.onFalseText));
+        Component label = this.getLabelTemplate().render(values, player);
+        boolean initialValue = this.getInitialValueSupplierX().map(Supplier::get).orElseGet(() -> Boolean.parseBoolean(this.initialValue.render(values, player)));
+
+        String onTrueText = this.onTrueText.render(values, player);
+        String onFalseText = this.onFalseText.render(values, player);
 
         return DialogInput.bool(key, label, initialValue, onTrueText, onFalseText);
     }

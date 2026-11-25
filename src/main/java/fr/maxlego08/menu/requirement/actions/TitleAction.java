@@ -5,6 +5,7 @@ import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.common.utils.ActionHelper;
 import org.bukkit.entity.Player;
+import fr.robie.minimessageflow.Template;
 import org.jspecify.annotations.NonNull;
 
 import java.util.Map;
@@ -16,6 +17,8 @@ public class TitleAction extends ActionHelper {
     private final long start;
     private final long duration;
     private final long end;
+    private final transient Template titleTemplate;
+    private final transient Template subtitleTemplate;
 
     public TitleAction(String title, String subtitle, long start, long duration, long end) {
         this.title = title;
@@ -23,11 +26,13 @@ public class TitleAction extends ActionHelper {
         this.start = start;
         this.duration = duration;
         this.end = end;
+        this.titleTemplate = compile(title);
+        this.subtitleTemplate = compile(subtitle);
     }
 
     @Override
     protected void execute(@NonNull Player player, Button button, @NonNull InventoryEngine inventory, @NonNull Placeholders placeholders) {
-        inventory.getPlugin().getMetaUpdater().sendTitle(player, this.papi(placeholders.parse(this.title), player), this.papi(placeholders.parse(this.subtitle), player), this.start, this.duration, this.end);
+        player.showTitle(title(this.titleTemplate, this.subtitleTemplate, placeholders.values(), player, this.start, this.duration, this.end));
     }
 
     @Override

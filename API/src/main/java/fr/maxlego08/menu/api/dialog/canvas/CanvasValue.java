@@ -1,7 +1,9 @@
 package fr.maxlego08.menu.api.dialog.canvas;
 
 import fr.maxlego08.menu.api.exceptions.DialogException;
+import fr.maxlego08.menu.api.text.TextService;
 import fr.maxlego08.menu.zcore.logger.Logger;
+import fr.robie.minimessageflow.TextTemplate;
 import net.kyori.adventure.key.Key;
 import org.bukkit.configuration.ConfigurationSection;
 import org.jetbrains.annotations.NotNull;
@@ -31,12 +33,17 @@ public final class CanvasValue<T> {
     private final T fixed;
     private final T fallback;
     private final Function<String, T> parser;
+    /**
+     * {@link #raw} compiled once when it has placeholders: read from the canvas's values, then PlaceholderAPI.
+     */
+    private final @Nullable TextTemplate template;
 
     private CanvasValue(@NotNull String raw, @Nullable T fixed, @NotNull T fallback, @NotNull Function<String, T> parser) {
         this.raw = raw;
         this.fixed = fixed;
         this.fallback = fallback;
         this.parser = parser;
+        this.template = fixed == null ? TextService.get().flow().compileText(raw) : null;
     }
 
     /**
@@ -167,7 +174,7 @@ public final class CanvasValue<T> {
      */
     public @NotNull T resolve(@NotNull CanvasRenderContext context) {
         if (this.fixed != null) return this.fixed;
-        String parsed = context.resolve(this.raw).trim();
+        String parsed = (this.template == null ? context.resolve(this.raw) : this.template.render(context.placeholders().values(), context.player())).trim();
         T value = this.parser.apply(parsed);
         if (value != null) return value;
         if (REPORTED.add(this.raw + "=" + parsed)) {

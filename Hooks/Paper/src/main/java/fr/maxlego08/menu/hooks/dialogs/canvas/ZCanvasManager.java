@@ -364,7 +364,7 @@ public final class ZCanvasManager implements CanvasManager, Listener {
     }
 
     private @NotNull Component formatForCheck(@NotNull String text) {
-        return this.plugin.getMetaUpdater() instanceof PaperMetaUpdater metaUpdater ? metaUpdater.getComponent(text) : Component.text(text);
+        return ((PaperMetaUpdater) this.plugin.getMetaUpdater()).getComponent(text);
     }
 
     private void reportProblems(@NotNull Map<String, List<String>> found) {

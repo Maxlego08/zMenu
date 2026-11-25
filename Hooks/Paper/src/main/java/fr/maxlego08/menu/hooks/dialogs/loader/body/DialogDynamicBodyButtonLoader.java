@@ -32,7 +32,7 @@ public class DialogDynamicBodyButtonLoader extends DialogDynamicAbstractLoader {
                 Logger.info("DialogDynamicBodyButtonLoader: Button is null for buttonName: " + buttonName);
         }
         if (button instanceof VanillaDialogBody vanillaDialogBody && !button.hasCustomRender()) {
-            return new DialogDynamicBodyButton(this.plugin, start, end, vanillaDialogBody);
+            return new DialogDynamicBodyButton(start, end, vanillaDialogBody);
         }
         return null;
     }
