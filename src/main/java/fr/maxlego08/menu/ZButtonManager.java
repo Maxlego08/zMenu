@@ -24,8 +24,8 @@ import fr.maxlego08.menu.registry.RegistryOwners;
 import fr.maxlego08.menu.registry.ZRegistryManager;
 import net.kyori.adventure.key.Key;
 import fr.maxlego08.menu.zcore.logger.Logger;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.YamlConfiguration;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
+import dev.dejvokep.boostedyaml.YamlDocument;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -33,6 +33,8 @@ import org.jspecify.annotations.NonNull;
 
 import java.io.File;
 import java.util.*;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
+import org.bukkit.configuration.file.YamlConfiguration;
 
 public class ZButtonManager extends ZUtils implements ButtonManager {
 
@@ -147,9 +149,17 @@ public class ZButtonManager extends ZUtils implements ButtonManager {
     }
 
     @Override @SuppressWarnings("unchecked")
-    public @NotNull List<Permissible> loadPermissible(@NotNull YamlConfiguration configuration, @NotNull String path, @NotNull File file) {
-        List<Map<String, Object>> elements = (List<Map<String, Object>>) configuration.getList(path, new ArrayList<>());
+    public @NotNull List<Permissible> loadPermissible(@NotNull YamlDocument configuration, @NotNull String path, @NotNull File file) {
+        List<Map<String, Object>> elements = (List<Map<String, Object>>) YamlSections.getList(configuration, path, new ArrayList<>());
         return this.loadPermissible(elements, path, file);
+    }
+
+    @SuppressWarnings("removal")
+    @Override
+    @Deprecated
+    public List<Permissible> loadPermissible(YamlConfiguration configuration, String path, File file) {
+        YamlDocument configurationDocument = configuration == null ? null : YamlSections.toDocument(configuration);
+        return this.loadPermissible(configurationDocument, path, file);
     }
 
     @Override
@@ -205,35 +215,67 @@ public class ZButtonManager extends ZUtils implements ButtonManager {
     }
 
     @Override @SuppressWarnings("unchecked")
-    public @NonNull List<Action> loadActions(@NonNull YamlConfiguration configuration, @NonNull String path, @NonNull File file) {
-        List<Map<String, Object>> elements = (List<Map<String, Object>>) configuration.getList(path, new ArrayList<>());
+    public @NonNull List<Action> loadActions(@NonNull YamlDocument configuration, @NonNull String path, @NonNull File file) {
+        List<Map<String, Object>> elements = (List<Map<String, Object>>) YamlSections.getList(configuration, path, new ArrayList<>());
         return this.loadActions(elements, path, file);
     }
 
+    @SuppressWarnings("removal")
+    @Override
+    @Deprecated
+    public List<Action> loadActions(YamlConfiguration configuration, String path, File file) {
+        YamlDocument configurationDocument = configuration == null ? null : YamlSections.toDocument(configuration);
+        return this.loadActions(configurationDocument, path, file);
+    }
+
     @Override @SuppressWarnings("unchecked")
-    public @NonNull List<Action> loadActions(@NonNull YamlConfiguration configuration, @NonNull String path, @NonNull File file, @NotNull List<ActionPattern> defaultActions, boolean useSuccess, boolean stopOnEmpty) {
-        List<Map<String, Object>> elements = (List<Map<String, Object>>) configuration.getList(path, new ArrayList<>());
+    public @NonNull List<Action> loadActions(@NonNull YamlDocument configuration, @NonNull String path, @NonNull File file, @NotNull List<ActionPattern> defaultActions, boolean useSuccess, boolean stopOnEmpty) {
+        List<Map<String, Object>> elements = (List<Map<String, Object>>) YamlSections.getList(configuration, path, new ArrayList<>());
         return this.loadActions(elements, path, file, defaultActions, useSuccess, stopOnEmpty);
     }
 
+    @SuppressWarnings("removal")
     @Override
-    public @NotNull List<Requirement> loadRequirements(@Nullable YamlConfiguration configuration, @NotNull String path, @NotNull File file) throws InventoryException {
+    @Deprecated
+    public List<Action> loadActions(YamlConfiguration configuration, String path, File file, List<ActionPattern> defaultActions, boolean useSuccess, boolean stopOnEmpty) {
+        YamlDocument configurationDocument = configuration == null ? null : YamlSections.toDocument(configuration);
+        return this.loadActions(configurationDocument, path, file, defaultActions, useSuccess, stopOnEmpty);
+    }
+
+    @Override
+    public @NotNull List<Requirement> loadRequirements(@Nullable YamlDocument configuration, @NotNull String path, @NotNull File file) throws InventoryException {
         if (configuration == null) return List.of();
 
-        ConfigurationSection section = configuration.getConfigurationSection(path);
+        Section section = configuration.getSection(path);
         if (section == null) return List.of();
 
         List<Requirement> requirements = new ArrayList<>();
-        for (String key : section.getKeys(false)) {
+        for (String key : section.getRoutesAsStrings(false)) {
             requirements.add(this.loadRequirement(configuration, path + "." + key + ".", file));
         }
         return requirements;
     }
 
+    @SuppressWarnings("removal")
     @Override
-    public @NotNull Requirement loadRequirement(@NotNull YamlConfiguration configuration, @NotNull String path, @NotNull File file) throws InventoryException {
+    @Deprecated
+    public List<Requirement> loadRequirements(YamlConfiguration configuration, String path, File file) throws InventoryException  {
+        YamlDocument configurationDocument = configuration == null ? null : YamlSections.toDocument(configuration);
+        return this.loadRequirements(configurationDocument, path, file);
+    }
+
+    @Override
+    public @NotNull Requirement loadRequirement(@NotNull YamlDocument configuration, @NotNull String path, @NotNull File file) throws InventoryException {
         Loader<Requirement> requirementLoader = new RequirementLoader(this.plugin);
         return requirementLoader.load(configuration, path, file);
+    }
+
+    @SuppressWarnings("removal")
+    @Override
+    @Deprecated
+    public Requirement loadRequirement(YamlConfiguration configuration, String path, File file) throws InventoryException  {
+        YamlDocument configurationDocument = configuration == null ? null : YamlSections.toDocument(configuration);
+        return this.loadRequirement(configurationDocument, path, file);
     }
 
     @Override

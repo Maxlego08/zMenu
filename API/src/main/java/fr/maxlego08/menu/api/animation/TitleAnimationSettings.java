@@ -5,6 +5,8 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 /**
  * Immutable settings object for title animations.
@@ -28,7 +30,15 @@ public record TitleAnimationSettings(
     int itemUpdateInterval
 ) {
 
+    /**
+     * @deprecated use {@link #serialize(Section)}, zMenu reads its files with BoostedYAML.
+     */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     public void serialize(@NotNull ConfigurationSection section) {
+        YamlSections.write(section, copy -> this.serialize(copy));
+    }
+
+    public void serialize(@NotNull Section section) {
         section.set("titles", this.titles);
         if (this.cycles != -1) section.set("cycles", this.cycles);
         if (this.initialDelay != 20) section.set("initial-delay", this.initialDelay);

@@ -6,8 +6,8 @@ import fr.maxlego08.menu.api.exceptions.InventoryButtonException;
 import fr.maxlego08.menu.api.utils.Loader;
 import fr.maxlego08.menu.hooks.bedrock.AbstractBedrockInventory;
 import fr.maxlego08.menu.zcore.logger.Logger;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.YamlConfiguration;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
+import dev.dejvokep.boostedyaml.YamlDocument;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -20,10 +20,10 @@ import java.util.function.BiConsumer;
 public interface BedrockInventoryTypeLoader<T extends AbstractBedrockInventory<?,?,?>> {
 
     @Nullable
-    T load(@NotNull MenuPlugin menuPlugin, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String title);
+    T load(@NotNull MenuPlugin menuPlugin, @NotNull File file, @NotNull YamlDocument configuration, @NotNull String title);
 
     static <U extends Button> List<U> loadButtons(
-            YamlConfiguration configuration,
+            YamlDocument configuration,
             File file,
             String sectionKey,
             Class<U> buttonClass,
@@ -32,7 +32,7 @@ public interface BedrockInventoryTypeLoader<T extends AbstractBedrockInventory<?
     ) {
         List<U> buttons = new ArrayList<>();
 
-        ConfigurationSection section = configuration.getConfigurationSection(sectionKey);
+        Section section = configuration.getSection(sectionKey);
 
         if (section == null) {
             return buttons;
@@ -41,7 +41,7 @@ public interface BedrockInventoryTypeLoader<T extends AbstractBedrockInventory<?
         Loader<Button> loader = menuPlugin.getButtonManager()
                 .getLoaderButton(menuPlugin, file, 54, new HashMap<>());
 
-        for (String key : section.getKeys(false)) {
+        for (String key : section.getRoutesAsStrings(false)) {
             String path = sectionKey + "." + key + ".";
             try {
                 Button button = loader.load(configuration, path, key);

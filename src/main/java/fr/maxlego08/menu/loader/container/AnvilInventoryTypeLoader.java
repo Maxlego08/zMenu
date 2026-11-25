@@ -8,7 +8,7 @@ import fr.maxlego08.menu.api.utils.version.MinecraftVersion;
 import fr.maxlego08.menu.inventory.setter.AnvilInventorySetter;
 import fr.maxlego08.menu.inventory.zinv.ZAnvilInventory;
 import fr.maxlego08.menu.zcore.logger.Logger;
-import org.bukkit.configuration.file.YamlConfiguration;
+import dev.dejvokep.boostedyaml.YamlDocument;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NonNull;
@@ -16,13 +16,14 @@ import org.jspecify.annotations.NonNull;
 import java.io.File;
 import java.util.Collections;
 import java.util.List;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 public class AnvilInventoryTypeLoader implements ContainerInventoryTypeLoader<AnvilInventorySetter> {
 
     private static final String ANVIL_MIN_VERSION = "1.21";
 
     @Override
-    public @NonNull AnvilInventorySetter load(@NotNull MenuPlugin menuPlugin, @NotNull Plugin plugin, @NotNull String inventoryName, @NotNull String fileName, int size, @NotNull List<Button> buttons, @NotNull YamlConfiguration configuration, @NotNull String path, File file) {
+    public @NonNull AnvilInventorySetter load(@NotNull MenuPlugin menuPlugin, @NotNull Plugin plugin, @NotNull String inventoryName, @NotNull String fileName, int size, @NotNull List<Button> buttons, @NotNull YamlDocument configuration, @NotNull String path, File file) {
         if (!MinecraftVersion.getCurrentVersion().isAtLeast(MinecraftVersion.parse(ANVIL_MIN_VERSION))) {
             Logger.error("Inventory " + inventoryName + " (" + file.getAbsolutePath() + ") uses type ANVIL, which requires Minecraft " + ANVIL_MIN_VERSION + "+. It will open as a chest and rename-requirements will not run.");
         }

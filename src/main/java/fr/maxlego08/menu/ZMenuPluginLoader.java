@@ -37,6 +37,11 @@ public class ZMenuPluginLoader implements PluginLoader {
                 null
         ));
 
+        resolver.addDependency(new Dependency(
+                new DefaultArtifact("dev.dejvokep:boosted-yaml:1.3.8"),
+                null
+        ));
+
         Set<String> backends = configuredBackends(classpathBuilder.getContext().getDataDirectory().resolve("config.yml"));
         if (backends.contains("REDIS")) {
             resolver.addDependency(new Dependency(

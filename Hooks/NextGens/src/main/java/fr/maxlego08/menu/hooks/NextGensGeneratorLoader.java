@@ -6,10 +6,12 @@ import com.muhammaddaffa.nextgens.generators.managers.GeneratorManager;
 import fr.maxlego08.menu.api.annotations.AutoMaterialLoader;
 import fr.maxlego08.menu.api.annotations.RequiresPlugin;
 import fr.maxlego08.menu.api.loader.MaterialLoader;
-import org.bukkit.configuration.file.YamlConfiguration;
+import dev.dejvokep.boostedyaml.YamlDocument;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jspecify.annotations.NonNull;
+import org.bukkit.configuration.file.YamlConfiguration;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 @AutoMaterialLoader
 @RequiresPlugin("NextGens")
@@ -22,10 +24,18 @@ public class NextGensGeneratorLoader extends MaterialLoader {
     }
 
     @Override
-    public ItemStack load(@NonNull Player player, @NonNull YamlConfiguration configuration, @NonNull String path, @NonNull String materialString) {
+    public ItemStack load(@NonNull Player player, @NonNull YamlDocument configuration, @NonNull String path, @NonNull String materialString) {
         this.loadNextGens(); // Try to fix Circular dependency
         Generator generator = this.generatorManager.getGenerator(materialString);
         return generator != null ? generator.item() : null;
+    }
+
+    @SuppressWarnings("removal")
+    @Override
+    @Deprecated
+    public ItemStack load(Player player, YamlConfiguration configuration, String path, String materialString) {
+        YamlDocument configurationDocument = configuration == null ? null : YamlSections.toDocument(configuration);
+        return this.load(player, configurationDocument, path, materialString);
     }
 
     private void loadNextGens() {

@@ -1,6 +1,6 @@
 package fr.maxlego08.menu.hooks.dialogs.canvas;
 
-import org.bukkit.configuration.ConfigurationSection;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -43,7 +43,7 @@ public record CanvasSettings(@NotNull String target, boolean autoRebuild, @NotNu
          */
         DEBUG;
 
-        static @NotNull FocusOutline read(@NotNull ConfigurationSection configuration) {
+        static @NotNull FocusOutline read(@NotNull Section configuration) {
             return switch (String.valueOf(configuration.get("dialog-canvas.hide-focus-outline", false)).trim().toLowerCase(Locale.ROOT)) {
                 case "true" -> ON;
                 case "debug" -> DEBUG;
@@ -85,7 +85,7 @@ public record CanvasSettings(@NotNull String target, boolean autoRebuild, @NotNu
             };
         }
 
-        static @NotNull RequirePack read(@NotNull ConfigurationSection configuration) {
+        static @NotNull RequirePack read(@NotNull Section configuration) {
             Object value = configuration.get("dialog-canvas.require-pack", "auto");
             String text = String.valueOf(value).trim().toUpperCase(Locale.ROOT);
             try {
@@ -100,13 +100,13 @@ public record CanvasSettings(@NotNull String target, boolean autoRebuild, @NotNu
      * @param configuration The content of {@code config.yml}.
      * @return The settings, with defaults for missing keys.
      */
-    public static @NotNull CanvasSettings read(@NotNull ConfigurationSection configuration) {
+    public static @NotNull CanvasSettings read(@NotNull Section configuration) {
         return new CanvasSettings(
                 configuration.getString("dialog-canvas.resource-pack.target", AUTO),
                 configuration.getBoolean("dialog-canvas.resource-pack.auto-rebuild", false),
                 RequirePack.read(configuration),
                 configuration.getBoolean("dialog-canvas.download-vanilla-assets", true),
-                Math.max(1, configuration.getLong("dialog-canvas.click-lifetime-seconds", 600)),
+                Math.max(1, configuration.getLong("dialog-canvas.click-lifetime-seconds", 600L)),
                 configuration.getString("dialog-canvas.resource-pack.standalone.url", ""),
                 configuration.getBoolean("dialog-canvas.resource-pack.standalone.required", false),
                 configuration.getString("dialog-canvas.resource-pack.standalone.prompt", ""),

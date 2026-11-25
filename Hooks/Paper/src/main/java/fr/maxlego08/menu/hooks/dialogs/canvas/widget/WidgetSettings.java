@@ -6,8 +6,8 @@ import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.hooks.dialogs.canvas.element.ElementSections;
 import fr.maxlego08.menu.hooks.dialogs.canvas.element.VisibleCondition;
 import fr.maxlego08.menu.hooks.dialogs.canvas.state.CanvasStateActions;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.YamlConfiguration;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
+import dev.dejvokep.boostedyaml.YamlDocument;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -15,6 +15,7 @@ import java.io.File;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 /**
  * The keys every widget accepts:
@@ -66,7 +67,7 @@ public record WidgetSettings(@NotNull String name, @NotNull String key, @NotNull
      * @param defaultValue The default value when the section has none.
      * @return The settings.
      */
-    public static @NotNull WidgetSettings read(@NotNull MenuPlugin plugin, @NotNull String name, @NotNull ConfigurationSection section, @NotNull String source,
+    public static @NotNull WidgetSettings read(@NotNull MenuPlugin plugin, @NotNull String name, @NotNull Section section, @NotNull String source,
                                                @NotNull String defaultValue) {
         String key = section.getString("key", name);
         if (!CanvasStateActions.isValidKey(key)) {
@@ -79,14 +80,14 @@ public record WidgetSettings(@NotNull String name, @NotNull String key, @NotNull
 
         List<Action> onChange = List.of();
         if (section.contains("on-change")) {
-            if (!(section.getRoot() instanceof YamlConfiguration configuration) || section.getCurrentPath() == null) {
+            if (!(section.getRoot() instanceof YamlDocument configuration) || YamlSections.getCurrentPath(section) == null) {
                 throw ElementSections.error(name, source, "must be read from a YAML file to use on-change");
             }
-            onChange = plugin.getButtonManager().loadActions(configuration, section.getCurrentPath() + ".on-change", new File(source));
+            onChange = plugin.getButtonManager().loadActions(configuration, YamlSections.getCurrentPath(section) + ".on-change", new File(source));
         }
         return new WidgetSettings(name, key, String.valueOf(section.get("default", defaultValue)), CanvasStateService.Keep.parse(keep), x, y,
                 section.contains("enabled") ? VisibleCondition.parse(String.valueOf(section.get("enabled"))) : null,
-                section.isList("hover") ? section.getStringList("hover") : section.contains("hover") ? List.of(section.getString("hover")) : List.of(),
+                section.isList("hover") ? YamlSections.getStringList(section, "hover") : section.contains("hover") ? List.of(section.getString("hover")) : List.of(),
                 section.getBoolean("escape-placeholders", true), onChange);
     }
 
@@ -95,7 +96,7 @@ public record WidgetSettings(@NotNull String name, @NotNull String key, @NotNull
      * @param type          The widget type.
      * @param defaultValue  The default value of the widget type, left out when unchanged.
      */
-    public void serialize(@NotNull ConfigurationSection section, @NotNull String type, @NotNull String defaultValue) {
+    public void serialize(@NotNull Section section, @NotNull String type, @NotNull String defaultValue) {
         section.set("type", type);
         if (!this.key.equals(this.name)) section.set("key", this.key);
         if (!this.defaultValue.equals(defaultValue)) section.set("default", this.defaultValue);

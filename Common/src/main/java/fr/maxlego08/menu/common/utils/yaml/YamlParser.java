@@ -5,35 +5,36 @@ import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.api.configuration.Configuration;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.common.utils.cache.YamlFileCache;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.YamlConfiguration;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
+import dev.dejvokep.boostedyaml.YamlDocument;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.util.*;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 public class YamlParser {
 
     private static final Placeholders PLACEHOLDER_PARSER = new Placeholders();
 
     /**
-     * Parse a YamlConfiguration with placeholders replacements.
+     * Parse a YamlDocument with placeholders replacements.
      * Iterates through the configuration structure recursively.
      *
      * @param configuration the configuration to parse
      * @param placeholders  the placeholders map (key -> value)
-     * @return the parsed YamlConfiguration
+     * @return the parsed YamlDocument
      */
     @Contract("null, _ -> null")
-    public static YamlConfiguration parseConfiguration(@Nullable YamlConfiguration configuration, @NotNull Map<String, Object> placeholders) {
+    public static YamlDocument parseConfiguration(@Nullable YamlDocument configuration, @NotNull Map<String, Object> placeholders) {
         if (configuration == null) return null;
 
         try {
-            YamlConfiguration parsedConfig = new YamlConfiguration();
+            YamlDocument parsedConfig = YamlSections.empty();
             parseSection(configuration, parsedConfig, "", placeholders);
-            return parsedConfig;
+            return YamlSections.link(parsedConfig);
         } catch (Exception e) {
             if (Configuration.enableDebug)
                 Logger.error(e);
@@ -46,31 +47,31 @@ public class YamlParser {
      *
      * @param file         the file to load
      * @param placeholders the placeholders map (key -> value)
-     * @return the parsed YamlConfiguration
+     * @return the parsed YamlDocument
      */
     @NotNull
-    public static YamlConfiguration loadAndParseFile(@NotNull File file, @NotNull Map<String, Object> placeholders) {
+    public static YamlDocument loadAndParseFile(@NotNull File file, @NotNull Map<String, Object> placeholders) {
         try {
-            Optional<YamlConfiguration> yamlConfiguration = YamlFileCache.getYamlConfiguration(file.toPath());
+            Optional<YamlDocument> yamlConfiguration = YamlFileCache.getYamlConfiguration(file.toPath());
             if (yamlConfiguration.isEmpty()) {
-                return new YamlConfiguration();
+                return YamlSections.empty();
             }
             return parseConfiguration(yamlConfiguration.get(), placeholders);
         } catch (Exception exception) {
             if (Configuration.enableDebug)
                 Logger.error(exception);
-            return new YamlConfiguration();
+            return YamlSections.empty();
         }
     }
 
-    private static void parseSection(@NotNull ConfigurationSection source, @NotNull ConfigurationSection destination,
+    private static void parseSection(@NotNull Section source, @NotNull Section destination,
                               @NotNull String currentPath, @NotNull Map<String, Object> placeholders) {
-        for (String key : source.getKeys(false)) {
+        for (String key : source.getRoutesAsStrings(false)) {
             String fullPath = currentPath.isEmpty() ? key : currentPath + "." + key;
             Object value = source.get(key);
 
             switch (value) {
-                case ConfigurationSection section -> parseSection(section, destination.createSection(key), fullPath, placeholders);
+                case Section section -> parseSection(section, destination.createSection(key), fullPath, placeholders);
                 case List<?> list -> destination.set(key, parseList(list, placeholders));
                 case String string -> destination.set(key, parseStringValue(string, placeholders));
                 case null, default -> destination.set(key, value);
@@ -87,7 +88,7 @@ public class YamlParser {
             Object value = entry.getValue();
 
             switch (value) {
-                case ConfigurationSection section -> destination.put(key, configurationSectionToMap(section, placeholders));
+                case Section section -> destination.put(key, configurationSectionToMap(section, placeholders));
                 case List<?> list -> destination.put(key, parseList(list, placeholders));
                 case String string -> {
                     String listPlaceholderKey = findListPlaceholderInString(string, listPlaceholders);
@@ -128,7 +129,7 @@ public class YamlParser {
 
         for (Object item : list) {
             switch (item) {
-                case ConfigurationSection section -> result.add(configurationSectionToMap(section, placeholders));
+                case Section section -> result.add(configurationSectionToMap(section, placeholders));
                 case List<?> nestedList -> result.add(parseList(nestedList, placeholders));
                 case String string -> processStringValue(string, listPlaceholders, placeholders, result::add);
                 case Map<?,?> map -> {
@@ -171,17 +172,17 @@ public class YamlParser {
     }
 
     /**
-     * Converts a ConfigurationSection to a Map by parsing it.
+     * Converts a Section to a Map by parsing it.
      *
-     * @param section the ConfigurationSection to convert
+     * @param section the Section to convert
      * @param placeholders the placeholders map
      * @return the parsed Map
      */
     @NotNull
-    private static Map<String, Object> configurationSectionToMap(@NotNull ConfigurationSection section, @NotNull Map<String, Object> placeholders) {
-        YamlConfiguration temp = new YamlConfiguration();
+    private static Map<String, Object> configurationSectionToMap(@NotNull Section section, @NotNull Map<String, Object> placeholders) {
+        YamlDocument temp = YamlSections.empty();
         parseSection(section, temp, "", placeholders);
-        return temp.getValues(true);
+        return temp.getStringRouteMappedValues(true);
     }
 
     /**

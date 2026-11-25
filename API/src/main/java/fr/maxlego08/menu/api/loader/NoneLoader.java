@@ -19,6 +19,8 @@ public class NoneLoader extends ButtonLoader {
         this.clazz = clazz;
     }
 
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
+    @SuppressWarnings("removal")
     @Override
     @Nullable
     public Button load(@NonNull YamlConfiguration configuration, @NonNull String path, @NonNull DefaultButtonValue defaultButtonValue) {

@@ -9,7 +9,7 @@ import fr.maxlego08.menu.api.dialog.canvas.GlyphCell;
 import fr.maxlego08.menu.api.dialog.canvas.ResolvedGlyph;
 import fr.maxlego08.menu.hooks.dialogs.canvas.glyph.ProgressGlyphProvider;
 import fr.maxlego08.menu.zcore.logger.Logger;
-import org.bukkit.configuration.ConfigurationSection;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -17,6 +17,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
+import org.bukkit.configuration.ConfigurationSection;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 /**
  * Draws a progress bar: the filled part of a texture over an optional background glyph.
@@ -139,7 +141,7 @@ public record ProgressElement(@NotNull String name, @NotNull PackValue texture, 
     }
 
     @Override
-    public void serialize(@NotNull ConfigurationSection section) {
+    public void serialize(@NotNull Section section) {
         section.set("type", "progress");
         this.texture.serialize(section, "texture");
         if (this.background != null) this.background.serialize(section, "background");
@@ -148,5 +150,12 @@ public record ProgressElement(@NotNull String name, @NotNull PackValue texture, 
         if (this.steps > 0) section.set("steps", this.steps);
         this.x.serialize(section, "x");
         this.y.serialize(section, "y");
+    }
+
+    @SuppressWarnings("removal")
+    @Override
+    @Deprecated
+    public void serialize(ConfigurationSection section) {
+        YamlSections.write(section, copy -> this.serialize(copy));
     }
 }

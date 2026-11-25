@@ -1,18 +1,18 @@
 package fr.maxlego08.menu.hooks.dialogs.loader;
 
 import fr.maxlego08.menu.api.enums.dialog.DialogType;
-import org.bukkit.configuration.file.YamlConfiguration;
+import dev.dejvokep.boostedyaml.YamlDocument;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 public class EscapeActionCheckTest {
 
     private static Optional<String> check(String yaml, DialogType type) throws Exception {
-        YamlConfiguration configuration = new YamlConfiguration();
-        configuration.loadFromString(yaml);
+        YamlDocument configuration = YamlSections.load(yaml);
         return EscapeActionCheck.refreshOnEscape(configuration, type);
     }
 

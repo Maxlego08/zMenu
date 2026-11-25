@@ -32,6 +32,8 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import dev.dejvokep.boostedyaml.YamlDocument;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 public interface MenuPlugin extends Plugin {
 
@@ -275,6 +277,7 @@ public interface MenuPlugin extends Plugin {
      * @return the loaded menu item stack.
      * @deprecated use {@link ItemStackService#load(YamlConfiguration, String, File)}.
      */
+    @SuppressWarnings("removal")
     @Deprecated(since = "1.1.2.1", forRemoval = true)
     default MenuItemStack loadItemStack(YamlConfiguration configuration, String path, File file) {
         return this.getItemStackService().load(configuration, path, file);
@@ -300,9 +303,35 @@ public interface MenuPlugin extends Plugin {
      *
      * @param path the file
      * @return the configuration, or empty if the file does not exist
+     * @deprecated use {@link #readYamlDocument(Path)}, zMenu reads its files with BoostedYAML.
      */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     @NotNull
     Optional<YamlConfiguration> readYamlFile(@NotNull Path path);
+
+    /**
+     * Reads a YAML file through zMenu's file cache: a file read by several menus is parsed once, and
+     * read again when it changes on disk.
+     * <p>BoostedYAML is loaded by zMenu: an addon that calls this method must also declare it.
+     *
+     * @param path the file
+     * @return the document, or empty if the file does not exist
+     */
+    @NotNull
+    default Optional<YamlDocument> readYamlDocument(@NotNull Path path) {
+        return this.readYamlFile(path).map(YamlSections::toDocument);
+    }
+
+    /**
+     * zMenu's {@code config.yml}, as BoostedYAML reads it.
+     * <p>BoostedYAML is loaded by zMenu: an addon that calls this method must also declare it.
+     *
+     * @return the document of {@code config.yml}
+     */
+    @NotNull
+    default YamlDocument getConfigDocument() {
+        return YamlSections.toDocument(this.getConfig());
+    }
 
     /**
      * Returns the ToastHelper object for this plugin.

@@ -20,8 +20,8 @@ import io.papermc.paper.registry.tag.Tag;
 import io.papermc.paper.registry.tag.TagKey;
 import net.kyori.adventure.key.Key;
 import org.bukkit.NamespacedKey;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.YamlConfiguration;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
+import dev.dejvokep.boostedyaml.YamlDocument;
 import org.bukkit.damage.DamageType;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
@@ -31,6 +31,9 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.configuration.ConfigurationSection;
 
 @AutoComponentLoader
 @SinceVersion("1.21.5")
@@ -41,7 +44,7 @@ public final class BlockAttacksItemComponentLoader extends ItemComponentLoader {
     }
 
     @Override
-    public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
+    public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlDocument configuration, @NotNull String path, @Nullable Section componentSection) {
         if (componentSection == null) return null;
 
         ResolvableFloat blockDelaySeconds = this.asResolvableFloat(componentSection, "block-delay-seconds");
@@ -51,7 +54,7 @@ public final class BlockAttacksItemComponentLoader extends ItemComponentLoader {
         TagKeyResolvable<DamageType> bypassedBy = fr.maxlego08.menu.api.utils.resolvable.paper.ResolvableRegistryKey.tagKeyOrNull(RegistryKey.DAMAGE_TYPE, componentSection.getString("bypassed-by"));
 
         ResolvableItemDamageFunction itemDamage = null;
-        ConfigurationSection itemDamageSection = componentSection.getConfigurationSection("item-damage");
+        Section itemDamageSection = componentSection.getSection("item-damage");
         if (itemDamageSection != null) {
             ResolvableFloat threshold = this.asResolvableFloat(itemDamageSection, "threshold");
             ResolvableFloat base = this.asResolvableFloat(itemDamageSection, "base");
@@ -63,8 +66,8 @@ public final class BlockAttacksItemComponentLoader extends ItemComponentLoader {
         List<ResolvableDamageReduction> damageReductionList = null;
         for (Map<?, ?> damageReductionMap : damageReductions) {
             if (damageReductionMap == null) continue;
-            ConfigurationSection damageReductionConfiguration = new YamlConfiguration();
-            ConfigurationSection damageReduction = damageReductionConfiguration.createSection("damage_reduction", damageReductionMap);
+            Section damageReductionConfiguration = YamlSections.empty();
+            Section damageReduction = YamlSections.createSection(damageReductionConfiguration, "damage_reduction", damageReductionMap);
             ResolvableFloat horizontalBlockingAngle = this.asResolvableFloat(damageReduction, "horizontal-blocking-angle");
             ResolvableFloat base = this.asResolvableFloat(damageReduction, "base");
             ResolvableFloat factor = this.asResolvableFloat(damageReduction, "factor");
@@ -88,6 +91,14 @@ public final class BlockAttacksItemComponentLoader extends ItemComponentLoader {
                 itemDamage,
                 damageReductionList
         );
+    }
+
+    @SuppressWarnings("removal")
+    @Override
+    @Deprecated
+    public ItemComponent load(MenuItemStackContext context, File file, YamlConfiguration configuration, String path, ConfigurationSection componentSection) {
+        YamlDocument configurationDocument = configuration == null ? null : YamlSections.toDocument(configuration);
+        return this.load(context, file, configurationDocument, path, YamlSections.toSection(configurationDocument, componentSection));
     }
 
     @Override

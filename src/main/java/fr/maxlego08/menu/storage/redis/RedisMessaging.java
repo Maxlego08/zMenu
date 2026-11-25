@@ -1,7 +1,7 @@
 package fr.maxlego08.menu.storage.redis;
 
 import fr.maxlego08.menu.api.storage.spi.MessageBroker;
-import org.bukkit.configuration.ConfigurationSection;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.TimeUnit;
@@ -27,7 +27,7 @@ public final class RedisMessaging {
      *
      * @throws IllegalStateException when the Redis client is missing
      */
-    public static @NotNull RedisMessaging open(@NotNull ConfigurationSection configuration, @NotNull String serverId, @NotNull Logger logger) {
+    public static @NotNull RedisMessaging open(@NotNull Section configuration, @NotNull String serverId, @NotNull Logger logger) {
         RedisSettings settings = RedisSettings.read(configuration);
         RedisConnection connection;
         try {

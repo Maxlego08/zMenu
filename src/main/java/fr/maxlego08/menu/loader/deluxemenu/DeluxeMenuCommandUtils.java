@@ -17,7 +17,7 @@ import fr.maxlego08.menu.requirement.permissible.*;
 import fr.maxlego08.menu.sound.ZSoundOption;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.traqueur.currencies.Currencies;
-import org.bukkit.configuration.ConfigurationSection;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.plugin.Plugin;
 
@@ -25,6 +25,7 @@ import java.io.File;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 /**
  * Turns DeluxeMenus click commands and requirements into zMenu actions and permissibles, following
@@ -179,14 +180,14 @@ public abstract class DeluxeMenuCommandUtils extends ZUtils {
         }
     }
 
-    protected Requirement loadRequirement(InventoryManager inventoryManager, CommandManager commandManager, Plugin plugin, List<Action> actions, ConfigurationSection section, List<ClickType> clickTypes, File file) {
+    protected Requirement loadRequirement(InventoryManager inventoryManager, CommandManager commandManager, Plugin plugin, List<Action> actions, Section section, List<ClickType> clickTypes, File file) {
         if (section == null) {
             return new ZRequirement(0, new ArrayList<>(), new ArrayList<>(), actions, clickTypes);
         }
 
         Set<Permissible> optional = Collections.newSetFromMap(new IdentityHashMap<>());
         List<Permissible> permissibles = new ArrayList<>();
-        ConfigurationSection requirementsSection = section.getConfigurationSection("requirements");
+        Section requirementsSection = section.getSection("requirements");
         if (requirementsSection != null) {
             permissibles = this.loadPermissibles(inventoryManager, commandManager, plugin, requirementsSection, optional, file);
         }
@@ -198,27 +199,27 @@ public abstract class DeluxeMenuCommandUtils extends ZUtils {
             if (required.isEmpty()) {
                 minimum = minimumRequirements;
             } else if (minimumRequirements <= required.size()) {
-                this.warn(file, "the optional requirements of " + section.getCurrentPath() + " cannot change the outcome, their commands are not converted");
+                this.warn(file, "the optional requirements of " + YamlSections.getCurrentPath(section) + " cannot change the outcome, their commands are not converted");
                 permissibles = new ArrayList<>(required);
                 minimum = permissibles.size();
             } else {
-                this.warn(file, "the requirements of " + section.getCurrentPath() + " mix optional and required checks, zMenu requires all of them");
+                this.warn(file, "the requirements of " + YamlSections.getCurrentPath(section) + " mix optional and required checks, zMenu requires all of them");
             }
         }
         if (section.getBoolean("stop_at_success", false)) {
-            this.warn(file, "stop_at_success in " + section.getCurrentPath() + " is not supported, every requirement is checked");
+            this.warn(file, "stop_at_success in " + YamlSections.getCurrentPath(section) + " is not supported, every requirement is checked");
         }
 
-        List<Action> denyActions = this.loadActions(inventoryManager, commandManager, plugin, section.getStringList("deny_commands"), file);
+        List<Action> denyActions = this.loadActions(inventoryManager, commandManager, plugin, YamlSections.getStringList(section, "deny_commands"), file);
         return new ZRequirement(minimum, permissibles, denyActions, actions, clickTypes);
     }
 
 
-    protected List<Permissible> loadPermissibles(InventoryManager inventoryManager, CommandManager commandManager, Plugin plugin, ConfigurationSection configurationSection, Set<Permissible> optional, File file) {
+    protected List<Permissible> loadPermissibles(InventoryManager inventoryManager, CommandManager commandManager, Plugin plugin, Section configurationSection, Set<Permissible> optional, File file) {
         List<Permissible> permissibles = new ArrayList<>();
 
-        for (String key : configurationSection.getKeys(false)) {
-            ConfigurationSection requirementSection = configurationSection.getConfigurationSection(key);
+        for (String key : configurationSection.getRoutesAsStrings(false)) {
+            Section requirementSection = configurationSection.getSection(key);
             if (requirementSection == null) continue;
 
             List<Permissible> loaded = this.loadPermissible(inventoryManager, commandManager, plugin, requirementSection, file);
@@ -229,10 +230,10 @@ public abstract class DeluxeMenuCommandUtils extends ZUtils {
         return permissibles;
     }
 
-    private List<Permissible> loadPermissible(InventoryManager inventoryManager, CommandManager commandManager, Plugin plugin, ConfigurationSection section, File file) {
+    private List<Permissible> loadPermissible(InventoryManager inventoryManager, CommandManager commandManager, Plugin plugin, Section section, File file) {
         String rawType = section.getString("type");
-        List<Action> denyActions = this.loadActions(inventoryManager, commandManager, plugin, section.getStringList("deny_commands"), file);
-        List<Action> successActions = this.loadActions(inventoryManager, commandManager, plugin, section.getStringList("success_commands"), file);
+        List<Action> denyActions = this.loadActions(inventoryManager, commandManager, plugin, YamlSections.getStringList(section, "deny_commands"), file);
+        List<Action> successActions = this.loadActions(inventoryManager, commandManager, plugin, YamlSections.getStringList(section, "success_commands"), file);
 
         if (rawType == null) {
             return List.of(this.unsupported(section, "without a type", denyActions, file));
@@ -251,7 +252,7 @@ public abstract class DeluxeMenuCommandUtils extends ZUtils {
                 return List.of(new ZPermissionPermissible(negated ? "!" + permission : permission, denyActions, successActions));
             }
             case "has permissions", "has perms", "haspermissions", "hasperms", "perms" -> {
-                List<String> permissions = section.getStringList("permissions");
+                List<String> permissions = YamlSections.getStringList(section, "permissions");
                 int minimum = section.getInt("minimum", permissions.size());
                 if (negated || minimum < permissions.size()) break;
                 List<Permissible> permissibles = new ArrayList<>(permissions.size());
@@ -328,7 +329,7 @@ public abstract class DeluxeMenuCommandUtils extends ZUtils {
     }
 
 
-    private Permissible loadItemPermissible(InventoryManager inventoryManager, ConfigurationSection section, List<Action> denyActions, List<Action> successActions, boolean negated, File file) {
+    private Permissible loadItemPermissible(InventoryManager inventoryManager, Section section, List<Action> denyActions, List<Action> successActions, boolean negated, File file) {
         String material = section.getString("material");
         boolean needsMore = section.getBoolean("strict", false) || section.contains("name") || section.contains("lore")
                 || section.contains("data") || section.getBoolean("armor", false) || section.getBoolean("offhand", false)
@@ -346,7 +347,7 @@ public abstract class DeluxeMenuCommandUtils extends ZUtils {
         return new ZItemPermissible(menuItemStack, amount, denyActions, successActions, verification);
     }
 
-    private Permissible unsupported(ConfigurationSection section, String description, List<Action> denyActions, File file) {
+    private Permissible unsupported(Section section, String description, List<Action> denyActions, File file) {
         this.warn(file, "the requirement " + section.getName() + " " + description + " is not supported, it always denies");
         return new UnsupportedDeluxeMenusPermissible(section.getName() + " " + description, denyActions);
     }

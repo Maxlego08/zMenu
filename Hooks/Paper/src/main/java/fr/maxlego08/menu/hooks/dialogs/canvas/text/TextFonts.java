@@ -2,8 +2,8 @@ package fr.maxlego08.menu.hooks.dialogs.canvas.text;
 
 import fr.maxlego08.menu.common.canvas.TextureMetrics;
 import fr.maxlego08.menu.zcore.logger.Logger;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.YamlConfiguration;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
+import dev.dejvokep.boostedyaml.YamlDocument;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 /**
  * The fonts canvas text can use: the vanilla font, called {@code default}, and the fonts of
@@ -50,9 +51,9 @@ public final class TextFonts {
 
         Path file = resourcePackFolder.resolve("fonts.yml");
         if (Files.isRegularFile(file)) {
-            YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file.toFile());
-            for (String name : configuration.getKeys(false)) {
-                ConfigurationSection section = configuration.getConfigurationSection(name);
+            YamlDocument configuration = YamlSections.load(file.toFile());
+            for (String name : configuration.getRoutesAsStrings(false)) {
+                Section section = configuration.getSection(name);
                 if (section == null) continue;
                 try {
                     loaded.put(name, this.read(resourcePackFolder, name, section));
@@ -64,7 +65,7 @@ public final class TextFonts {
         this.fonts = Map.copyOf(loaded);
     }
 
-    private @NotNull CanvasTextFont read(@NotNull Path folder, @NotNull String name, @NotNull ConfigurationSection section) throws IOException {
+    private @NotNull CanvasTextFont read(@NotNull Path folder, @NotNull String name, @NotNull Section section) throws IOException {
         if (!NAME.matcher(name).matches()) throw new IllegalArgumentException("a font name may only hold a-z, 0-9, _, . and -");
         if (VanillaTextFont.NAME.equals(name)) throw new IllegalArgumentException("the name default belongs to the vanilla font");
 
@@ -81,7 +82,7 @@ public final class TextFonts {
                 rejectUnknownKeys(section, BITMAP_KEYS);
                 BufferedImage image = TextureMetrics.read(bytes);
                 if (image == null) throw new IllegalArgumentException("the file is not a PNG");
-                List<String> chars = section.getStringList("chars");
+                List<String> chars = YamlSections.getStringList(section, "chars");
                 if (chars.isEmpty()) throw new IllegalArgumentException("chars is missing");
                 int height = section.getInt("height", 8);
                 int ascent = section.getInt("ascent", 7);
@@ -96,16 +97,16 @@ public final class TextFonts {
                 } catch (FontFormatException exception) {
                     throw new IllegalArgumentException("the file is not a TrueType font");
                 }
-                float size = (float) section.getDouble("size", 11);
-                return new TrueTypeTextFont(name, bytes, font, size, (float) section.getDouble("oversample", 4), (float) section.getDouble("shift", 0),
+                float size = (float) (double) section.getDouble("size", 11.0);
+                return new TrueTypeTextFont(name, bytes, font, size, (float) (double) section.getDouble("oversample", 4.0), (float) (double) section.getDouble("shift", 0.0),
                         section.getInt("line-height", Math.round(size) + 1));
             }
             default -> throw new IllegalArgumentException("type must be bitmap or ttf");
         }
     }
 
-    private static void rejectUnknownKeys(@NotNull ConfigurationSection section, @NotNull Set<String> allowed) {
-        for (String key : section.getKeys(false)) {
+    private static void rejectUnknownKeys(@NotNull Section section, @NotNull Set<String> allowed) {
+        for (String key : section.getRoutesAsStrings(false)) {
             if (!allowed.contains(key)) throw new IllegalArgumentException("unknown key " + key + ", allowed: " + String.join(", ", allowed));
         }
     }

@@ -7,8 +7,10 @@ import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.DefaultButtonValue;
 import fr.maxlego08.menu.api.loader.ButtonLoader;
 import fr.maxlego08.menu.button.buttons.ZMainMenuButton;
-import org.bukkit.configuration.file.YamlConfiguration;
+import dev.dejvokep.boostedyaml.YamlDocument;
 import org.jspecify.annotations.NonNull;
+import org.bukkit.configuration.file.YamlConfiguration;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 @AutoButtonLoader
 public class MainMenuLoader extends ButtonLoader {
@@ -21,7 +23,15 @@ public class MainMenuLoader extends ButtonLoader {
     }
 
     @Override
-    public Button load(@NonNull YamlConfiguration configuration, @NonNull String path, @NonNull DefaultButtonValue defaultButtonValue) {
+    public Button load(@NonNull YamlDocument configuration, @NonNull String path, @NonNull DefaultButtonValue defaultButtonValue) {
         return new ZMainMenuButton(this.manager);
+    }
+
+    @SuppressWarnings("removal")
+    @Override
+    @Deprecated
+    public Button load(YamlConfiguration configuration, String path, DefaultButtonValue defaultButtonValue) {
+        YamlDocument configurationDocument = configuration == null ? null : YamlSections.toDocument(configuration);
+        return this.load(configurationDocument, path, defaultButtonValue);
     }
 }

@@ -6,13 +6,15 @@ import fr.maxlego08.menu.api.dialog.canvas.CanvasVariants;
 import fr.maxlego08.menu.api.dialog.canvas.HAlign;
 import fr.maxlego08.menu.api.dialog.canvas.ResolvedGlyph;
 import fr.maxlego08.menu.hooks.dialogs.canvas.element.VisibleCondition;
-import org.bukkit.configuration.ConfigurationSection;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import org.bukkit.configuration.ConfigurationSection;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 /**
  * Several options at once: each option is a checkbox, its value the options checked, in the order of the
@@ -175,18 +177,25 @@ public final class ChecklistWidget extends WidgetElement {
     }
 
     @Override
-    public void serialize(@NotNull ConfigurationSection section) {
+    public void serialize(@NotNull Section section) {
         this.settings.serialize(section, TYPE, "");
         if (!this.column) section.set("direction", "row");
         if (this.gap != 2) section.set("gap", this.gap);
         section.set("height", this.height);
         if (this.max > 0) section.set("max", this.max);
-        ConfigurationSection options = section.createSection("options");
+        Section options = section.createSection("options");
         for (ChoiceWidget.Option option : this.options) option.serialize(options, "glyph-on", "glyph-off", "label-checked");
         section.set("glyph-on", this.glyphOn);
         section.set("glyph-off", this.glyphOff);
         if (!this.font.equals("default")) section.set("font", this.font);
         this.label.serialize(section, "label", false);
         this.labelChecked.serialize(section, "label-checked", false);
+    }
+
+    @SuppressWarnings("removal")
+    @Override
+    @Deprecated
+    public void serialize(ConfigurationSection section) {
+        YamlSections.write(section, copy -> this.serialize(copy));
     }
 }

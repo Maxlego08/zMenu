@@ -7,13 +7,15 @@ import fr.maxlego08.menu.api.dialog.canvas.HAlign;
 import fr.maxlego08.menu.api.dialog.canvas.ResolvedGlyph;
 import fr.maxlego08.menu.hooks.dialogs.canvas.glyph.PanelGlyphProvider;
 import fr.maxlego08.menu.hooks.dialogs.canvas.state.CanvasStateAction;
-import org.bukkit.configuration.ConfigurationSection;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
+import org.bukkit.configuration.ConfigurationSection;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 /**
  * A number chosen by clicking along a track.
@@ -175,7 +177,7 @@ public final class SliderWidget extends WidgetElement {
     }
 
     @Override
-    public void serialize(@NotNull ConfigurationSection section) {
+    public void serialize(@NotNull Section section) {
         this.settings.serialize(section, TYPE, CanvasStateAction.format(this.min));
         section.set("min", this.min);
         section.set("max", this.max);
@@ -190,5 +192,12 @@ public final class SliderWidget extends WidgetElement {
         this.textMin.serialize(section, "text-min", false);
         this.textMax.serialize(section, "text-max", false);
         if (!this.font.equals("default")) section.set("font", this.font);
+    }
+
+    @SuppressWarnings("removal")
+    @Override
+    @Deprecated
+    public void serialize(ConfigurationSection section) {
+        YamlSections.write(section, copy -> this.serialize(copy));
     }
 }

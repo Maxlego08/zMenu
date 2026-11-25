@@ -11,6 +11,8 @@ import org.jetbrains.annotations.NotNull;
 import java.io.File;
 import java.util.Map;
 import java.util.Optional;
+import dev.dejvokep.boostedyaml.YamlDocument;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 /**
  * Reads, converts and compares the items of zMenu.
@@ -26,8 +28,24 @@ public interface ItemStackService {
      * @param path          the path of the item in the configuration, ending with a dot
      * @param file          the file the configuration was read from, named when an error is logged
      * @return the menu item
+     * @deprecated use {@link #load(YamlDocument, String, File)}, zMenu reads its files with BoostedYAML.
      */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     MenuItemStack load(YamlConfiguration configuration, String path, File file);
+
+    /**
+     * Loads a menu item from a document, with the global placeholders applied.
+     * By default it reads a Bukkit copy with the deprecated method.
+     * <p>BoostedYAML is loaded by zMenu: an addon that calls this method must also declare it.
+     *
+     * @param configuration the document holding the item
+     * @param path          the path of the item in the document, ending with a dot
+     * @param file          the file the document was read from, named when an error is logged
+     * @return the menu item
+     */
+    default MenuItemStack load(YamlDocument configuration, String path, File file) {
+        return this.load(YamlSections.toBukkit(configuration), path, file);
+    }
 
     /**
      * Loads a menu item from a map of its settings, such as the item of an action.

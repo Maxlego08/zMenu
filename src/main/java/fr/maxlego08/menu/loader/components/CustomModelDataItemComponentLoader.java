@@ -13,8 +13,8 @@ import fr.maxlego08.menu.api.utils.version.MinecraftVersion;
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.datacomponent.item.CustomModelData;
 import org.bukkit.Color;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.YamlConfiguration;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
+import dev.dejvokep.boostedyaml.YamlDocument;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
@@ -23,6 +23,9 @@ import org.jetbrains.annotations.Nullable;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.configuration.ConfigurationSection;
 
 @AutoComponentLoader
 public class CustomModelDataItemComponentLoader extends AbstractColorItemComponentLoader {
@@ -32,7 +35,7 @@ public class CustomModelDataItemComponentLoader extends AbstractColorItemCompone
     }
 
     @Override
-    public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
+    public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlDocument configuration, @NotNull String path, @Nullable Section componentSection) {
         if (componentSection == null) return null;
         List<ResolvableFloat> floats = this.getFloats(componentSection);
 
@@ -49,6 +52,14 @@ public class CustomModelDataItemComponentLoader extends AbstractColorItemCompone
         return MinecraftVersion.isServerAtLeast("1.21.4")
                 ? new CustomModelDataComponent(floats, booleans, strings, colorList)
                 : new LegacyCustomModelDataComponent(floats, booleans, strings, colorList);
+    }
+
+    @SuppressWarnings("removal")
+    @Override
+    @Deprecated
+    public ItemComponent load(MenuItemStackContext context, File file, YamlConfiguration configuration, String path, ConfigurationSection componentSection) {
+        YamlDocument configurationDocument = configuration == null ? null : YamlSections.toDocument(configuration);
+        return this.load(context, file, configurationDocument, path, YamlSections.toSection(configurationDocument, componentSection));
     }
 
     @Override
@@ -89,9 +100,9 @@ public class CustomModelDataItemComponentLoader extends AbstractColorItemCompone
         return new LegacyCustomModelDataComponent(List.of(ResolvableFloat.of(value)), List.of(), List.of(), List.of());
     }
 
-    protected @NotNull List<ResolvableFloat> getFloats(@NotNull ConfigurationSection section) {
+    protected @NotNull List<ResolvableFloat> getFloats(@NotNull Section section) {
         List<ResolvableFloat> resolvables = new ArrayList<>();
-        List<?> list = section.getList("floats");
+        List<?> list = YamlSections.getList(section, "floats");
         if (list != null) {
             for (Object obj : list) {
                 if (obj instanceof Number number) resolvables.add(ResolvableFloat.of(number.floatValue()));
@@ -101,9 +112,9 @@ public class CustomModelDataItemComponentLoader extends AbstractColorItemCompone
         return resolvables;
     }
 
-    protected @NotNull List<ResolvableBoolean> getBooleans(@NotNull ConfigurationSection section) {
+    protected @NotNull List<ResolvableBoolean> getBooleans(@NotNull Section section) {
         List<ResolvableBoolean> resolvables = new ArrayList<>();
-        List<?> list = section.getList("flags");
+        List<?> list = YamlSections.getList(section, "flags");
         if (list != null) {
             for (Object obj : list) {
                 if (obj instanceof Boolean bool) resolvables.add(ResolvableBoolean.of(bool));
@@ -113,18 +124,18 @@ public class CustomModelDataItemComponentLoader extends AbstractColorItemCompone
         return resolvables;
     }
 
-    protected @NotNull List<ResolvableString> getStrings(@NotNull ConfigurationSection section) {
+    protected @NotNull List<ResolvableString> getStrings(@NotNull Section section) {
         List<ResolvableString> resolvables = new ArrayList<>();
-        List<String> list = section.getStringList("strings");
+        List<String> list = YamlSections.getStringList(section, "strings");
         for (String s : list) {
             resolvables.add(ResolvableString.ofExpression(s));
         }
         return resolvables;
     }
 
-    protected @NotNull List<ResolvableColor> getColors(@NotNull ConfigurationSection section) {
+    protected @NotNull List<ResolvableColor> getColors(@NotNull Section section) {
         List<ResolvableColor> colors = new ArrayList<>();
-        List<?> colorsList = section.getList("colors");
+        List<?> colorsList = YamlSections.getList(section, "colors");
         if (colorsList != null) {
             for (Object obj : colorsList) {
                 ResolvableColor color = ResolvableColor.of(obj);

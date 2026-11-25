@@ -11,10 +11,12 @@ import fr.maxlego08.menu.api.loader.ButtonLoader;
 import fr.maxlego08.menu.api.utils.SwitchCaseButton;
 import fr.maxlego08.menu.button.buttons.ZSwitchButton;
 import fr.maxlego08.menu.loader.ZButtonLoader;
-import org.bukkit.configuration.file.YamlConfiguration;
+import dev.dejvokep.boostedyaml.YamlDocument;
 import org.jspecify.annotations.NonNull;
 
 import java.util.ArrayList;
+import org.bukkit.configuration.file.YamlConfiguration;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 @AutoButtonLoader
 public class SwitchLoader extends ButtonLoader {
@@ -27,15 +29,15 @@ public class SwitchLoader extends ButtonLoader {
     }
 
     @Override
-    public Button load(@NonNull YamlConfiguration configuration, @NonNull String path, @NonNull DefaultButtonValue defaultButtonValue) {
+    public Button load(@NonNull YamlDocument configuration, @NonNull String path, @NonNull DefaultButtonValue defaultButtonValue) {
 
         var placeholder = configuration.getString(path + "key");
         var switchCaseButtons = new ArrayList<SwitchCaseButton>();
         var loader = new ZButtonLoader(this.plugin, defaultButtonValue.getFile(), defaultButtonValue.getInventorySize(), defaultButtonValue.getMatrix());
-        var section = configuration.getConfigurationSection(path + "buttons.");
+        var section = configuration.getSection(path + "buttons.");
 
         if (section != null) {
-            for (String key : section.getKeys(false)) {
+            for (String key : section.getRoutesAsStrings(false)) {
 
                 try {
                     var button = loader.load(configuration, path + "buttons." + key + ".", key, defaultButtonValue);
@@ -47,5 +49,13 @@ public class SwitchLoader extends ButtonLoader {
         }
 
         return new ZSwitchButton(placeholder, switchCaseButtons);
+    }
+
+    @SuppressWarnings("removal")
+    @Override
+    @Deprecated
+    public Button load(YamlConfiguration configuration, String path, DefaultButtonValue defaultButtonValue) {
+        YamlDocument configurationDocument = configuration == null ? null : YamlSections.toDocument(configuration);
+        return this.load(configurationDocument, path, defaultButtonValue);
     }
 }

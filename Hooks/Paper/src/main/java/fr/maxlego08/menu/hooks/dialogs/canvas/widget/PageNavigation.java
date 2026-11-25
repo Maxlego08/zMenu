@@ -4,7 +4,7 @@ import fr.maxlego08.menu.api.dialog.canvas.CanvasVariants;
 import fr.maxlego08.menu.api.dialog.canvas.HAlign;
 import fr.maxlego08.menu.api.dialog.canvas.ResolvedGlyph;
 import fr.maxlego08.menu.hooks.dialogs.canvas.element.ElementSections;
-import org.bukkit.configuration.ConfigurationSection;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -91,14 +91,14 @@ public record PageNavigation(@NotNull Button previous, @NotNull Button next, @Nu
      * @param source  Where it is read from, for error messages.
      * @return The navigation.
      */
-    public static @NotNull PageNavigation read(@NotNull ConfigurationSection section, @NotNull String name, @NotNull String source) {
+    public static @NotNull PageNavigation read(@NotNull Section section, @NotNull String name, @NotNull String source) {
         return new PageNavigation(button(section, "previous", "<gray>«", name, source), button(section, "next", "<gray>»", name, source),
-                pageText(section.getConfigurationSection("page-text"), name, source));
+                pageText(section.getSection("page-text"), name, source));
     }
 
-    private static @NotNull Button button(@NotNull ConfigurationSection parent, @NotNull String key, @NotNull String defaultText, @NotNull String name,
+    private static @NotNull Button button(@NotNull Section parent, @NotNull String key, @NotNull String defaultText, @NotNull String name,
                                           @NotNull String source) {
-        ConfigurationSection section = parent.getConfigurationSection(key);
+        Section section = parent.getSection(key);
         if (section == null) throw ElementSections.error(name, source, "needs " + key + " with x and y");
         int width = section.getInt("width", 20);
         int height = section.getInt("height", 12);
@@ -109,7 +109,7 @@ public record PageNavigation(@NotNull Button previous, @NotNull Button next, @Nu
                 glyph, section.getString("glyph-disabled"), text, section.getString("font", "default"));
     }
 
-    private static @Nullable PageText pageText(@Nullable ConfigurationSection section, @NotNull String name, @NotNull String source) {
+    private static @Nullable PageText pageText(@Nullable Section section, @NotNull String name, @NotNull String source) {
         if (section == null) return null;
         HAlign align;
         try {
@@ -126,11 +126,11 @@ public record PageNavigation(@NotNull Button previous, @NotNull Button next, @Nu
      *
      * @param section The widget section.
      */
-    public void serialize(@NotNull ConfigurationSection section) {
+    public void serialize(@NotNull Section section) {
         write(section.createSection("previous"), this.previous);
         write(section.createSection("next"), this.next);
         if (this.pageText != null) {
-            ConfigurationSection text = section.createSection("page-text");
+            Section text = section.createSection("page-text");
             text.set("x", this.pageText.x());
             text.set("y", this.pageText.y());
             if (this.pageText.width() > 0) text.set("width", this.pageText.width());
@@ -140,7 +140,7 @@ public record PageNavigation(@NotNull Button previous, @NotNull Button next, @Nu
         }
     }
 
-    private static void write(@NotNull ConfigurationSection section, @NotNull Button button) {
+    private static void write(@NotNull Section section, @NotNull Button button) {
         section.set("x", button.x());
         section.set("y", button.y());
         section.set("width", button.width());

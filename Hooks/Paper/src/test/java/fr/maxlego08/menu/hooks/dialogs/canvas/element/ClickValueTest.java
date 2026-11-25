@@ -4,21 +4,24 @@ import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.exceptions.DialogException;
 import fr.maxlego08.menu.hooks.dialogs.action.ZStaticOpenUrlDialogAction;
 import fr.maxlego08.menu.hooks.dialogs.canvas.DialogActionRegistries;
-import org.bukkit.configuration.ConfigurationSection;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
 import org.bukkit.configuration.InvalidConfigurationException;
-import org.bukkit.configuration.file.YamlConfiguration;
+import dev.dejvokep.boostedyaml.YamlDocument;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 public class ClickValueTest {
 
     private static final MenuPlugin PLUGIN = DialogActionRegistries.plugin(DialogActionRegistries.create());
 
-    private static ConfigurationSection element(String yaml) throws InvalidConfigurationException {
-        YamlConfiguration configuration = new YamlConfiguration();
-        configuration.loadFromString(yaml);
-        return configuration.getConfigurationSection("docs");
+    private static Section element(String yaml) throws InvalidConfigurationException {
+        try {
+            return YamlSections.load(yaml).getSection("docs");
+        } catch (java.io.IOException exception) {
+            throw new InvalidConfigurationException(exception.getMessage(), exception);
+        }
     }
 
     private static ClickValue read(String yaml) throws InvalidConfigurationException {
@@ -43,7 +46,7 @@ public class ClickValueTest {
         assertNotNull(click);
         assertInstanceOf(ZStaticOpenUrlDialogAction.class, click.action());
 
-        YamlConfiguration written = new YamlConfiguration();
+        YamlDocument written = YamlSections.empty();
         click.serialize(written);
         assertEquals("static", written.getString("click.type"));
         assertEquals("OPEN_URL", written.getString("click.static-type"));

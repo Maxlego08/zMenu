@@ -13,9 +13,11 @@ import fr.maxlego08.menu.button.buttons.ZItemDragButton;
 import fr.maxlego08.menu.itemstack.FullSimilar;
 import fr.maxlego08.menu.registry.ZRuleLoaderRegistry;
 import fr.maxlego08.menu.zcore.logger.Logger;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.YamlConfiguration;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
+import dev.dejvokep.boostedyaml.YamlDocument;
 import org.jspecify.annotations.NonNull;
+import org.bukkit.configuration.file.YamlConfiguration;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 @AutoButtonLoader
 public class ItemDragLoader extends ButtonLoader {
@@ -30,7 +32,7 @@ public class ItemDragLoader extends ButtonLoader {
     }
 
     @Override
-    public Button load(@NonNull YamlConfiguration configuration, @NonNull String path, @NonNull DefaultButtonValue defaultButtonValue) {
+    public Button load(@NonNull YamlDocument configuration, @NonNull String path, @NonNull DefaultButtonValue defaultButtonValue) {
         ZItemDragButton button = new ZItemDragButton(this.plugin);
         String check_element = configuration.contains(path + "check_item") ? "check_item" : configuration.contains(path + "check-item") ? "check-item" : null;
 
@@ -51,9 +53,9 @@ public class ItemDragLoader extends ButtonLoader {
             MenuItemStack menuItemStack = this.itemStackService.load(configuration, path + error_element + ".item.", defaultButtonValue.getFile());
             button.setErrorItem(menuItemStack, ticks, useCache);
         }
-        ConfigurationSection ruleSection = configuration.getConfigurationSection(path + "rule");
+        Section ruleSection = configuration.getSection(path + "rule");
         if (ruleSection != null) {
-            Rule rule = ZRuleLoaderRegistry.loadRule(ruleSection.getValues(true));
+            Rule rule = ZRuleLoaderRegistry.loadRule(ruleSection.getStringRouteMappedValues(true));
             if (rule == null || !rule.isValid()) {
                 Logger.info("The rule of the item_drag button " + path + " in " + defaultButtonValue.getFile().getName() + " is invalid, the button will refuse every item.", Logger.LogType.WARNING);
                 rule = context -> false;
@@ -62,5 +64,13 @@ public class ItemDragLoader extends ButtonLoader {
         }
 
         return button;
+    }
+
+    @SuppressWarnings("removal")
+    @Override
+    @Deprecated
+    public Button load(YamlConfiguration configuration, String path, DefaultButtonValue defaultButtonValue) {
+        YamlDocument configurationDocument = configuration == null ? null : YamlSections.toDocument(configuration);
+        return this.load(configurationDocument, path, defaultButtonValue);
     }
 }

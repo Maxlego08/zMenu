@@ -12,7 +12,7 @@ import fr.maxlego08.menu.api.rules.Rule;
 import fr.maxlego08.menu.api.utils.Placeholders;
 import fr.maxlego08.menu.rules.ZRuleContext;
 import org.bukkit.Material;
-import org.bukkit.configuration.ConfigurationSection;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
@@ -25,6 +25,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import org.bukkit.configuration.ConfigurationSection;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 public class ZItemDragButton extends ItemDragButton {
 
@@ -70,22 +72,29 @@ public class ZItemDragButton extends ItemDragButton {
     }
 
     @Override
-    protected void serializeProperties(@NotNull ConfigurationSection section) {
+    protected void serializeProperties(@NotNull Section section) {
         section.set("type", "item_drag");
         if (this.checkItems != null) {
-            ConfigurationSection checkSection = section.createSection("check-item");
+            Section checkSection = section.createSection("check-item");
             this.checkItems.serialize(checkSection.createSection("item"));
             if (this.itemStackSimilar != null && !"full".equals(this.itemStackSimilar.getName())) {
                 checkSection.set("type", this.itemStackSimilar.getName());
             }
         }
         if (this.enableErrorItem) {
-            ConfigurationSection errorSection = section.createSection("error-item");
+            Section errorSection = section.createSection("error-item");
             this.errorItems.serialize(errorSection.createSection("item"));
             if (this.ticks != 20) errorSection.set("duration", this.ticks);
             if (!this.useErrorItemCache) errorSection.set("use-cache", false);
         }
-        if (this.rule != null) section.createSection("rule", this.rule.serialize());
+        if (this.rule != null) YamlSections.createSection(section, "rule", this.rule.serialize());
+    }
+
+    @SuppressWarnings("removal")
+    @Override
+    @Deprecated
+    protected void serializeProperties(ConfigurationSection section) {
+        YamlSections.write(section, copy -> this.serializeProperties(copy));
     }
 
     @Override

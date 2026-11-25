@@ -5,10 +5,12 @@ import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.button.buttons.NextButton;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.utils.Placeholders;
-import org.bukkit.configuration.ConfigurationSection;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.jspecify.annotations.NonNull;
+import org.bukkit.configuration.ConfigurationSection;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 public class ZNextButton extends NextButton {
 
@@ -20,8 +22,15 @@ public class ZNextButton extends NextButton {
     }
 
     @Override
-    protected void serializeProperties(@NonNull ConfigurationSection section) {
+    protected void serializeProperties(@NonNull Section section) {
         section.set("type", "next");
+    }
+
+    @SuppressWarnings("removal")
+    @Override
+    @Deprecated
+    protected void serializeProperties(ConfigurationSection section) {
+        YamlSections.write(section, copy -> this.serializeProperties(copy));
     }
 
     @Override

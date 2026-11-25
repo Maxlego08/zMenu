@@ -99,7 +99,7 @@ public final class ZCanvasManager implements CanvasManager, Listener {
         this.vanillaAssets = new VanillaAssets(plugin.getDataFolder().toPath().resolve("cache"), Bukkit.getMinecraftVersion());
         this.textFonts = new TextFonts(new VanillaTextFont(this.vanillaAssets));
         this.generator = new CanvasPackGenerator(this.textFonts);
-        this.settings = CanvasSettings.read(plugin.getConfig());
+        this.settings = CanvasSettings.read(plugin.getConfigDocument());
     }
 
     /**
@@ -257,7 +257,7 @@ public final class ZCanvasManager implements CanvasManager, Listener {
     private @Nullable ZGeneratedPack generate(@NotNull String reason, boolean allowRebuild) {
         synchronized (this.generationLock) {
             try {
-                this.settings = CanvasSettings.read(this.plugin.getConfig());
+                this.settings = CanvasSettings.read(this.plugin.getConfigDocument());
                 this.glyphs.clear();
                 Optional<CanvasPackTarget> target = this.getActiveTarget();
                 this.vanillaAssets.useOverrides(path -> path.startsWith("assets/zmenu/") ? Optional.empty() : target.flatMap(value -> value.readPackFile(path)));

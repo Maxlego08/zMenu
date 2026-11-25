@@ -138,6 +138,8 @@ public class DialogCanvasBody extends VanillaDialogBody {
         return DialogBody.plainMessage(Component.join(JoinConfiguration.newlines(), lines), Math.min(1024, this.canvasWidth.fixedOrFallback() + 10));
     }
 
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
+    @SuppressWarnings("removal")
     @Override
     protected void serializeProperties(@NotNull ConfigurationSection section) {
         section.set("type", "dialog-canvas");

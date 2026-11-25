@@ -5,11 +5,13 @@ import fr.maxlego08.menu.api.ZMenuKeys;
 import fr.maxlego08.menu.api.dialog.canvas.CanvasElement;
 import fr.maxlego08.menu.api.dialog.canvas.CanvasElementLoader;
 import net.kyori.adventure.key.Key;
-import org.bukkit.configuration.ConfigurationSection;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
 import java.util.function.UnaryOperator;
+import org.bukkit.configuration.ConfigurationSection;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 /**
  * Reads {@link ImageElement}s, written {@code type: image}.
@@ -24,7 +26,7 @@ public final class ImageElementLoader implements CanvasElementLoader {
     }
 
     @Override
-    public @NotNull CanvasElement load(@NotNull MenuPlugin plugin, @NotNull String name, @NotNull ConfigurationSection section, @NotNull String source) {
+    public @NotNull CanvasElement load(@NotNull MenuPlugin plugin, @NotNull String name, @NotNull Section section, @NotNull String source) {
         ElementSections.rejectUnknownKeys(section, KEYS, name, source);
         PackValue glyph = PackValue.read(section, "glyph", null, UnaryOperator.identity(), name, source);
         PositionValue x = PositionValue.readX(section, "x", name, source);
@@ -34,5 +36,12 @@ public final class ImageElementLoader implements CanvasElementLoader {
             throw ElementSections.error(name, source, "needs a height from 1 to " + PanelElementLoader.MAX_HEIGHT);
         }
         return new ImageElement(name, glyph, x, y, height);
+    }
+
+    @SuppressWarnings("removal")
+    @Override
+    @Deprecated
+    public CanvasElement load(MenuPlugin plugin, String name, ConfigurationSection section, String source) {
+        return this.load(plugin, name, (section == null ? null : YamlSections.toDocument(section)), source);
     }
 }

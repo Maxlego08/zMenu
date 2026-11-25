@@ -41,6 +41,8 @@ public class CustomSlotAnimation implements SlotAnimation {
         }
     }
 
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
+    @SuppressWarnings("removal")
     @Override
     public void serialize(@NotNull ConfigurationSection section) {
         List<Integer> order = new ArrayList<>(this.positionBySlot.keySet());

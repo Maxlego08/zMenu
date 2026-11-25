@@ -7,7 +7,7 @@ import fr.maxlego08.menu.api.dialog.canvas.CanvasVariants;
 import fr.maxlego08.menu.api.dialog.canvas.HAlign;
 import fr.maxlego08.menu.api.dialog.canvas.ResolvedGlyph;
 import fr.maxlego08.menu.hooks.dialogs.canvas.glyph.PanelGlyphProvider;
-import org.bukkit.configuration.ConfigurationSection;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -17,6 +17,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import org.bukkit.configuration.ConfigurationSection;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 /**
  * One value out of a list of options: {@code type: tabs} draws each option as a panel, {@code type: radio} as
@@ -119,8 +121,8 @@ public final class ChoiceWidget extends WidgetElement {
          * @param idleKey       The key of the idle look.
          * @param labelSelected The key of the label while selected.
          */
-        public void serialize(@NotNull ConfigurationSection section, @NotNull String selectedKey, @NotNull String idleKey, @NotNull String labelSelected) {
-            ConfigurationSection option = section.createSection(this.id);
+        public void serialize(@NotNull Section section, @NotNull String selectedKey, @NotNull String idleKey, @NotNull String labelSelected) {
+            Section option = section.createSection(this.id);
             option.set("label", this.label);
             option.set("width", this.width);
             if (this.x != null) option.set("x", this.x);
@@ -307,13 +309,13 @@ public final class ChoiceWidget extends WidgetElement {
     }
 
     @Override
-    public void serialize(@NotNull ConfigurationSection section) {
+    public void serialize(@NotNull Section section) {
         boolean tabs = this.style == Style.TABS;
         this.settings.serialize(section, this.style.type(), this.options.getFirst().id());
         if (this.column != (this.style == Style.RADIO)) section.set("direction", this.column ? "column" : "row");
         if (this.gap != 2) section.set("gap", this.gap);
         section.set("height", this.height);
-        ConfigurationSection options = section.createSection("options");
+        Section options = section.createSection("options");
         for (Option option : this.options) {
             option.serialize(options, tabs ? "panel-selected" : "glyph-selected", tabs ? "panel-idle" : "glyph-idle", "label-selected");
         }
@@ -324,12 +326,19 @@ public final class ChoiceWidget extends WidgetElement {
         this.label.serialize(section, "label", false);
         this.labelSelected.serialize(section, "label-selected", false);
         if (!this.pages.isEmpty()) {
-            ConfigurationSection pagesSection = section.createSection("pages");
+            Section pagesSection = section.createSection("pages");
             this.pages.forEach((id, elements) -> {
-                ConfigurationSection page = pagesSection.createSection(id);
+                Section page = pagesSection.createSection(id);
                 for (CanvasElement element : elements) element.serialize(page.createSection(element.name()));
             });
         }
+    }
+
+    @SuppressWarnings("removal")
+    @Override
+    @Deprecated
+    public void serialize(ConfigurationSection section) {
+        YamlSections.write(section, copy -> this.serialize(copy));
     }
 
     /**

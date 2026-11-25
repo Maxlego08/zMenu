@@ -17,6 +17,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import dev.dejvokep.boostedyaml.YamlDocument;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 @SuppressWarnings("unused")
 public abstract class MechanicFactory<T extends Mechanic<?>> implements Keyed {
@@ -31,8 +34,23 @@ public abstract class MechanicFactory<T extends Mechanic<?>> implements Keyed {
         this.itemManager = plugin.getItemManager();
     }
 
+    /**
+     * @deprecated use {@link #parse(MenuPlugin, String, Section, YamlDocument, File, String)}, zMenu reads its files with BoostedYAML.
+     */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     @NotNull
     public abstract T parse(final MenuPlugin plugin, final String itemId, final ConfigurationSection mechanicSection, YamlConfiguration configurationFile, File file, String path);
+
+    /**
+     * Reads the mechanic of an item. zMenu calls this method, override it.
+     * By default it reads a Bukkit copy with the deprecated method, which existing addons override.
+     * <p>BoostedYAML is loaded by zMenu: an addon that calls this method must also declare it.
+     */
+    @NotNull
+    public T parse(final MenuPlugin plugin, final String itemId, final Section mechanicSection, YamlDocument configurationFile, File file, String path) {
+        YamlConfiguration copy = YamlSections.toBukkit(configurationFile);
+        return this.parse(plugin, itemId, YamlSections.toBukkit(copy, mechanicSection), copy, file, path);
+    }
 
     @Contract(pure = true)
     public @Nullable T getMechanic(@NotNull String itemId){

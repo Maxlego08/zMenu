@@ -6,10 +6,12 @@ import fr.maxlego08.menu.api.dialog.canvas.CanvasElement;
 import fr.maxlego08.menu.api.dialog.canvas.CanvasElementLoader;
 import fr.maxlego08.menu.api.dialog.canvas.CanvasValue;
 import net.kyori.adventure.key.Key;
-import org.bukkit.configuration.ConfigurationSection;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
+import org.bukkit.configuration.ConfigurationSection;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 /**
  * Reads {@link HeadElement}s ({@code type: head}) and {@link SpriteElement}s ({@code type: sprite}).
@@ -19,7 +21,7 @@ public final class ObjectElementLoaders {
     private ObjectElementLoaders() {
     }
 
-    private static int line(@NotNull ConfigurationSection section, @NotNull String name, @NotNull String source) {
+    private static int line(@NotNull Section section, @NotNull String name, @NotNull String source) {
         int line = ElementSections.requireInt(section, "line", name, source);
         if (line < 0) throw ElementSections.error(name, source, "cannot have a negative line");
         return line;
@@ -38,7 +40,7 @@ public final class ObjectElementLoaders {
         }
 
         @Override
-        public @NotNull CanvasElement load(@NotNull MenuPlugin plugin, @NotNull String name, @NotNull ConfigurationSection section, @NotNull String source) {
+        public @NotNull CanvasElement load(@NotNull MenuPlugin plugin, @NotNull String name, @NotNull Section section, @NotNull String source) {
             ElementSections.rejectUnknownKeys(section, KEYS, name, source);
             String where = "The canvas element " + name + " of " + source;
             String player = section.getString("player");
@@ -46,6 +48,13 @@ public final class ObjectElementLoaders {
             if (player != null && texture != null && !texture.isPlaceholder()) throw ElementSections.error(name, source, "needs player or texture, not both");
             return new HeadElement(name, player, texture, CanvasValue.bool(section, "hat", true, where), PositionValue.readX(section, "x", name, source),
                     line(section, name, source));
+        }
+
+        @SuppressWarnings("removal")
+        @Override
+        @Deprecated
+        public CanvasElement load(MenuPlugin plugin, String name, ConfigurationSection section, String source) {
+            return this.load(plugin, name, (section == null ? null : YamlSections.toDocument(section)), source);
         }
     }
 
@@ -62,12 +71,19 @@ public final class ObjectElementLoaders {
         }
 
         @Override
-        public @NotNull CanvasElement load(@NotNull MenuPlugin plugin, @NotNull String name, @NotNull ConfigurationSection section, @NotNull String source) {
+        public @NotNull CanvasElement load(@NotNull MenuPlugin plugin, @NotNull String name, @NotNull Section section, @NotNull String source) {
             ElementSections.rejectUnknownKeys(section, KEYS, name, source);
             String where = "The canvas element " + name + " of " + source;
             ElementSections.requireString(section, "sprite", name, source);
             return new SpriteElement(name, CanvasValue.key(section, "atlas", SpriteElement.DEFAULT_ATLAS, where),
                     CanvasValue.key(section, "sprite", SpriteElement.MISSING_SPRITE, where), PositionValue.readX(section, "x", name, source), line(section, name, source));
+        }
+
+        @SuppressWarnings("removal")
+        @Override
+        @Deprecated
+        public CanvasElement load(MenuPlugin plugin, String name, ConfigurationSection section, String source) {
+            return this.load(plugin, name, (section == null ? null : YamlSections.toDocument(section)), source);
         }
     }
 }

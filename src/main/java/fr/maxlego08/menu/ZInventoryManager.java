@@ -58,9 +58,9 @@ import fr.maxlego08.menu.zcore.logger.Logger;
 import fr.maxlego08.menu.zcore.logger.Logger.LogType;
 import net.kyori.adventure.key.Key;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.ConfigurationSection;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
 import org.bukkit.configuration.InvalidConfigurationException;
-import org.bukkit.configuration.file.YamlConfiguration;
+import dev.dejvokep.boostedyaml.YamlDocument;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -84,6 +84,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
+import org.bukkit.configuration.file.YamlConfiguration;
 
 public class ZInventoryManager extends ZUtils implements InventoryManager {
     private final ZPaginationManager paginationManager = new ZPaginationManager();
@@ -157,7 +159,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         if (bedrockManager != null) {
             bedrockManager.loadBedrockInventory();
         }
-        this.startOfflineTask(this.plugin.getConfig().getInt("cache-offline-player", 300));
+        this.startOfflineTask(this.plugin.getConfigDocument().getInt("cache-offline-player", 300));
     }
 
     /**
@@ -376,7 +378,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
 
         if (yamlFileEntry.isEmpty()) throw new InventoryFileNotFound("Cannot find " + file.getAbsolutePath() + ". File does not exist.");
 
-        YamlConfiguration configuration = yamlFileEntry.get().getYamlConfiguration();
+        YamlDocument configuration = yamlFileEntry.get().getYamlConfiguration();
 
         Map<String, Object> placeholders = this.plugin.getGlobalPlaceholders();
 
@@ -941,7 +943,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
             message(this.plugin, sender, Message.INVENTORY_CREATE_ERROR_EXCEPTION, "%error%", exception.getMessage());
         }
 
-        YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
+        YamlDocument configuration = YamlSections.load(file);
 
         configuration.set("name", inventoryName);
         configuration.set("size", inventorySize);
@@ -1011,11 +1013,11 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
             }
         }
 
-        YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
+        YamlDocument configuration = YamlSections.load(file);
 
-        ConfigurationSection configurationSection = configuration.getConfigurationSection("items.");
+        Section configurationSection = configuration.getSection("items.");
         if (configurationSection != null) {
-            Set<String> names = configurationSection.getKeys(false);
+            Set<String> names = configurationSection.getRoutesAsStrings(false);
             if (names.contains(name)) {
                 message(this.plugin, sender, Message.SAVE_ERROR_NAME);
                 return;
@@ -1123,9 +1125,15 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         return this.plugin.getFontImage();
     }
 
-    @Override
-    public YamlConfiguration loadYamlConfiguration(File file) {
+    public YamlDocument loadYamlDocument(File file) {
         return YamlParser.loadAndParseFile(file, this.plugin.getGlobalPlaceholders());
+    }
+
+    @SuppressWarnings("removal")
+    @Override
+    @Deprecated
+    public YamlConfiguration loadYamlConfiguration(File file) {
+        return YamlSections.toBukkit(this.loadYamlDocument(file));
     }
 
     @Override

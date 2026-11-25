@@ -2,7 +2,7 @@ package fr.maxlego08.menu.hooks.dialogs.canvas.element;
 
 import fr.maxlego08.menu.api.dialog.canvas.CanvasRenderContext;
 import fr.maxlego08.menu.zcore.logger.Logger;
-import org.bukkit.configuration.ConfigurationSection;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -14,6 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.UnaryOperator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 /**
  * A key that chooses something the resource pack must hold, such as an image or a font, and may hold
@@ -67,7 +68,7 @@ public record PackValue(@NotNull String raw, @NotNull List<String> values, @NotN
      * @param source    Where it is read from, for error messages.
      * @return The value.
      */
-    public static @NotNull PackValue read(@NotNull ConfigurationSection section, @NotNull String key, @Nullable String fallback,
+    public static @NotNull PackValue read(@NotNull Section section, @NotNull String key, @Nullable String fallback,
                                           @NotNull UnaryOperator<String> normalize, @NotNull String name, @NotNull String source) {
         String valuesKey = key + "-values";
         String defaultKey = key + "-default";
@@ -82,7 +83,7 @@ public record PackValue(@NotNull String raw, @NotNull List<String> values, @NotN
             return new PackValue(raw, List.of(value), value, List.of(), null, normalize);
         }
 
-        List<String> written = section.getStringList(valuesKey);
+        List<String> written = YamlSections.getStringList(section, valuesKey);
         if (written.isEmpty()) {
             throw ElementSections.error(name, source, "uses a placeholder in " + key + ", so it needs " + valuesKey
                     + ": the list of values it can give, which are added to the resource pack");
@@ -168,7 +169,7 @@ public record PackValue(@NotNull String raw, @NotNull List<String> values, @NotN
      * @param section The section.
      * @param key     The key.
      */
-    public void serialize(@NotNull ConfigurationSection section, @NotNull String key) {
+    public void serialize(@NotNull Section section, @NotNull String key) {
         section.set(key, this.raw);
         if (!this.written.isEmpty()) section.set(key + "-values", this.written);
         if (this.writtenDefault != null) section.set(key + "-default", this.writtenDefault);

@@ -4,7 +4,7 @@ import fr.maxlego08.menu.api.dialog.canvas.CanvasBuilder;
 import fr.maxlego08.menu.api.dialog.canvas.CanvasRenderContext;
 import fr.maxlego08.menu.api.dialog.canvas.CanvasVariants;
 import fr.maxlego08.menu.api.dialog.canvas.ResolvedGlyph;
-import org.bukkit.configuration.ConfigurationSection;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -15,6 +15,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.Function;
+import org.bukkit.configuration.ConfigurationSection;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 /**
  * A row of stars: the value is the number of stars filled, from 0 to {@code max}, and a click on a star
@@ -145,7 +147,7 @@ public final class RatingWidget extends WidgetElement {
     }
 
     @Override
-    public void serialize(@NotNull ConfigurationSection section) {
+    public void serialize(@NotNull Section section) {
         this.settings.serialize(section, TYPE, "0");
         if (this.stars.isEmpty() && this.max != 5) section.set("max", this.max);
         if (this.gap != 1) section.set("gap", this.gap);
@@ -163,5 +165,12 @@ public final class RatingWidget extends WidgetElement {
             }
             section.set("stars", list);
         }
+    }
+
+    @SuppressWarnings("removal")
+    @Override
+    @Deprecated
+    public void serialize(ConfigurationSection section) {
+        YamlSections.write(section, copy -> this.serialize(copy));
     }
 }

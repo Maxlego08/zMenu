@@ -2,6 +2,8 @@ package fr.maxlego08.menu.api.animation.slot.settings;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.jetbrains.annotations.NotNull;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 /**
  * One of the animations a menu may play, and how likely it is compared to the others.
@@ -24,8 +26,14 @@ public record AnimationVariant(@NotNull String name, @NotNull SlotAnimationSetti
      * Writes this variant into its section of {@code variants}: its settings, and its weight.
      *
      * @param section the section named after the variant
+     * @deprecated use {@link #serialize(Section)}, zMenu reads its files with BoostedYAML.
      */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     public void serialize(@NotNull ConfigurationSection section) {
+        YamlSections.write(section, copy -> this.serialize(copy));
+    }
+
+    public void serialize(@NotNull Section section) {
         this.settings.serialize(section);
         if (this.weight != 1) section.set("weight", this.weight);
     }

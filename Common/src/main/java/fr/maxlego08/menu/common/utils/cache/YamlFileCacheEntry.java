@@ -1,15 +1,15 @@
 package fr.maxlego08.menu.common.utils.cache;
 
-import org.bukkit.configuration.file.YamlConfiguration;
+import dev.dejvokep.boostedyaml.YamlDocument;
 
 import java.io.File;
 
 public class YamlFileCacheEntry {
     private final long lastModified;
     private final File file;
-    private final YamlConfiguration yamlConfiguration;
+    private final YamlDocument yamlConfiguration;
 
-    public YamlFileCacheEntry(File file, YamlConfiguration yamlConfiguration) {
+    public YamlFileCacheEntry(File file, YamlDocument yamlConfiguration) {
         this.file = file;
         this.yamlConfiguration = yamlConfiguration;
         this.lastModified = file.lastModified();
@@ -23,7 +23,7 @@ public class YamlFileCacheEntry {
         return this.file;
     }
 
-    public YamlConfiguration getYamlConfiguration() {
+    public YamlDocument getYamlConfiguration() {
         return this.yamlConfiguration;
     }
 

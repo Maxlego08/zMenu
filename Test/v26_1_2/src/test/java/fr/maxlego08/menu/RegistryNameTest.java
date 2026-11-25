@@ -103,6 +103,7 @@ class RegistryNameTest {
 
     private static ButtonLoader buttonLoader(String name, Button button) {
         return new ButtonLoader(addon, name) {
+            @SuppressWarnings("removal")
             @Override
             public Button load(@NotNull YamlConfiguration configuration, @NotNull String path, @NotNull DefaultButtonValue defaultButtonValue) {
                 return button;
@@ -188,6 +189,7 @@ class RegistryNameTest {
     void aMaterialLoaderRegisteredTheOldWayIsFoundByItsName(String base) {
         String name = unique(base);
         MaterialLoader loader = new MaterialLoader(name) {
+            @SuppressWarnings("removal")
             @Override
             public ItemStack load(@NotNull Player player, @Nullable YamlConfiguration configuration, @NotNull String path, @NotNull String materialString) {
                 return null;

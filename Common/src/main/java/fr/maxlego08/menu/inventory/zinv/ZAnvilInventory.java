@@ -3,11 +3,13 @@ package fr.maxlego08.menu.inventory.zinv;
 import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.requirement.Requirement;
 import fr.maxlego08.menu.inventory.setter.AnvilInventorySetter;
-import org.bukkit.configuration.ConfigurationSection;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import org.bukkit.configuration.ConfigurationSection;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 public class ZAnvilInventory extends ZInventory implements AnvilInventorySetter {
     private final List<Requirement> renameRequirements;
@@ -23,12 +25,18 @@ public class ZAnvilInventory extends ZInventory implements AnvilInventorySetter 
     }
 
     @Override
-    public void serialize(@NotNull ConfigurationSection section) {
+    public void serialize(@NotNull Section section) {
         super.serialize(section);
         if (this.renameRequirements.isEmpty()) return;
-        ConfigurationSection requirementsSection = section.createSection("rename-requirements");
+        Section requirementsSection = section.createSection("rename-requirements");
         for (int index = 0; index < this.renameRequirements.size(); index++) {
             this.renameRequirements.get(index).serialize(requirementsSection.createSection("requirement-" + (index + 1)));
         }
+    }
+
+    @Override
+    @Deprecated
+    public void serialize(ConfigurationSection section) {
+        YamlSections.write(section, copy -> this.serialize(copy));
     }
 }

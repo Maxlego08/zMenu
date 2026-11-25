@@ -5,6 +5,8 @@ import fr.maxlego08.menu.api.sound.SoundOption;
 import org.bukkit.configuration.ConfigurationSection;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 /**
  * One step of a {@link ButtonIdleAnimation}.
@@ -47,8 +49,14 @@ public record IdleFrame(@NotNull MenuItemStack item, long duration, @Nullable So
      * Writes this frame into its section of the idle animation's {@code items}.
      *
      * @param section the section of the frame
+     * @deprecated use {@link #serialize(Section)}, zMenu reads its files with BoostedYAML.
      */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     public void serialize(@NotNull ConfigurationSection section) {
+        YamlSections.write(section, copy -> this.serialize(copy));
+    }
+
+    public void serialize(@NotNull Section section) {
         this.item.serialize(section);
         if (this.duration != 0) section.set("duration", this.duration);
         if (this.sound != null) this.sound.serialize(section.createSection("sound"));

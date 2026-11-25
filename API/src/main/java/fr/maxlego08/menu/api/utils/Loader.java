@@ -8,6 +8,9 @@ import org.jetbrains.annotations.NotNull;
 import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import dev.dejvokep.boostedyaml.YamlDocument;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 /**
  * Generic loader interface for loading/saving plugin objects out of YAML configuration files.
@@ -24,8 +27,25 @@ public interface Loader<T> {
      * @param objects Additional parameters that might be needed for loading.
      * @return The loaded object.
      * @throws InventoryException If there is an error while loading the object.
+     * @deprecated use {@link #load(YamlDocument, String, Object...)}, zMenu reads its files with BoostedYAML.
      */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     T load(@NotNull YamlConfiguration configuration, @NotNull String path, Object... objects) throws InventoryException;
+
+    /**
+     * Loads an object from a document. zMenu calls this method, override it.
+     * By default it reads a Bukkit copy with the deprecated method, which existing addons override.
+     * <p>BoostedYAML is loaded by zMenu: an addon that calls this method must also declare it.
+     *
+     * @param configuration The document to load the object from.
+     * @param path The path within the document to locate the object.
+     * @param objects Additional parameters that might be needed for loading.
+     * @return The loaded object.
+     * @throws InventoryException If there is an error while loading the object.
+     */
+    default T load(@NotNull YamlDocument configuration, @NotNull String path, Object... objects) throws InventoryException {
+        return this.load(YamlSections.toBukkit(configuration), path, objects);
+    }
 
     /**
      * Writes an object into a configuration section, in the same format {@link #load} reads.
@@ -40,13 +60,30 @@ public interface Loader<T> {
      * @param section The section to write the object's keys into.
      * @param objects Additional parameters that might be needed for serializing.
      * @throws UnsupportedOperationException If the object cannot be serialized.
+     * @deprecated use {@link #serialize(Object, Section, Object...)}, zMenu reads its files with BoostedYAML.
      */
+    @SuppressWarnings("removal")
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     default void serialize(@NotNull T object, @NotNull ConfigurationSection section, Object... objects) {
         if (object instanceof SectionSerializable serializable) {
             serializable.serialize(section);
             return;
         }
         throw new UnsupportedOperationException(object.getClass().getName() + " cannot be serialized");
+    }
+
+    /**
+     * Writes an object into a section, in the same format {@link #load} reads. zMenu calls this method, override it.
+     * By default it writes through the deprecated method, which existing addons override.
+     * <p>BoostedYAML is loaded by zMenu: an addon that calls this method must also declare it.
+     *
+     * @param object The object to serialize.
+     * @param section The section to write the object's keys into.
+     * @param objects Additional parameters that might be needed for serializing.
+     * @throws UnsupportedOperationException If the object cannot be serialized.
+     */
+    default void serialize(@NotNull T object, @NotNull Section section, Object... objects) {
+        YamlSections.write(section, copy -> this.serialize(object, copy, objects));
     }
 
     /**

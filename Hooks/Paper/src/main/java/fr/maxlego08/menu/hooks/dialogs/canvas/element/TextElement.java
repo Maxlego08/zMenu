@@ -10,7 +10,7 @@ import fr.maxlego08.menu.api.dialog.canvas.HAlign;
 import fr.maxlego08.menu.api.dialog.canvas.ResolvedGlyph;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.JoinConfiguration;
-import org.bukkit.configuration.ConfigurationSection;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -19,6 +19,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.function.Function;
+import org.bukkit.configuration.ConfigurationSection;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 /**
  * Draws text, with zMenu placeholders, PlaceholderAPI and MiniMessage.
@@ -218,7 +220,7 @@ public record TextElement(@NotNull String name, @NotNull List<String> lines, @No
     }
 
     @Override
-    public void serialize(@NotNull ConfigurationSection section) {
+    public void serialize(@NotNull Section section) {
         section.set("type", "text");
         section.set("text", this.lines.size() == 1 ? this.lines.getFirst() : this.lines);
         if (!this.font.raw().equals("default")) this.font.serialize(section, "font");
@@ -234,5 +236,12 @@ public record TextElement(@NotNull String name, @NotNull List<String> lines, @No
             if (this.box.vertical() != VerticalAlign.TOP) section.set("vertical-align", this.box.vertical().name().toLowerCase(Locale.ROOT));
             if (!this.box.ellipsis()) section.set("overflow", "hide");
         }
+    }
+
+    @SuppressWarnings("removal")
+    @Override
+    @Deprecated
+    public void serialize(ConfigurationSection section) {
+        YamlSections.write(section, copy -> this.serialize(copy));
     }
 }

@@ -21,6 +21,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import dev.dejvokep.boostedyaml.YamlDocument;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 /**
  * The {@code ButtonManager} interface offers a centralized management system for buttons, enabling the creation,
@@ -174,9 +176,21 @@ public interface ButtonManager {
      * @param path          The path specifying the location of the permissible list.
      * @param file          The file where the configuration is located.
      * @return A list of {@link Permissible} objects derived from the configuration.
+     * @deprecated use {@link #loadPermissible(YamlDocument, String, File)}, zMenu reads its files with BoostedYAML.
      */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     @NotNull
     List<@NotNull Permissible> loadPermissible(@NotNull YamlConfiguration configuration,@NotNull String path,@NotNull File file);
+
+    /**
+     * Reads the permissible list of a document.
+     * By default it reads a Bukkit copy with the deprecated method.
+     * <p>BoostedYAML is loaded by zMenu: an addon that calls this method must also declare it.
+     */
+    @NotNull
+    default List<@NotNull Permissible> loadPermissible(@NotNull YamlDocument configuration, @NotNull String path, @NotNull File file) {
+        return this.loadPermissible(YamlSections.toBukkit(configuration), path, file);
+    }
 
     /**
      * Converts a list of map elements from a configuration file into a list of {@link Action} objects.
@@ -203,18 +217,72 @@ public interface ButtonManager {
      * @param path          The path specifying the location of the action list.
      * @param file          The configuration file in use.
      * @return A list of {@link Action} objects derived from the configuration.
+     * @deprecated use {@link #loadActions(YamlDocument, String, File)}, zMenu reads its files with BoostedYAML.
      */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     @NotNull
     List<@NotNull Action> loadActions(@NotNull YamlConfiguration configuration,@NotNull String path,@NotNull File file);
 
+    /**
+     * Reads the action list of a document.
+     * By default it reads a Bukkit copy with the deprecated method.
+     * <p>BoostedYAML is loaded by zMenu: an addon that calls this method must also declare it.
+     */
+    @NotNull
+    default List<@NotNull Action> loadActions(@NotNull YamlDocument configuration, @NotNull String path, @NotNull File file) {
+        return this.loadActions(YamlSections.toBukkit(configuration), path, file);
+    }
+
+    /**
+     * @deprecated use {@link #loadActions(YamlDocument, String, File, List, boolean, boolean)}, zMenu reads its files with BoostedYAML.
+     */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     @NotNull
     List<@NotNull Action> loadActions(@NotNull YamlConfiguration configuration,@NotNull String path,@NotNull File file, @NotNull List<@NotNull ActionPattern> defaultActions, boolean useSuccess, boolean stopOnEmpty);
 
+    /**
+     * Reads the action list of a document, with default actions.
+     * By default it reads a Bukkit copy with the deprecated method.
+     * <p>BoostedYAML is loaded by zMenu: an addon that calls this method must also declare it.
+     */
+    @NotNull
+    default List<@NotNull Action> loadActions(@NotNull YamlDocument configuration, @NotNull String path, @NotNull File file, @NotNull List<@NotNull ActionPattern> defaultActions, boolean useSuccess, boolean stopOnEmpty) {
+        return this.loadActions(YamlSections.toBukkit(configuration), path, file, defaultActions, useSuccess, stopOnEmpty);
+    }
+
+    /**
+     * @deprecated use {@link #loadRequirements(YamlDocument, String, File)}, zMenu reads its files with BoostedYAML.
+     */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     @NotNull
     List<Requirement> loadRequirements(@Nullable YamlConfiguration configuration,@NotNull String path,@NotNull File file) throws InventoryException;
 
+    /**
+     * Reads the requirement list of a document.
+     * By default it reads a Bukkit copy with the deprecated method.
+     * <p>BoostedYAML is loaded by zMenu: an addon that calls this method must also declare it.
+     */
+    @NotNull
+    default List<Requirement> loadRequirements(@Nullable YamlDocument configuration, @NotNull String path, @NotNull File file) throws InventoryException {
+        return this.loadRequirements(configuration == null ? null : YamlSections.toBukkit(configuration), path, file);
+    }
+
+    /**
+     * @deprecated use {@link #loadRequirement(YamlDocument, String, File)}, zMenu reads its files with BoostedYAML.
+     */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     @NotNull
     Requirement loadRequirement(@NotNull YamlConfiguration configuration,@NotNull String path,@NotNull File file) throws InventoryException;
+
+    /**
+     * Reads a requirement of a document.
+     * By default it reads a Bukkit copy with the deprecated method.
+     * <p>BoostedYAML is loaded by zMenu: an addon that calls this method must also declare it.
+     */
+    @NotNull
+    default Requirement loadRequirement(@NotNull YamlDocument configuration, @NotNull String path, @NotNull File file) throws InventoryException {
+        return this.loadRequirement(YamlSections.toBukkit(configuration), path, file);
+    }
 
     /**
      * Retrieves a list of all empty actions from the given configuration elements.

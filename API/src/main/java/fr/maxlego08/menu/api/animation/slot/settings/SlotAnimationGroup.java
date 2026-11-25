@@ -5,6 +5,8 @@ import fr.maxlego08.menu.api.sound.SoundOption;
 import org.bukkit.configuration.ConfigurationSection;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 /**
  * How one group of slots is revealed.
@@ -58,8 +60,14 @@ public record SlotAnimationGroup(@NotNull SlotAnimation animation, long interval
      * @param section  the section of the group
      * @param defaults the group this one inherits from, or null for the default group itself
      * @throws UnsupportedOperationException if the animation of the group cannot be serialized
+     * @deprecated use {@link #serialize(Section, SlotAnimationGroup)}, zMenu reads its files with BoostedYAML.
      */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     public void serialize(@NotNull ConfigurationSection section, @Nullable SlotAnimationGroup defaults) {
+        YamlSections.write(section, copy -> this.serialize(copy, defaults));
+    }
+
+    public void serialize(@NotNull Section section, @Nullable SlotAnimationGroup defaults) {
         if (defaults == null || this.animation != defaults.animation) this.animation.serialize(section);
 
         long inheritedInterval = defaults == null ? DEFAULT_INTERVAL : defaults.interval;

@@ -19,14 +19,16 @@ import fr.maxlego08.menu.api.utils.Loader;
 import fr.maxlego08.menu.loader.MenuItemStackLoader;
 import fr.maxlego08.menu.requirement.permissible.ZPermissionPermissible;
 import fr.maxlego08.menu.sound.ZSoundOption;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.YamlConfiguration;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
+import dev.dejvokep.boostedyaml.YamlDocument;
 import org.bukkit.event.inventory.ClickType;
 import org.jspecify.annotations.NonNull;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
+import org.bukkit.configuration.file.YamlConfiguration;
 
 public class ButtonDeluxeMenuLoader extends DeluxeMenuCommandUtils implements Loader<Button> {
     private static final Map<String, ClickType> CLICKS = new LinkedHashMap<>();
@@ -74,7 +76,7 @@ public class ButtonDeluxeMenuLoader extends DeluxeMenuCommandUtils implements Lo
     }
 
     @Override
-    public Button load(@NonNull YamlConfiguration configuration, @NonNull String path, Object... objects) throws InventoryException {
+    public Button load(@NonNull YamlDocument configuration, @NonNull String path, Object... objects) throws InventoryException {
 
         String buttonType = "NONE";
         String buttonName = (String) objects[0];
@@ -119,7 +121,7 @@ public class ButtonDeluxeMenuLoader extends DeluxeMenuCommandUtils implements Lo
             slot = slot + ((page - 1) * this.inventorySize);
         }
 
-        List<String> slotsAsString = configuration.getStringList(path + "slots");
+        List<String> slotsAsString = YamlSections.getStringList(configuration, path + "slots");
         List<Integer> slots = ButtonLoader.loadSlot(slotsAsString);
         if (slots.isEmpty()) slots = defaultButtonValue.getSlots();
         if (slots.isEmpty()) {
@@ -138,7 +140,7 @@ public class ButtonDeluxeMenuLoader extends DeluxeMenuCommandUtils implements Lo
         InventoryManager inventoryManager = this.plugin.getInventoryManager();
         button.setClickRequirements(this.loadClickRequirements(configuration, path, inventoryManager));
 
-        ConfigurationSection viewRequirementSection = configuration.getConfigurationSection(path + "view_requirement");
+        Section viewRequirementSection = configuration.getSection(path + "view_requirement");
         if (viewRequirementSection != null) {
             button.setViewRequirement(this.loadRequirement(inventoryManager, this.plugin.getCommandManager(), this.plugin, new ArrayList<>(), viewRequirementSection, Configuration.allClicksType, this.file));
         }
@@ -147,8 +149,8 @@ public class ButtonDeluxeMenuLoader extends DeluxeMenuCommandUtils implements Lo
         button.setPriority(configuration.getInt(path + "priority", 1));
         button.setSoundOption(new ZSoundOption(null, XSound.Category.MASTER.name(), null, 1f, 1f, true));
 
-        List<String> permissions = configuration.getStringList(path + "permission");
-        permissions = permissions.isEmpty() ? configuration.getStringList(path + "permissions") : permissions;
+        List<String> permissions = YamlSections.getStringList(configuration, path + "permission");
+        permissions = permissions.isEmpty() ? YamlSections.getStringList(configuration, path + "permissions") : permissions;
         if (permissions.isEmpty()) {
             String permission = configuration.getString(path + "permission", null);
             if (permission != null) {
@@ -160,8 +162,8 @@ public class ButtonDeluxeMenuLoader extends DeluxeMenuCommandUtils implements Lo
             mappedPermissions.add(new ZPermissionPermissible(permissionValue));
         }
         button.setPermissions(mappedPermissions);
-        List<String> orPermissions = configuration.getStringList(path + "orPermission");
-        List<String> resolvedOrPermissions = orPermissions.isEmpty() ? configuration.getStringList(path + "orPermissions") : orPermissions;
+        List<String> orPermissions = YamlSections.getStringList(configuration, path + "orPermission");
+        List<String> resolvedOrPermissions = orPermissions.isEmpty() ? YamlSections.getStringList(configuration, path + "orPermissions") : orPermissions;
         List<PermissionPermissible> mappedOrPermissions = new ArrayList<>(resolvedOrPermissions.size());
         for (String permissionValue : resolvedOrPermissions) {
             mappedOrPermissions.add(new ZPermissionPermissible(permissionValue));
@@ -176,29 +178,37 @@ public class ButtonDeluxeMenuLoader extends DeluxeMenuCommandUtils implements Lo
         return button;
     }
 
-    private List<Requirement> loadClickRequirements(YamlConfiguration configuration, String path, InventoryManager inventoryManager) {
+    @SuppressWarnings("removal")
+    @Override
+    @Deprecated
+    public Button load(YamlConfiguration configuration, String path, Object... objects) throws InventoryException  {
+        YamlDocument configurationDocument = configuration == null ? null : YamlSections.toDocument(configuration);
+        return this.load(configurationDocument, path, objects);
+    }
+
+    private List<Requirement> loadClickRequirements(YamlDocument configuration, String path, InventoryManager inventoryManager) {
         List<Requirement> requirements = new ArrayList<>();
 
-        List<String> clickCommands = configuration.getStringList(path + "click_commands");
+        List<String> clickCommands = YamlSections.getStringList(configuration, path + "click_commands");
         if (!clickCommands.isEmpty()) {
             List<Action> actions = this.loadActions(inventoryManager, this.plugin.getCommandManager(), this.plugin, clickCommands, this.file);
-            ConfigurationSection section = configuration.getConfigurationSection(path + "click_requirement");
+            Section section = configuration.getSection(path + "click_requirement");
             requirements.add(this.loadRequirement(inventoryManager, this.plugin.getCommandManager(), this.plugin, actions, section, Configuration.allClicksType, this.file));
             return requirements;
         }
 
         for (Map.Entry<String, ClickType> click : CLICKS.entrySet()) {
-            List<String> commands = configuration.getStringList(path + click.getKey() + "_click_commands");
+            List<String> commands = YamlSections.getStringList(configuration, path + click.getKey() + "_click_commands");
             if (commands.isEmpty()) continue;
 
             List<Action> actions = this.loadActions(inventoryManager, this.plugin.getCommandManager(), this.plugin, commands, this.file);
-            ConfigurationSection section = configuration.getConfigurationSection(path + click.getKey() + "_click_requirement");
+            Section section = configuration.getSection(path + click.getKey() + "_click_requirement");
             requirements.add(this.loadRequirement(inventoryManager, this.plugin.getCommandManager(), this.plugin, actions, section, List.of(click.getValue()), this.file));
         }
         return requirements;
     }
 
-    private String translateItem(YamlConfiguration configuration, String path, String buttonName) {
+    private String translateItem(YamlDocument configuration, String path, String buttonName) {
         String playerHead = null;
         String material = configuration.getString(path + "material");
 
@@ -229,7 +239,7 @@ public class ButtonDeluxeMenuLoader extends DeluxeMenuCommandUtils implements Lo
             }
         }
 
-        List<String> enchantments = configuration.getStringList(path + "enchantments");
+        List<String> enchantments = YamlSections.getStringList(configuration, path + "enchantments");
         if (!enchantments.isEmpty()) {
             configuration.set(path + "enchantments", enchantments.stream().map(enchantment -> enchantment.replace(';', ',')).toList());
         }

@@ -10,14 +10,16 @@ import fr.maxlego08.menu.api.dialog.canvas.CanvasVariants;
 import fr.maxlego08.menu.api.dialog.canvas.ResolvedGlyph;
 import fr.maxlego08.menu.api.exceptions.InventoryException;
 import fr.maxlego08.menu.api.requirement.Requirement;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.YamlConfiguration;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
+import dev.dejvokep.boostedyaml.YamlDocument;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.util.Optional;
 import java.util.function.Function;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
+import org.bukkit.configuration.ConfigurationSection;
 
 /**
  * An element drawn only for some players, from the keys every element accepts:
@@ -60,9 +62,9 @@ public final class ConditionalElement implements CanvasElement, CanvasLayoutable
      * @return The element.
      */
     public static @NotNull CanvasElement load(@NotNull MenuPlugin plugin, @NotNull CanvasElementLoader loader, @NotNull String name,
-                                              @NotNull ConfigurationSection section, @NotNull String source) {
+                                              @NotNull Section section, @NotNull String source) {
         VisibleCondition visible = section.contains("visible") ? VisibleCondition.parse(String.valueOf(section.get("visible"))) : null;
-        Requirement viewRequirement = section.isConfigurationSection("view-requirement") ? readRequirement(plugin, name, section, source) : null;
+        Requirement viewRequirement = section.isSection("view-requirement") ? readRequirement(plugin, name, section, source) : null;
         section.set("visible", null);
         section.set("view-requirement", null);
 
@@ -70,13 +72,13 @@ public final class ConditionalElement implements CanvasElement, CanvasLayoutable
         return visible == null && viewRequirement == null ? element : new ConditionalElement(element, visible, viewRequirement);
     }
 
-    private static @NotNull Requirement readRequirement(@NotNull MenuPlugin plugin, @NotNull String name, @NotNull ConfigurationSection section,
+    private static @NotNull Requirement readRequirement(@NotNull MenuPlugin plugin, @NotNull String name, @NotNull Section section,
                                                         @NotNull String source) {
-        if (!(section.getRoot() instanceof YamlConfiguration configuration) || section.getCurrentPath() == null) {
+        if (!(section.getRoot() instanceof YamlDocument configuration) || YamlSections.getCurrentPath(section) == null) {
             throw ElementSections.error(name, source, "must be read from a YAML file to use view-requirement");
         }
         try {
-            return plugin.getButtonManager().loadRequirement(configuration, section.getCurrentPath() + ".view-requirement.", new File(source));
+            return plugin.getButtonManager().loadRequirement(configuration, YamlSections.getCurrentPath(section) + ".view-requirement.", new File(source));
         } catch (InventoryException exception) {
             throw ElementSections.error(name, source, "has an invalid view-requirement: " + exception.getMessage());
         }
@@ -162,9 +164,16 @@ public final class ConditionalElement implements CanvasElement, CanvasLayoutable
     }
 
     @Override
-    public void serialize(@NotNull ConfigurationSection section) {
+    public void serialize(@NotNull Section section) {
         this.element.serialize(section);
         if (this.visible != null) section.set("visible", this.visible.raw());
         if (this.viewRequirement != null) this.viewRequirement.serialize(section.createSection("view-requirement"));
+    }
+
+    @SuppressWarnings("removal")
+    @Override
+    @Deprecated
+    public void serialize(ConfigurationSection section) {
+        YamlSections.write(section, copy -> this.serialize(copy));
     }
 }

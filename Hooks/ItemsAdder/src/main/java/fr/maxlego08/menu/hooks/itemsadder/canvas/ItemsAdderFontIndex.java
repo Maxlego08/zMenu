@@ -2,8 +2,8 @@ package fr.maxlego08.menu.hooks.itemsadder.canvas;
 
 import fr.maxlego08.menu.common.canvas.TextureMetrics;
 import net.kyori.adventure.key.Key;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.YamlConfiguration;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
+import dev.dejvokep.boostedyaml.YamlDocument;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -13,6 +13,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Stream;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 /**
  * The font images of ItemsAdder, read from its {@code contents} folder. ItemsAdder's API gives neither the
@@ -52,12 +53,12 @@ final class ItemsAdderFontIndex {
             return;
         }
         for (Path file : files) {
-            YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file.toFile());
+            YamlDocument configuration = YamlSections.load(file.toFile());
             String namespace = configuration.getString("info.namespace");
-            ConfigurationSection images = configuration.getConfigurationSection("font_images");
+            Section images = configuration.getSection("font_images");
             if (namespace == null || images == null) continue;
-            for (String id : images.getKeys(false)) {
-                ConfigurationSection image = images.getConfigurationSection(id);
+            for (String id : images.getRoutesAsStrings(false)) {
+                Section image = images.getSection(id);
                 if (image == null) continue;
                 String path = image.getString("path");
                 if (path == null) continue;

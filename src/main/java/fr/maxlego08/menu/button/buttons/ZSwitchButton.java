@@ -4,12 +4,14 @@ import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.buttons.SwitchButton;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.utils.SwitchCaseButton;
-import org.bukkit.configuration.ConfigurationSection;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.function.IntPredicate;
+import org.bukkit.configuration.ConfigurationSection;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 public class ZSwitchButton extends SwitchButton {
 
@@ -22,19 +24,33 @@ public class ZSwitchButton extends SwitchButton {
     }
 
     @Override
-    protected void serializeProperties(@NotNull ConfigurationSection section) {
+    protected void serializeProperties(@NotNull Section section) {
         section.set("type", "switch");
         section.set("key", this.placeholder);
     }
 
+    @SuppressWarnings("removal")
     @Override
-    public void serialize(@NotNull ConfigurationSection section, int inventorySize) {
+    @Deprecated
+    protected void serializeProperties(ConfigurationSection section) {
+        YamlSections.write(section, copy -> this.serializeProperties(copy));
+    }
+
+    @Override
+    public void serialize(@NotNull Section section, int inventorySize) {
         super.serialize(section, inventorySize);
         if (this.buttons.isEmpty()) return;
-        ConfigurationSection buttonsSection = section.createSection("buttons");
+        Section buttonsSection = section.createSection("buttons");
         for (SwitchCaseButton button : this.buttons) {
             button.button().serialize(buttonsSection.createSection(button.value()), inventorySize);
         }
+    }
+
+    @SuppressWarnings("removal")
+    @Override
+    @Deprecated
+    public void serialize(ConfigurationSection section, int inventorySize) {
+        YamlSections.write(section, copy -> this.serialize(copy, inventorySize));
     }
 
     @Override

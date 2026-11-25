@@ -10,6 +10,8 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 /**
  * Represents a set of requirements that a player must meet to perform a certain action.
@@ -95,7 +97,9 @@ public interface RefreshRequirement {
      * Writes this refresh requirement in the format the refresh requirement loader reads.
      *
      * @param section The section to write into.
+     * @deprecated use {@link #serialize(Section)}, zMenu reads its files with BoostedYAML.
      */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     default void serialize(@NotNull ConfigurationSection section) {
         List<Map<String, Object>> requirements = new ArrayList<>(this.getRequirements().size());
         for (Permissible permissible : this.getRequirements()) {
@@ -112,5 +116,14 @@ public interface RefreshRequirement {
         if (this.isRefreshName()) section.set("refresh-name", true);
         if (this.isRefreshButton()) section.set("refresh-button", true);
         if (this.getUpdateInterval() != 500) section.set("update-interval", this.getUpdateInterval());
+    }
+
+    /**
+     * Writes this object's keys into a section. zMenu calls this method, override it.
+     * By default it writes through the deprecated method, which existing addons override.
+     * <p>BoostedYAML is loaded by zMenu: an addon that calls this method must also declare it.
+     */
+    default void serialize(@NotNull Section section) {
+        YamlSections.write(section, copy -> this.serialize(copy));
     }
 }

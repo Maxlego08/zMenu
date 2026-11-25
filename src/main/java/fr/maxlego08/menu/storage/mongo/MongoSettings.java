@@ -1,6 +1,6 @@
 package fr.maxlego08.menu.storage.mongo;
 
-import org.bukkit.configuration.ConfigurationSection;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
  */
 public record MongoSettings(@NotNull String uri, @NotNull String database, @NotNull String collectionPrefix) {
 
-    public static @NotNull MongoSettings read(@NotNull ConfigurationSection configuration) {
+    public static @NotNull MongoSettings read(@NotNull Section configuration) {
         return new MongoSettings(
                 configuration.getString("mongodb.uri", "mongodb://localhost:27017"),
                 configuration.getString("mongodb.database", "zmenu"),

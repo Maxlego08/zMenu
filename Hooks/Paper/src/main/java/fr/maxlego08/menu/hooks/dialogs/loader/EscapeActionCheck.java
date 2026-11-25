@@ -1,8 +1,8 @@
 package fr.maxlego08.menu.hooks.dialogs.loader;
 
 import fr.maxlego08.menu.api.enums.dialog.DialogType;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.YamlConfiguration;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
+import dev.dejvokep.boostedyaml.YamlDocument;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -29,12 +29,12 @@ public final class EscapeActionCheck {
      * @param type          The dialog type.
      * @return The path of the button Escape runs, or null when it has none.
      */
-    public static @Nullable String escapeButton(@NotNull YamlConfiguration configuration, @NotNull DialogType type) {
+    public static @Nullable String escapeButton(@NotNull YamlDocument configuration, @NotNull DialogType type) {
         return switch (type) {
             case NOTICE -> "notice";
             case CONFIRMATION -> "confirmation.no";
-            case MULTI_ACTION, DIALOG_LIST -> configuration.isConfigurationSection("exit-button") ? "exit-button" : null;
-            case SERVER_LINKS -> configuration.isConfigurationSection("server-links") ? "server-links" : null;
+            case MULTI_ACTION, DIALOG_LIST -> configuration.isSection("exit-button") ? "exit-button" : null;
+            case SERVER_LINKS -> configuration.isSection("server-links") ? "server-links" : null;
         };
     }
 
@@ -43,7 +43,7 @@ public final class EscapeActionCheck {
      * @param type          The dialog type.
      * @return The path of the button Escape runs when its actions hold a {@code canvas-refresh}.
      */
-    public static @NotNull Optional<String> refreshOnEscape(@NotNull YamlConfiguration configuration, @NotNull DialogType type) {
+    public static @NotNull Optional<String> refreshOnEscape(@NotNull YamlDocument configuration, @NotNull DialogType type) {
         if (!configuration.getBoolean("can-close-with-escape", true)) return Optional.empty();
         String button = escapeButton(configuration, type);
         if (button == null) return Optional.empty();
@@ -57,15 +57,15 @@ public final class EscapeActionCheck {
     }
 
     private static boolean isEmpty(@NotNull Object value) {
-        if (value instanceof ConfigurationSection section) return section.getKeys(false).isEmpty();
+        if (value instanceof Section section) return section.getRoutesAsStrings(false).isEmpty();
         if (value instanceof List<?> list) return list.isEmpty();
         return false;
     }
 
     private static boolean holdsRefresh(@Nullable Object value) {
-        if (value instanceof ConfigurationSection section) {
+        if (value instanceof Section section) {
             if (isRefresh(section.get("type"))) return true;
-            return section.getKeys(false).stream().anyMatch(key -> holdsRefresh(section.get(key)));
+            return section.getRoutesAsStrings(false).stream().anyMatch(key -> holdsRefresh(section.get(key)));
         }
         if (value instanceof Map<?, ?> map) {
             if (isRefresh(map.get("type"))) return true;

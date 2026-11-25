@@ -9,13 +9,15 @@ import fr.maxlego08.menu.api.dialog.canvas.CanvasManager;
 import fr.maxlego08.menu.hooks.dialogs.canvas.layout.LayoutEngine;
 import fr.maxlego08.menu.hooks.dialogs.canvas.layout.SizeSpec;
 import net.kyori.adventure.key.Key;
-import org.bukkit.configuration.ConfigurationSection;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import org.bukkit.configuration.ConfigurationSection;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 /**
  * Reads {@link LayoutElement}s, written {@code type: row} or {@code type: column}.
@@ -37,7 +39,7 @@ public final class LayoutElementLoader implements CanvasElementLoader {
     }
 
     @Override
-    public @NotNull CanvasElement load(@NotNull MenuPlugin plugin, @NotNull String name, @NotNull ConfigurationSection section, @NotNull String source) {
+    public @NotNull CanvasElement load(@NotNull MenuPlugin plugin, @NotNull String name, @NotNull Section section, @NotNull String source) {
         ElementSections.rejectUnknownKeys(section, KEYS, name, source);
         int x = section.contains("x") ? ElementSections.requireInt(section, "x", name, source) : 0;
         int y = section.contains("y") ? ElementSections.requireInt(section, "y", name, source) : 0;
@@ -58,10 +60,10 @@ public final class LayoutElementLoader implements CanvasElementLoader {
         CanvasManager canvasManager = plugin.getCanvasManager();
         if (canvasManager == null) throw ElementSections.error(name, source, "needs dialog canvases to be enabled");
         List<LayoutElement.Child> children = new ArrayList<>();
-        ConfigurationSection childrenSection = section.getConfigurationSection("children");
+        Section childrenSection = section.getSection("children");
         if (childrenSection != null) {
-            for (String childName : childrenSection.getKeys(false)) {
-                ConfigurationSection childSection = childrenSection.getConfigurationSection(childName);
+            for (String childName : childrenSection.getRoutesAsStrings(false)) {
+                Section childSection = childrenSection.getSection(childName);
                 if (childSection == null) throw ElementSections.error(childName, source, "must be a section");
                 LayoutElement.Child child = this.loadChild(plugin, canvasManager, childName, childSection, source);
                 if (child.growText() && children.stream().anyMatch(LayoutElement.Child::growText)) {
@@ -77,8 +79,15 @@ public final class LayoutElementLoader implements CanvasElementLoader {
         return new LayoutElement(name, this.direction, x, y, width, height, this.padding(section, name, source), gap, align, justify, children, null);
     }
 
+    @SuppressWarnings("removal")
+    @Override
+    @Deprecated
+    public CanvasElement load(MenuPlugin plugin, String name, ConfigurationSection section, String source) {
+        return this.load(plugin, name, (section == null ? null : YamlSections.toDocument(section)), source);
+    }
+
     private @NotNull LayoutElement.Child loadChild(@NotNull MenuPlugin plugin, @NotNull CanvasManager canvasManager, @NotNull String name,
-                                                   @NotNull ConfigurationSection section, @NotNull String source) {
+                                                   @NotNull Section section, @NotNull String source) {
         String type = section.getString("type");
         if (type == null) throw ElementSections.error(name, source, "needs a type");
         CanvasElementLoader loader = canvasManager.getElementLoader(type).orElseThrow(() -> ElementSections.error(name, source, "has the unknown type " + type));
@@ -121,20 +130,20 @@ public final class LayoutElementLoader implements CanvasElementLoader {
         return new LayoutElement.Child(layoutable, width, height, false, collapse);
     }
 
-    private @NotNull SizeSpec size(@NotNull ConfigurationSection section, @NotNull String key, @NotNull String name, @NotNull String source) {
+    private @NotNull SizeSpec size(@NotNull Section section, @NotNull String key, @NotNull String name, @NotNull String source) {
         if (!section.contains(key)) return SizeSpec.FIT;
         SizeSpec spec = SizeSpec.parse(section.get(key));
         if (spec == null) throw ElementSections.error(name, source, "needs " + key + " as a number, fit, grow or a percentage such as 50%");
         return spec;
     }
 
-    private @NotNull LayoutEngine.Insets padding(@NotNull ConfigurationSection section, @NotNull String name, @NotNull String source) {
+    private @NotNull LayoutEngine.Insets padding(@NotNull Section section, @NotNull String name, @NotNull String source) {
         if (!section.contains("padding")) return LayoutEngine.Insets.NONE;
         if (section.isInt("padding")) {
             int padding = section.getInt("padding");
             return new LayoutEngine.Insets(padding, padding, padding, padding);
         }
-        List<Integer> values = section.getIntegerList("padding");
+        List<Integer> values = section.getIntList("padding");
         if (values.size() != 4 || values.stream().anyMatch(value -> value < 0)) {
             throw ElementSections.error(name, source, "needs padding as a number or as [top, right, bottom, left]");
         }

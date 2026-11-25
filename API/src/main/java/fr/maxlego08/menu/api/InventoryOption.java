@@ -7,6 +7,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
+import dev.dejvokep.boostedyaml.YamlDocument;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 public interface InventoryOption {
 
@@ -27,8 +30,19 @@ public interface InventoryOption {
      * @param configuration       the configuration to load the inventory from
      * @param inventoryManager    the inventory manager to use for inventory operations
      * @param buttonManager       the button manager to use for button-related operations
+     * @deprecated use {@link #loadInventory(Inventory, File, YamlDocument, InventoryManager, ButtonManager)}, zMenu reads its files with BoostedYAML.
      */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     void loadInventory(Inventory inventory, File file, YamlConfiguration configuration, InventoryManager inventoryManager, ButtonManager buttonManager);
+
+    /**
+     * Loads the given inventory from its document. zMenu calls this method, override it.
+     * By default it reads a Bukkit copy with the deprecated method, which existing addons override.
+     * <p>BoostedYAML is loaded by zMenu: an addon that calls this method must also declare it.
+     */
+    default void loadInventory(Inventory inventory, File file, YamlDocument configuration, InventoryManager inventoryManager, ButtonManager buttonManager) {
+        this.loadInventory(inventory, file, YamlSections.toBukkit(configuration), inventoryManager, buttonManager);
+    }
 
     /**
      * Writes the keys this option reads in {@link #loadInventory}. Every registered option is asked
@@ -36,8 +50,19 @@ public interface InventoryOption {
      *
      * @param inventory The inventory being serialized.
      * @param section   The section of the inventory.
+     * @deprecated use {@link #serialize(Inventory, Section)}, zMenu reads its files with BoostedYAML.
      */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     default void serialize(Inventory inventory, ConfigurationSection section) {
+    }
+
+    /**
+     * Writes the keys this option reads. zMenu calls this method, override it.
+     * By default it writes through the deprecated method, which existing addons override.
+     * <p>BoostedYAML is loaded by zMenu: an addon that calls this method must also declare it.
+     */
+    default void serialize(Inventory inventory, Section section) {
+        YamlSections.write(section, copy -> this.serialize(inventory, copy));
     }
 
     /**

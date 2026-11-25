@@ -14,12 +14,14 @@ import fr.maxlego08.menu.api.exceptions.DialogException;
 import fr.maxlego08.menu.api.loader.ButtonLoader;
 import fr.maxlego08.menu.hooks.dialogs.canvas.ZCanvasBuilder;
 import fr.maxlego08.menu.hooks.dialogs.canvas.element.ConditionalElement;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.YamlConfiguration;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
+import dev.dejvokep.boostedyaml.YamlDocument;
 import org.jspecify.annotations.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
+import org.bukkit.configuration.file.YamlConfiguration;
 
 /**
  * Reads {@code dialog-canvas} bodies:
@@ -50,11 +52,11 @@ public class DialogCanvasBodyLoader extends ButtonLoader {
     }
 
     @Override
-    public Button load(@NonNull YamlConfiguration configuration, @NonNull String path, @NonNull DefaultButtonValue defaultButtonValue) {
+    public Button load(@NonNull YamlDocument configuration, @NonNull String path, @NonNull DefaultButtonValue defaultButtonValue) {
         CanvasManager canvasManager = this.menuPlugin.getCanvasManager();
         if (canvasManager == null) throw new DialogException("The dialog body " + path + " is a canvas, which needs dialog support");
 
-        ConfigurationSection body = configuration.getConfigurationSection(path);
+        Section body = configuration.getSection(path);
         if (body == null || !body.contains("width") || !body.contains("height")) {
             throw new DialogException("The canvas " + path + " needs a width from 1 to " + ZCanvasBuilder.MAX_WIDTH + " and a height");
         }
@@ -63,10 +65,10 @@ public class DialogCanvasBodyLoader extends ButtonLoader {
         CanvasValue<Integer> height = CanvasValue.number(body, "height", 90, 1, 4096, where);
 
         List<CanvasElement> elements = new ArrayList<>();
-        ConfigurationSection elementsSection = configuration.getConfigurationSection(path + ".elements");
+        Section elementsSection = configuration.getSection(path + ".elements");
         if (elementsSection != null) {
-            for (String name : elementsSection.getKeys(false)) {
-                ConfigurationSection section = elementsSection.getConfigurationSection(name);
+            for (String name : elementsSection.getRoutesAsStrings(false)) {
+                Section section = elementsSection.getSection(name);
                 if (section == null) throw new DialogException("The canvas element " + name + " of " + path + " must be a section");
                 String type = section.getString("type");
                 if (type == null) throw new DialogException("The canvas element " + name + " of " + path + " needs a type");
@@ -76,6 +78,14 @@ public class DialogCanvasBodyLoader extends ButtonLoader {
             }
         }
 
-        return new DialogCanvasBody(width, height, elements, configuration.getStringList(path + ".fallback"));
+        return new DialogCanvasBody(width, height, elements, YamlSections.getStringList(configuration, path + ".fallback"));
+    }
+
+    @SuppressWarnings("removal")
+    @Override
+    @Deprecated
+    public Button load(YamlConfiguration configuration, String path, DefaultButtonValue defaultButtonValue) {
+        YamlDocument configurationDocument = configuration == null ? null : YamlSections.toDocument(configuration);
+        return this.load(configurationDocument, path, defaultButtonValue);
     }
 }

@@ -17,7 +17,7 @@ import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.website.request.HttpRequest;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.YamlConfiguration;
+import dev.dejvokep.boostedyaml.YamlDocument;
 import org.bukkit.entity.Player;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
@@ -35,6 +35,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.regex.Pattern;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
+import java.util.List;
 
 public class LiveSyncManager extends ZUtils {
 
@@ -183,7 +185,7 @@ public class LiveSyncManager extends ZUtils {
      */
     private String ensureServerId() {
         File configFile = new File(this.plugin.getDataFolder().getParentFile().getParentFile(), "config/zmenu-uuid.yml");
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(configFile);
+        YamlDocument config = YamlSections.load(configFile);
         String serverId = config.getString("server_uuid");
 
         if (serverId == null || serverId.isEmpty()) {
@@ -191,8 +193,7 @@ public class LiveSyncManager extends ZUtils {
             config.set("server_uuid", serverId);
             try {
                 String header = "It is not recommended to delete this file, as it is used to identify the server on https://minecraft-inventory-builder.com/.";
-                config.options().header(header);
-                config.options().copyHeader(true);
+                YamlSections.setHeader(config, List.of(header));
                 config.save(configFile);
                 this.log("Generated new server UUID in " + configFile.getPath());
             } catch (Exception exception) {
@@ -863,9 +864,9 @@ public class LiveSyncManager extends ZUtils {
                 return;
             }
 
-            YamlConfiguration yaml = YamlConfiguration.loadConfiguration(tempFile);
-            if (yaml.getKeys(false).isEmpty() || !"BUTTON".equalsIgnoreCase(yaml.getString("type", ""))
-                    || !yaml.isConfigurationSection("button")) {
+            YamlDocument yaml = YamlSections.load(tempFile);
+            if (yaml.getRoutesAsStrings(false).isEmpty() || !"BUTTON".equalsIgnoreCase(yaml.getString("type", ""))
+                    || !yaml.isSection("button")) {
                 this.severe("Rejected button pattern '" + rawFileName + "': expected a BUTTON pattern with a button section.");
                 this.deleteQuietly(tempFile);
                 completion.accept(false);
@@ -984,8 +985,8 @@ public class LiveSyncManager extends ZUtils {
             }
 
             try {
-                YamlConfiguration test = YamlConfiguration.loadConfiguration(tempFile);
-                if (test.getKeys(false).isEmpty()) {
+                YamlDocument test = YamlSections.load(tempFile);
+                if (test.getRoutesAsStrings(false).isEmpty()) {
                     this.severe("Rejected '" + fileName + "': downloaded file is empty or not valid YAML.");
                     this.deleteQuietly(tempFile);
                     return;

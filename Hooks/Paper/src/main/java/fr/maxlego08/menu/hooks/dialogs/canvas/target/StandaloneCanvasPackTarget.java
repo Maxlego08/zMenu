@@ -47,7 +47,7 @@ public final class StandaloneCanvasPackTarget implements CanvasPackTarget, Liste
     }
 
     private @NotNull CanvasSettings settings() {
-        return CanvasSettings.read(this.plugin.getConfig());
+        return CanvasSettings.read(this.plugin.getConfigDocument());
     }
 
     @Override

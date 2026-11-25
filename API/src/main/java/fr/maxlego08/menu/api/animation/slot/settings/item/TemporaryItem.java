@@ -4,6 +4,8 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 /**
  * An item that exists only while the opening animation plays.
@@ -57,11 +59,17 @@ public record TemporaryItem(@NotNull String name, @NotNull List<Integer> slots, 
      * as {@code frames}, the general form {@code show} and {@code hide} are loaded into.
      *
      * @param section the section named after the item
+     * @deprecated use {@link #serialize(Section)}, zMenu reads its files with BoostedYAML.
      */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     public void serialize(@NotNull ConfigurationSection section) {
+        YamlSections.write(section, copy -> this.serialize(copy));
+    }
+
+    public void serialize(@NotNull Section section) {
         section.set("slots", this.slots);
 
-        ConfigurationSection framesSection = section.createSection("frames");
+        Section framesSection = section.createSection("frames");
         for (int index = 0; index < this.frames.size(); index++) {
             this.frames.get(index).serialize(framesSection.createSection(String.valueOf(index + 1)));
         }

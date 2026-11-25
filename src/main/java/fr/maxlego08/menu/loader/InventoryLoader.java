@@ -26,8 +26,8 @@ import fr.maxlego08.menu.itemstack.FullSimilar;
 import fr.maxlego08.menu.loader.container.EmptyContainerInventoryTypeLoader;
 import fr.maxlego08.menu.registry.InventoryTypeRegistry;
 import fr.maxlego08.menu.zcore.logger.Logger;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.YamlConfiguration;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
+import dev.dejvokep.boostedyaml.YamlDocument;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.plugin.Plugin;
@@ -36,6 +36,8 @@ import org.jspecify.annotations.NonNull;
 import java.io.File;
 import java.lang.reflect.Constructor;
 import java.util.*;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
+import org.bukkit.configuration.file.YamlConfiguration;
 
 public class InventoryLoader extends ZUtils implements Loader<Inventory> {
 
@@ -47,7 +49,7 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
     }
 
     @Override
-    public Inventory load(@NonNull YamlConfiguration configuration, @NonNull String path, Object... objects) throws InventoryException {
+    public Inventory load(@NonNull YamlDocument configuration, @NonNull String path, Object... objects) throws InventoryException {
 
         File file = (File) objects[0];
         var nameObject = configuration.get("name", configuration.get("title"));
@@ -85,8 +87,8 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
             }
         }
 
-        Map<Character, List<Integer>> matrix = this.generateMatrix(configuration.getStringList("matrix"));
-        if (!matrix.isEmpty()) size = this.getInventorySizeByMatrix(configuration.getStringList("matrix"));
+        Map<Character, List<Integer>> matrix = this.generateMatrix(YamlSections.getStringList(configuration, "matrix"));
+        if (!matrix.isEmpty()) size = this.getInventorySizeByMatrix(YamlSections.getStringList(configuration, "matrix"));
 
         List<Button> buttons = new ArrayList<>();
         Loader<Button> loader = new ZButtonLoader(this.plugin, file, size, matrix);
@@ -95,10 +97,10 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
 
         Loader<MenuItemStack> menuItemStackLoader = new MenuItemStackLoader(this.plugin.getInventoryManager());
 
-        ConfigurationSection section = configuration.getConfigurationSection("items.");
+        Section section = configuration.getSection("items.");
 
         if (section != null) {
-            for (String buttonPath : section.getKeys(false)) {
+            for (String buttonPath : section.getRoutesAsStrings(false)) {
                 try {
                     buttons.add(loader.load(configuration, "items." + buttonPath + ".", buttonPath, actionPatterns));
                 } catch (Exception exception) {
@@ -164,8 +166,8 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
         }
         inventory.setClickLimiterEnabled(configuration.getBoolean(path + "click-limiter-enabled", true));
         inventory.setFile(file);
-        if (configuration.isConfigurationSection("inventory-replacement")){
-            ConfigurationSection replacementSection = configuration.getConfigurationSection("inventory-replacement");
+        if (configuration.isSection("inventory-replacement")){
+            Section replacementSection = configuration.getSection("inventory-replacement");
             if (replacementSection != null) {
                 InventoryReplacement inventoryReplacement = InventoryReplacement.deserialize(replacementSection);
                 if (inventoryReplacement != null) {
@@ -196,7 +198,15 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
         return inventory;
     }
 
-    private void loadOpenAndCloseActions(@NonNull YamlConfiguration configuration, ContainerInventorySetter inventory, File file) {
+    @SuppressWarnings("removal")
+    @Override
+    @Deprecated
+    public Inventory load(YamlConfiguration configuration, String path, Object... objects) throws InventoryException  {
+        YamlDocument configurationDocument = configuration == null ? null : YamlSections.toDocument(configuration);
+        return this.load(configurationDocument, path, objects);
+    }
+
+    private void loadOpenAndCloseActions(@NonNull YamlDocument configuration, ContainerInventorySetter inventory, File file) {
         var buttonManager = this.plugin.getButtonManager();
         inventory.setOpenActions(buttonManager.loadActions(configuration, "open-actions", file));
         inventory.setCloseActions(buttonManager.loadActions(configuration, "close-actions", file));
@@ -210,7 +220,7 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
      * @param inventory           the inventory to assign the fill item to
      * @param menuItemStackLoader the loader to use to load the fill item
      */
-    private void loadFillItem(YamlConfiguration configuration, ContainerInventorySetter inventory, Loader<MenuItemStack> menuItemStackLoader, File file) {
+    private void loadFillItem(YamlDocument configuration, ContainerInventorySetter inventory, Loader<MenuItemStack> menuItemStackLoader, File file) {
         try {
             String loadString = configuration.contains("fillItem") ? "fillItem" : configuration.contains("fill-item") ? "fill-item" : null;
             if (loadString != null) {
@@ -230,9 +240,9 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
      * @param configuration the configuration to load the patterns from
      * @param inventory     the inventory to assign the patterns to
      */
-    private void loadPatterns(YamlConfiguration configuration, ContainerInventorySetter inventory) {
+    private void loadPatterns(YamlDocument configuration, ContainerInventorySetter inventory) {
         PatternManager patternManager = this.plugin.getPatternManager();
-        List<String> patternNames = configuration.getStringList("patterns");
+        List<String> patternNames = YamlSections.getStringList(configuration, "patterns");
         List<Pattern> patterns = new ArrayList<>(patternNames.size());
         for (String patternName : patternNames) {
             Optional<Pattern> pattern = patternManager.getPattern(patternName);
@@ -241,10 +251,10 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
         inventory.setPatterns(patterns);
     }
 
-    private List<ActionPattern> loadActionPatterns(YamlConfiguration configuration) {
+    private List<ActionPattern> loadActionPatterns(YamlDocument configuration) {
         PatternManager patternManager = this.plugin.getPatternManager();
         List<ActionPattern> actionPatterns = new ArrayList<>();
-        for (String patternName : configuration.getStringList("action-patterns")) {
+        for (String patternName : YamlSections.getStringList(configuration, "action-patterns")) {
             Optional<ActionPattern> actionPattern = patternManager.getActionPattern(patternName);
             actionPattern.ifPresent(actionPatterns::add);
         }
@@ -270,13 +280,13 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
      * @param file                the file that the configuration was loaded from
      * @param menuItemStackLoader the loader to use to load the item stack from the configuration
      */
-    private void loadOpenWithItem(YamlConfiguration configuration, ContainerInventorySetter inventory, File file, Loader<MenuItemStack> menuItemStackLoader) {
+    private void loadOpenWithItem(YamlDocument configuration, ContainerInventorySetter inventory, File file, Loader<MenuItemStack> menuItemStackLoader) {
         try {
             String loadString = configuration.contains("openWithItem") ? "openWithItem" : configuration.contains("open-with-item") ? "open-with-item" : null;
             if (loadString != null) {
                 MenuItemStack loadedItem = menuItemStackLoader.load(configuration, loadString + ".item.", file);
 
-                List<String> actionStrings = configuration.getStringList(loadString + ".actions");
+                List<String> actionStrings = YamlSections.getStringList(configuration, loadString + ".actions");
                 List<Action> actions = new ArrayList<>(actionStrings.size());
                 for (String string : actionStrings) {
                     try {
@@ -305,18 +315,18 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
      * @param file          the file of the inventory
      * @throws InventoryException if the requirement cannot be loaded
      */
-    private void loadOpenRequirement(YamlConfiguration configuration, ContainerInventorySetter inventory, File file) throws InventoryException {
+    private void loadOpenRequirement(YamlDocument configuration, ContainerInventorySetter inventory, File file) throws InventoryException {
         String loadString = configuration.contains("open_requirement") ? "open_requirement" : configuration.contains("open-requirement") ? "open-requirement" : null;
         if (loadString != null) {
-            if (configuration.contains(loadString) && configuration.isConfigurationSection(loadString + ".")) {
+            if (configuration.contains(loadString) && configuration.isSection(loadString + ".")) {
                 Loader<Requirement> requirementLoader = new RequirementLoader(this.plugin);
                 inventory.setOpenRequirement(requirementLoader.load(configuration, loadString + ".", file));
             }
         }
     }
 
-    private void loadTitleAnimation(ContainerInventorySetter inventory, YamlConfiguration configuration, File file) throws InventoryException {
-        if (configuration.isConfigurationSection("title-animation")) {
+    private void loadTitleAnimation(ContainerInventorySetter inventory, YamlDocument configuration, File file) throws InventoryException {
+        if (configuration.isSection("title-animation")) {
             String titleAnimationPath = "title-animation.";
             String pluginName = configuration.getString(titleAnimationPath + "plugin");
             Optional<TitleAnimationLoader> titleAnimationLoader;

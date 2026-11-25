@@ -15,8 +15,8 @@ import fr.maxlego08.menu.hooks.dialogs.canvas.element.ElementSections;
 import fr.maxlego08.menu.hooks.dialogs.canvas.element.VisibleCondition;
 import fr.maxlego08.menu.hooks.dialogs.canvas.state.CanvasStateAction;
 import net.kyori.adventure.key.Key;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.YamlConfiguration;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
+import dev.dejvokep.boostedyaml.YamlDocument;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -27,6 +27,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
+import org.bukkit.configuration.ConfigurationSection;
 
 /**
  * Reads the widgets: {@code toggle}, {@code stepper}, {@code slider}, {@code tabs} and {@code radio}.
@@ -50,25 +52,25 @@ public final class WidgetLoaders {
         return all;
     }
 
-    private static double number(@NotNull ConfigurationSection section, @NotNull String key, double fallback, @NotNull String name, @NotNull String source) {
+    private static double number(@NotNull Section section, @NotNull String key, double fallback, @NotNull String name, @NotNull String source) {
         if (!section.contains(key)) return fallback;
         if (!section.isInt(key) && !section.isDouble(key)) throw ElementSections.error(name, source, "needs a number for " + key);
         return section.getDouble(key);
     }
 
-    private static int positive(@NotNull ConfigurationSection section, @NotNull String key, int fallback, @NotNull String name, @NotNull String source) {
+    private static int positive(@NotNull Section section, @NotNull String key, int fallback, @NotNull String name, @NotNull String source) {
         int value = section.contains(key) ? ElementSections.requireInt(section, key, name, source) : fallback;
         if (value < 1) throw ElementSections.error(name, source, "needs a " + key + " of at least 1");
         return value;
     }
 
-    private static @NotNull WidgetPart glyphPart(@NotNull ConfigurationSection section, @NotNull String key, @NotNull String name, @NotNull String source) {
+    private static @NotNull WidgetPart glyphPart(@NotNull Section section, @NotNull String key, @NotNull String name, @NotNull String source) {
         WidgetPart part = WidgetPart.read(section, key, true, name, source);
         if (part.glyph(null) == null) throw ElementSections.error(name, source, "needs " + key + ": a glyph, or a section with glyph");
         return part;
     }
 
-    private static @NotNull String texture(@NotNull ConfigurationSection section, @NotNull String key, @NotNull String name, @NotNull String source) {
+    private static @NotNull String texture(@NotNull Section section, @NotNull String key, @NotNull String name, @NotNull String source) {
         String value = ElementSections.requireString(section, key, name, source);
         try {
             return ElementSections.texture(value);
@@ -90,13 +92,20 @@ public final class WidgetLoaders {
         }
 
         @Override
-        public @NotNull CanvasElement load(@NotNull MenuPlugin plugin, @NotNull String name, @NotNull ConfigurationSection section, @NotNull String source) {
+        public @NotNull CanvasElement load(@NotNull MenuPlugin plugin, @NotNull String name, @NotNull Section section, @NotNull String source) {
             ElementSections.rejectUnknownKeys(section, KEYS, name, source);
             WidgetSettings settings = WidgetSettings.read(plugin, name, section, source, "false");
             return new ToggleWidget(settings, ElementSections.requireString(section, "glyph-on", name, source),
                     ElementSections.requireString(section, "glyph-off", name, source), WidgetPart.read(section, "label", false, name, source),
                     WidgetPart.read(section, "label-on", false, name, source), WidgetPart.read(section, "label-off", false, name, source),
                     section.getString("font", "default"), section.contains("width") ? positive(section, "width", 1, name, source) : null);
+        }
+
+        @SuppressWarnings("removal")
+        @Override
+        @Deprecated
+        public CanvasElement load(MenuPlugin plugin, String name, ConfigurationSection section, String source) {
+            return this.load(plugin, name, (section == null ? null : YamlSections.toDocument(section)), source);
         }
     }
 
@@ -114,7 +123,7 @@ public final class WidgetLoaders {
         }
 
         @Override
-        public @NotNull CanvasElement load(@NotNull MenuPlugin plugin, @NotNull String name, @NotNull ConfigurationSection section, @NotNull String source) {
+        public @NotNull CanvasElement load(@NotNull MenuPlugin plugin, @NotNull String name, @NotNull Section section, @NotNull String source) {
             ElementSections.rejectUnknownKeys(section, KEYS, name, source);
             double min = number(section, "min", 0, name, source);
             double max = number(section, "max", 10, name, source);
@@ -125,6 +134,13 @@ public final class WidgetLoaders {
                     glyphPart(section, "plus", name, source), section.getString("minus-disabled"), section.getString("plus-disabled"),
                     WidgetPart.read(section, "text", false, name, source), WidgetPart.read(section, "text-min", false, name, source),
                     WidgetPart.read(section, "text-max", false, name, source), section.getString("font", "default"));
+        }
+
+        @SuppressWarnings("removal")
+        @Override
+        @Deprecated
+        public CanvasElement load(MenuPlugin plugin, String name, ConfigurationSection section, String source) {
+            return this.load(plugin, name, (section == null ? null : YamlSections.toDocument(section)), source);
         }
     }
 
@@ -142,7 +158,7 @@ public final class WidgetLoaders {
         }
 
         @Override
-        public @NotNull CanvasElement load(@NotNull MenuPlugin plugin, @NotNull String name, @NotNull ConfigurationSection section, @NotNull String source) {
+        public @NotNull CanvasElement load(@NotNull MenuPlugin plugin, @NotNull String name, @NotNull Section section, @NotNull String source) {
             ElementSections.rejectUnknownKeys(section, KEYS, name, source);
             double min = number(section, "min", 0, name, source);
             double max = number(section, "max", 100, name, source);
@@ -160,6 +176,13 @@ public final class WidgetLoaders {
                     glyphPart(section, "knob", name, source), steps, WidgetPart.read(section, "text", false, name, source),
                     WidgetPart.read(section, "text-min", false, name, source), WidgetPart.read(section, "text-max", false, name, source),
                     section.getString("font", "default"));
+        }
+
+        @SuppressWarnings("removal")
+        @Override
+        @Deprecated
+        public CanvasElement load(MenuPlugin plugin, String name, ConfigurationSection section, String source) {
+            return this.load(plugin, name, (section == null ? null : YamlSections.toDocument(section)), source);
         }
     }
 
@@ -184,7 +207,7 @@ public final class WidgetLoaders {
         }
 
         @Override
-        public @NotNull CanvasElement load(@NotNull MenuPlugin plugin, @NotNull String name, @NotNull ConfigurationSection section, @NotNull String source) {
+        public @NotNull CanvasElement load(@NotNull MenuPlugin plugin, @NotNull String name, @NotNull Section section, @NotNull String source) {
             ElementSections.rejectUnknownKeys(section, this.keys, name, source);
             boolean tabs = this.style == ChoiceWidget.Style.TABS;
             String direction = section.getString("direction", tabs ? "row" : "column").toLowerCase(Locale.ROOT);
@@ -219,16 +242,23 @@ public final class WidgetLoaders {
                     WidgetPart.read(section, "label-selected", false, name, source), pages);
         }
 
-        private @NotNull Map<String, List<CanvasElement>> pages(@NotNull MenuPlugin plugin, @NotNull String name, @NotNull ConfigurationSection section,
+        @SuppressWarnings("removal")
+        @Override
+        @Deprecated
+        public CanvasElement load(MenuPlugin plugin, String name, ConfigurationSection section, String source) {
+            return this.load(plugin, name, (section == null ? null : YamlSections.toDocument(section)), source);
+        }
+
+        private @NotNull Map<String, List<CanvasElement>> pages(@NotNull MenuPlugin plugin, @NotNull String name, @NotNull Section section,
                                                                 @NotNull String source, @NotNull List<ChoiceWidget.Option> options) {
             Map<String, List<CanvasElement>> pages = new LinkedHashMap<>();
-            ConfigurationSection pagesSection = section.getConfigurationSection("pages");
+            Section pagesSection = section.getSection("pages");
             if (pagesSection == null) return pages;
-            for (String id : pagesSection.getKeys(false)) {
+            for (String id : pagesSection.getRoutesAsStrings(false)) {
                 if (options.stream().noneMatch(option -> option.id().equals(id))) {
                     throw ElementSections.error(name, source, "has a page " + id + " that is not one of its options");
                 }
-                ConfigurationSection page = pagesSection.getConfigurationSection(id);
+                Section page = pagesSection.getSection(id);
                 if (page == null) throw ElementSections.error(name, source, "needs the page " + id + " as a section of elements");
                 pages.put(id, elements(plugin, name, page, source));
             }
@@ -240,16 +270,16 @@ public final class WidgetLoaders {
      * Reads the options of tabs, radio and checklist: {@code id: label} or {@code id: { label, width, x, y,
      * <label selected key>, <selected key>, <idle key>, hover }}.
      */
-    private static @NotNull List<ChoiceWidget.Option> options(@NotNull ConfigurationSection section, @NotNull String name, @NotNull String source,
+    private static @NotNull List<ChoiceWidget.Option> options(@NotNull Section section, @NotNull String name, @NotNull String source,
                                                               @NotNull String labelSelectedKey, @NotNull String selectedKey, @NotNull String idleKey,
                                                               boolean textures) {
         List<ChoiceWidget.Option> options = new ArrayList<>();
-        ConfigurationSection optionsSection = section.getConfigurationSection("options");
-        if (optionsSection == null || optionsSection.getKeys(false).isEmpty()) throw ElementSections.error(name, source, "needs options");
+        Section optionsSection = section.getSection("options");
+        if (optionsSection == null || optionsSection.getRoutesAsStrings(false).isEmpty()) throw ElementSections.error(name, source, "needs options");
         Set<String> keys = Set.of("label", "width", "x", "y", labelSelectedKey, selectedKey, idleKey, "hover");
-        for (String id : optionsSection.getKeys(false)) {
+        for (String id : optionsSection.getRoutesAsStrings(false)) {
             if (id.contains(",")) throw ElementSections.error(name, source, "has the option " + id + ", an option id cannot hold a comma");
-            ConfigurationSection option = optionsSection.getConfigurationSection(id);
+            Section option = optionsSection.getSection(id);
             if (option == null) {
                 options.add(new ChoiceWidget.Option(id, optionsSection.getString(id, id), 60));
                 continue;
@@ -260,7 +290,7 @@ public final class WidgetLoaders {
             options.add(new ChoiceWidget.Option(id, option.getString("label", id), positive(option, "width", 60, name, source),
                     option.contains("x") ? ElementSections.requireInt(option, "x", name, source) : null,
                     option.contains("y") ? ElementSections.requireInt(option, "y", name, source) : null, option.getString(labelSelectedKey), selected, idle,
-                    option.isList("hover") ? option.getStringList("hover") : option.contains("hover") ? List.of(option.getString("hover")) : List.of()));
+                    option.isList("hover") ? YamlSections.getStringList(option, "hover") : option.contains("hover") ? List.of(option.getString("hover")) : List.of()));
         }
         return options;
     }
@@ -278,7 +308,7 @@ public final class WidgetLoaders {
         }
 
         @Override
-        public @NotNull CanvasElement load(@NotNull MenuPlugin plugin, @NotNull String name, @NotNull ConfigurationSection section, @NotNull String source) {
+        public @NotNull CanvasElement load(@NotNull MenuPlugin plugin, @NotNull String name, @NotNull Section section, @NotNull String source) {
             ElementSections.rejectUnknownKeys(section, KEYS, name, source);
             String direction = section.getString("direction", "column").toLowerCase(Locale.ROOT);
             if (!direction.equals("row") && !direction.equals("column")) throw ElementSections.error(name, source, "needs direction: row or column");
@@ -289,6 +319,13 @@ public final class WidgetLoaders {
                     ElementSections.requireString(section, "glyph-on", name, source), ElementSections.requireString(section, "glyph-off", name, source),
                     section.getString("font", "default"), WidgetPart.read(section, "label", false, name, source),
                     WidgetPart.read(section, "label-checked", false, name, source));
+        }
+
+        @SuppressWarnings("removal")
+        @Override
+        @Deprecated
+        public CanvasElement load(MenuPlugin plugin, String name, ConfigurationSection section, String source) {
+            return this.load(plugin, name, (section == null ? null : YamlSections.toDocument(section)), source);
         }
     }
 
@@ -306,16 +343,16 @@ public final class WidgetLoaders {
         }
 
         @Override
-        public @NotNull CanvasElement load(@NotNull MenuPlugin plugin, @NotNull String name, @NotNull ConfigurationSection section, @NotNull String source) {
+        public @NotNull CanvasElement load(@NotNull MenuPlugin plugin, @NotNull String name, @NotNull Section section, @NotNull String source) {
             ElementSections.rejectUnknownKeys(section, KEYS, name, source);
             int width = ElementSections.requireInt(section, "width", name, source);
             int height = ElementSections.requireInt(section, "height", name, source);
             if (width < 1) throw ElementSections.error(name, source, "needs a width of at least 1");
             if (height < 1 || height > WidgetElement.MAX_AREA_HEIGHT) throw ElementSections.error(name, source, "needs a height from 1 to " + WidgetElement.MAX_AREA_HEIGHT);
-            if (!(section.getRoot() instanceof YamlConfiguration configuration) || section.getCurrentPath() == null) {
+            if (!(section.getRoot() instanceof YamlDocument configuration) || YamlSections.getCurrentPath(section) == null) {
                 throw ElementSections.error(name, source, "must be read from a YAML file");
             }
-            String path = section.getCurrentPath();
+            String path = YamlSections.getCurrentPath(section);
             File file = new File(source);
             ButtonManager buttonManager = plugin.getButtonManager();
             List<Action> actions;
@@ -330,6 +367,13 @@ public final class WidgetLoaders {
             return new ConfirmWidget(settings, width, height, section.getString("glyph"), section.getString("glyph-armed"),
                     WidgetPart.read(section, "text", false, name, source), WidgetPart.read(section, "text-armed", false, name, source),
                     section.getString("font", "default"), actions, clickRequirements, section.getBoolean("refresh", true));
+        }
+
+        @SuppressWarnings("removal")
+        @Override
+        @Deprecated
+        public CanvasElement load(MenuPlugin plugin, String name, ConfigurationSection section, String source) {
+            return this.load(plugin, name, (section == null ? null : YamlSections.toDocument(section)), source);
         }
     }
 
@@ -346,18 +390,25 @@ public final class WidgetLoaders {
         }
 
         @Override
-        public @NotNull CanvasElement load(@NotNull MenuPlugin plugin, @NotNull String name, @NotNull ConfigurationSection section, @NotNull String source) {
+        public @NotNull CanvasElement load(@NotNull MenuPlugin plugin, @NotNull String name, @NotNull Section section, @NotNull String source) {
             ElementSections.rejectUnknownKeys(section, KEYS, name, source);
             WidgetSettings settings = WidgetSettings.read(plugin, name, section, source, "0");
             return new RatingWidget(settings, positive(section, "max", 5, name, source),
                     section.contains("gap") ? ElementSections.requireInt(section, "gap", name, source) : 1,
                     ElementSections.requireString(section, "glyph-on", name, source), ElementSections.requireString(section, "glyph-off", name, source),
                     section.getBoolean("clear", true),
-                    section.isList("star-hover") ? section.getStringList("star-hover") : section.contains("star-hover") ? List.of(section.getString("star-hover")) : List.of(),
+                    section.isList("star-hover") ? YamlSections.getStringList(section, "star-hover") : section.contains("star-hover") ? List.of(section.getString("star-hover")) : List.of(),
                     stars(section, name, source));
         }
 
-        private static @NotNull List<int[]> stars(@NotNull ConfigurationSection section, @NotNull String name, @NotNull String source) {
+        @SuppressWarnings("removal")
+        @Override
+        @Deprecated
+        public CanvasElement load(MenuPlugin plugin, String name, ConfigurationSection section, String source) {
+            return this.load(plugin, name, (section == null ? null : YamlSections.toDocument(section)), source);
+        }
+
+        private static @NotNull List<int[]> stars(@NotNull Section section, @NotNull String name, @NotNull String source) {
             if (!section.contains("stars")) return List.of();
             if (!section.isList("stars")) throw ElementSections.error(name, source, "needs stars as a list of { x, y }");
             List<int[]> stars = new ArrayList<>();
@@ -372,13 +423,13 @@ public final class WidgetLoaders {
         }
     }
 
-    private static @NotNull List<CanvasElement> elements(@NotNull MenuPlugin plugin, @NotNull String name, @NotNull ConfigurationSection section,
+    private static @NotNull List<CanvasElement> elements(@NotNull MenuPlugin plugin, @NotNull String name, @NotNull Section section,
                                                          @NotNull String source) {
         CanvasManager canvasManager = plugin.getCanvasManager();
         if (canvasManager == null) throw ElementSections.error(name, source, "needs dialog canvases to be enabled");
         List<CanvasElement> elements = new ArrayList<>();
-        for (String elementName : section.getKeys(false)) {
-            ConfigurationSection element = section.getConfigurationSection(elementName);
+        for (String elementName : section.getRoutesAsStrings(false)) {
+            Section element = section.getSection(elementName);
             if (element == null) throw ElementSections.error(elementName, source, "must be a section");
             String type = element.getString("type");
             if (type == null) throw ElementSections.error(elementName, source, "needs a type");
@@ -405,20 +456,20 @@ public final class WidgetLoaders {
         }
 
         @Override
-        public @NotNull CanvasElement load(@NotNull MenuPlugin plugin, @NotNull String name, @NotNull ConfigurationSection section, @NotNull String source) {
+        public @NotNull CanvasElement load(@NotNull MenuPlugin plugin, @NotNull String name, @NotNull Section section, @NotNull String source) {
             ElementSections.rejectUnknownKeys(section, KEYS, name, source);
             List<DropdownWidget.Option> options = new ArrayList<>();
-            ConfigurationSection optionsSection = section.getConfigurationSection("options");
-            if (optionsSection == null || optionsSection.getKeys(false).isEmpty()) throw ElementSections.error(name, source, "needs options");
-            for (String id : optionsSection.getKeys(false)) {
-                ConfigurationSection option = optionsSection.getConfigurationSection(id);
+            Section optionsSection = section.getSection("options");
+            if (optionsSection == null || optionsSection.getRoutesAsStrings(false).isEmpty()) throw ElementSections.error(name, source, "needs options");
+            for (String id : optionsSection.getRoutesAsStrings(false)) {
+                Section option = optionsSection.getSection(id);
                 if (option == null) {
                     options.add(new DropdownWidget.Option(id, optionsSection.getString(id, id)));
                     continue;
                 }
                 ElementSections.rejectUnknownKeys(option, OPTION_KEYS, name + ".options." + id, source);
                 options.add(new DropdownWidget.Option(id, option.getString("label", id),
-                        option.isList("hover") ? option.getStringList("hover") : option.contains("hover") ? List.of(option.getString("hover")) : List.of()));
+                        option.isList("hover") ? YamlSections.getStringList(option, "hover") : option.contains("hover") ? List.of(option.getString("hover")) : List.of()));
             }
 
             int width = positive(section, "width", 100, name, source);
@@ -441,6 +492,13 @@ public final class WidgetLoaders {
                     section.getString("font", "default"), WidgetPart.read(section, "text", false, name, source),
                     WidgetPart.read(section, "list", false, name, source), WidgetPart.read(section, "option-text", false, name, source));
         }
+
+        @SuppressWarnings("removal")
+        @Override
+        @Deprecated
+        public CanvasElement load(MenuPlugin plugin, String name, ConfigurationSection section, String source) {
+            return this.load(plugin, name, (section == null ? null : YamlSections.toDocument(section)), source);
+        }
     }
 
     /**
@@ -458,9 +516,9 @@ public final class WidgetLoaders {
         }
 
         @Override
-        public @NotNull CanvasElement load(@NotNull MenuPlugin plugin, @NotNull String name, @NotNull ConfigurationSection section, @NotNull String source) {
+        public @NotNull CanvasElement load(@NotNull MenuPlugin plugin, @NotNull String name, @NotNull Section section, @NotNull String source) {
             ElementSections.rejectUnknownKeys(section, KEYS, name, source);
-            List<String> entries = section.isList("entries") ? section.getStringList("entries") : List.of();
+            List<String> entries = section.isList("entries") ? YamlSections.getStringList(section, "entries") : List.of();
             String entriesSource = section.isList("entries") ? null : section.getString("entries");
             if (entriesSource == null && !section.isList("entries")) throw ElementSections.error(name, source, "needs entries: a list or a placeholder");
             String direction = section.getString("direction", "column").toLowerCase(Locale.ROOT);
@@ -468,7 +526,7 @@ public final class WidgetLoaders {
             int perPage = positive(section, "per-page", 4, name, source);
             int columns = section.contains("columns") ? positive(section, "columns", 1, name, source) : direction.equals("row") ? perPage : 1;
 
-            ConfigurationSection templateSection = section.getConfigurationSection("template");
+            Section templateSection = section.getSection("template");
             if (templateSection == null) throw ElementSections.error(name, source, "needs a template element");
             CanvasLayoutable template = template(plugin, name, templateSection, source);
 
@@ -480,7 +538,14 @@ public final class WidgetLoaders {
                     section.getString("filter-on", "%entry%"));
         }
 
-        private static @NotNull CanvasLayoutable template(@NotNull MenuPlugin plugin, @NotNull String name, @NotNull ConfigurationSection section,
+        @SuppressWarnings("removal")
+        @Override
+        @Deprecated
+        public CanvasElement load(MenuPlugin plugin, String name, ConfigurationSection section, String source) {
+            return this.load(plugin, name, (section == null ? null : YamlSections.toDocument(section)), source);
+        }
+
+        private static @NotNull CanvasLayoutable template(@NotNull MenuPlugin plugin, @NotNull String name, @NotNull Section section,
                                                           @NotNull String source) {
             CanvasManager canvasManager = plugin.getCanvasManager();
             if (canvasManager == null) throw ElementSections.error(name, source, "needs dialog canvases to be enabled");
@@ -511,29 +576,36 @@ public final class WidgetLoaders {
         }
 
         @Override
-        public @NotNull CanvasElement load(@NotNull MenuPlugin plugin, @NotNull String name, @NotNull ConfigurationSection section, @NotNull String source) {
+        public @NotNull CanvasElement load(@NotNull MenuPlugin plugin, @NotNull String name, @NotNull Section section, @NotNull String source) {
             ElementSections.rejectUnknownKeys(section, KEYS, name, source);
-            ConfigurationSection pagesSection = section.getConfigurationSection("pages");
-            if (pagesSection == null || pagesSection.getKeys(false).isEmpty()) throw ElementSections.error(name, source, "needs pages");
+            Section pagesSection = section.getSection("pages");
+            if (pagesSection == null || pagesSection.getRoutesAsStrings(false).isEmpty()) throw ElementSections.error(name, source, "needs pages");
             Map<String, List<CanvasElement>> pages = new LinkedHashMap<>();
-            for (String page : pagesSection.getKeys(false)) {
-                ConfigurationSection pageSection = pagesSection.getConfigurationSection(page);
+            for (String page : pagesSection.getRoutesAsStrings(false)) {
+                Section pageSection = pagesSection.getSection(page);
                 if (pageSection == null) throw ElementSections.error(name, source, "needs the page " + page + " as a section of elements");
                 pages.put(page, elements(plugin, name, pageSection, source));
             }
             Map<String, VisibleCondition> nextRequirements = new LinkedHashMap<>();
-            ConfigurationSection requirements = section.getConfigurationSection("next-requirement");
+            Section requirements = section.getSection("next-requirement");
             if (section.contains("next-requirement") && requirements == null) {
                 throw ElementSections.error(name, source, "needs next-requirement as a section of page names");
             }
             if (requirements != null) {
-                for (String page : requirements.getKeys(false)) {
+                for (String page : requirements.getRoutesAsStrings(false)) {
                     if (!pages.containsKey(page)) throw ElementSections.error(name, source, "has a next-requirement for the unknown page " + page);
                     nextRequirements.put(page, VisibleCondition.parse(String.valueOf(requirements.get(page))));
                 }
             }
             WidgetSettings settings = WidgetSettings.read(plugin, name, section, source, "1");
             return new PagesWidget(settings, PageNavigation.read(section, name, source), pages, nextRequirements);
+        }
+
+        @SuppressWarnings("removal")
+        @Override
+        @Deprecated
+        public CanvasElement load(MenuPlugin plugin, String name, ConfigurationSection section, String source) {
+            return this.load(plugin, name, (section == null ? null : YamlSections.toDocument(section)), source);
         }
     }
 
@@ -550,17 +622,24 @@ public final class WidgetLoaders {
         }
 
         @Override
-        public @NotNull CanvasElement load(@NotNull MenuPlugin plugin, @NotNull String name, @NotNull ConfigurationSection section, @NotNull String source) {
+        public @NotNull CanvasElement load(@NotNull MenuPlugin plugin, @NotNull String name, @NotNull Section section, @NotNull String source) {
             ElementSections.rejectUnknownKeys(section, KEYS, name, source);
             int width = positive(section, "width", 160, name, source);
             int height = positive(section, "height", 80, name, source);
             int border = section.contains("border") ? ElementSections.requireInt(section, "border", name, source) : 4;
             if (border < 0 || border * 2 > Math.min(width, height)) throw ElementSections.error(name, source, "has a border larger than its window");
-            ConfigurationSection elements = section.getConfigurationSection("elements");
+            Section elements = section.getSection("elements");
             WidgetSettings settings = WidgetSettings.read(plugin, name, section, source, "false");
             return new ModalWidget(settings, width, height, texture(section, "panel", name, source), border,
                     section.contains("dim") ? texture(section, "dim", name, source) : null, section.getBoolean("close-on-outside", true),
                     elements == null ? List.of() : elements(plugin, name, elements, source));
+        }
+
+        @SuppressWarnings("removal")
+        @Override
+        @Deprecated
+        public CanvasElement load(MenuPlugin plugin, String name, ConfigurationSection section, String source) {
+            return this.load(plugin, name, (section == null ? null : YamlSections.toDocument(section)), source);
         }
     }
 }

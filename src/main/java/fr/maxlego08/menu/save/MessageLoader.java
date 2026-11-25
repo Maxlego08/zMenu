@@ -1,17 +1,23 @@
 package fr.maxlego08.menu.save;
 
+import dev.dejvokep.boostedyaml.YamlDocument;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
 import fr.maxlego08.menu.zcore.logger.Logger;
 
 import fr.maxlego08.menu.ZMenuPlugin;
 import fr.maxlego08.menu.api.enums.MessageType;
 import fr.maxlego08.menu.api.utils.Message;
-import org.bukkit.configuration.file.YamlConfiguration;
+import fr.maxlego08.menu.zcore.utils.VersionedYamlFile;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 
 /**
@@ -27,21 +33,29 @@ public class MessageLoader {
         this.plugin = plugin;
     }
 
+    private YamlDocument document;
+
+    /**
+     * Adds the messages the file does not have yet.
+     */
     public void save() {
-
-        File file = new File(this.plugin.getDataFolder(), "messages.yml");
-        if (!file.exists()) {
-            try {
-                file.createNewFile();
-            } catch (IOException exception) {
-                Logger.error(exception);
-            }
+        if (this.document == null) return;
+        addMissingMessages(this.document);
+        try {
+            this.document.save();
+        } catch (IOException exception) {
+            Logger.error(exception);
         }
+        this.loadMessages(this.document);
+    }
 
-        YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
+    /**
+     * Writes every message of the enum the section does not have yet, in the form messages.yml uses.
+     */
+    public static void addMissingMessages(Section configuration) {
         for (Message message : Message.values()) {
 
-            String path = message.name().toLowerCase(Locale.ROOT).replace("_", "-");
+            String path = getPath(message);
 
             if (configuration.contains(path)) continue;
 
@@ -66,32 +80,32 @@ public class MessageLoader {
                 }
             }
         }
-
-        try {
-            configuration.save(file);
-        } catch (IOException exception) {
-            Logger.error(exception);
-        }
-
-        this.loadMessages(configuration);
     }
 
     public void load() {
 
         File file = new File(this.plugin.getDataFolder(), "messages.yml");
-        if (!file.exists()) {
-            this.save();
+        try {
+            // Each message keeps the form the user gave it, only the messages zMenu no longer has are removed
+            Set<String> messages = Arrays.stream(Message.values()).map(MessageLoader::getPath).collect(Collectors.toSet());
+            this.document = VersionedYamlFile.open(file, () -> this.plugin.getResource("messages.yml"), this.plugin.getLogger(), messages, false, Map.of());
+        } catch (Exception exception) {
+            Logger.error(exception);
             return;
         }
 
-        this.loadMessages(YamlConfiguration.loadConfiguration(file));
+        this.loadMessages(this.document);
     }
 
-    private void loadMessages(YamlConfiguration configuration) {
+    public static String getPath(Message message) {
+        return message.name().toLowerCase(Locale.ROOT).replace("_", "-");
+    }
+
+    private void loadMessages(YamlDocument configuration) {
 
         this.loadedMessages.clear();
 
-        for (String key : configuration.getKeys(false)) {
+        for (String key : configuration.getRoutesAsStrings(false)) {
             this.loadMessage(configuration, key);
         }
 
@@ -116,7 +130,7 @@ public class MessageLoader {
      * @param configuration The YAML configuration to load the message from.
      * @param key           The key under which the message is stored.
      */
-    private void loadMessage(YamlConfiguration configuration, String key) {
+    private void loadMessage(YamlDocument configuration, String key) {
         try {
 
             Message message = Message.valueOf(key.toUpperCase(Locale.ROOT).replace("-", "_"));

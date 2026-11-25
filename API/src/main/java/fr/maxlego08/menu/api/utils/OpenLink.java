@@ -72,6 +72,8 @@ public interface OpenLink extends SectionSerializable {
      *
      * @param section The section to write into.
      */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
+    @SuppressWarnings("removal")
     @Override
     default void serialize(@NotNull ConfigurationSection section) {
         Action action = this.getAction();

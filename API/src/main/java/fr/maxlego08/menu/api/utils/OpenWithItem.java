@@ -10,6 +10,8 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 
 /**
@@ -53,6 +55,11 @@ public class OpenWithItem {
         return this.itemStackSimilar.isSimilar(itemStackA, item);
     }
 
+    /**
+     * @deprecated use {@link #serialize(Section)}, zMenu reads its files with BoostedYAML.
+     */
+    @SuppressWarnings("removal")
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     public void serialize(@NotNull ConfigurationSection section) {
         this.menuItemStack.serialize(section.createSection("item"));
         List<String> actionNames = new ArrayList<>(this.actions.size());
@@ -61,5 +68,14 @@ public class OpenWithItem {
         }
         section.set("actions", actionNames);
         if (!"full".equals(this.itemStackSimilar.getName())) section.set("type", this.itemStackSimilar.getName());
+    }
+
+    /**
+     * Writes this object's keys into a section.
+     * By default it writes through the deprecated method, which existing addons override.
+     * <p>BoostedYAML is loaded by zMenu: an addon that calls this method must also declare it.
+     */
+    public void serialize(@NotNull Section section) {
+        YamlSections.write(section, copy -> this.serialize(copy));
     }
 }

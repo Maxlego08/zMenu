@@ -343,6 +343,8 @@ public interface Inventory extends Keyed, SectionSerializable {
      * @param section The section to write into, usually the root of the file.
      * @throws UnsupportedOperationException If this inventory, or something it holds, cannot be serialized.
      */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
+    @SuppressWarnings("removal")
     @Override
     default void serialize(@NotNull ConfigurationSection section) {
         throw new UnsupportedOperationException(this.getClass().getName() + " cannot be serialized");

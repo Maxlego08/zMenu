@@ -13,8 +13,8 @@ import io.papermc.paper.registry.TypedKey;
 import io.papermc.paper.registry.set.RegistrySet;
 import io.papermc.paper.registry.tag.Tag;
 import net.kyori.adventure.key.Key;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.YamlConfiguration;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
+import dev.dejvokep.boostedyaml.YamlDocument;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ItemType;
 import org.jetbrains.annotations.NotNull;
@@ -23,6 +23,9 @@ import org.jetbrains.annotations.Nullable;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.configuration.ConfigurationSection;
 
 @AutoComponentLoader
 @SinceVersion("1.21.3")
@@ -33,9 +36,9 @@ public class RepairableItemComponentLoader extends ItemComponentLoader {
     }
 
     @Override
-    public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
+    public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlDocument configuration, @NotNull String path, @Nullable Section componentSection) {
         if (componentSection == null) return null;
-        List<String> items = componentSection.isList("items") ? componentSection.getStringList("items") : new ArrayList<>();
+        List<String> items = componentSection.isList("items") ? YamlSections.getStringList(componentSection, "items") : new ArrayList<>();
         String string = componentSection.isList("items") ? null : componentSection.getString("items");
         List<TypedKey<ItemType>> itemKeys = new ArrayList<>();
         for (String item : items) {
@@ -45,6 +48,14 @@ public class RepairableItemComponentLoader extends ItemComponentLoader {
             itemKeys.add(TypedKey.create(RegistryKey.ITEM, Key.key(string)));
         }
         return itemKeys.isEmpty() ? null : new RepairableComponent(Repairable.repairable(RegistrySet.keySet(RegistryKey.ITEM, itemKeys)));
+    }
+
+    @SuppressWarnings("removal")
+    @Override
+    @Deprecated
+    public ItemComponent load(MenuItemStackContext context, File file, YamlConfiguration configuration, String path, ConfigurationSection componentSection) {
+        YamlDocument configurationDocument = configuration == null ? null : YamlSections.toDocument(configuration);
+        return this.load(context, file, configurationDocument, path, YamlSections.toSection(configurationDocument, componentSection));
     }
 
     @Override

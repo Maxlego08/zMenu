@@ -3,16 +3,17 @@ package fr.maxlego08.menu.hooks.dialogs.loader;
 import fr.maxlego08.menu.api.MenuPlugin;
 import fr.maxlego08.menu.api.utils.record.dialogs.ActionButtonRecord;
 import fr.maxlego08.menu.hooks.dialogs.inventory.ZServerLinksDialogInventory;
-import org.bukkit.configuration.file.YamlConfiguration;
+import dev.dejvokep.boostedyaml.YamlDocument;
 import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.Nullable;
 
 import java.io.File;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 public class ServerLinksDialogInventoryTypeLoader implements DialogInventoryTypeLoader<ZServerLinksDialogInventory> {
     @Override
-    public @Nullable ZServerLinksDialogInventory load(@NotNull MenuPlugin menuPlugin, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String name, @NotNull String externalTitle) {
-        ActionButtonRecord record = configuration.isConfigurationSection("server-links") || configuration.contains("server-links-text")
+    public @Nullable ZServerLinksDialogInventory load(@NotNull MenuPlugin menuPlugin, @NotNull File file, @NotNull YamlDocument configuration, @NotNull String name, @NotNull String externalTitle) {
+        ActionButtonRecord record = configuration.isSection("server-links") || configuration.contains("server-links-text")
                 ? this.loadActionButtonRecord(menuPlugin, configuration, "server-links", file)
                 : null;
         int numberOfColumns = configuration.getInt("server-links.number-of-columns", 1);

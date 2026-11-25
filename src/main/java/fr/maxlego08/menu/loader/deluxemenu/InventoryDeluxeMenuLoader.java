@@ -13,8 +13,8 @@ import fr.maxlego08.menu.inventory.zinv.ZInventory;
 import fr.maxlego08.menu.loader.container.EmptyContainerInventoryTypeLoader;
 import fr.maxlego08.menu.registry.InventoryTypeRegistry;
 import fr.maxlego08.menu.zcore.logger.Logger;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.YamlConfiguration;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
+import dev.dejvokep.boostedyaml.YamlDocument;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.plugin.Plugin;
 import org.jspecify.annotations.NonNull;
@@ -22,6 +22,8 @@ import org.jspecify.annotations.NonNull;
 import java.io.File;
 import java.lang.reflect.Constructor;
 import java.util.*;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
+import org.bukkit.configuration.file.YamlConfiguration;
 
 public class InventoryDeluxeMenuLoader extends DeluxeMenuCommandUtils implements Loader<Inventory> {
 
@@ -33,7 +35,7 @@ public class InventoryDeluxeMenuLoader extends DeluxeMenuCommandUtils implements
     }
 
     @Override
-    public Inventory load(@NonNull YamlConfiguration configuration, @NonNull String path, Object... objects) throws InventoryException {
+    public Inventory load(@NonNull YamlDocument configuration, @NonNull String path, Object... objects) throws InventoryException {
 
         File file = (File) objects[0];
         String name = this.loadTitle(configuration);
@@ -54,10 +56,10 @@ public class InventoryDeluxeMenuLoader extends DeluxeMenuCommandUtils implements
         List<Button> buttons = new ArrayList<>();
         Loader<Button> loader = new ButtonDeluxeMenuLoader(this.plugin, file, size, this.warnings);
 
-        ConfigurationSection section = configuration.getConfigurationSection("items.");
+        Section section = configuration.getSection("items.");
 
         if (section != null) {
-            for (String buttonPath : section.getKeys(false)) {
+            for (String buttonPath : section.getRoutesAsStrings(false)) {
                 try {
                     buttons.add(loader.load(configuration, "items." + buttonPath + ".", buttonPath));
                 } catch (Exception exception) {
@@ -140,10 +142,10 @@ public class InventoryDeluxeMenuLoader extends DeluxeMenuCommandUtils implements
 
         InventoryManager inventoryManager = this.plugin.getInventoryManager();
         CommandManager commandManager = this.plugin.getCommandManager();
-        inventory.setOpenActions(this.loadActions(inventoryManager, commandManager, this.plugin, configuration.getStringList("open_commands"), file));
-        inventory.setCloseActions(this.loadActions(inventoryManager, commandManager, this.plugin, configuration.getStringList("close_commands"), file));
+        inventory.setOpenActions(this.loadActions(inventoryManager, commandManager, this.plugin, YamlSections.getStringList(configuration, "open_commands"), file));
+        inventory.setCloseActions(this.loadActions(inventoryManager, commandManager, this.plugin, YamlSections.getStringList(configuration, "close_commands"), file));
 
-        ConfigurationSection openRequirementSection = configuration.getConfigurationSection("open_requirement");
+        Section openRequirementSection = configuration.getSection("open_requirement");
         if (openRequirementSection != null) {
             inventory.setOpenRequirement(this.loadRequirement(inventoryManager, commandManager, this.plugin, new ArrayList<>(), openRequirementSection, Configuration.allClicksType, file));
         }
@@ -159,10 +161,18 @@ public class InventoryDeluxeMenuLoader extends DeluxeMenuCommandUtils implements
         return inventory;
     }
 
-    private String loadTitle(YamlConfiguration configuration) {
+    @SuppressWarnings("removal")
+    @Override
+    @Deprecated
+    public Inventory load(YamlConfiguration configuration, String path, Object... objects) throws InventoryException  {
+        YamlDocument configurationDocument = configuration == null ? null : YamlSections.toDocument(configuration);
+        return this.load(configurationDocument, path, objects);
+    }
+
+    private String loadTitle(YamlDocument configuration) {
         String key = configuration.contains("menu_title") ? "menu_title" : configuration.contains("name") ? "name" : "title";
         if (configuration.isList(key)) {
-            List<String> lines = configuration.getStringList(key);
+            List<String> lines = YamlSections.getStringList(configuration, key);
             return lines.isEmpty() ? "" : lines.getFirst();
         }
         String title = configuration.getString(key);
@@ -170,7 +180,7 @@ public class InventoryDeluxeMenuLoader extends DeluxeMenuCommandUtils implements
     }
 
 
-    private int loadChestSize(YamlConfiguration configuration, File file) {
+    private int loadChestSize(YamlDocument configuration, File file) {
         if (!configuration.contains("size")) return 54;
         int configuredSize = configuration.getInt("size");
         int size = configuredSize;

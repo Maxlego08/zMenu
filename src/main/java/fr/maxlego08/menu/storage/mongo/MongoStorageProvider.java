@@ -54,7 +54,7 @@ public final class MongoStorageProvider implements StorageProvider {
 
     @Override
     public @NotNull CompletableFuture<Void> open(@NotNull StorageContext context) {
-        MongoSettings settings = MongoSettings.read(context.configuration());
+        MongoSettings settings = MongoSettings.read(context.section());
         try {
             this.connection = MongoConnection.open(settings);
         } catch (NoClassDefFoundError error) {
@@ -70,7 +70,7 @@ public final class MongoStorageProvider implements StorageProvider {
         this.inventoryLogs = this.connection.inventoryLogs();
         this.sessions = this.connection.sessions();
 
-        StorageConfiguration configuration = StorageConfiguration.read(context.configuration());
+        StorageConfiguration configuration = StorageConfiguration.read(context.section());
         if (configuration.messagingType().equalsIgnoreCase("AUTO")) {
             this.broker = this.connection.broker(context.serverId(), context.logger());
             this.broker.start(configuration.pollIntervalMillis());

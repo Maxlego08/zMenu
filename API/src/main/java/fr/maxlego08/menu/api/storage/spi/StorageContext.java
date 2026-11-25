@@ -7,6 +7,8 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.logging.Logger;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 /**
  * What zMenu hands a {@link StorageProvider} when it opens.
@@ -21,4 +23,21 @@ import java.util.logging.Logger;
 @ApiStatus.Experimental
 public record StorageContext(@NotNull Plugin plugin, @NotNull ConfigurationSection configuration, @NotNull File dataFolder,
                              @NotNull Logger logger, @NotNull String serverId) {
+
+    /**
+     * @deprecated use {@link #section()}, zMenu reads its files with BoostedYAML.
+     */
+    @Override
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
+    public @NotNull ConfigurationSection configuration() {
+        return this.configuration;
+    }
+
+    /**
+     * zMenu's {@code config.yml}, as BoostedYAML reads it; a provider reads its own settings from it.
+     * <p>BoostedYAML is loaded by zMenu: an addon that calls this method must also declare it.
+     */
+    public @NotNull Section section() {
+        return YamlSections.toDocument(this.configuration);
+    }
 }

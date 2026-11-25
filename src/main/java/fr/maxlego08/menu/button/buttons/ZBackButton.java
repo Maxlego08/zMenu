@@ -5,12 +5,14 @@ import fr.maxlego08.menu.api.InventoryManager;
 import fr.maxlego08.menu.api.button.buttons.BackButton;
 import fr.maxlego08.menu.api.engine.InventoryEngine;
 import fr.maxlego08.menu.api.utils.Placeholders;
-import org.bukkit.configuration.ConfigurationSection;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.jspecify.annotations.NonNull;
 
 import java.util.List;
+import org.bukkit.configuration.ConfigurationSection;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 // ToDo, vérifier le bon fonctionnement de cette class parce que je suis pas sur que c'est une bonne idée de stocker la variable pour tout le monde
 
@@ -51,8 +53,15 @@ public class ZBackButton extends BackButton {
     }
 
     @Override
-    protected void serializeProperties(@NonNull ConfigurationSection section) {
+    protected void serializeProperties(@NonNull Section section) {
         section.set("type", "back");
+    }
+
+    @SuppressWarnings("removal")
+    @Override
+    @Deprecated
+    protected void serializeProperties(ConfigurationSection section) {
+        YamlSections.write(section, copy -> this.serializeProperties(copy));
     }
 
 }

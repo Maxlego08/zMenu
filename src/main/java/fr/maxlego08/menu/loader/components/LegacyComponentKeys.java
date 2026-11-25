@@ -2,11 +2,12 @@ package fr.maxlego08.menu.loader.components;
 
 import fr.maxlego08.menu.api.utils.SectionSerializable;
 import fr.maxlego08.menu.zcore.logger.Logger;
-import org.bukkit.configuration.ConfigurationSection;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
 
 import java.io.File;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 /**
  * Keeps the old snake_case component keys working now that components use kebab-case keys.
@@ -52,11 +53,11 @@ public final class LegacyComponentKeys {
      * @param components The {@code components} section of the item.
      * @param file       The file the item comes from, named in the warning.
      */
-    public static void normalize(ConfigurationSection components, File file) {
-        for (String componentName : components.getKeys(false)) {
+    public static void normalize(Section components, File file) {
+        for (String componentName : components.getRoutesAsStrings(false)) {
             if (DATA_COMPONENTS.contains(componentName)) continue;
             Object value = components.get(componentName);
-            if (value instanceof ConfigurationSection section) {
+            if (value instanceof Section section) {
                 renameSection(section, file, componentName);
             } else if (value instanceof List<?> list) {
                 components.set(componentName, renameList(list, file, componentName));
@@ -64,10 +65,10 @@ public final class LegacyComponentKeys {
         }
     }
 
-    private static void renameSection(ConfigurationSection section, File file, String componentName) {
-        for (String key : new ArrayList<>(section.getKeys(false))) {
+    private static void renameSection(Section section, File file, String componentName) {
+        for (String key : new ArrayList<>(section.getRoutesAsStrings(false))) {
             Object value = section.get(key);
-            if (value instanceof ConfigurationSection child) {
+            if (value instanceof Section child) {
                 renameSection(child, file, componentName);
             } else if (value instanceof List<?> list) {
                 value = renameList(list, file, componentName);
@@ -78,7 +79,7 @@ public final class LegacyComponentKeys {
             if (newKey.equals(key)) continue;
             section.set(key, null);
             if (section.contains(newKey)) continue;
-            if (value instanceof ConfigurationSection child) section.createSection(newKey, SectionSerializable.toMap(child));
+            if (value instanceof Section child) YamlSections.createSection(section, newKey, SectionSerializable.toMap(child));
             else section.set(newKey, value);
         }
     }

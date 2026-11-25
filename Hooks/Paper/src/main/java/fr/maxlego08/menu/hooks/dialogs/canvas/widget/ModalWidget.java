@@ -5,13 +5,15 @@ import fr.maxlego08.menu.api.dialog.canvas.CanvasElement;
 import fr.maxlego08.menu.api.dialog.canvas.CanvasRenderContext;
 import fr.maxlego08.menu.api.dialog.canvas.CanvasVariants;
 import fr.maxlego08.menu.hooks.dialogs.canvas.glyph.PanelGlyphProvider;
-import org.bukkit.configuration.ConfigurationSection;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import org.bukkit.configuration.ConfigurationSection;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 /**
  * A window drawn over the canvas while its key is {@code true}.
@@ -119,7 +121,7 @@ public final class ModalWidget extends WidgetElement {
     }
 
     @Override
-    public void serialize(@NotNull ConfigurationSection section) {
+    public void serialize(@NotNull Section section) {
         this.settings.serialize(section, TYPE, "false");
         section.set("width", this.width);
         section.set("height", this.height);
@@ -127,7 +129,14 @@ public final class ModalWidget extends WidgetElement {
         section.set("border", this.border);
         if (this.dim != null) section.set("dim", this.dim);
         if (!this.closeOnOutside) section.set("close-on-outside", false);
-        ConfigurationSection elementsSection = section.createSection("elements");
+        Section elementsSection = section.createSection("elements");
         for (CanvasElement element : this.elements) element.serialize(elementsSection.createSection(element.name()));
+    }
+
+    @SuppressWarnings("removal")
+    @Override
+    @Deprecated
+    public void serialize(ConfigurationSection section) {
+        YamlSections.write(section, copy -> this.serialize(copy));
     }
 }

@@ -23,7 +23,7 @@ import fr.maxlego08.menu.inventory.inventories.InventoryDefault;
 import fr.maxlego08.menu.inventory.setter.ContainerInventorySetter;
 import net.kyori.adventure.key.Key;
 import org.bukkit.Bukkit;
-import org.bukkit.configuration.ConfigurationSection;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.InventoryHolder;
@@ -34,6 +34,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.util.*;
+import org.bukkit.configuration.ConfigurationSection;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 public class ZInventory extends ZUtils implements ContainerInventorySetter {
 
@@ -561,7 +563,7 @@ public class ZInventory extends ZUtils implements ContainerInventorySetter {
     }
 
     @Override
-    public void serialize(@NotNull ConfigurationSection section) {
+    public void serialize(@NotNull Section section) {
         section.set("name", this.name);
         if (this.translatedNames != null && !this.translatedNames.isEmpty()) {
             List<Map<String, Object>> names = new ArrayList<>(this.translatedNames.size());
@@ -599,7 +601,7 @@ public class ZInventory extends ZUtils implements ContainerInventorySetter {
         if (!this.getOpenActions().isEmpty()) section.set("open-actions", Permissible.serializeActions(this.getOpenActions()));
         if (!this.getCloseActions().isEmpty()) section.set("close-actions", Permissible.serializeActions(this.getCloseActions()));
 
-        ConfigurationSection itemsSection = section.createSection("items");
+        Section itemsSection = section.createSection("items");
         int index = 0;
         for (Button button : this.buttons) {
             String key = button.getName() == null || itemsSection.contains(button.getName()) ? "button-" + index : button.getName();
@@ -613,5 +615,12 @@ public class ZInventory extends ZUtils implements ContainerInventorySetter {
             InventoryOption option = type.create();
             if (option != null) option.serialize(this, section);
         }
+    }
+
+    @SuppressWarnings("removal")
+    @Override
+    @Deprecated
+    public void serialize(ConfigurationSection section) {
+        YamlSections.write(section, copy -> this.serialize(copy));
     }
 }

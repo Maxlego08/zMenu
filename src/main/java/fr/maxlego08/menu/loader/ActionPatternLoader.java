@@ -6,10 +6,12 @@ import fr.maxlego08.menu.api.pattern.ActionPattern;
 import fr.maxlego08.menu.api.utils.Loader;
 import fr.maxlego08.menu.pattern.ZActionsPattern;
 import fr.maxlego08.menu.common.utils.ZUtils;
-import org.bukkit.configuration.file.YamlConfiguration;
+import dev.dejvokep.boostedyaml.YamlDocument;
 import org.jspecify.annotations.NonNull;
 
 import java.io.File;
+import org.bukkit.configuration.file.YamlConfiguration;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 public class ActionPatternLoader extends ZUtils implements Loader<ActionPattern> {
     private final ZMenuPlugin plugin;
@@ -19,12 +21,20 @@ public class ActionPatternLoader extends ZUtils implements Loader<ActionPattern>
     }
 
     @Override
-    public ActionPattern load(@NonNull YamlConfiguration configuration, @NonNull String path, Object... objects) throws InventoryException {
+    public ActionPattern load(@NonNull YamlDocument configuration, @NonNull String path, Object... objects) throws InventoryException {
         File file = (File) objects[0];
         String name = configuration.getString("name");
         if (name == null) {
             throw new InventoryException("ActionPattern name is missing in configuration at path: " + path);
         }
         return new ZActionsPattern(name, this.plugin.getButtonManager().loadActions(configuration,"actions", file), this.plugin.getButtonManager().loadActions(configuration,"deny-actions", file));
+    }
+
+    @SuppressWarnings("removal")
+    @Override
+    @Deprecated
+    public ActionPattern load(YamlConfiguration configuration, String path, Object... objects) throws InventoryException  {
+        YamlDocument configurationDocument = configuration == null ? null : YamlSections.toDocument(configuration);
+        return this.load(configurationDocument, path, objects);
     }
 }

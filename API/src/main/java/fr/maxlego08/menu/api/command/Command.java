@@ -127,6 +127,8 @@ public interface Command extends SectionSerializable {
      *
      * @param section The section of the command.
      */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
+    @SuppressWarnings("removal")
     @Override
     default void serialize(@NotNull ConfigurationSection section) {
         section.set("command", this.command());

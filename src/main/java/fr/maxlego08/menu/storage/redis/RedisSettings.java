@@ -1,6 +1,6 @@
 package fr.maxlego08.menu.storage.redis;
 
-import org.bukkit.configuration.ConfigurationSection;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -15,7 +15,7 @@ import org.jetbrains.annotations.NotNull;
  */
 public record RedisSettings(@NotNull String uri, boolean cluster, @NotNull String keyPrefix, boolean requireAof, @NotNull String channel) {
 
-    public static @NotNull RedisSettings read(@NotNull ConfigurationSection configuration) {
+    public static @NotNull RedisSettings read(@NotNull Section configuration) {
         String prefix = configuration.getString("redis.key-prefix", "zmenu");
         return new RedisSettings(
                 configuration.getString("redis.uri", "redis://localhost:6379/0"),

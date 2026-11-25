@@ -17,7 +17,6 @@ import fr.maxlego08.menu.common.utils.cache.YamlFileCache;
 import fr.maxlego08.menu.requirement.actions.InventoryAction;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import net.kyori.adventure.key.Key;
-import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -48,6 +47,8 @@ import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import dev.dejvokep.boostedyaml.YamlDocument;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 /**
  * {@code enable-inventory-paths}: off, inventories are named by their file name as they always
@@ -170,25 +171,24 @@ public class InventoryPathTest {
     }
 
     @Test
-    public void theOptionIsOffByDefaultAndWhenItsKeyIsMissing() throws InvalidConfigurationException {
-        assertTrue(plugin.getConfig().isBoolean("enable-inventory-paths"), "the key is at the root of config.yml");
-        assertFalse(plugin.getConfig().getBoolean("enable-inventory-paths"));
-        assertFalse(plugin.getConfig().contains("menus"), "MENUS is a comment, not a section");
+    public void theOptionIsOffByDefaultAndWhenItsKeyIsMissing() throws IOException {
+        assertTrue(plugin.getConfigDocument().isBoolean("enable-inventory-paths"), "the key is at the root of config.yml");
+        assertFalse(plugin.getConfigDocument().getBoolean("enable-inventory-paths"));
+        assertFalse(plugin.getConfigDocument().contains("menus"), "MENUS is a comment, not a section");
         assertFalse(Configuration.enableInventoryPaths);
         assertFalse(this.inventoryManager.usesInventoryPaths());
 
-        YamlConfiguration configuration = new YamlConfiguration();
-        configuration.loadFromString(plugin.getConfig().saveToString());
+        YamlDocument configuration = YamlSections.load(plugin.getConfigDocument().dump());
         try {
             configuration.set("enable-inventory-paths", true);
             Configuration.getInstance().load(configuration);
             assertTrue(Configuration.enableInventoryPaths);
 
-            configuration.set("enable-inventory-paths", null);
+            configuration.remove("enable-inventory-paths");
             Configuration.getInstance().load(configuration);
             assertFalse(Configuration.enableInventoryPaths, "a config.yml written before the option keeps it off");
         } finally {
-            Configuration.getInstance().load(plugin.getConfig());
+            Configuration.getInstance().load(plugin.getConfigDocument());
         }
     }
 

@@ -8,11 +8,13 @@ import fr.maxlego08.menu.api.button.DefaultButtonValue;
 import fr.maxlego08.menu.api.button.buttons.dialogs.inputs.DialogSingleOptionInput;
 import fr.maxlego08.menu.api.loader.ButtonLoader;
 import fr.maxlego08.menu.api.utils.record.dialogs.SingleOption;
-import org.bukkit.configuration.file.YamlConfiguration;
+import dev.dejvokep.boostedyaml.YamlDocument;
 import org.jspecify.annotations.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.bukkit.configuration.file.YamlConfiguration;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 @AutoButtonLoader
 @RequireSupport(RequireSupport.SupportType.DIALOG)
@@ -23,16 +25,16 @@ public class DialogSingleOptionInputLoader extends ButtonLoader {
     }
 
     @Override
-    public Button load(@NonNull YamlConfiguration configuration, @NonNull String path, @NonNull DefaultButtonValue defaultButtonValue) {
+    public Button load(@NonNull YamlDocument configuration, @NonNull String path, @NonNull DefaultButtonValue defaultButtonValue) {
 
         int width = configuration.getInt(path + ".width", 200);
         String label = configuration.getString(path + ".label", "");
         boolean labelVisible = configuration.getBoolean(path + ".label-visible", true);
         List<SingleOption> singleOptionList = new ArrayList<>();
 
-        if (configuration.isConfigurationSection(path + ".options")) {
+        if (configuration.isSection(path + ".options")) {
             boolean initialAlreadySet = false;
-            for (String optionKey : configuration.getConfigurationSection(path + ".options").getKeys(false)) {
+            for (String optionKey : configuration.getSection(path + ".options").getRoutesAsStrings(false)) {
                 String optionPath = path + ".options." + optionKey;
 
                 String id = configuration.getString(optionPath + ".id", optionKey);
@@ -50,5 +52,13 @@ public class DialogSingleOptionInputLoader extends ButtonLoader {
             }
         }
         return new DialogSingleOptionInput(label, width, labelVisible, singleOptionList);
+    }
+
+    @SuppressWarnings("removal")
+    @Override
+    @Deprecated
+    public Button load(YamlConfiguration configuration, String path, DefaultButtonValue defaultButtonValue) {
+        YamlDocument configurationDocument = configuration == null ? null : YamlSections.toDocument(configuration);
+        return this.load(configurationDocument, path, defaultButtonValue);
     }
 }

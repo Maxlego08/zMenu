@@ -56,6 +56,7 @@ public class DataComponentTest extends DataComponentTestBase {
     @Test
     public void testRegistrationWithDuplicateNameKeepsTheFirstLoader() {
         ItemComponentLoader first = new ItemComponentLoader("duplicate-test") {
+            @SuppressWarnings("removal")
             @Override
             public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
                 return null;
@@ -65,6 +66,7 @@ public class DataComponentTest extends DataComponentTestBase {
         this.componentsManager.registerComponent(first);
 
         ItemComponentLoader second = new ItemComponentLoader("duplicate-test") {
+            @SuppressWarnings("removal")
             @Override
             public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
                 return null;
@@ -80,6 +82,7 @@ public class DataComponentTest extends DataComponentTestBase {
     @Test
     public void testRegistrationWithDistinctNamesSucceeds() {
         ItemComponentLoader first = new ItemComponentLoader("distinct-a") {
+            @SuppressWarnings("removal")
             @Override
             public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
                 return null;
@@ -87,6 +90,7 @@ public class DataComponentTest extends DataComponentTestBase {
         };
 
         ItemComponentLoader second = new ItemComponentLoader("distinct-b") {
+            @SuppressWarnings("removal")
             @Override
             public @Nullable ItemComponent load(@NotNull MenuItemStackContext context, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String path, @Nullable ConfigurationSection componentSection) {
                 return null;

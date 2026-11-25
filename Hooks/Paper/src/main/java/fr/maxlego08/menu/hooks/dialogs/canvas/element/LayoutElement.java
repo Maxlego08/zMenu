@@ -8,7 +8,7 @@ import fr.maxlego08.menu.api.dialog.canvas.CanvasVariants;
 import fr.maxlego08.menu.api.dialog.canvas.ResolvedGlyph;
 import fr.maxlego08.menu.hooks.dialogs.canvas.layout.LayoutEngine;
 import fr.maxlego08.menu.hooks.dialogs.canvas.layout.SizeSpec;
-import org.bukkit.configuration.ConfigurationSection;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -19,6 +19,8 @@ import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
+import org.bukkit.configuration.ConfigurationSection;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 /**
  * Lays its children out in a row or a column, written {@code type: row} or {@code type: column}.
@@ -321,7 +323,7 @@ public final class LayoutElement implements CanvasElement, CanvasLayoutable {
     }
 
     @Override
-    public void serialize(@NotNull ConfigurationSection section) {
+    public void serialize(@NotNull Section section) {
         section.set("type", this.direction.name().toLowerCase(Locale.ROOT));
         if (this.x != 0) section.set("x", this.x);
         if (this.y != 0) section.set("y", this.y);
@@ -334,10 +336,10 @@ public final class LayoutElement implements CanvasElement, CanvasLayoutable {
         if (this.align != LayoutEngine.Align.START) section.set("align", this.align.name().toLowerCase(Locale.ROOT));
         if (this.justify != LayoutEngine.Justify.START) section.set("justify", this.justify.name().toLowerCase(Locale.ROOT).replace('_', '-'));
 
-        ConfigurationSection childrenSection = section.createSection("children");
+        Section childrenSection = section.createSection("children");
         for (Child child : this.children) {
             CanvasElement element = (CanvasElement) child.element();
-            ConfigurationSection childSection = childrenSection.createSection(element.name());
+            Section childSection = childrenSection.createSection(element.name());
             element.serialize(childSection);
             if (child.collapse()) childSection.set("collapse", true);
             if (ConditionalElement.unwrap(element) instanceof LayoutElement) continue;
@@ -350,5 +352,12 @@ public final class LayoutElement implements CanvasElement, CanvasLayoutable {
                 childSection.set("layout-height", child.height().serialize());
             }
         }
+    }
+
+    @SuppressWarnings("removal")
+    @Override
+    @Deprecated
+    public void serialize(ConfigurationSection section) {
+        YamlSections.write(section, copy -> this.serialize(copy));
     }
 }

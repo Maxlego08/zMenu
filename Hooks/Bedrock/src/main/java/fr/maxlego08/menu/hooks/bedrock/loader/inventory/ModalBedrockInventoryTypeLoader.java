@@ -6,16 +6,17 @@ import fr.maxlego08.menu.hooks.bedrock.inventory.ZModalBedrockInventory;
 import fr.maxlego08.menu.hooks.bedrock.loader.AbstractBedrockInventoryTypeLoader;
 import fr.maxlego08.menu.hooks.bedrock.loader.BedrockInventoryTypeLoader;
 import fr.maxlego08.menu.zcore.logger.Logger;
-import org.bukkit.configuration.file.YamlConfiguration;
+import dev.dejvokep.boostedyaml.YamlDocument;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.List;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 public class ModalBedrockInventoryTypeLoader extends AbstractBedrockInventoryTypeLoader<ZModalBedrockInventory> {
 
     @Override
-    protected ZModalBedrockInventory loadInventory(@NotNull MenuPlugin menuPlugin, @NotNull File file, @NotNull YamlConfiguration configuration, @NotNull String title) {
+    protected ZModalBedrockInventory loadInventory(@NotNull MenuPlugin menuPlugin, @NotNull File file, @NotNull YamlDocument configuration, @NotNull String title) {
         String content = configuration.getString("content", "");
         List<BasicBedrockComponentButton> bodyButtons = BedrockInventoryTypeLoader.loadButtons(configuration, file, "buttons", BasicBedrockComponentButton.class, null, menuPlugin);
         int buttonSize = bodyButtons.size();

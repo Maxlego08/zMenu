@@ -835,6 +835,7 @@ public interface InventoryManager extends Listener {
      * @return the loaded menu item stack.
      * @deprecated use {@link ItemStackService#load(YamlConfiguration, String, File)}.
      */
+    @SuppressWarnings("removal")
     @Deprecated(since = "1.1.2.1", forRemoval = true)
     default MenuItemStack loadItemStack(YamlConfiguration configuration, String path, File file) {
         return this.getPlugin().getItemStackService().load(configuration, path, file);

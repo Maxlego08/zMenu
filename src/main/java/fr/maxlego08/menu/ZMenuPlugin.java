@@ -2,6 +2,7 @@ package fr.maxlego08.menu;
 
 import com.tcoded.folialib.FoliaLib;
 import com.tcoded.folialib.impl.PlatformScheduler;
+import dev.dejvokep.boostedyaml.YamlDocument;
 import dev.faststats.bukkit.BukkitContext;
 import fr.maxlego08.menu.api.*;
 import fr.maxlego08.menu.api.annotations.AutoFontImage;
@@ -83,11 +84,11 @@ import fr.maxlego08.menu.zcore.utils.plugins.Metrics;
 import fr.maxlego08.menu.zcore.utils.plugins.Plugins;
 import fr.maxlego08.menu.zcore.utils.plugins.VersionChecker;
 import fr.maxlego08.menu.zcore.utils.toast.ToastManager;
+import fr.maxlego08.menu.zcore.utils.VersionedYamlFile;
 import fr.robie.paperdispatch.cache.OfflinePlayerCache;
 import fr.robie.paperdispatch.manager.ICommandManager;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryType;
@@ -100,6 +101,11 @@ import java.io.File;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import org.bukkit.configuration.file.YamlConfiguration;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
+import org.bukkit.configuration.file.FileConfiguration;
+import java.io.IOException;
 
 /**
  * System to create your plugins very simply Projet with <a href="https://github.com/Maxlego08/TemplatePlugin">https://github.com/Maxlego08/TemplatePlugin</a>
@@ -147,6 +153,8 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
     private final ToastHelper toastHelper;
     private final AttributApplier attributApplier;
     private final File configFile;
+    private YamlDocument configDocument;
+    private YamlConfiguration configCopy;
     private final PlatformScheduler scheduler;
     private final BukkitContext context = new BukkitContext.Factory(this, "df00d7dc59087d9e248fe7723489b87b").metrics(dev.faststats.Metrics.Factory::create).create();
     private ItemManager itemManager = new DisabledItemManager();
@@ -196,6 +204,12 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
 
     @Override
     public void onLoad() {
+        // Before anything reads config.yml, the defaults are copied or merged by BoostedYAML
+        try {
+            this.configDocument = this.openConfig();
+        } catch (Exception exception) {
+            this.getLogger().log(Level.SEVERE, "Unable to update config.yml", exception);
+        }
         if (this.isActive(Plugins.PACKETEVENTS)) {
             this.safeHook("packetevents", () -> {
                 PacketManager manager = new PacketUtils(this);
@@ -218,8 +232,7 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
         if (!this.loadMeta()) {
             return;
         }
-        this.saveDefaultConfig();
-        Configuration.getInstance().load(this.getConfig());
+        Configuration.getInstance().load(this.getConfigDocument());
         this.loadFeatures();
         this.websiteManager = new ZWebsiteManager(this); // Create a website manager after loading config.yml, for API URL. Never change the URL, only for dev purposes
 
@@ -393,7 +406,7 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
         File tokenFile = new File(this.getDataFolder(), "token.json");
         if (tokenFile.exists()) tokenFile.delete(); // Delete old token file
 
-        if (this.getConfig().getBoolean("DEV-ONLY-DONT-ENABLE-THIS", false)) {
+        if (this.getConfigDocument().getBoolean("DEV-ONLY-DONT-ENABLE-THIS", false)) {
             this.websiteManager.onEnable();
         }
 
@@ -591,7 +604,7 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
         if (this.storageManager != null) this.safeDisable("storage", this.storageManager::flush);
         if (this.storageManager instanceof ZStorageManager zStorageManager) this.safeDisable("storage writer", zStorageManager::close);
 
-        this.safeDisable("configuration", () -> Configuration.getInstance().save(this.getConfig(), this.configFile));
+        this.safeDisable("configuration", () -> Configuration.getInstance().save(this.getConfigDocument()));
 
         this.safeDisable("file cache", YamlFileCache::clearCache);
         this.safeDisable("api offline player cache", fr.maxlego08.menu.api.utils.OfflinePlayerCache::clearCache);
@@ -768,8 +781,15 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
     }
 
     @Override
-    public @NotNull Optional<YamlConfiguration> readYamlFile(@NotNull Path path) {
+    public @NotNull Optional<YamlDocument> readYamlDocument(@NotNull Path path) {
         return YamlFileCache.getYamlConfiguration(path);
+    }
+
+    @SuppressWarnings("removal")
+    @Override
+    @Deprecated
+    public @NotNull Optional<YamlConfiguration> readYamlFile(@NotNull Path path) {
+        return this.readYamlDocument(path).map(YamlSections::toBukkit);
     }
 
     @Override
@@ -859,12 +879,16 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
 
         this.globalPlaceholders.clear();
         File file = new File(this.getDataFolder(), "global-placeholders.yml");
-        if (!file.exists()) {
-            this.saveResource("global-placeholders.yml", false);
+        YamlDocument configuration;
+        try {
+            configuration = VersionedYamlFile.open(file, () -> this.getResource("global-placeholders.yml"), this.getLogger(), Set.of(), true, Map.of());
+        } catch (Exception exception) {
+            this.getLogger().log(Level.SEVERE, "Unable to load global-placeholders.yml", exception);
+            return;
         }
-
-        YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
-        configuration.getKeys(false).forEach(key -> this.globalPlaceholders.put(key, configuration.get(key)));
+        configuration.getRoutesAsStrings(false).stream()
+                .filter(key -> !key.equals(VersionedYamlFile.VERSION_ROUTE))
+                .forEach(key -> this.globalPlaceholders.put(key, configuration.get(key)));
     }
 
     @Override
@@ -924,6 +948,46 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
 
     public File getConfigFile() {
         return this.configFile;
+    }
+
+    private YamlDocument openConfig() throws IOException {
+        return VersionedYamlFile.open(this.configFile, () -> this.getResource("config.yml"), this.getLogger(), Set.of("migration-database-configuration", "database-configuration.properties"), false, Map.of());
+    }
+
+    @Override
+    public @NotNull YamlDocument getConfigDocument() {
+        if (this.configDocument == null) this.configDocument = YamlSections.load(this.configFile);
+        return this.configDocument;
+    }
+
+    /**
+     * @deprecated use {@link #getConfigDocument()}: this is a Bukkit copy of it, written back by {@link #saveConfig()}.
+     */
+    @Override
+    @Deprecated
+    public @NotNull FileConfiguration getConfig() {
+        if (this.configCopy == null) this.configCopy = YamlSections.toBukkit(this.getConfigDocument());
+        return this.configCopy;
+    }
+
+    @Override
+    public void reloadConfig() {
+        try {
+            this.configDocument = this.openConfig();
+        } catch (Exception exception) {
+            this.getLogger().log(Level.SEVERE, "Unable to load config.yml", exception);
+        }
+        this.configCopy = null;
+    }
+
+    @Override
+    public void saveConfig() {
+        if (this.configCopy != null) YamlSections.copy(this.configCopy, this.getConfigDocument());
+        try {
+            this.getConfigDocument().save();
+        } catch (IOException exception) {
+            this.getLogger().log(Level.SEVERE, "Unable to save config.yml", exception);
+        }
     }
 
 }

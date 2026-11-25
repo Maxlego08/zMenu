@@ -5,12 +5,14 @@ import fr.maxlego08.menu.api.button.Button;
 import fr.maxlego08.menu.api.button.DefaultButtonValue;
 import fr.maxlego08.menu.api.loader.ButtonLoader;
 import fr.maxlego08.menu.api.utils.Loader;
-import org.bukkit.configuration.file.YamlConfiguration;
+import dev.dejvokep.boostedyaml.YamlDocument;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
+import org.bukkit.configuration.file.YamlConfiguration;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 public abstract class DialogDynamicAbstractLoader extends ButtonLoader {
 
@@ -22,7 +24,7 @@ public abstract class DialogDynamicAbstractLoader extends ButtonLoader {
     }
 
     @Override
-    public @Nullable Button load(@NotNull YamlConfiguration configuration, @NotNull String path, @NotNull DefaultButtonValue defaultButtonValue) {
+    public @Nullable Button load(@NotNull YamlDocument configuration, @NotNull String path, @NotNull DefaultButtonValue defaultButtonValue) {
         String start = configuration.getString(path + "start");
         String end = configuration.getString(path + "end");
 
@@ -38,6 +40,14 @@ public abstract class DialogDynamicAbstractLoader extends ButtonLoader {
         } catch (Exception e) {
             return null;
         }
+    }
+
+    @SuppressWarnings("removal")
+    @Override
+    @Deprecated
+    public Button load(YamlConfiguration configuration, String path, DefaultButtonValue defaultButtonValue) {
+        YamlDocument configurationDocument = configuration == null ? null : YamlSections.toDocument(configuration);
+        return this.load(configurationDocument, path, defaultButtonValue);
     }
 
     protected abstract String getChildPath();

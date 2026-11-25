@@ -7,7 +7,7 @@ import fr.maxlego08.menu.api.dialog.canvas.HAlign;
 import fr.maxlego08.menu.api.dialog.canvas.ResolvedGlyph;
 import fr.maxlego08.menu.hooks.dialogs.canvas.glyph.PanelGlyphProvider;
 import fr.maxlego08.menu.hooks.dialogs.canvas.state.CanvasStateAction;
-import org.bukkit.configuration.ConfigurationSection;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -15,6 +15,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import org.bukkit.configuration.ConfigurationSection;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 /**
  * One value out of a list that opens over the canvas.
@@ -334,16 +336,16 @@ public final class DropdownWidget extends WidgetElement {
     }
 
     @Override
-    public void serialize(@NotNull ConfigurationSection section) {
+    public void serialize(@NotNull Section section) {
         this.settings.serialize(section, TYPE, this.options.getFirst().id());
         section.set("width", this.width);
         section.set("height", this.height);
-        ConfigurationSection options = section.createSection("options");
+        Section options = section.createSection("options");
         for (Option option : this.options) {
             if (option.hover().isEmpty()) {
                 options.set(option.id(), option.label());
             } else {
-                ConfigurationSection optionSection = options.createSection(option.id());
+                Section optionSection = options.createSection(option.id());
                 optionSection.set("label", option.label());
                 optionSection.set("hover", option.hover());
             }
@@ -361,5 +363,12 @@ public final class DropdownWidget extends WidgetElement {
         section.set("previous-text", this.previousText);
         section.set("next-text", this.nextText);
         if (!this.font.equals("default")) section.set("font", this.font);
+    }
+
+    @SuppressWarnings("removal")
+    @Override
+    @Deprecated
+    public void serialize(ConfigurationSection section) {
+        YamlSections.write(section, copy -> this.serialize(copy));
     }
 }

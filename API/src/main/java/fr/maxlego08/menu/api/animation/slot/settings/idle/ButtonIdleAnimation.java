@@ -5,6 +5,8 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 /**
  * An animation a button plays on its own slots for as long as the menu stays open.
@@ -63,14 +65,20 @@ public record ButtonIdleAnimation(@NotNull List<IdleFrame> frames, long interval
      * its files when it was only read from files, otherwise its frames and options.
      *
      * @param section the idle animation section
+     * @deprecated use {@link #serialize(Section)}, zMenu reads its files with BoostedYAML.
      */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     public void serialize(@NotNull ConfigurationSection section) {
+        YamlSections.write(section, copy -> this.serialize(copy));
+    }
+
+    public void serialize(@NotNull Section section) {
         if (!this.files.isEmpty()) {
             section.set("file", this.files.size() == 1 ? this.files.getFirst() : this.files);
             return;
         }
 
-        ConfigurationSection itemsSection = section.createSection("items");
+        Section itemsSection = section.createSection("items");
         for (int index = 0; index < this.frames.size(); index++) {
             this.frames.get(index).serialize(itemsSection.createSection(String.valueOf(index + 1)));
         }

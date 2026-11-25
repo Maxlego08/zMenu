@@ -10,8 +10,8 @@ import fr.maxlego08.menu.api.exceptions.InventoryException;
 import fr.maxlego08.menu.api.requirement.Action;
 import fr.maxlego08.menu.api.requirement.Requirement;
 import net.kyori.adventure.key.Key;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.YamlConfiguration;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
+import dev.dejvokep.boostedyaml.YamlDocument;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -19,6 +19,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.function.UnaryOperator;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
+import org.bukkit.configuration.ConfigurationSection;
 
 /**
  * Reads {@link ItemElement}s, written {@code type: item}.
@@ -34,13 +36,13 @@ public final class ItemElementLoader implements CanvasElementLoader {
     }
 
     @Override
-    public @NotNull CanvasElement load(@NotNull MenuPlugin plugin, @NotNull String name, @NotNull ConfigurationSection section, @NotNull String source) {
+    public @NotNull CanvasElement load(@NotNull MenuPlugin plugin, @NotNull String name, @NotNull Section section, @NotNull String source) {
         ElementSections.rejectUnknownKeys(section, KEYS, name, source);
-        if (!section.isConfigurationSection("item")) throw ElementSections.error(name, source, "needs an item section, in the zMenu item format");
-        if (!(section.getRoot() instanceof YamlConfiguration configuration) || section.getCurrentPath() == null) {
+        if (!section.isSection("item")) throw ElementSections.error(name, source, "needs an item section, in the zMenu item format");
+        if (!(section.getRoot() instanceof YamlDocument configuration) || YamlSections.getCurrentPath(section) == null) {
             throw ElementSections.error(name, source, "must be read from a YAML file");
         }
-        String path = section.getCurrentPath();
+        String path = YamlSections.getCurrentPath(section);
         File file = new File(source);
 
         String material = section.getString("item.material", "");
@@ -56,7 +58,7 @@ public final class ItemElementLoader implements CanvasElementLoader {
             throw ElementSections.error(name, source, "needs a height from 1 to " + PanelElementLoader.MAX_HEIGHT);
         }
 
-        MenuItemStack item = plugin.loadItemStack(configuration, path + ".item", file);
+        MenuItemStack item = plugin.getItemStackService().load(configuration, path + ".item", file);
         ButtonManager buttonManager = plugin.getButtonManager();
         List<Action> actions;
         List<Requirement> clickRequirements;
@@ -70,5 +72,12 @@ public final class ItemElementLoader implements CanvasElementLoader {
 
         return new ItemElement(name, PositionValue.readX(section, "x", name, source), PositionValue.readY(section, "y", name, source), item, glyph, height,
                 section.getBoolean("show-amount", true), actions, clickRequirements, section.getBoolean("refresh", false), click);
+    }
+
+    @SuppressWarnings("removal")
+    @Override
+    @Deprecated
+    public CanvasElement load(MenuPlugin plugin, String name, ConfigurationSection section, String source) {
+        return this.load(plugin, name, (section == null ? null : YamlSections.toDocument(section)), source);
     }
 }

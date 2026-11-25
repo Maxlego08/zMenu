@@ -8,11 +8,13 @@ import fr.maxlego08.menu.api.utils.Loader;
 import fr.maxlego08.menu.api.variable.VariableScope;
 import fr.maxlego08.menu.requirement.ZActionPlayerData;
 import fr.maxlego08.menu.zcore.logger.Logger;
-import org.bukkit.configuration.file.YamlConfiguration;
+import dev.dejvokep.boostedyaml.YamlDocument;
 import org.jspecify.annotations.NonNull;
 
 import java.util.Arrays;
 import java.util.Locale;
+import org.bukkit.configuration.file.YamlConfiguration;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 public class ActionPlayerDataLoader implements Loader<ActionPlayerData> {
 
@@ -36,7 +38,7 @@ public class ActionPlayerDataLoader implements Loader<ActionPlayerData> {
     }
 
     @Override
-    public ActionPlayerData load(@NonNull YamlConfiguration configuration, @NonNull String path, Object... objects)
+    public ActionPlayerData load(@NonNull YamlDocument configuration, @NonNull String path, Object... objects)
             throws InventoryException {
 
         String typeString = configuration.getString(path + "type", "SET").toUpperCase(Locale.ROOT);
@@ -51,13 +53,21 @@ public class ActionPlayerDataLoader implements Loader<ActionPlayerData> {
         Object object = configuration.get(path + "value", true);
         String seconds = configuration.getString(path + "seconds", null);
         if (seconds == null) {
-            seconds = String.valueOf(configuration.getLong(path + "seconds",0));
+            seconds = String.valueOf(configuration.getLong(path + "seconds",0L));
         }
 
         boolean mathExpression = configuration.getBoolean(path + "math", false);
         VariableScope scope = readScope(configuration.getString(path + "scope", "player"), path + "scope");
 
         return new ZActionPlayerData(this.plugin, key, type, object, seconds, mathExpression, scope);
+    }
+
+    @SuppressWarnings("removal")
+    @Override
+    @Deprecated
+    public ActionPlayerData load(YamlConfiguration configuration, String path, Object... objects) throws InventoryException  {
+        YamlDocument configurationDocument = configuration == null ? null : YamlSections.toDocument(configuration);
+        return this.load(configurationDocument, path, objects);
     }
 
 }

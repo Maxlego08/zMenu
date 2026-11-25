@@ -38,8 +38,8 @@ import fr.maxlego08.menu.requirement.permissible.ZPlaceholderPermissible;
 import fr.maxlego08.menu.sound.ZSoundOption;
 import fr.maxlego08.menu.zcore.logger.Logger;
 import org.bukkit.Bukkit;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.YamlConfiguration;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
+import dev.dejvokep.boostedyaml.YamlDocument;
 import org.bukkit.plugin.Plugin;
 import org.jspecify.annotations.NonNull;
 
@@ -48,6 +48,9 @@ import java.lang.reflect.Constructor;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.configuration.ConfigurationSection;
 
 public class ZButtonLoader extends ZUtils implements Loader<Button> {
 
@@ -67,7 +70,7 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
     }
 
     @Override
-    public Button load(@NonNull YamlConfiguration configuration, @NonNull String path, Object... objects) throws InventoryException {
+    public Button load(@NonNull YamlDocument configuration, @NonNull String path, Object... objects) throws InventoryException {
 
         String buttonType = configuration.getString(path + "type", "NONE");
         String buttonName = (String) objects[0];
@@ -84,13 +87,13 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
             defaultButtonValue = new DefaultButtonValue(this.inventorySize, this.matrix, this.file);
         }
 
-        ConfigurationSection patternSection = configuration.getConfigurationSection(path + "pattern");
+        Section patternSection = configuration.getSection(path + "pattern");
 
         // Using the pattern file to load the button
         if (patternSection != null) {
 
             Map<String, Object> mapPlaceholders = new HashMap<>();
-            patternSection.getKeys(false).forEach(key -> mapPlaceholders.put(key, patternSection.get(key)));
+            patternSection.getRoutesAsStrings(false).forEach(key -> mapPlaceholders.put(key, patternSection.get(key)));
 
             String fileName = configuration.getString(path + "pattern.fileName", configuration.getString(path + "pattern.file-name", configuration.getString(path + "pattern.file")));
             String pluginName = configuration.getString(path + "pattern.pluginName", configuration.getString(path + "pattern.plugin-name", configuration.getString(path + "pattern.plugin", null)));
@@ -103,7 +106,7 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
                 throw new InventoryButtonException("Impossible to load the pattern " + fileName + ", file doesnt exist");
             }
 
-            YamlConfiguration patternYamlConfiguration = yamlFileEntry.get().getYamlConfiguration();
+            YamlDocument patternYamlConfiguration = yamlFileEntry.get().getYamlConfiguration();
 
             this.loadDefaultPatternValues(patternYamlConfiguration, mapPlaceholders);
 
@@ -173,7 +176,7 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
             slot = slot + ((page - 1) * this.inventorySize);
         }
 
-        List<String> slotsAsString = configuration.getStringList(path + "slots");
+        List<String> slotsAsString = YamlSections.getStringList(configuration, path + "slots");
         List<Integer> slots = ButtonLoader.loadSlot(slotsAsString);
         if (slots.isEmpty()) {
             slots = defaultButtonValue.getSlots();
@@ -210,7 +213,7 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
         button.setItemStack(itemStack);
 
         button.setButtonName(buttonName);
-        button.setMessages(configuration.getStringList(path + "messages"));
+        button.setMessages(YamlSections.getStringList(configuration, path + "messages"));
 
         String playerHead = configuration.getString(path + "playerHead", configuration.getString(path + "player-head", configuration.getString(path + "item.playerHead", configuration.getString(path + "item.player-head", defaultButtonValue.getPlayerHead()))));
 
@@ -255,8 +258,8 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
         Loader<ActionPlayerData> loaderActions = new ActionPlayerDataLoader(this.plugin);
 
         List<ActionPlayerData> actionPlayerDatas = new ArrayList<>();
-        if (configuration.isConfigurationSection(path + "datas")) {
-            for (String key : configuration.getConfigurationSection(path + "datas.").getKeys(false)) {
+        if (configuration.isSection(path + "datas")) {
+            for (String key : configuration.getSection(path + "datas.").getRoutesAsStrings(false)) {
                 ActionPlayerData actionPlayerData = loaderActions.load(configuration, path + "datas." + key + ".");
                 actionPlayerDatas.add(actionPlayerData);
             }
@@ -264,8 +267,8 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
 
         button.setDatas(actionPlayerDatas);
 
-        List<String> permissions = configuration.getStringList(path + "permission");
-        if (permissions.isEmpty()) permissions = configuration.getStringList(path + "permissions");
+        List<String> permissions = YamlSections.getStringList(configuration, path + "permission");
+        if (permissions.isEmpty()) permissions = YamlSections.getStringList(configuration, path + "permissions");
         if (!permissions.isEmpty()) {
             List<PermissionPermissible> mappedPermissions = new ArrayList<>(permissions.size());
             for (String permissionValue : permissions) {
@@ -278,15 +281,15 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
             button.getPermissions().add(new ZPermissionPermissible(permission));
         }
 
-        List<String> orPermissions = configuration.getStringList(path + "orPermission");
+        List<String> orPermissions = YamlSections.getStringList(configuration, path + "orPermission");
         if (orPermissions.isEmpty()) {
-            orPermissions = configuration.getStringList(path + "or-permission");
+            orPermissions = YamlSections.getStringList(configuration, path + "or-permission");
         }
         if (orPermissions.isEmpty()) {
-            orPermissions = configuration.getStringList(path + "orPermissions");
+            orPermissions = YamlSections.getStringList(configuration, path + "orPermissions");
         }
         if (orPermissions.isEmpty()) {
-            orPermissions = configuration.getStringList(path + "or-permissions");
+            orPermissions = YamlSections.getStringList(configuration, path + "or-permissions");
         }
         List<PermissionPermissible> mappedOrPermissions = new ArrayList<>(orPermissions.size());
         for (String permissionValue : orPermissions) {
@@ -315,7 +318,7 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
         }
 
         PermissibleLoader permissibleLoader = new PlaceholderPermissibleLoader(this.plugin.getButtonManager());
-        List<Map<String, Object>> placeholderMaps = (List<Map<String, Object>>) configuration.getList(path + "placeholders", new ArrayList<>());
+        List<Map<String, Object>> placeholderMaps = (List<Map<String, Object>>) YamlSections.getList(configuration, path + "placeholders", new ArrayList<>());
         List<PlaceholderPermissible> placeholders = new ArrayList<>();
         for (Map<String, Object> map : placeholderMaps) {
             PlaceholderPermissible permissible = (PlaceholderPermissible) permissibleLoader.load(path + "placeholders", new TypedMapAccessor(map), this.file);
@@ -338,38 +341,38 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
         button.setPlaceholders(placeholders);
 
         // Perform commands
-        List<String> commands = configuration.getStringList(path + "commands");
-        if (commands.isEmpty()) commands = configuration.getStringList(path + "playerCommands");
-        if (commands.isEmpty()) commands = configuration.getStringList(path + "player-commands");
+        List<String> commands = YamlSections.getStringList(configuration, path + "commands");
+        if (commands.isEmpty()) commands = YamlSections.getStringList(configuration, path + "playerCommands");
+        if (commands.isEmpty()) commands = YamlSections.getStringList(configuration, path + "player-commands");
 
-        List<String> leftCommands = configuration.getStringList(path + "leftCommands");
-        if (leftCommands.isEmpty()) leftCommands = configuration.getStringList(path + "left-commands");
-        if (leftCommands.isEmpty()) leftCommands = configuration.getStringList(path + "leftPlayerCommands");
-        if (leftCommands.isEmpty()) leftCommands = configuration.getStringList(path + "left-player-commands");
+        List<String> leftCommands = YamlSections.getStringList(configuration, path + "leftCommands");
+        if (leftCommands.isEmpty()) leftCommands = YamlSections.getStringList(configuration, path + "left-commands");
+        if (leftCommands.isEmpty()) leftCommands = YamlSections.getStringList(configuration, path + "leftPlayerCommands");
+        if (leftCommands.isEmpty()) leftCommands = YamlSections.getStringList(configuration, path + "left-player-commands");
 
-        List<String> rightCommands = configuration.getStringList(path + "rightCommands");
-        if (rightCommands.isEmpty()) rightCommands = configuration.getStringList(path + "right-commands");
-        if (rightCommands.isEmpty()) rightCommands = configuration.getStringList(path + "rightPlayerCommands");
-        if (rightCommands.isEmpty()) rightCommands = configuration.getStringList(path + "right-player-commands");
+        List<String> rightCommands = YamlSections.getStringList(configuration, path + "rightCommands");
+        if (rightCommands.isEmpty()) rightCommands = YamlSections.getStringList(configuration, path + "right-commands");
+        if (rightCommands.isEmpty()) rightCommands = YamlSections.getStringList(configuration, path + "rightPlayerCommands");
+        if (rightCommands.isEmpty()) rightCommands = YamlSections.getStringList(configuration, path + "right-player-commands");
 
-        List<String> consoleCommands = configuration.getStringList(path + "consoleCommands");
+        List<String> consoleCommands = YamlSections.getStringList(configuration, path + "consoleCommands");
         if (consoleCommands.isEmpty()) {
-            consoleCommands = configuration.getStringList(path + "console-commands");
+            consoleCommands = YamlSections.getStringList(configuration, path + "console-commands");
         }
 
-        List<String> consoleRightCommands = configuration.getStringList(path + "consoleRightCommands");
+        List<String> consoleRightCommands = YamlSections.getStringList(configuration, path + "consoleRightCommands");
         if (consoleRightCommands.isEmpty()) {
-            consoleRightCommands = configuration.getStringList(path + "console-right-commands");
+            consoleRightCommands = YamlSections.getStringList(configuration, path + "console-right-commands");
         }
 
-        List<String> consoleLeftCommands = configuration.getStringList(path + "consoleLeftCommands");
+        List<String> consoleLeftCommands = YamlSections.getStringList(configuration, path + "consoleLeftCommands");
         if (consoleLeftCommands.isEmpty()) {
-            consoleLeftCommands = configuration.getStringList(path + "console-left-commands");
+            consoleLeftCommands = YamlSections.getStringList(configuration, path + "console-left-commands");
         }
 
-        List<String> consolePermissionCommands = configuration.getStringList(path + "consolePermissionCommands");
+        List<String> consolePermissionCommands = YamlSections.getStringList(configuration, path + "consolePermissionCommands");
         if (consolePermissionCommands.isEmpty()) {
-            consolePermissionCommands = configuration.getStringList(path + "console-permission-commands");
+            consolePermissionCommands = YamlSections.getStringList(configuration, path + "console-permission-commands");
         }
         String consolePermission = configuration.getString(path + "consolePermission", configuration.getString(path + "console-permission"));
 
@@ -390,7 +393,7 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
         this.loadRefreshRequirements(button, configuration, path, this.file);
         // Load actions
         boolean stopOnEmpty = configuration.getBoolean(path + "stop-on-empty", true);
-        List<Action> actions = buttonManager.loadActions((List<Map<String, Object>>) configuration.getList(path + "actions", new ArrayList<>()), path + "actions", this.file, actionPatterns, true, stopOnEmpty);
+        List<Action> actions = buttonManager.loadActions((List<Map<String, Object>>) YamlSections.getList(configuration, path + "actions", new ArrayList<>()), path + "actions", this.file, actionPatterns, true, stopOnEmpty);
 
         button.setActions(actions);
 
@@ -414,10 +417,18 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
         return button;
     }
 
-    private void loadDefaultPatternValues(YamlConfiguration patternConfig, Map<String, Object> mapPlaceholders) {
-        ConfigurationSection defaultValueConfigurationSection = patternConfig.getConfigurationSection("default-values.");
+    @SuppressWarnings("removal")
+    @Override
+    @Deprecated
+    public Button load(YamlConfiguration configuration, String path, Object... objects) throws InventoryException  {
+        YamlDocument configurationDocument = configuration == null ? null : YamlSections.toDocument(configuration);
+        return this.load(configurationDocument, path, objects);
+    }
+
+    private void loadDefaultPatternValues(YamlDocument patternConfig, Map<String, Object> mapPlaceholders) {
+        Section defaultValueConfigurationSection = patternConfig.getSection("default-values.");
         if (defaultValueConfigurationSection != null) {
-            Map<String, Object> defaultValues = defaultValueConfigurationSection.getValues(true);
+            Map<String, Object> defaultValues = defaultValueConfigurationSection.getStringRouteMappedValues(true);
             for (String key : defaultValues.keySet()) {
                 if (!mapPlaceholders.containsKey(key)) {
                     mapPlaceholders.put(key, defaultValues.get(key));
@@ -434,21 +445,21 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
      * @param file          the file
      * @param path          current path in configuration
      */
-    private void loadClickRequirements(Button button, YamlConfiguration configuration, String path, File file, List<ActionPattern> actionPatterns) throws InventoryException {
+    private void loadClickRequirements(Button button, YamlDocument configuration, String path, File file, List<ActionPattern> actionPatterns) throws InventoryException {
 
         String[] sectionStrings = this.plugin.getClickRequirementKeys();
-        ConfigurationSection section = null;
+        Section section = null;
         String sectionString = "";
         for (String string : sectionStrings) {
             sectionString = string;
-            section = configuration.getConfigurationSection(path + sectionString);
+            section = configuration.getSection(path + sectionString);
             if (section != null) break;
         }
         if (section == null) return;
 
         Loader<Requirement> loader = new RequirementLoader(this.plugin);
         List<Requirement> requirements = new ArrayList<>();
-        for (String key : section.getKeys(false)) {
+        for (String key : section.getRoutesAsStrings(false)) {
             requirements.add(loader.load(configuration, path + sectionString + key + ".", file, actionPatterns));
         }
         button.setClickRequirements(requirements);
@@ -463,9 +474,9 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
      * @param path          current path in configuration
      * @throws InventoryException if the configuration does not contain the "view_requirement" section
      */
-    private void loadViewRequirements(Button button, YamlConfiguration configuration, String path, File file) throws InventoryException {
+    private void loadViewRequirements(Button button, YamlDocument configuration, String path, File file) throws InventoryException {
         Loader<Requirement> loader = new RequirementLoader(this.plugin);
-        String requirementPath = configuration.isConfigurationSection(path + "view_requirement.") ? "view_requirement." : configuration.isConfigurationSection(path + "view-requirement.") ? "view-requirement." : null;
+        String requirementPath = configuration.isSection(path + "view_requirement.") ? "view_requirement." : configuration.isSection(path + "view-requirement.") ? "view-requirement." : null;
         if (requirementPath == null) return;
 
         button.setViewRequirement(loader.load(configuration, path + requirementPath, file));
@@ -479,9 +490,9 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
      * @param file          the file
      * @param path          current path in configuration
      */
-    private void loadRefreshRequirements(Button button, YamlConfiguration configuration, String path, File file) throws InventoryException {
+    private void loadRefreshRequirements(Button button, YamlDocument configuration, String path, File file) throws InventoryException {
         Loader<RefreshRequirement> loader = new RefreshRequiementLoader(this.plugin);
-        String requirementPath = configuration.isConfigurationSection(path + "refresh_requirements.") ? "refresh_requirements." : configuration.isConfigurationSection(path + "refresh-requirements.") ? "refresh-requirements." : null;
+        String requirementPath = configuration.isSection(path + "refresh_requirements.") ? "refresh_requirements." : configuration.isSection(path + "refresh-requirements.") ? "refresh-requirements." : null;
         if (requirementPath == null) return;
 
         button.setRefreshRequirement(loader.load(configuration, path + requirementPath, file));
@@ -492,8 +503,15 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
      * slots relative to their page.
      */
     @Override
-    public void serialize(@NonNull Button button, @NonNull ConfigurationSection section, Object... objects) {
+    public void serialize(@NonNull Button button, @NonNull Section section, Object... objects) {
         button.serialize(section, this.inventorySize);
+    }
+
+    @SuppressWarnings("removal")
+    @Override
+    @Deprecated
+    public void serialize(Button button, ConfigurationSection section, Object... objects) {
+        YamlSections.write(section, copy -> this.serialize(button, copy, objects));
     }
 
     private ButtonOption createInstance(Plugin plugin, Class<? extends ButtonOption> aClass) {

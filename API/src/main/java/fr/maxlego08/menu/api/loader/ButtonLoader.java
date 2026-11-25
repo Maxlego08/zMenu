@@ -15,6 +15,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.IntStream;
+import dev.dejvokep.boostedyaml.YamlDocument;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 /**
  * The ButtonLoader interface defines methods for loading buttons and related configurations.
@@ -140,7 +143,24 @@ public abstract class ButtonLoader implements Keyed {
      * @param path               The current button path.
      * @param defaultButtonValue Default button values.
      * @return The loaded button.
+     * @deprecated use {@link #load(YamlDocument, String, DefaultButtonValue)}, zMenu reads its files with BoostedYAML.
      */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     @Nullable
     public abstract Button load(@NotNull YamlConfiguration configuration, @NotNull String path, @NotNull DefaultButtonValue defaultButtonValue);
+
+    /**
+     * Loads a button based on the provided document. zMenu calls this method, override it.
+     * By default it reads a Bukkit copy with the deprecated method, which existing addons override.
+     * <p>BoostedYAML is loaded by zMenu: an addon that calls this method must also declare it.
+     *
+     * @param configuration      The current file.
+     * @param path               The current button path.
+     * @param defaultButtonValue Default button values.
+     * @return The loaded button.
+     */
+    @Nullable
+    public Button load(@NotNull YamlDocument configuration, @NotNull String path, @NotNull DefaultButtonValue defaultButtonValue) {
+        return this.load(YamlSections.toBukkit(configuration), path, defaultButtonValue);
+    }
 }

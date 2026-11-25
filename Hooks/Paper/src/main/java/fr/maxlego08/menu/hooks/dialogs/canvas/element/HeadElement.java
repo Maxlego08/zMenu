@@ -8,11 +8,13 @@ import fr.maxlego08.menu.api.dialog.canvas.CanvasVariants;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.object.ObjectContents;
 import net.kyori.adventure.text.object.PlayerHeadObjectContents;
-import org.bukkit.configuration.ConfigurationSection;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
+import org.bukkit.configuration.ConfigurationSection;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 /**
  * Draws the head of a player, 8 pixels wide and high, on a text line (Minecraft 1.21.9+).
@@ -71,12 +73,19 @@ public record HeadElement(@NotNull String name, @Nullable String player, @Nullab
     }
 
     @Override
-    public void serialize(@NotNull ConfigurationSection section) {
+    public void serialize(@NotNull Section section) {
         section.set("type", "head");
         if (this.player != null) section.set("player", this.player);
         if (this.texture != null) this.texture.serialize(section, "texture");
         if (this.hat.isPlaceholder() || Boolean.FALSE.equals(this.hat.fixed())) this.hat.serialize(section, "hat");
         this.x.serialize(section, "x");
         section.set("line", this.line);
+    }
+
+    @SuppressWarnings("removal")
+    @Override
+    @Deprecated
+    public void serialize(ConfigurationSection section) {
+        YamlSections.write(section, copy -> this.serialize(copy));
     }
 }

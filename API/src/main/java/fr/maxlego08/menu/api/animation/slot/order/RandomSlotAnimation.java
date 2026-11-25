@@ -28,6 +28,8 @@ public class RandomSlotAnimation implements SlotAnimation {
         this.random = random;
     }
 
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
+    @SuppressWarnings("removal")
     @Override
     public void serialize(@NotNull ConfigurationSection section) {
         section.set("type", "random");

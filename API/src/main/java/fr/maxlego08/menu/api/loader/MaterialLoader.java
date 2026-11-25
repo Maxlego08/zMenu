@@ -9,6 +9,9 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import dev.dejvokep.boostedyaml.YamlDocument;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 /**
  * Documentation: <a href="https://docs.zmenu.dev/api/create-material-loader">here</a>
@@ -53,8 +56,26 @@ public abstract class MaterialLoader implements Keyed {
      * @param path           The current path.
      * @param materialString The material as a String.
      * @return The loaded ItemStack.
+     * @deprecated use {@link #load(Player, YamlDocument, String, String)}, zMenu reads its files with BoostedYAML.
      */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
     @Nullable
     public abstract ItemStack load(@NotNull Player player, @Nullable YamlConfiguration configuration,@NotNull String path,@NotNull String materialString);
+
+    /**
+     * Loads an ItemStack based on the provided document. zMenu calls this method, override it.
+     * By default it reads a Bukkit copy with the deprecated method, which existing addons override.
+     * <p>BoostedYAML is loaded by zMenu: an addon that calls this method must also declare it.
+     *
+     * @param player         The player.
+     * @param configuration  The current document.
+     * @param path           The current path.
+     * @param materialString The material as a String.
+     * @return The loaded ItemStack.
+     */
+    @Nullable
+    public ItemStack load(@NotNull Player player, @Nullable YamlDocument configuration, @NotNull String path, @NotNull String materialString) {
+        return this.load(player, configuration == null ? null : YamlSections.toBukkit(configuration), path, materialString);
+    }
 
 }
