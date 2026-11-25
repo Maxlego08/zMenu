@@ -61,6 +61,7 @@ public class FireworksItemComponentLoader extends AbstractFireworkItemComponentL
                 : new LegacyFireworksComponent(flightDuration, effects);
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public ItemComponent load(MenuItemStackContext context, File file, YamlConfiguration configuration, String path, ConfigurationSection componentSection) {

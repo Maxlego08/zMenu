@@ -28,6 +28,7 @@ public class BedrockToggleInputLoader extends ButtonLoader {
         return new BedrockToggleInput(text, defaultValue);
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public Button load(YamlConfiguration configuration, String path, DefaultButtonValue defaultButtonValue) {

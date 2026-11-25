@@ -14,6 +14,8 @@ import java.util.List;
  */
 public class VerticalSnakeSlotAnimation implements SlotAnimation {
 
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
+    @SuppressWarnings("removal")
     @Override
     public void serialize(@NotNull ConfigurationSection section) {
         section.set("type", "vertical_snake");

@@ -63,6 +63,7 @@ public class PotionContentsItemComponentLoader extends AbstractEffectItemCompone
                 : new LegacyPotionContentsComponent(resolvableBasePotionType, customName, color, customEffects);
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public ItemComponent load(MenuItemStackContext context, File file, YamlConfiguration configuration, String path, ConfigurationSection componentSection) {

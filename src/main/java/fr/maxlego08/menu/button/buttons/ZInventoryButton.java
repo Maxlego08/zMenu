@@ -46,6 +46,7 @@ public class ZInventoryButton extends InventoryButton {
         if (arguments != null && !arguments.isEmpty()) section.set("arguments", arguments);
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     protected void serializeProperties(ConfigurationSection section) {

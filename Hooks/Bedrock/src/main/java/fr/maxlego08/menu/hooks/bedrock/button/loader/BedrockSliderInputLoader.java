@@ -31,6 +31,7 @@ public class BedrockSliderInputLoader extends ButtonLoader {
         return new BedrockSliderInput(text, start, end, step, initialValue);
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public Button load(YamlConfiguration configuration, String path, DefaultButtonValue defaultButtonValue) {

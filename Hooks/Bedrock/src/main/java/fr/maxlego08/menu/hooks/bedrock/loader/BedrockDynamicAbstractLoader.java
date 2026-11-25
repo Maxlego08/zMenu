@@ -42,6 +42,7 @@ public abstract class BedrockDynamicAbstractLoader extends ButtonLoader {
         }
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public Button load(YamlConfiguration configuration, String path, DefaultButtonValue defaultButtonValue) {

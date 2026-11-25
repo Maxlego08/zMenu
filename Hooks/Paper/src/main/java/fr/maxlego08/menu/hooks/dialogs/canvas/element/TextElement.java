@@ -238,6 +238,7 @@ public record TextElement(@NotNull String name, @NotNull List<String> lines, @No
         }
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public void serialize(ConfigurationSection section) {

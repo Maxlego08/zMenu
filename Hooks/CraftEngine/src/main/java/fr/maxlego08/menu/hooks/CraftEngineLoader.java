@@ -27,6 +27,7 @@ public class CraftEngineLoader extends MaterialLoader {
         return custom.buildBukkitItem(player);
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public ItemStack load(Player player, YamlConfiguration configuration, String path, String materialString) {

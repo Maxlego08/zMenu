@@ -365,6 +365,7 @@ public final class DropdownWidget extends WidgetElement {
         if (!this.font.equals("default")) section.set("font", this.font);
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public void serialize(ConfigurationSection section) {

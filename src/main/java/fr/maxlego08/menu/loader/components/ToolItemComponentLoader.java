@@ -76,6 +76,7 @@ public class ToolItemComponentLoader extends ItemComponentLoader {
                 : new LegacyToolComponent(defaultMiningSpeed, damagePerBlock, canDestroyBlocksInCreative, rules);
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public ItemComponent load(MenuItemStackContext context, File file, YamlConfiguration configuration, String path, ConfigurationSection componentSection) {

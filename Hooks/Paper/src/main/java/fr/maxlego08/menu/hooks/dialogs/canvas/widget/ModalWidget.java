@@ -133,6 +133,7 @@ public final class ModalWidget extends WidgetElement {
         for (CanvasElement element : this.elements) element.serialize(elementsSection.createSection(element.name()));
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public void serialize(ConfigurationSection section) {

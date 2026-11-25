@@ -33,6 +33,7 @@ public final class WaxedItemComponentLoader extends ItemComponentLoader {
         return new WaxedComponent(this.asResolvableBoolean(configuration, path, true));
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public ItemComponent load(MenuItemStackContext context, File file, YamlConfiguration configuration, String path, ConfigurationSection componentSection) {

@@ -31,6 +31,7 @@ public class PacketTitleAnimation implements TitleAnimation {
         this.settings.serialize(section);
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public void serialize(ConfigurationSection section) {

@@ -28,6 +28,7 @@ public class PreviousLoader extends ButtonLoader {
         return new ZPreviousButton(this.manager);
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public Button load(YamlConfiguration configuration, String path, DefaultButtonValue defaultButtonValue) {

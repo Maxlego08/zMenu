@@ -79,6 +79,7 @@ public class ZCustomClickDialogActionLoader implements DialogActionLoader {
         return new ZCustomClickDialogAction(actions, usageLimit, actionDurationLimit, enablePlaceholders);
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public ZDialogAction load(MenuPlugin plugin, YamlConfiguration configuration, String path, File file) {

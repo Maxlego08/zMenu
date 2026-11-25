@@ -161,6 +161,7 @@ public class InventoryDeluxeMenuLoader extends DeluxeMenuCommandUtils implements
         return inventory;
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public Inventory load(YamlConfiguration configuration, String path, Object... objects) throws InventoryException  {

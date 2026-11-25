@@ -50,6 +50,7 @@ public class RepairableItemComponentLoader extends ItemComponentLoader {
         return itemKeys.isEmpty() ? null : new RepairableComponent(Repairable.repairable(RegistrySet.keySet(RegistryKey.ITEM, itemKeys)));
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public ItemComponent load(MenuItemStackContext context, File file, YamlConfiguration configuration, String path, ConfigurationSection componentSection) {

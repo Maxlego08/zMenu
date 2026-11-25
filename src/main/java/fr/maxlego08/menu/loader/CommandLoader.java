@@ -105,6 +105,7 @@ public class CommandLoader implements Loader<Command> {
         return new ZCommand(this.plugin, command, aliases, consoleCanUse, permission, inventory, arguments, commandActions, subCommands, requirements, denyMessage, path, file);
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public Command load(YamlConfiguration configuration, String path, Object... args) throws InventoryException  {

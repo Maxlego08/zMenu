@@ -29,6 +29,7 @@ public class NovaLoader extends MaterialLoader {
         return blockRegistry.getOrNull(materialString) == null ? itemRegistry.get(materialString).createItemStack() : Objects.requireNonNull(blockRegistry.get(materialString).getItem()).createItemStack();
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public ItemStack load(Player player, YamlConfiguration configuration, String path, String materialString) {

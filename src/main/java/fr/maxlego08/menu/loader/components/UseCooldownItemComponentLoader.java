@@ -39,6 +39,7 @@ public class UseCooldownItemComponentLoader extends ItemComponentLoader {
         return new UseCooldownComponent(cooldownSeconds != null ? cooldownSeconds : ResolvableFloat.of(0), resolvableNamespacedKey);
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public ItemComponent load(MenuItemStackContext context, File file, YamlConfiguration configuration, String path, ConfigurationSection componentSection) {

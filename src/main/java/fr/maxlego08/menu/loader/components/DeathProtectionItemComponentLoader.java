@@ -38,6 +38,7 @@ public class DeathProtectionItemComponentLoader extends AbstractEffectItemCompon
         return resolvablePotionEffects.isEmpty() ? null : new DeathProtectionComponent(new PaperResolvableDeathProtection(resolvablePotionEffects));
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public ItemComponent load(MenuItemStackContext context, File file, YamlConfiguration configuration, String path, ConfigurationSection componentSection) {

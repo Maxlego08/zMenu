@@ -1250,6 +1250,7 @@ public class ZMenuItemStack extends ZUtils implements MenuItemStack {
         }
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public void serialize(ConfigurationSection section) {

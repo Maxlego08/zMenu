@@ -13,6 +13,8 @@ import java.util.List;
  */
 public class FromCenterSlotAnimation implements SlotAnimation {
 
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
+    @SuppressWarnings("removal")
     @Override
     public void serialize(@NotNull ConfigurationSection section) {
         section.set("type", "from_center");

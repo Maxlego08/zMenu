@@ -58,6 +58,7 @@ public class WrittenBookContentItemComponentLoader extends ItemComponentLoader {
                 : new LegacyWrittenBookContentComponent(title, author, generation, pages);
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public ItemComponent load(MenuItemStackContext context, File file, YamlConfiguration configuration, String path, ConfigurationSection componentSection) {

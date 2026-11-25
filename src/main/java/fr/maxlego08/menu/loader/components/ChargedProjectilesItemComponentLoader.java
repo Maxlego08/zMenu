@@ -42,6 +42,7 @@ public class ChargedProjectilesItemComponentLoader extends AbstractMenuItemStack
                 : new LegacyChargedProjectilesComponent(projectiles);
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public ItemComponent load(MenuItemStackContext context, File file, YamlConfiguration configuration, String path, ConfigurationSection componentSection) {

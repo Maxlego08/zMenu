@@ -48,6 +48,7 @@ public class SuspiciousStewEffectsItemComponentLoader extends AbstractEffectItem
                 : new LegacySuspiciousStewEffectsComponent(resolvablePotionEffects);
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public ItemComponent load(MenuItemStackContext context, File file, YamlConfiguration configuration, String path, ConfigurationSection componentSection) {

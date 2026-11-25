@@ -67,6 +67,7 @@ public class InstrumentItemComponentLoader extends ItemComponentLoader {
         return dataComponents ? new InstrumentComponent(instrument) : new LegacyInstrumentComponent(instrument);
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public ItemComponent load(MenuItemStackContext context, File file, YamlConfiguration configuration, String path, ConfigurationSection componentSection) {

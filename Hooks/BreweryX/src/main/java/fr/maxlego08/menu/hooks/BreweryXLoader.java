@@ -31,6 +31,7 @@ public class BreweryXLoader extends MaterialLoader {
         return BreweryApi.createBrewItem(parts[0],quality,player);
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public ItemStack load(Player player, YamlConfiguration configuration, String path, String materialString) {

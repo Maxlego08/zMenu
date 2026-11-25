@@ -48,6 +48,7 @@ public class LodestoneTrackerItemComponentLoader extends ItemComponentLoader {
                 : new LegacyLodestoneTrackerComponent(lodestoneTracked, lodestoneLocation);
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public ItemComponent load(MenuItemStackContext context, File file, YamlConfiguration configuration, String path, ConfigurationSection componentSection) {

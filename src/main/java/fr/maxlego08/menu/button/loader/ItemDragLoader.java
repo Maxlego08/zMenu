@@ -66,6 +66,7 @@ public class ItemDragLoader extends ButtonLoader {
         return button;
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public Button load(YamlConfiguration configuration, String path, DefaultButtonValue defaultButtonValue) {

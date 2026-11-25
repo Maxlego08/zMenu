@@ -37,6 +37,7 @@ public class DamageTypeItemComponentLoader extends ItemComponentLoader {
         return resolvable != null ? new DamageTypeComponent(resolvable) : null;
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public ItemComponent load(MenuItemStackContext context, File file, YamlConfiguration configuration, String path, ConfigurationSection componentSection) {

@@ -28,6 +28,7 @@ public class JumpLoader extends ButtonLoader {
         return new ZJumpButton(this.inventoryManager, page);
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public Button load(YamlConfiguration configuration, String path, DefaultButtonValue defaultButtonValue) {

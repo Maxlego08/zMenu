@@ -136,6 +136,7 @@ public final class ToggleWidget extends WidgetElement {
         if (this.width != null) section.set("width", this.width);
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public void serialize(ConfigurationSection section) {

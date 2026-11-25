@@ -40,6 +40,7 @@ public final class ProgressElementLoader implements CanvasElementLoader {
                 PositionValue.readX(section, "x", name, source), PositionValue.readY(section, "y", name, source));
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public CanvasElement load(MenuPlugin plugin, String name, ConfigurationSection section, String source) {

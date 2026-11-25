@@ -52,6 +52,7 @@ public class ZHomeButton extends HomeButton {
         section.set("type", "home");
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     protected void serializeProperties(ConfigurationSection section) {

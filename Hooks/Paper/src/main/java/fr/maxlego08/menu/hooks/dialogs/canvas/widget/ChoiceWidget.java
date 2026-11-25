@@ -334,6 +334,7 @@ public final class ChoiceWidget extends WidgetElement {
         }
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public void serialize(ConfigurationSection section) {

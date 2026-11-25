@@ -47,6 +47,7 @@ public class HmccosmeticsLoader extends MaterialLoader {
         return HMCCosmeticsAPI.getUser(target.getUniqueId()).getCosmetic(cosmeticSlot).getItem();
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public ItemStack load(Player player, YamlConfiguration configuration, String path, String materialString) {

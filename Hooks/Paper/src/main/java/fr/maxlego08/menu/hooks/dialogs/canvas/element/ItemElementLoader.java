@@ -74,6 +74,7 @@ public final class ItemElementLoader implements CanvasElementLoader {
                 section.getBoolean("show-amount", true), actions, clickRequirements, section.getBoolean("refresh", false), click);
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public CanvasElement load(MenuPlugin plugin, String name, ConfigurationSection section, String source) {

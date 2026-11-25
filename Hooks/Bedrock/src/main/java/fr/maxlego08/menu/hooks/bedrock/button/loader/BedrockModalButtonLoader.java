@@ -27,6 +27,7 @@ public class BedrockModalButtonLoader extends ButtonLoader {
         return new BasicBedrockComponentButton(text);
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public BedrockComponentButton load(YamlConfiguration configuration, String path, DefaultButtonValue defaultButtonValue) {

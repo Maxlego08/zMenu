@@ -27,6 +27,7 @@ public class MainMenuLoader extends ButtonLoader {
         return new ZMainMenuButton(this.manager);
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public Button load(YamlConfiguration configuration, String path, DefaultButtonValue defaultButtonValue) {

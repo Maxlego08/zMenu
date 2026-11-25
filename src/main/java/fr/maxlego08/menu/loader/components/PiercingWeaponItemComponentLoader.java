@@ -41,6 +41,7 @@ public class PiercingWeaponItemComponentLoader extends ItemComponentLoader {
         return new PiercingWeaponComponent(dealsKnockback, dismounts, sound, hitSound);
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public ItemComponent load(MenuItemStackContext context, File file, YamlConfiguration configuration, String path, ConfigurationSection componentSection) {

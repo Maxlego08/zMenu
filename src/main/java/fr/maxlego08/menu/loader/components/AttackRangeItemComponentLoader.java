@@ -46,6 +46,7 @@ public class AttackRangeItemComponentLoader extends AbstractAttackRangeItemCompo
         );
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public ItemComponent load(MenuItemStackContext context, File file, YamlConfiguration configuration, String path, ConfigurationSection componentSection) {

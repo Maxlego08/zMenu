@@ -354,6 +354,7 @@ public final class LayoutElement implements CanvasElement, CanvasLayoutable {
         }
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public void serialize(ConfigurationSection section) {

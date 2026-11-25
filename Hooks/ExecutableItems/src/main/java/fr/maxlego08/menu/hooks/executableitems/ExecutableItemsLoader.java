@@ -27,6 +27,7 @@ public class ExecutableItemsLoader extends MaterialLoader {
                 .orElse(null);
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public ItemStack load(Player player, YamlConfiguration configuration, String path, String materialString) {

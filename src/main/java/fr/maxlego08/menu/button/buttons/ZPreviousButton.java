@@ -26,6 +26,7 @@ public class ZPreviousButton extends PreviousButton {
         section.set("type", "previous");
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     protected void serializeProperties(ConfigurationSection section) {

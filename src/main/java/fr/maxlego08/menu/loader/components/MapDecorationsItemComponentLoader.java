@@ -57,6 +57,7 @@ public class MapDecorationsItemComponentLoader extends ItemComponentLoader {
         return decorations.isEmpty() ? null : new MapDecorationsComponent(decorations);
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public ItemComponent load(MenuItemStackContext context, File file, YamlConfiguration configuration, String path, ConfigurationSection componentSection) {

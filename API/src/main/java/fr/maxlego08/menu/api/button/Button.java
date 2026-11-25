@@ -734,6 +734,7 @@ public abstract class Button extends PlaceholderButton {
      * @deprecated use {@link #serialize(Section, int)}, zMenu reads its files with BoostedYAML.
      */
     @Deprecated(since = "1.1.2.1", forRemoval = true)
+    @SuppressWarnings("removal")
     public void serialize(@NotNull ConfigurationSection section, int inventorySize) {
         this.serializeProperties(section);
 
@@ -835,6 +836,7 @@ public abstract class Button extends PlaceholderButton {
      * @throws UnsupportedOperationException If this type of button cannot be serialized.
      * @deprecated use {@link #serializeProperties(Section)}, zMenu reads its files with BoostedYAML.
      */
+    @SuppressWarnings("removal")
     @Deprecated(since = "1.1.2.1", forRemoval = true)
     protected void serializeProperties(@NotNull ConfigurationSection section) {
         throw new UnsupportedOperationException("The button " + this.buttonName + " of type " + this.getClass().getName() + " cannot be serialized yet");

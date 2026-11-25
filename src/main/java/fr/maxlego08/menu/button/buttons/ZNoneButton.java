@@ -12,6 +12,7 @@ public class ZNoneButton extends Button {
     protected void serializeProperties(@NotNull Section section) {
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     protected void serializeProperties(ConfigurationSection section) {

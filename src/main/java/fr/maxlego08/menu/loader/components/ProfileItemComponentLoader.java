@@ -60,6 +60,7 @@ public class ProfileItemComponentLoader extends ItemComponentLoader {
         return this.createComponent(resolvable);
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public ItemComponent load(MenuItemStackContext context, File file, YamlConfiguration configuration, String path, ConfigurationSection componentSection) {

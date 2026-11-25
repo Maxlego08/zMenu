@@ -30,6 +30,7 @@ public class DialogBooleanInputLoader extends ButtonLoader {
         return new DialogBooleanInput(label, defaultValue, textTrue, textFalse);
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public Button load(YamlConfiguration configuration, String path, DefaultButtonValue defaultButtonValue) {

@@ -42,6 +42,7 @@ public class ProvidesBannerPatternsItemComponentLoader extends ItemComponentLoad
         return new ProvidesBannerPatternsComponent(patternTypeTagKey);
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public ItemComponent load(MenuItemStackContext context, File file, YamlConfiguration configuration, String path, ConfigurationSection componentSection) {

@@ -785,6 +785,7 @@ public class ZMenuPlugin extends ZPlugin implements fr.maxlego08.menu.api.MenuPl
         return YamlFileCache.getYamlConfiguration(path);
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public @NotNull Optional<YamlConfiguration> readYamlFile(@NotNull Path path) {

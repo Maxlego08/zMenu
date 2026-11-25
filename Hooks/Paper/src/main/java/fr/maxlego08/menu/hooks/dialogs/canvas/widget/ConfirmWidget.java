@@ -154,6 +154,7 @@ public final class ConfirmWidget extends WidgetElement {
         if (!this.refresh) section.set("refresh", false);
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public void serialize(ConfigurationSection section) {

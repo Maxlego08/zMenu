@@ -443,6 +443,8 @@ public interface MenuItemStack extends MenuItemStackContext, SectionSerializable
      * @param section The section to write into.
      * @throws UnsupportedOperationException If this implementation cannot be serialized.
      */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
+    @SuppressWarnings("removal")
     @Override
     default void serialize(@NotNull ConfigurationSection section) {
         throw new UnsupportedOperationException(this.getClass().getName() + " cannot be serialized");

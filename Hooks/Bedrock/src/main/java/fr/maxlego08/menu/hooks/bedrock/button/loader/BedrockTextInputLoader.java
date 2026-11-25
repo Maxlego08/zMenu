@@ -27,6 +27,7 @@ public class BedrockTextInputLoader extends ButtonLoader {
         return new BedrockTextInput(text, defaultValue);
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public Button load(YamlConfiguration configuration, String path, DefaultButtonValue defaultButtonValue) {

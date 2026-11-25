@@ -40,6 +40,7 @@ public class MythicMobsItemsLoader extends MaterialLoader {
         return BukkitAdapter.adapt(mythicItem.get().generateItemStack(1));
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public ItemStack load(Player player, YamlConfiguration configuration, String path, String materialString) {

@@ -34,6 +34,7 @@ public class OpenLinkLoader implements Loader<OpenLink> {
         return new ZOpenLink(this.plugin, action, message, link, replace, hover);
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public OpenLink load(YamlConfiguration configuration, String path, Object... objects) throws InventoryException  {

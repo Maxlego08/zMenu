@@ -62,6 +62,7 @@ public final class AttackAnimationItemComponentLoader extends ItemComponentLoade
         return new AttackAnimationComponent(new ResolvableSwingAnimation(type, duration));
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public ItemComponent load(MenuItemStackContext context, File file, YamlConfiguration configuration, String path, ConfigurationSection componentSection) {

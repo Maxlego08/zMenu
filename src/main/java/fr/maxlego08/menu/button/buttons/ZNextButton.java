@@ -26,6 +26,7 @@ public class ZNextButton extends NextButton {
         section.set("type", "next");
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     protected void serializeProperties(ConfigurationSection section) {

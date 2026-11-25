@@ -29,6 +29,7 @@ public class NexoLoader extends MaterialLoader {
         return builder == null ? null : builder.build();
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public ItemStack load(Player player, YamlConfiguration configuration, String path, String materialString) {

@@ -78,6 +78,7 @@ public class BedrockLoader implements Loader<AbstractBedrockInventory<?,?,?>> {
         return bedrockInventory;
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public AbstractBedrockInventory<?,?,?> load(YamlConfiguration configuration, String path, Object... objects) throws InventoryException  {

@@ -90,6 +90,7 @@ public class ZItemDragButton extends ItemDragButton {
         if (this.rule != null) YamlSections.createSection(section, "rule", this.rule.serialize());
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     protected void serializeProperties(ConfigurationSection section) {

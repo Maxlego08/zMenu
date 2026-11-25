@@ -62,6 +62,7 @@ public class ActionPlayerDataLoader implements Loader<ActionPlayerData> {
         return new ZActionPlayerData(this.plugin, key, type, object, seconds, mathExpression, scope);
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public ActionPlayerData load(YamlConfiguration configuration, String path, Object... objects) throws InventoryException  {

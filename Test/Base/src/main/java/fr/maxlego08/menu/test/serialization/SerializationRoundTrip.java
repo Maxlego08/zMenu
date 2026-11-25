@@ -1,11 +1,13 @@
 package fr.maxlego08.menu.test.serialization;
 
 import fr.maxlego08.menu.api.utils.SectionSerializable;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.io.IOException;
+import dev.dejvokep.boostedyaml.YamlDocument;
+import dev.dejvokep.boostedyaml.block.implementation.Section;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 /**
  * Serializes an object to a real file and reads the file back, so a round trip goes through YAML text
@@ -25,10 +27,11 @@ public final class SerializationRoundTrip {
      * @return The configuration read back from the file.
      */
     public static YamlConfiguration writeAndReread(SectionSerializable object, String sectionPath, File file) throws IOException {
-        YamlConfiguration configuration = new YamlConfiguration();
-        ConfigurationSection section = sectionPath.isEmpty() ? configuration : configuration.createSection(sectionPath);
+        YamlDocument document = YamlSections.empty();
+        Section section = sectionPath.isEmpty() ? document : document.createSection(sectionPath);
         object.serialize(section);
-        configuration.save(file);
+        YamlSections.removeNulls(document);
+        document.save(file);
         return YamlConfiguration.loadConfiguration(file);
     }
 }

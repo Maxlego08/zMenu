@@ -154,6 +154,7 @@ public class ZButtonManager extends ZUtils implements ButtonManager {
         return this.loadPermissible(elements, path, file);
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public List<Permissible> loadPermissible(YamlConfiguration configuration, String path, File file) {
@@ -219,6 +220,7 @@ public class ZButtonManager extends ZUtils implements ButtonManager {
         return this.loadActions(elements, path, file);
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public List<Action> loadActions(YamlConfiguration configuration, String path, File file) {
@@ -232,6 +234,7 @@ public class ZButtonManager extends ZUtils implements ButtonManager {
         return this.loadActions(elements, path, file, defaultActions, useSuccess, stopOnEmpty);
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public List<Action> loadActions(YamlConfiguration configuration, String path, File file, List<ActionPattern> defaultActions, boolean useSuccess, boolean stopOnEmpty) {
@@ -253,6 +256,7 @@ public class ZButtonManager extends ZUtils implements ButtonManager {
         return requirements;
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public List<Requirement> loadRequirements(YamlConfiguration configuration, String path, File file) throws InventoryException  {
@@ -266,6 +270,7 @@ public class ZButtonManager extends ZUtils implements ButtonManager {
         return requirementLoader.load(configuration, path, file);
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public Requirement loadRequirement(YamlConfiguration configuration, String path, File file) throws InventoryException  {

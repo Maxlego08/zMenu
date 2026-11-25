@@ -51,6 +51,7 @@ public class BedrockDropDownInputLoader extends ButtonLoader {
         return new BedrockDropDownInput(label, singleOptionList);
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public Button load(YamlConfiguration configuration, String path, DefaultButtonValue defaultButtonValue) {

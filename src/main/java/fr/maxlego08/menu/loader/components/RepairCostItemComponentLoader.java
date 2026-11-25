@@ -38,6 +38,7 @@ public class RepairCostItemComponentLoader extends ItemComponentLoader {
                 : new LegacyRepairCostComponent(cost);
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public ItemComponent load(MenuItemStackContext context, File file, YamlConfiguration configuration, String path, ConfigurationSection componentSection) {

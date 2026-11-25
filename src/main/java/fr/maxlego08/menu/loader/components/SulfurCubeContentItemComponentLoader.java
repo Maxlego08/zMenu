@@ -35,6 +35,7 @@ public class SulfurCubeContentItemComponentLoader extends AbstractMenuItemStackL
         return menuItemStack == null ? null : new SulfurCubeContentComponent(menuItemStack);
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public ItemComponent load(MenuItemStackContext context, File file, YamlConfiguration configuration, String path, ConfigurationSection componentSection) {

@@ -35,6 +35,7 @@ public class EcoLoader extends MaterialLoader {
         }
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public ItemStack load(Player player, YamlConfiguration yamlConfiguration, String path, String materialString) {

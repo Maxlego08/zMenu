@@ -30,6 +30,7 @@ public class ActionPatternLoader extends ZUtils implements Loader<ActionPattern>
         return new ZActionsPattern(name, this.plugin.getButtonManager().loadActions(configuration,"actions", file), this.plugin.getButtonManager().loadActions(configuration,"deny-actions", file));
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public ActionPattern load(YamlConfiguration configuration, String path, Object... objects) throws InventoryException  {

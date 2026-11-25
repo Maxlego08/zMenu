@@ -417,6 +417,7 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
         return button;
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public Button load(YamlConfiguration configuration, String path, Object... objects) throws InventoryException  {
@@ -506,6 +507,7 @@ public class ZButtonLoader extends ZUtils implements Loader<Button> {
         button.serialize(section, this.inventorySize);
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public void serialize(Button button, ConfigurationSection section, Object... objects) {

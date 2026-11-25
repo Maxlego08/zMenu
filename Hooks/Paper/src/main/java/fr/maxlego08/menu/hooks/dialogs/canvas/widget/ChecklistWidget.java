@@ -192,6 +192,7 @@ public final class ChecklistWidget extends WidgetElement {
         this.labelChecked.serialize(section, "label-checked", false);
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public void serialize(ConfigurationSection section) {

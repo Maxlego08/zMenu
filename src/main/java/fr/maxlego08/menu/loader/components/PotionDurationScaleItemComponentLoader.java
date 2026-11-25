@@ -34,6 +34,7 @@ public class PotionDurationScaleItemComponentLoader extends ItemComponentLoader 
         return new PotionDurationScaleComponent(durationScale);
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public ItemComponent load(MenuItemStackContext context, File file, YamlConfiguration configuration, String path, ConfigurationSection componentSection) {

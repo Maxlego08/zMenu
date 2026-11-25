@@ -43,6 +43,7 @@ public class BundleContentsItemComponentLoader extends AbstractMenuItemStackList
                 : new LegacyBundleContentsComponent(contents);
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public ItemComponent load(MenuItemStackContext context, File file, YamlConfiguration configuration, String path, ConfigurationSection componentSection) {

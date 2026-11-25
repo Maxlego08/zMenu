@@ -41,6 +41,7 @@ public class ZStaticDialogActionLoader implements DialogActionLoader {
         };
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public ZDialogAction load(MenuPlugin plugin, YamlConfiguration configuration, String path, File file) {

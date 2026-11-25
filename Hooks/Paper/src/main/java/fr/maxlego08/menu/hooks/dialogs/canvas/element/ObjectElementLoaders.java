@@ -50,6 +50,7 @@ public final class ObjectElementLoaders {
                     line(section, name, source));
         }
 
+        @SuppressWarnings("removal")
         @Override
         @Deprecated
         public CanvasElement load(MenuPlugin plugin, String name, ConfigurationSection section, String source) {
@@ -78,6 +79,7 @@ public final class ObjectElementLoaders {
                     CanvasValue.key(section, "sprite", SpriteElement.MISSING_SPRITE, where), PositionValue.readX(section, "x", name, source), line(section, name, source));
         }
 
+        @SuppressWarnings("removal")
         @Override
         @Deprecated
         public CanvasElement load(MenuPlugin plugin, String name, ConfigurationSection section, String source) {

@@ -37,6 +37,7 @@ public final class BreakSoundItemComponentLoader extends ItemComponentLoader {
         return new BreakSoundComponent(resolvableNamespacedKey);
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public ItemComponent load(MenuItemStackContext context, File file, YamlConfiguration configuration, String path, ConfigurationSection componentSection) {

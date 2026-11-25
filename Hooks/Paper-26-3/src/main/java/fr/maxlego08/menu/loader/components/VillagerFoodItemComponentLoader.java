@@ -35,6 +35,7 @@ public final class VillagerFoodItemComponentLoader extends ItemComponentLoader {
         return nutrition == null ? null : new VillagerFoodComponent(nutrition);
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public ItemComponent load(MenuItemStackContext context, File file, YamlConfiguration configuration, String path, ConfigurationSection componentSection) {

@@ -51,6 +51,7 @@ public class SwitchLoader extends ButtonLoader {
         return new ZSwitchButton(placeholder, switchCaseButtons);
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public Button load(YamlConfiguration configuration, String path, DefaultButtonValue defaultButtonValue) {

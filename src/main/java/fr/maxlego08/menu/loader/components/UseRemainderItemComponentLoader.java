@@ -37,6 +37,7 @@ public class UseRemainderItemComponentLoader extends AbstractMenuItemStackListCo
         return menuItemStack == null ? null : new UseRemainderComponent(menuItemStack);
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public ItemComponent load(MenuItemStackContext context, File file, YamlConfiguration configuration, String path, ConfigurationSection componentSection) {

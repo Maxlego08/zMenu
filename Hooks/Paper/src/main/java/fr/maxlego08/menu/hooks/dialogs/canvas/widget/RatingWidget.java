@@ -167,6 +167,7 @@ public final class RatingWidget extends WidgetElement {
         }
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public void serialize(ConfigurationSection section) {

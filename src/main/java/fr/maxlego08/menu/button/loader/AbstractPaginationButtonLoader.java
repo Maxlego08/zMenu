@@ -28,6 +28,7 @@ public abstract class AbstractPaginationButtonLoader extends ButtonLoader {
         return this.createButton(contextId, onlyRefreshButton);
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public Button load(YamlConfiguration configuration, String path, DefaultButtonValue defaultButtonValue) {

@@ -1129,6 +1129,7 @@ public class ZInventoryManager extends ZUtils implements InventoryManager {
         return YamlParser.loadAndParseFile(file, this.plugin.getGlobalPlaceholders());
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public YamlConfiguration loadYamlConfiguration(File file) {

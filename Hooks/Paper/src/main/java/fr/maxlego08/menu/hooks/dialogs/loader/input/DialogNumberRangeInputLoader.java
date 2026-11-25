@@ -33,6 +33,7 @@ public class DialogNumberRangeInputLoader extends ButtonLoader {
         return new DialogNumberRangeInput(label, width, labelFormat, start, end, step, initialValue);
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public Button load(YamlConfiguration configuration, String path, DefaultButtonValue defaultButtonValue) {

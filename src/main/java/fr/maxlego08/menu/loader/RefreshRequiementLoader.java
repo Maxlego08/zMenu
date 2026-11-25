@@ -41,6 +41,7 @@ public class RefreshRequiementLoader implements Loader<RefreshRequirement> {
         return new ZRefreshRequirement(enablePermissibles, permissibles, task, refreshLore, refreshName, refreshButton, updateInterval);
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public RefreshRequirement load(YamlConfiguration configuration, String path, Object... objects) throws InventoryException  {

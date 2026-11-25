@@ -54,6 +54,7 @@ public class DialogSingleOptionInputLoader extends ButtonLoader {
         return new DialogSingleOptionInput(label, width, labelVisible, singleOptionList);
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public Button load(YamlConfiguration configuration, String path, DefaultButtonValue defaultButtonValue) {

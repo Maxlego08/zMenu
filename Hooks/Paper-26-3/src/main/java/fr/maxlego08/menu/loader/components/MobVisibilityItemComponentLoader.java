@@ -66,6 +66,7 @@ public final class MobVisibilityItemComponentLoader extends ItemComponentLoader 
         return new MobVisibilityComponent(entityTypes, visibility);
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public ItemComponent load(MenuItemStackContext context, File file, YamlConfiguration configuration, String path, ConfigurationSection componentSection) {

@@ -152,6 +152,7 @@ public record ProgressElement(@NotNull String name, @NotNull PackValue texture, 
         this.y.serialize(section, "y");
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public void serialize(ConfigurationSection section) {

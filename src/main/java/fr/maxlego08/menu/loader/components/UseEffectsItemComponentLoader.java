@@ -38,6 +38,7 @@ public class UseEffectsItemComponentLoader extends ItemComponentLoader {
         return new UseEffectsComponent(canSprint, speedMultiplier, interactVibrations);
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public ItemComponent load(MenuItemStackContext context, File file, YamlConfiguration configuration, String path, ConfigurationSection componentSection) {

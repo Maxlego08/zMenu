@@ -27,6 +27,7 @@ public class OnClickMechanicFactory extends MechanicFactory<OnClickMechanic> {
         return mechanic;
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public OnClickMechanic parse(MenuPlugin plugin, String itemId, ConfigurationSection mechanicSection, YamlConfiguration configuration, File file, String path) {

@@ -79,6 +79,7 @@ public final class LayoutElementLoader implements CanvasElementLoader {
         return new LayoutElement(name, this.direction, x, y, width, height, this.padding(section, name, source), gap, align, justify, children, null);
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public CanvasElement load(MenuPlugin plugin, String name, ConfigurationSection section, String source) {

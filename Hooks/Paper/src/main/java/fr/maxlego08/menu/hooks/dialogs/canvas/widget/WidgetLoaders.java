@@ -101,6 +101,7 @@ public final class WidgetLoaders {
                     section.getString("font", "default"), section.contains("width") ? positive(section, "width", 1, name, source) : null);
         }
 
+        @SuppressWarnings("removal")
         @Override
         @Deprecated
         public CanvasElement load(MenuPlugin plugin, String name, ConfigurationSection section, String source) {
@@ -135,6 +136,7 @@ public final class WidgetLoaders {
                     WidgetPart.read(section, "text-max", false, name, source), section.getString("font", "default"));
         }
 
+        @SuppressWarnings("removal")
         @Override
         @Deprecated
         public CanvasElement load(MenuPlugin plugin, String name, ConfigurationSection section, String source) {
@@ -176,6 +178,7 @@ public final class WidgetLoaders {
                     section.getString("font", "default"));
         }
 
+        @SuppressWarnings("removal")
         @Override
         @Deprecated
         public CanvasElement load(MenuPlugin plugin, String name, ConfigurationSection section, String source) {
@@ -239,6 +242,7 @@ public final class WidgetLoaders {
                     WidgetPart.read(section, "label-selected", false, name, source), pages);
         }
 
+        @SuppressWarnings("removal")
         @Override
         @Deprecated
         public CanvasElement load(MenuPlugin plugin, String name, ConfigurationSection section, String source) {
@@ -317,6 +321,7 @@ public final class WidgetLoaders {
                     WidgetPart.read(section, "label-checked", false, name, source));
         }
 
+        @SuppressWarnings("removal")
         @Override
         @Deprecated
         public CanvasElement load(MenuPlugin plugin, String name, ConfigurationSection section, String source) {
@@ -364,6 +369,7 @@ public final class WidgetLoaders {
                     section.getString("font", "default"), actions, clickRequirements, section.getBoolean("refresh", true));
         }
 
+        @SuppressWarnings("removal")
         @Override
         @Deprecated
         public CanvasElement load(MenuPlugin plugin, String name, ConfigurationSection section, String source) {
@@ -395,6 +401,7 @@ public final class WidgetLoaders {
                     stars(section, name, source));
         }
 
+        @SuppressWarnings("removal")
         @Override
         @Deprecated
         public CanvasElement load(MenuPlugin plugin, String name, ConfigurationSection section, String source) {
@@ -486,6 +493,7 @@ public final class WidgetLoaders {
                     WidgetPart.read(section, "list", false, name, source), WidgetPart.read(section, "option-text", false, name, source));
         }
 
+        @SuppressWarnings("removal")
         @Override
         @Deprecated
         public CanvasElement load(MenuPlugin plugin, String name, ConfigurationSection section, String source) {
@@ -530,6 +538,7 @@ public final class WidgetLoaders {
                     section.getString("filter-on", "%entry%"));
         }
 
+        @SuppressWarnings("removal")
         @Override
         @Deprecated
         public CanvasElement load(MenuPlugin plugin, String name, ConfigurationSection section, String source) {
@@ -592,6 +601,7 @@ public final class WidgetLoaders {
             return new PagesWidget(settings, PageNavigation.read(section, name, source), pages, nextRequirements);
         }
 
+        @SuppressWarnings("removal")
         @Override
         @Deprecated
         public CanvasElement load(MenuPlugin plugin, String name, ConfigurationSection section, String source) {
@@ -625,6 +635,7 @@ public final class WidgetLoaders {
                     elements == null ? List.of() : elements(plugin, name, elements, source));
         }
 
+        @SuppressWarnings("removal")
         @Override
         @Deprecated
         public CanvasElement load(MenuPlugin plugin, String name, ConfigurationSection section, String source) {

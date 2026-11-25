@@ -244,6 +244,7 @@ public final class ListWidget extends PagedWidget {
         this.navigation.serialize(section);
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public void serialize(ConfigurationSection section) {

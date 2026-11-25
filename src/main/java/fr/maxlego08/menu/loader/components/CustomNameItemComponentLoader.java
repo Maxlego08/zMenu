@@ -47,6 +47,7 @@ public class CustomNameItemComponentLoader extends ItemComponentLoader {
         return resolvableString != null ? new LegacyCustomNameComponent(resolvableString) : null;
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public ItemComponent load(MenuItemStackContext context, File file, YamlConfiguration configuration, String path, ConfigurationSection componentSection) {

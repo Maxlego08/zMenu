@@ -43,6 +43,7 @@ public class ContainerLootItemComponentLoader extends ItemComponentLoader {
                 : new LegacyContainerLootComponent(lootTablesResolvable, seed);
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public ItemComponent load(MenuItemStackContext context, File file, YamlConfiguration configuration, String path, ConfigurationSection componentSection) {

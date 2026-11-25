@@ -39,6 +39,7 @@ public class BlockStateItemComponentLoader extends ItemComponentLoader {
         return new BlockStateComponent(this.getFinalBlockState(blockStateBuilder.toString()));
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public ItemComponent load(MenuItemStackContext context, File file, YamlConfiguration configuration, String path, ConfigurationSection componentSection) {

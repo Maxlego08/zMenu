@@ -22,6 +22,7 @@ public class Base64Loader extends MaterialLoader {
         return ItemStackUtils.deserializeItemStack(materialString);
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public ItemStack load(Player player, YamlConfiguration configuration, String path, String materialString) {

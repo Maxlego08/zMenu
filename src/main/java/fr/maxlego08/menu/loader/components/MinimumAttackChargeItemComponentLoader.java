@@ -37,6 +37,7 @@ public class MinimumAttackChargeItemComponentLoader extends ItemComponentLoader 
         return new MinimumAttackChargeComponent(charge);
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public ItemComponent load(MenuItemStackContext context, File file, YamlConfiguration configuration, String path, ConfigurationSection componentSection) {

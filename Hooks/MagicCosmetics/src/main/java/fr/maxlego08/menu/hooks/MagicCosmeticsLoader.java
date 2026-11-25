@@ -29,6 +29,7 @@ public class MagicCosmeticsLoader extends MaterialLoader {
         return itemStack;
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public ItemStack load(Player player, YamlConfiguration configuration, String path, String materialString) {

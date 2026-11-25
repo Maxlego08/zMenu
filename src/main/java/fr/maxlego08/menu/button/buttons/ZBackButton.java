@@ -57,6 +57,7 @@ public class ZBackButton extends BackButton {
         section.set("type", "back");
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     protected void serializeProperties(ConfigurationSection section) {

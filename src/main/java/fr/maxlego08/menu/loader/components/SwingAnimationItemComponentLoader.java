@@ -42,6 +42,7 @@ public final class SwingAnimationItemComponentLoader extends ItemComponentLoader
         return new SwingAnimationComponent(new ResolvableSwingAnimation(type, duration));
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public ItemComponent load(MenuItemStackContext context, File file, YamlConfiguration configuration, String path, ConfigurationSection componentSection) {

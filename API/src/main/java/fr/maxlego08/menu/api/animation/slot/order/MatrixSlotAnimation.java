@@ -53,6 +53,8 @@ public class MatrixSlotAnimation implements SlotAnimation {
         charBySlot.forEach((slot, character) -> this.stepBySlot.put(slot, ordered.indexOf(character)));
     }
 
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
+    @SuppressWarnings("removal")
     @Override
     public void serialize(@NotNull ConfigurationSection section) {
         section.set("type", "matrix");

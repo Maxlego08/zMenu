@@ -54,6 +54,7 @@ public class CustomModelDataItemComponentLoader extends AbstractColorItemCompone
                 : new LegacyCustomModelDataComponent(floats, booleans, strings, colorList);
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public ItemComponent load(MenuItemStackContext context, File file, YamlConfiguration configuration, String path, ConfigurationSection componentSection) {

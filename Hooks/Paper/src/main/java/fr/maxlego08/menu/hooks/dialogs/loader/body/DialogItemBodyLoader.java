@@ -34,6 +34,7 @@ public class DialogItemBodyLoader extends ButtonLoader {
         return new DialogItemBody(descriptionMessages, descriptionWidth, showDecoration, showTooltip, width, height);
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public Button load(YamlConfiguration configuration, String path, DefaultButtonValue defaultButtonValue) {

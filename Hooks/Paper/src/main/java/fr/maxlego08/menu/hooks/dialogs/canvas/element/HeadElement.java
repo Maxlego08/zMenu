@@ -82,6 +82,7 @@ public record HeadElement(@NotNull String name, @Nullable String player, @Nullab
         section.set("line", this.line);
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public void serialize(ConfigurationSection section) {

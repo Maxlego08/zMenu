@@ -26,6 +26,7 @@ public class BedrockLabelLoader extends ButtonLoader {
         return new BedrockLabel(text);
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public Button load(YamlConfiguration configuration, String path, DefaultButtonValue defaultButtonValue) {

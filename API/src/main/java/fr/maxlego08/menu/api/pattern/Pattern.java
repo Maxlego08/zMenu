@@ -61,6 +61,8 @@ public interface Pattern extends SectionSerializable {
      * @param section The section to write into, usually the root of the file.
      * @throws UnsupportedOperationException If one of its buttons cannot be serialized.
      */
+    @Deprecated(since = "1.1.2.1", forRemoval = true)
+    @SuppressWarnings("removal")
     @Override
     default void serialize(@NotNull ConfigurationSection section) {
         section.set("name", this.name());

@@ -34,6 +34,7 @@ public abstract class EnumVariantLoader<T extends Enum<T>> extends ItemComponent
         return resolvableEnum != null ? this.componentFactory.apply(resolvableEnum) : null;
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public ItemComponent load(MenuItemStackContext context, File file, YamlConfiguration configuration, String path, ConfigurationSection componentSection) {

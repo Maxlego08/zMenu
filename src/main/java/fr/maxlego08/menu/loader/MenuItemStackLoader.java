@@ -55,6 +55,7 @@ public class MenuItemStackLoader extends ZUtils implements Loader<MenuItemStack>
     /**
      * Load ItemStack
      */
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public MenuItemStack load(@NonNull YamlConfiguration configuration, @NonNull String path, Object... objects) {

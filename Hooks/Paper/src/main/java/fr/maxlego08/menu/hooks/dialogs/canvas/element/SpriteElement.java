@@ -59,6 +59,7 @@ public record SpriteElement(@NotNull String name, @NotNull CanvasValue<Key> atla
         section.set("line", this.line);
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public void serialize(ConfigurationSection section) {

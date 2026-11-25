@@ -35,6 +35,7 @@ public class DyeItemComponentLoader extends ItemComponentLoader {
         return dyeColorResolvableEnum == null ? null : new DyeComponent(dyeColorResolvableEnum);
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public ItemComponent load(MenuItemStackContext context, File file, YamlConfiguration configuration, String path, ConfigurationSection componentSection) {

@@ -36,6 +36,7 @@ public class HeadDatabaseLoader extends MaterialLoader {
         return null;
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public ItemStack load(Player player, YamlConfiguration configuration, String path, String materialString) {

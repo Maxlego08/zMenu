@@ -43,6 +43,7 @@ public class ZItemStackService extends ZUtils implements ItemStackService {
         return new MenuItemStackLoader(this.plugin.getInventoryManager()).load(configuration, path, file);
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public MenuItemStack load(YamlConfiguration configuration, String path, File file) {

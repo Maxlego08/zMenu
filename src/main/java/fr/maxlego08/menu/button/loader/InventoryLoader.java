@@ -36,6 +36,7 @@ public class InventoryLoader extends ButtonLoader {
         return new ZInventoryButton(this.manager, this.commandManager, inventoryName, pluginName, arguments, toPage);
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public Button load(YamlConfiguration configuration, String path, DefaultButtonValue defaultButtonValue) {

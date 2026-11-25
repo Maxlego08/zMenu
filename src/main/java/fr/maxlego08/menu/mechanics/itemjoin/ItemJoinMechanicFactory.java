@@ -24,6 +24,7 @@ public class ItemJoinMechanicFactory extends MechanicFactory<ItemJoinMechanic> {
         return mechanic;
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public ItemJoinMechanic parse(MenuPlugin plugin, String itemId, ConfigurationSection mechanicSection, YamlConfiguration configurationFile, File file, String path) {

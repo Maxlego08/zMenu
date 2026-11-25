@@ -617,6 +617,7 @@ public class ZInventory extends ZUtils implements ContainerInventorySetter {
         }
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public void serialize(ConfigurationSection section) {

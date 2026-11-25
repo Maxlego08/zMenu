@@ -46,6 +46,7 @@ public class RecipesItemComponentLoader extends ItemComponentLoader {
                 : new LegacyRecipesComponent(recipes);
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public ItemComponent load(MenuItemStackContext context, File file, YamlConfiguration configuration, String path, ConfigurationSection componentSection) {

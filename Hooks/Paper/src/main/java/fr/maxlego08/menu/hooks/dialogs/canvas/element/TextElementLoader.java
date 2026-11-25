@@ -52,6 +52,7 @@ public final class TextElementLoader implements CanvasElementLoader {
                 this.box(section, name, source, width, lineHeight == null ? 9 : lineHeight), section.getBoolean("escape-placeholders", true));
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public CanvasElement load(MenuPlugin plugin, String name, ConfigurationSection section, String source) {

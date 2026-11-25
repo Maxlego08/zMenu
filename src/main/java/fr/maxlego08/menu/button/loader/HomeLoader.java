@@ -27,6 +27,7 @@ public class HomeLoader extends ButtonLoader {
         return new ZHomeButton(this.manager);
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public Button load(YamlConfiguration configuration, String path, DefaultButtonValue defaultButtonValue) {

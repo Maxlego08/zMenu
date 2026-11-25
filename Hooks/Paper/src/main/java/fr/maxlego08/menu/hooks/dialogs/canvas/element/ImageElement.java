@@ -100,6 +100,7 @@ public record ImageElement(@NotNull String name, @NotNull PackValue glyph, @NotN
         if (this.height != null) section.set("height", this.height);
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public void serialize(ConfigurationSection section) {

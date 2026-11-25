@@ -38,6 +38,7 @@ public final class ImageElementLoader implements CanvasElementLoader {
         return new ImageElement(name, glyph, x, y, height);
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public CanvasElement load(MenuPlugin plugin, String name, ConfigurationSection section, String source) {

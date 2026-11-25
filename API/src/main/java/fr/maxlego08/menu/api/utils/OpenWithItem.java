@@ -58,6 +58,7 @@ public class OpenWithItem {
     /**
      * @deprecated use {@link #serialize(Section)}, zMenu reads its files with BoostedYAML.
      */
+    @SuppressWarnings("removal")
     @Deprecated(since = "1.1.2.1", forRemoval = true)
     public void serialize(@NotNull ConfigurationSection section) {
         this.menuItemStack.serialize(section.createSection("item"));

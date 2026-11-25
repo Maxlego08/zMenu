@@ -35,6 +35,7 @@ public abstract class PaginationButton extends Button {
         if (this.onlyRefreshButton) section.set("only-refresh-button", true);
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     protected void serializeProperties(ConfigurationSection section) {

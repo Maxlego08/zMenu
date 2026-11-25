@@ -37,6 +37,7 @@ public abstract class RegistryVariantLoader<T extends Keyed> extends ItemCompone
         return this.componentFactory.apply(resolvableRegistryEntry);
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public ItemComponent load(MenuItemStackContext context, File file, YamlConfiguration configuration, String path, ConfigurationSection componentSection) {

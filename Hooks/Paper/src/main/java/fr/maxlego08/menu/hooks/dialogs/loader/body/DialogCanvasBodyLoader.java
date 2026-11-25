@@ -81,6 +81,7 @@ public class DialogCanvasBodyLoader extends ButtonLoader {
         return new DialogCanvasBody(width, height, elements, YamlSections.getStringList(configuration, path + ".fallback"));
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public Button load(YamlConfiguration configuration, String path, DefaultButtonValue defaultButtonValue) {

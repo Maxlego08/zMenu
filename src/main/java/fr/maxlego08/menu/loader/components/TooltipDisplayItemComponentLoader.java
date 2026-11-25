@@ -48,6 +48,7 @@ public class TooltipDisplayItemComponentLoader extends ItemComponentLoader {
         return new TooltipDisplayComponent(hideTooltip, hiddenComponentEntries);
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public ItemComponent load(MenuItemStackContext context, File file, YamlConfiguration configuration, String path, ConfigurationSection componentSection) {

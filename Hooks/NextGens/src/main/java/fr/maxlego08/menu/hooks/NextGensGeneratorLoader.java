@@ -30,6 +30,7 @@ public class NextGensGeneratorLoader extends MaterialLoader {
         return generator != null ? generator.item() : null;
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public ItemStack load(Player player, YamlConfiguration configuration, String path, String materialString) {

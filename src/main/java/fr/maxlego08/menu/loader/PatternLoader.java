@@ -76,6 +76,7 @@ public class PatternLoader extends ZUtils implements Loader<Pattern> {
         return new ZPattern(name, buttons, size, enableMultiPage);
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public Pattern load(YamlConfiguration configuration, String path, Object... objects) throws InventoryException  {

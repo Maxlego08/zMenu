@@ -31,6 +31,7 @@ public class IntangibleProjectileItemComponentLoader extends ItemComponentLoader
         return new IntangibleProjectileComponent(true);
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public ItemComponent load(MenuItemStackContext context, File file, YamlConfiguration configuration, String path, ConfigurationSection componentSection) {

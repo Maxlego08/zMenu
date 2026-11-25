@@ -199,6 +199,7 @@ public final class ButtonElement implements CanvasElement, CanvasLayoutable {
         if (!this.escapePlaceholders) section.set("escape-placeholders", false);
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public void serialize(ConfigurationSection section) {

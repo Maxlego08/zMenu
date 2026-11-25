@@ -38,6 +38,7 @@ public class UnbreakableItemComponentLoader extends ItemComponentLoader {
                 : new LegacyUnbreakableComponent(unbreakable);
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public ItemComponent load(MenuItemStackContext context, File file, YamlConfiguration configuration, String path, ConfigurationSection componentSection) {

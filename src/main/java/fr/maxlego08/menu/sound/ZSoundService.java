@@ -41,6 +41,7 @@ public class ZSoundService implements SoundService {
         return this.create(sound, category, (float) (double) configuration.getDouble(path + ".pitch", 1.0), volume);
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public SoundOption load(YamlConfiguration configuration, String path) {

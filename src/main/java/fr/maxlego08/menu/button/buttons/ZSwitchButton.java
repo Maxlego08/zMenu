@@ -29,6 +29,7 @@ public class ZSwitchButton extends SwitchButton {
         section.set("key", this.placeholder);
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     protected void serializeProperties(ConfigurationSection section) {
@@ -45,6 +46,7 @@ public class ZSwitchButton extends SwitchButton {
         }
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public void serialize(ConfigurationSection section, int inventorySize) {

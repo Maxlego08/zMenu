@@ -39,6 +39,7 @@ public final class PanelElementLoader implements CanvasElementLoader {
         return new PanelElement(name, texture, border, PositionValue.readX(section, "x", name, source), PositionValue.readY(section, "y", name, source), width, height);
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public CanvasElement load(MenuPlugin plugin, String name, ConfigurationSection section, String source) {

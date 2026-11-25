@@ -92,6 +92,7 @@ public record PanelElement(@NotNull String name, @NotNull PackValue texture, int
         section.set("height", this.height);
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public void serialize(ConfigurationSection section) {

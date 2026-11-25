@@ -127,6 +127,7 @@ public class DialogLoader implements Loader<AbstractDialogInventory> {
         return dialogInventory;
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public AbstractDialogInventory load(YamlConfiguration configuration, String path, Object... objects) throws InventoryException  {

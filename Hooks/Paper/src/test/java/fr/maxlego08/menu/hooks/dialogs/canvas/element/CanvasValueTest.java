@@ -4,16 +4,17 @@ import fr.maxlego08.menu.api.dialog.canvas.CanvasValue;
 import fr.maxlego08.menu.api.dialog.canvas.HAlign;
 import fr.maxlego08.menu.api.exceptions.DialogException;
 import net.kyori.adventure.key.Key;
-import org.bukkit.configuration.MemoryConfiguration;
+import dev.dejvokep.boostedyaml.YamlDocument;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
+import fr.maxlego08.menu.api.utils.yaml.YamlSections;
 
 public class CanvasValueTest {
 
     @Test
     public void numbersAreReadAndChecked() {
-        MemoryConfiguration section = new MemoryConfiguration();
+        YamlDocument section = YamlSections.empty();
         section.set("width", 120);
         CanvasValue<Integer> width = CanvasValue.number(section, "width", 200, 1, 1014, "test");
         assertFalse(width.isPlaceholder());
@@ -27,7 +28,7 @@ public class CanvasValueTest {
 
     @Test
     public void aPlaceholderIsKeptForLater() {
-        MemoryConfiguration section = new MemoryConfiguration();
+        YamlDocument section = YamlSections.empty();
         section.set("width", "%my_width%");
         CanvasValue<Integer> width = CanvasValue.number(section, "width", 200, 1, 1014, "test");
         assertTrue(width.isPlaceholder());
@@ -37,13 +38,13 @@ public class CanvasValueTest {
 
     @Test
     public void aMissingKeyGivesItsDefault() {
-        CanvasValue<Boolean> hat = CanvasValue.bool(new MemoryConfiguration(), "hat", true, "test");
+        CanvasValue<Boolean> hat = CanvasValue.bool(YamlSections.empty(), "hat", true, "test");
         assertEquals(Boolean.TRUE, hat.fixed());
     }
 
     @Test
     public void booleansEnumsAndKeysAreRead() {
-        MemoryConfiguration section = new MemoryConfiguration();
+        YamlDocument section = YamlSections.empty();
         section.set("hat", "no");
         section.set("align", "Center");
         section.set("atlas", "blocks");
@@ -59,10 +60,10 @@ public class CanvasValueTest {
 
     @Test
     public void writesBackWhatItRead() {
-        MemoryConfiguration section = new MemoryConfiguration();
+        YamlDocument section = YamlSections.empty();
         section.set("align", "center");
         section.set("width", "%my_width%");
-        MemoryConfiguration written = new MemoryConfiguration();
+        YamlDocument written = YamlSections.empty();
         CanvasValue.enumeration(section, "align", HAlign.class, HAlign.LEFT, "test").serialize(written, "align");
         CanvasValue.number(section, "width", 200, 1, 1014, "test").serialize(written, "width");
         assertEquals("center", written.getString("align"));

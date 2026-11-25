@@ -69,6 +69,7 @@ public final class ButtonElementLoader implements CanvasElementLoader {
                 section.getBoolean("escape-placeholders", true));
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public CanvasElement load(MenuPlugin plugin, String name, ConfigurationSection section, String source) {

@@ -44,6 +44,7 @@ public class DialogPlainMessageBodyLoader extends ButtonLoader {
         return new DialogPlainMessageBody(messages, width, localizedMessages);
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public Button load(YamlConfiguration configuration, String path, DefaultButtonValue defaultButtonValue) {

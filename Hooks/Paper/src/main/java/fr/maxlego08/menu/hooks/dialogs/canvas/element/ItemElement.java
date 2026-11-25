@@ -179,6 +179,7 @@ public final class ItemElement implements CanvasElement, CanvasLayoutable {
         if (this.click != null) this.click.serialize(section);
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public void serialize(ConfigurationSection section) {

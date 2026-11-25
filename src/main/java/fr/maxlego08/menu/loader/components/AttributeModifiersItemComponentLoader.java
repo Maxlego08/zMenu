@@ -66,6 +66,7 @@ public class AttributeModifiersItemComponentLoader extends ItemComponentLoader {
                 : new LegacyAttributeModifiersComponent(this.plugin, resolvableWrappers, attributeMergeStrategyResolvable);
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public ItemComponent load(MenuItemStackContext context, File file, YamlConfiguration configuration, String path, ConfigurationSection componentSection) {

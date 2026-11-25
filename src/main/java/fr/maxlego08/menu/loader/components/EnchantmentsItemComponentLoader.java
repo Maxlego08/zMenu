@@ -67,6 +67,7 @@ public class EnchantmentsItemComponentLoader extends ItemComponentLoader {
                 : new LegacyEnchantementsComponent(enchantments);
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public ItemComponent load(MenuItemStackContext context, File file, YamlConfiguration configuration, String path, ConfigurationSection componentSection) {

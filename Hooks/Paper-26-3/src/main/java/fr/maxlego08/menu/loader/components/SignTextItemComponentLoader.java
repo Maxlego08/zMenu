@@ -64,6 +64,7 @@ public abstract class SignTextItemComponentLoader extends ItemComponentLoader {
         return new SignTextComponent(this.side, messages, color, hasGlowingText);
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public ItemComponent load(MenuItemStackContext context, File file, YamlConfiguration configuration, String path, ConfigurationSection componentSection) {

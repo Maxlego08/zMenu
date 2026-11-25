@@ -49,6 +49,7 @@ public class RequirementLoader implements Loader<Requirement> {
         return new ZRequirement(miniumRequirement, permissibles, denyActions, successActions, clickTypes);
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public Requirement load(YamlConfiguration configuration, String path, Object... objects) throws InventoryException  {

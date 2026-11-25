@@ -198,6 +198,7 @@ public class InventoryLoader extends ZUtils implements Loader<Inventory> {
         return inventory;
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public Inventory load(YamlConfiguration configuration, String path, Object... objects) throws InventoryException  {

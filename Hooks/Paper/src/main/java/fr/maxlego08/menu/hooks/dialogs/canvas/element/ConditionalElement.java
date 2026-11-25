@@ -170,6 +170,7 @@ public final class ConditionalElement implements CanvasElement, CanvasLayoutable
         if (this.viewRequirement != null) this.viewRequirement.serialize(section.createSection("view-requirement"));
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public void serialize(ConfigurationSection section) {

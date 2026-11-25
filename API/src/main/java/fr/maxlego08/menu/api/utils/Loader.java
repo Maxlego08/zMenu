@@ -62,6 +62,7 @@ public interface Loader<T> {
      * @throws UnsupportedOperationException If the object cannot be serialized.
      * @deprecated use {@link #serialize(Object, Section, Object...)}, zMenu reads its files with BoostedYAML.
      */
+    @SuppressWarnings("removal")
     @Deprecated(since = "1.1.2.1", forRemoval = true)
     default void serialize(@NotNull T object, @NotNull ConfigurationSection section, Object... objects) {
         if (object instanceof SectionSerializable serializable) {

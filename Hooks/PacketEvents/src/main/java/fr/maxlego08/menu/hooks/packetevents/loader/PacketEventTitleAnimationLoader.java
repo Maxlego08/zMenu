@@ -16,6 +16,7 @@ public class PacketEventTitleAnimationLoader extends TitleAnimationLoader {
         return new PacketTitleAnimation(super.loadSettings(configuration, path));
     }
 
+    @SuppressWarnings("removal")
     @Override
     @Deprecated
     public TitleAnimation load(YamlConfiguration configuration, String path, Object... objects) throws InventoryException  {
